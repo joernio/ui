@@ -1,4 +1,5 @@
 const { BrowserWindow, ipcMain, Notification, dialog } = require('electron');
+const initWebSocket = require('./webSocket');
 
 const getWindow = event => {
   const window = BrowserWindow.fromId(event.frameId);
@@ -17,6 +18,9 @@ const handleWindowAction = (action, window) => {
     case 'unmaximize':
       window.unmaximize();
       return true;
+    case 'reload':
+      window.reload();
+      return true;
     case 'close':
       window.close();
       return true;
@@ -27,6 +31,11 @@ const handleWindowAction = (action, window) => {
 };
 
 const initIpcMain = () => {
+  ipcMain.on('websocket-connect', (event, ws_url) => {
+    const window = getWindow(event);
+    initWebSocket(window, ws_url);
+  });
+
   ipcMain.on('window-action', (event, message) => {
     return handleWindowAction(message, getWindow(event));
   });
@@ -43,13 +52,43 @@ const initIpcMain = () => {
     new Notification({ title: 'Notification', body: message }).show();
   });
 
-  ipcMain.on('select-dir', async (event, _) => {
+  ipcMain.on('select-dir', async (event) => {
     const window = getWindow(event);
     const result = await dialog.showOpenDialog(window, {
-      properties: ['openDirectory'],
+      properties:['openDirectory'],
     });
 
     window.webContents.send('selected-dir', result.filePaths[0]);
+  });
+
+  ipcMain.on('select-file', async (event)=>{
+    const window = getWindow(event);
+    const result = await dialog.showOpenDialog(window, {
+      properties:['openFile'],
+    });
+
+    window.webContents.send('selected-file', result.filePaths[0]);
+  });
+
+  ipcMain.on('create-file', async (event, defaultPath) => {
+    const window = getWindow(event);
+    const file = await dialog.showSaveDialog(window, {
+      title: 'Save',
+      defaultPath,
+      filters: [
+        {
+          name: '.sc files',
+          extensions: ['sc'],
+        },
+      ],
+      properties: [
+        'showHiddenFiles',
+        'createDirectory',
+        'showOverwriteConfirmation',
+      ],
+    });
+
+    window.webContents.send('created-file', file);
   });
 };
 
@@ -70,4 +109,15 @@ const openDevTools = window => {
   window.webContents.openDevTools();
 };
 
-module.exports = { initIpcMain, updateWindowInfo, openDevTools };
+const listenForConnectionClose = connection => {
+  ipcMain.on('websocket-disconnect', () => {
+    connection.close(null, 'user terminated connection');
+  });
+};
+
+module.exports = {
+  initIpcMain,
+  updateWindowInfo,
+  openDevTools,
+  listenForConnectionClose,
+};

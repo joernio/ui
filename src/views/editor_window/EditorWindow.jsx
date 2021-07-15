@@ -1,76 +1,59 @@
 import React from 'react';
+import clsx from 'clsx';
 import MonacoEditor from 'react-monaco-editor';
 import { connect } from 'react-redux';
+import * as filesActions from '../../store/actions/filesActions';
 import { makeStyles } from '@material-ui/core';
-import {
-  goToLine,
-  editorDidMount,
-  readRecentFile,
-  onChange,
-} from './editorScripts';
+import { editorDidMount, handleFileAddedToRecent } from './editorScripts';
+import styles from '../../assets/js/styles/views/editor_window/editorWindowStyles';
 
-const useStyles = makeStyles(theme => ({
-  editorContainerStyle: {
-    paddingTop: '1.5em',
-    position: 'fixed',
-    width: '100%',
-    height: '100%',
-    backgroundColor: theme.palette.background.paper,
-    paddingLeft: props =>
-      props.drawerOpen ? props.drawerWidth : props.sideNavWidth,
-  },
-}));
+const useStyles = makeStyles(styles);
 
 function EditorWindow(props) {
   const classes = useStyles(props);
-  const editorRef = React.useRef(null);
 
-  const [state, setState] = React.useState({
-    code: '// type your code...',
-  });
-
-  const handleSetState = obj => {
-    if (obj) {
-      Promise.resolve(obj).then(obj => {
-        setState(state => ({ ...state, ...obj }));
-      });
-    }
+  const refs = {
+    editorContainerEl: React.useRef(null),
+    editorEl: React.useRef(null),
   };
 
-  React.useEffect(() => {
-    if (editorRef) {
-      readRecentFile(props)
-        .then(data => {
-          handleSetState({ code: data });
-          setTimeout(() => goToLine(editorRef.current.editor, 100), 1000);
-        })
-        .catch(err => {
-          console.log(err);
-        });
+  React.useEffect(async () => {
+    if (refs.editorEl.current) {
+      const { openFileContent, isReadOnly } = await handleFileAddedToRecent(
+        refs,
+        props,
+      );
+      props.setOpenFileContent(openFileContent);
+      props.setOpenFileIsReadOnly(isReadOnly);
     }
   }, [props.files.recent]);
 
-  const { code } = state;
+  const { settings, files } = props;
+
   const options = {
     selectOnLineNumbers: true,
     roundedSelection: false,
-    readOnly: false,
+    readOnly: files.openFileIsReadOnly,
     cursorStyle: 'line',
     automaticLayout: true,
   };
 
-  const { prefersDarkMode } = props;
   return (
-    <div className={classes.editorContainerStyle}>
+    <div
+      className={clsx(
+        classes.editorContainerStyle,
+        props.drawerWidth ? classes.drawerOpenStyle : classes.drawerCloseStyle,
+      )}
+    >
       <MonacoEditor
-        ref={editorRef}
+        ref={refs.editorEl}
         width="100%"
-        height="100vh"
-        theme={prefersDarkMode ? 'vs-dark' : 'vs-light'}
+        height="100%"
+        theme={settings.prefersDarkMode ? 'vs-dark' : 'vs-light'}
         language="javascript"
-        value={code}
+        value={files?.openFileContent}
         options={options}
-        onChange={onChange}
+        onChange={(newValue, _) => props.setOpenFileContent(newValue)}
         editorDidMount={editorDidMount}
       />
     </div>
@@ -80,7 +63,20 @@ function EditorWindow(props) {
 const mapStateToProps = state => {
   return {
     files: state.files,
+    query: state.query,
+    settings: state.settings
   };
 };
 
-export default connect(mapStateToProps, null)(EditorWindow);
+const mapDispatchToProps = dispatch => {
+  return {
+    setOpenFileContent: content => {
+      return dispatch(filesActions.setOpenFileContent(content));
+    },
+    setOpenFileIsReadOnly: bool => {
+      return dispatch(filesActions.setOpenFileIsReadOnly(bool));
+    },
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(EditorWindow);

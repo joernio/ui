@@ -15,49 +15,55 @@ export const getOpenProjectInputPath = workspace => {
   let root = path ? path.split('/') : null;
   root = root ? root[root.length - 1] : null;
 
-
   return { path, root };
+};
+
+export const isFileInRecentlyOpened = (file_path, recent) => {
+  if (file_path) {
+    return Object.keys(recent).includes(file_path);
+  } else {
+    return true;
+  }
 };
 
 export const getFilePathToOpen = async workspace => {
   const { path: inputPath } = getOpenProjectInputPath(workspace);
   let file_path;
 
-  if(inputPath){
+  if (inputPath) {
     await getDirectories(inputPath)
-    .then(async paths => {
+      .then(async paths => {
+        let promisesArr = [];
 
-      let promisesArr = [];
-
-      for (let path of paths) {
-        if (!file_path) {
-          let promise = new Promise((resolve, reject) => {
-            fs.stat(path, (err, stats) => {
-              if (!err) {
-                resolve(stats);
-              } else {
-                reject(err);
-              }
-            });
-          })
-            .then(stats => {
-              if (stats.isFile()) {
-                file_path = path;
-              }
+        for (let path of paths) {
+          if (!file_path) {
+            let promise = new Promise((resolve, reject) => {
+              fs.stat(path, (err, stats) => {
+                if (!err) {
+                  resolve(stats);
+                } else {
+                  reject(err);
+                }
+              });
             })
-            .catch(err => {
-              console.log('error getting path stats', err);
-            });
+              .then(stats => {
+                if (stats.isFile()) {
+                  file_path = path;
+                }
+              })
+              .catch(err => {
+                console.log('error getting path stats', err);
+              });
 
             promisesArr.push(promise);
+          }
         }
-      }
 
-      await Promise.any(promisesArr);
-    })
-    .catch(err => {
-      console.log('error getting path directories', err);
-    });
+        await Promise.any(promisesArr);
+      })
+      .catch(err => {
+        console.log('error getting path directories', err);
+      });
   }
 
   return file_path;

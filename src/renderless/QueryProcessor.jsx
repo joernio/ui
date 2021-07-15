@@ -3,6 +3,10 @@ import { connect } from 'react-redux';
 import { usePrevious } from '../assets/js/utils/hooks';
 import * as queryActions from '../store/actions/queryActions';
 import { shouldRunQuery } from './queryProcessorScripts';
+import {
+  addToQueue,
+  addWorkSpaceQueryToQueue,
+} from '../assets/js/utils/scripts';
 
 function QueryProcessor(props) {
   const prev_queue = usePrevious(props.query.queue);
@@ -10,22 +14,12 @@ function QueryProcessor(props) {
   React.useEffect(() => {
     const query = props.peekQueue();
     const run_query = shouldRunQuery(prev_queue, props.query.queue, query);
-    if (run_query) {
-      props.mainQuery(query);
-    }
+    run_query && props.mainQuery(query);
   }, [props.query.queue]);
 
-  // React.useEffect(() => {
-  //   const prev_queue_count = prev_queue ? Object.keys(prev_queue).length : 0;
-  //   const queue_count = Object.keys(props.query.queue).length;
-  //   const query = props.peekQueue();
-
-  //   if (query && queue_count === 1) {
-  //     runQuery(query, props);
-  //   } else if (query && prev_queue_count > queue_count && queue_count > 0) {
-  //     runQuery(query, props);
-  //   }
-  // }, [props.query.queue]);
+  React.useEffect(() => {
+    props.status.connected && addToQueue(addWorkSpaceQueryToQueue(), props);
+  }, [props.status.connected, props.settings.server, props.settings.websocket]);
 
   return null;
 }
@@ -33,6 +27,8 @@ function QueryProcessor(props) {
 const mapStateToProps = state => {
   return {
     query: state.query,
+    status: state.status,
+    settings: state.settings,
   };
 };
 
@@ -43,6 +39,9 @@ const mapDispatchToProps = dispatch => {
     },
     peekQueue: () => {
       return dispatch(queryActions.peekQueue());
+    },
+    enQueueQuery: query => {
+      return dispatch(queryActions.enQueueQuery(query));
     },
   };
 };

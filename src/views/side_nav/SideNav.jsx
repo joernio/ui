@@ -1,88 +1,31 @@
 import React from 'react';
 import clsx from 'clsx';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import List from '@material-ui/core/List';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import SearchIcon from '@material-ui/icons/Search';
-import SettingsIcon from '@material-ui/icons/Settings';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
-import TerminalIcon from '../../assets/image/js/TerminalIcon';
-import Popper from '@material-ui/core/Popper';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import Paper from '@material-ui/core/Paper';
+import { connect } from 'react-redux';
+import * as settingsActions from '../../store/actions/settingsActions';
+import { makeStyles } from '@material-ui/core/styles';
+import { Icon, Divider, Switch } from '@blueprintjs/core';
+import { Dialog } from '@blueprintjs/core';
+import { Tooltip2 } from '@blueprintjs/popover2';
+import styles from '../../assets/js/styles/views/side_nav/sideNavStyles';
 
 import {
-  handleSettingsClick,
+  toggleSettingsDialog,
   handleDrawerToggle,
   handleTerminalToggle,
+  getSettingsInitialValues,
+  collectSettingsValues,
+  handleOnChange,
 } from './sideNavScripts';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: 'flex',
-  },
-  menuButton: {
-    marginRight: 36,
-  },
-  hide: {
-    display: 'none',
-  },
-
-  drawerDefault: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    marginTop: '2.5em',
-    paddingBottom: '2.5em',
-    backgroundColor: '#303030',
-    width: props => props.SideNavWidth,
-    '& ul': {
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%',
-      '& .navTopSection': {
-        flexGrow: 1,
-      },
-    },
-  },
-  drawerDefaultListItemStyle: {
-    justifyContent: 'center',
-    paddingLeft: 0,
-    paddingRight: 0,
-    '& .MuiListItemIcon-root': {
-      minWidth: 0,
-    },
-  },
-  IconStyle: {
-    fill: '#C6C6C6',
-    '&:hover': {
-      fill: '#FFFFFF',
-    },
-  },
-  toolbar: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
-  },
-}));
+const useStyles = makeStyles(styles);
 
 function SideNav(props) {
   const classes = useStyles(props);
-  const theme = useTheme();
 
   const [state, setState] = React.useState({
     anchorEl: null,
-    popperOpen: false,
+    settingsDialogIsOpen: false,
+    values: { ...getSettingsInitialValues(props.settings) },
   });
 
   const handleSetState = obj => {
@@ -93,97 +36,168 @@ function SideNav(props) {
     }
   };
 
-  const { prefersDarkMode, handleSetThemePreference } = props;
+  const { values } = state;
+
   return (
-    <div className={classes.root}>
-      <CssBaseline />
-
-      <Popper
-        open={state.popperOpen}
-        anchorEl={state.anchorEl}
-        placement="right"
-        style={{
-          zIndex: '10000',
-          height: '10em',
-          width: '13em',
-        }}
-      >
-        <Paper>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={prefersDarkMode}
-                onChange={() => handleSetThemePreference(!prefersDarkMode)}
-                color="primary"
-              />
-            }
-            label="Dark Theme"
-            labelPlacement="start"
-          />
-        </Paper>
-      </Popper>
-
-      <Drawer
-        variant="permanent"
-        classes={{
-          paper: clsx({
-            [classes.drawerDefault]: true,
-          }),
-        }}
-      >
-        <div className={classes.toolbar}>
-          <IconButton
-            onClick={() => props.handleSetState(handleDrawerToggle(props))}
+    <>
+      <div className={clsx(classes.rootStyle, 'side-nav')}>
+        <div>
+          <Tooltip2
+            content={<span className={classes.toolTipTextStyle}>explorer</span>}
+            placement="right"
+            usePortal={false}
           >
-            {theme.direction === 'rtl' ? (
-              <ChevronRightIcon className={classes.IconStyle} />
-            ) : (
-              <ChevronLeftIcon className={classes.IconStyle} />
-            )}
-          </IconButton>
+            <Icon
+              icon="code"
+              iconSize={25}
+              className={classes.iconStyle}
+              onClick={() => props.handleSetState(handleDrawerToggle(props))}
+            />
+          </Tooltip2>
+        </div>
+
+        <Tooltip2
+          content={<span className={classes.toolTipTextStyle}>terminal</span>}
+          placement="right"
+          usePortal={false}
+        >
+          <Icon
+            icon="console"
+            iconSize={25}
+            className={classes.iconStyle}
+            onClick={() => props.handleSetState(handleTerminalToggle(props))}
+          />
+        </Tooltip2>
+
+        <Tooltip2
+          content={<span className={classes.toolTipTextStyle}>settings</span>}
+          placement="right"
+          usePortal={false}
+        >
+          <Icon
+            icon="cog"
+            iconSize={25}
+            className={classes.iconStyle}
+            onClick={() => {
+              handleSetState(toggleSettingsDialog(state.isSettingsDialogOpen));
+            }}
+          />
+        </Tooltip2>
+      </div>
+      <Dialog
+        portalClassName={classes.settingsDialogStyle}
+        autoFocus={true}
+        canEscapeKeyClose={true}
+        canOutsideClickClose={true}
+        enforceFocus={true}
+        isOpen={state.isSettingsDialogOpen}
+        title="Settings"
+        isCloseButtonShown={false}
+        onClose={() =>
+          handleSetState(toggleSettingsDialog(state.isSettingsDialogOpen))
+        }
+        usePortal={true}
+      >
+        <div className={classes.settingsDialogContentStyle}>
+          <div>
+            <h3>Server</h3>
+
+            <h4>URL</h4>
+            <input
+              id="server_url"
+              type="text"
+              placeholder="http://example.com"
+              value={values['server_url']}
+              onChange={e => handleSetState(handleOnChange(e, values))}
+              onBlur={e => handleSetState(handleOnChange(e, values))}
+            />
+
+            <h4>Username</h4>
+            <input
+              type="text"
+              id="server_username"
+              placeholder="auth username here.."
+              value={values['server_username']}
+              onChange={e => handleSetState(handleOnChange(e, values))}
+              onBlur={e => handleSetState(handleOnChange(e, values))}
+            />
+
+            <h4>Password</h4>
+            <input
+              type="text"
+              id="server_password"
+              placeholder="auth password here.."
+              value={values['server_password']}
+              onChange={e => handleSetState(handleOnChange(e, values))}
+              onBlur={e => handleSetState(handleOnChange(e, values))}
+            />
+          </div>
+          <Divider />
+          <div>
+            <h3>Web Socket</h3>
+            <h4>URL</h4>
+            <input
+              type="text"
+              id="ws_url"
+              placeholder="ws://example.com/connect"
+              value={values['ws_url']}
+              onChange={e => handleSetState(handleOnChange(e, values))}
+              onBlur={e => handleSetState(handleOnChange(e, values))}
+            />
+          </div>
+          <Divider />
+          <div>
+            <h3>GUI</h3>
+            <h4>Dark Theme</h4>
+            <Switch
+              className={classes.switchStyle}
+              innerLabelChecked="on"
+              id="prefers_dark_mode"
+              innerLabel="off"
+              defaultChecked={values['prefers_dark_mode']}
+              onChange={e => handleSetState(handleOnChange(e, values))}
+              onBlur={e => handleSetState(handleOnChange(e, values))}
+            />
+
+            <h4>Font Size</h4>
+            <input
+              disabled={true}
+              type="text"
+              id="font_size"
+              placeholder="disabled"
+              value={values['font_size']}
+              onChange={e => handleSetState(handleOnChange(e, values))}
+              onBlur={e => handleSetState(handleOnChange(e, values))}
+            />
+          </div>
         </div>
         <Divider />
-        <List>
-          <div className="navTopSection">
-            <ListItem button className={classes.drawerDefaultListItemStyle}>
-              <ListItemIcon>
-                <FileCopyIcon className={classes.IconStyle} />
-              </ListItemIcon>
-            </ListItem>
-
-            <ListItem button className={classes.drawerDefaultListItemStyle}>
-              <ListItemIcon>
-                <SearchIcon className={classes.IconStyle} />
-              </ListItemIcon>
-            </ListItem>
-          </div>
-
-          <ListItem
-            button
-            className={clsx(
-              classes.drawerDefaultListItemStyle,
-              classes.IconStyle,
-            )}
-            onClick={() => props.handleSetState(handleTerminalToggle(props))}
-          >
-            <ListItemIcon>
-              <TerminalIcon />
-            </ListItemIcon>
-          </ListItem>
-
-          <ListItem
-            button
-            className={classes.drawerDefaultListItemStyle}
-            onClick={e => handleSetState(handleSettingsClick(e, state))}
-          >
-            <ListItemIcon>
-              <SettingsIcon className={classes.IconStyle} />
-            </ListItemIcon>
-          </ListItem>
-        </List>
-      </Drawer>
-    </div>
+        <div
+          className={classes.submitSectionStyle}
+          onClick={() => {
+            props.setSettings(collectSettingsValues(values));
+            handleSetState(toggleSettingsDialog(state.isSettingsDialogOpen));
+          }}
+        >
+          <h3>save</h3>
+        </div>
+      </Dialog>
+    </>
   );
 }
 
-export default SideNav;
+const mapStateToProps = state => {
+  return {
+    settings: state.settings,
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    setSettings: values => {
+      return dispatch(settingsActions.setSettings(values));
+    },
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SideNav);

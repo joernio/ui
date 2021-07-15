@@ -1,11 +1,14 @@
 const default_state = {
-  server_auth: {
-    protocol: 'http',
-    domain: 'localhost',
-    port: '8080',
-    auth_username: null,
-    auth_password: null,
+  server: {
+    url: 'http://localhost:8080',
+    auth_username: '',
+    auth_password: '',
   },
+  websocket: {
+    url: 'ws://localhost:8080/connect',
+  },
+  prefersDarkMode: true,
+  fontSize: '16px',
 };
 
 const settings = (state = default_state, action) => {

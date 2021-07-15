@@ -1,17 +1,17 @@
 export const joernWelcomeScreen = `
-
-     ██╗ ██████╗ ███████╗██████╗ ███╗   ██╗
-     ██║██╔═══██╗██╔════╝██╔══██╗████╗  ██║
-     ██║██║   ██║█████╗  ██████╔╝██╔██╗ ██║
-██   ██║██║   ██║██╔══╝  ██╔══██╗██║╚██╗██║
-╚█████╔╝╚██████╔╝███████╗██║  ██║██║ ╚████║
- ╚════╝  ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝
-
-Type "help" or "browse(help)" to begin
-
+\r
+\r      ██╗ ██████╗ ███████╗██████╗ ███╗   ██╗
+\r      ██║██╔═══██╗██╔════╝██╔══██╗████╗  ██║
+\r      ██║██║   ██║█████╗  ██████╔╝██╔██╗ ██║
+\r ██   ██║██║   ██║██╔══╝  ██╔══██╗██║╚██╗██║
+\r ╚█████╔╝╚██████╔╝███████╗██║  ██║██║ ╚████║
+\r  ╚════╝  ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝
+\r
+\r Type "help" or "browse(help)" to begin
+\r
 `;
 
-export const joernDefaultPrompt = '\r\njoern> ';
+export const joernDefaultPrompt = '\r\n joern> ';
 
 export const joernManagementCommands = {
   close: 'close',
@@ -22,5 +22,6 @@ export const joernManagementCommands = {
   switchWorkspace: 'switchWorkspace',
 };
 
-export const dirPathKey =
-  '31E397BB088E11B3AC88BEC7B40BCB17BD01B10934EB62EB308E97E167A0CF4F';
+export const apiErrorStrings = {
+  ws_not_connected: 'WS_NOT_CONNECTED',
+};

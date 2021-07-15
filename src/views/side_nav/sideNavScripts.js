@@ -1,14 +1,57 @@
-export const handleSettingsClick = (e, state) => {
+import { processSize } from 'react-monaco-editor/lib/utils';
+
+export const toggleSettingsDialog = isSettingsDialogOpen => {
   return {
-    anchorEl: e.currentTarget,
-    popperOpen: !state.popperOpen,
+    isSettingsDialogOpen: !isSettingsDialogOpen,
   };
 };
 
 export const handleDrawerToggle = props => {
-  return { drawerOpen: !props.drawerOpen };
+  return { drawerWidth: props.drawerWidth ? 0 : '250px' };
 };
 
 export const handleTerminalToggle = props => {
-  return { terminalOpen: !props.terminalOpen };
+  const terminalHeight = props.terminalHeight ? 0 : '468px';
+  return { terminalHeight };
+};
+
+export const handleOnChange = (e, values) => {
+  if (e.target.id === 'prefers_dark_mode') {
+    values[e.target.id] = e.target.checked;
+  } else {
+    values[e.target.id] = e.target.value;
+  }
+  return values;
+};
+
+export const getSettingsInitialValues = settings => {
+  const initialSettings = {};
+
+  initialSettings['server_url'] = settings?.server?.url;
+  initialSettings['server_username'] = settings?.server?.auth_username;
+  initialSettings['server_password'] = settings?.server?.auth_password;
+
+  initialSettings['ws_url'] = settings?.websocket?.url;
+
+  initialSettings['prefers_dark_mode'] = settings?.prefersDarkMode;
+  initialSettings['font_size'] = settings?.fontSize;
+
+  return initialSettings;
+};
+
+export const collectSettingsValues = values => {
+  const settings = {
+    server: {
+      url: values['server_url'],
+      auth_username: values['server_username'],
+      auth_password: values['server_password'],
+    },
+    websocket: {
+      url: values['ws_url'],
+    },
+    prefersDarkMode: values['prefers_dark_mode'],
+    fontSize: values['font_size'],
+  };
+
+  return settings;
 };

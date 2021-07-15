@@ -1,39 +1,55 @@
 import axios from 'axios';
+import { apiErrorStrings } from '../assets/js/utils/defaultVariables';
 import { store } from '../store/configureStore';
 
 class API {
-  request = ({ path = '/', method = 'GET', body }) => {
-    const { protocol, domain, port } = store.getState().settings.server_auth;
-    const url = `${protocol}://${domain}:${port}/${path}`;
+  request = ({ path = '/', method = 'GET', data }) => {
+    let {
+      url,
+      auth_username: username,
+      auth_password: password,
+    } = store.getState().settings.server;
+    const connection_status = store.getState().status.connected;
+    url = url.split('/');
+    url =
+      url[url.length - 1] === ''
+        ? `${url.join('/')}${path}`
+        : `${url.join('/')}/${path}`;
 
-    if (method === 'GET') {
-      console.log('inside api get');
-      return axios.get(url);
-    } else if (body) {
-      return axios.post(url, body);
+    if (connection_status && method === 'GET') {
+      return axios({
+        method: 'get',
+        url,
+        auth: { username, password },
+      });
+    } else if (connection_status && data) {
+      return axios({
+        method: 'post',
+        url,
+        data,
+        auth: { username, password },
+      });
+    } else if (!connection_status) {
+      return new Promise((_, reject) => {
+        reject(apiErrorStrings.ws_not_connected);
+      });
     }
   };
 
   /**********************query******************************/
   query = query => {
-    console.log('api.query was called: ', query);
     const path = 'query';
     const method = 'POST';
-    const body = JSON.stringify({ query });
+    const data = { query };
 
-    return this.request({ path, method, body }).then(res => {
-      return res.data;
-    });
+    return this.request({ path, method, data }).then(res => res.data);
   };
   /****************************************************/
 
   /**********************get query result******************************/
   getQueryResult = uuid => {
-    console.log('api.getQueryResult was called: ', uuid);
     const path = `result/${uuid}`;
-    return this.request({ path }).then(res => {
-      return res.data;
-    });
+    return this.request({ path }).then(res => res.data);
   };
   /****************************************************/
 }

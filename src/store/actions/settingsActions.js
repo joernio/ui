@@ -1,11 +1,8 @@
-import JoernAPI from '../../api';
-const API = new JoernAPI();
-
-export const set_domain = domain => {
+export const setSettings = setting => {
   return dispatch => {
     dispatch({
-      type: 'SET_SERVER_AUTH',
-      payload: { domain: domain },
+      type: 'SET_SETTINGS',
+      payload: setting,
     });
   };
 };

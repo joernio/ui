@@ -1,51 +1,32 @@
 import React from 'react';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { ThemeProvider } from '@material-ui/core/styles';
 import createTheme from './assets/js/theme';
 import initIPCRenderer from './assets/js/utils/ipcRenderer';
+import { connect } from 'react-redux';
 
 import WindowWrapper from './views/WindowWrapper';
 import Window from './views/window/Window';
 import QueryProcessor from './renderless/QueryProcessor';
 import WorkspaceProcessor from './renderless/WorkspaceProcessor';
 import FilesProcessor from './renderless/FilesProcessor';
-initIPCRenderer();
+import Toaster from './components/toaster/Toaster';
 
 function App(props) {
-  const userThemePreference = value => {
-    if (value) {
-      localStorage.setItem('prefersDarkMode', value);
-    } else {
-      let prefersDarkMode = localStorage.getItem('prefersDarkMode');
-      if (!prefersDarkMode) {
-        prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-      }
-      return prefersDarkMode;
-    }
-  };
+  React.useEffect(() => {
+    props.settings?.websocket?.url &&
+      initIPCRenderer(props.settings.websocket.url);
+  }, [props.settings.websocket]);
 
-  const [prefersDarkMode, setPrefersDarkMode] = React.useState(
-    userThemePreference(),
-  );
-
-  const handleSetThemePreference = value => {
-    setPrefersDarkMode(value);
-    userThemePreference(value);
-  };
-
-  const theme = createTheme(prefersDarkMode);
+  const theme = createTheme(props.settings.prefersDarkMode);
 
   return (
     <>
       <ThemeProvider theme={theme}>
-        <WindowWrapper {...props}>
-          <Window
-            {...props}
-            handleSetThemePreference={handleSetThemePreference}
-            prefersDarkMode={prefersDarkMode}
-          />
+        <WindowWrapper>
+          <Window />
         </WindowWrapper>
       </ThemeProvider>
+      <Toaster />
       <QueryProcessor />
       <WorkspaceProcessor />
       <FilesProcessor />
@@ -53,4 +34,10 @@ function App(props) {
   );
 }
 
-export default App;
+const mapStateToProps = state => {
+  return {
+    settings: state.settings,
+  };
+};
+
+export default connect(mapStateToProps, null)(App);

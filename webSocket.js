@@ -1,33 +1,31 @@
 const WebSocketClient = require('websocket').client;
-const { Notification } = require('electron');
+// const { Notification } = require('electron');
 
-function initWebSocket(window) {
+function initWebSocket(window, ws_url) {
+  const { listenForConnectionClose } = require('./ipcMain');
   const client = new WebSocketClient();
 
-  client.on('connectFailed', error => {
-    new Notification({ title: 'Notification', body: error.toString() }).show();
+  client.on('connectFailed', _ => {
+    window.webContents.send('websocket-connection-failed');
   });
 
   client.on('connect', connection => {
     console.log('WebSocket Client Connected');
+    window.webContents.send('websocket-connected');
 
-    connection.on('error', error => {
-      new Notification({
-        title: 'Notification',
-        body: error.toString(),
-      }).show();
+    listenForConnectionClose(connection);
+
+    connection.on('error', _ => {
+      window.webContents.send('websocket-connection-failed');
     });
 
-    connection.on('close', message => {
+    connection.on('close', _ => {
+      window.webContents.send('websocket-connection-failed');
       console.log('echo-protocol Connection Closed');
-      new Notification({
-        title: 'Notification',
-        body: message.toString(),
-      }).show();
     });
 
     connection.on('message', data => {
-      console.log('websocket message recieived');
+      console.log('websocket message received');
       if (data.type === 'utf8' && data.utf8Data !== 'connected') {
         window.webContents.send('websocket-response', data);
       } else {
@@ -36,7 +34,7 @@ function initWebSocket(window) {
     });
   });
 
-  client.connect('ws://localhost:8080/connect', []);
+  client.connect(ws_url, []);
 }
 
 module.exports = initWebSocket;

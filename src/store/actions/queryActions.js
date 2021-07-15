@@ -1,5 +1,6 @@
 import JoernAPI from '../../api';
 import {
+  handleAPIQueryError,
   performDeQueueQuery,
   performEnQueueQuery,
   performPeekQueue,
@@ -18,10 +19,19 @@ export const setResults = payload => {
   };
 };
 
-const setQueue = payload => {
+export const setQueue = payload => {
   return dispatch => {
     return dispatch({
       type: 'SET_QUEUE',
+      payload,
+    });
+  };
+};
+
+export const resetQueue = payload => {
+  return dispatch => {
+    return dispatch({
+      type: 'RESET_QUEUE',
       payload,
     });
   };
@@ -61,20 +71,16 @@ export const pushResult = result => {
 
 export const runQuery = query_string => {
   return () => {
-    return API.query(query_string)
-      .then(data => {
-        if (data && data.uuid) {
-          return data;
-        } else {
-          res = Object.keys(res)
-            .map(key => res[key])
-            .join('\n');
-          throw new Error(res);
-        }
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    return API.query(query_string).then(data => {
+      if (data && data.uuid) {
+        return data;
+      } else {
+        res = Object.keys(res)
+          .map(key => res[key])
+          .join('\n');
+        throw new Error(res);
+      }
+    });
   };
 };
 
@@ -85,14 +91,14 @@ export const getQueryResult = uuid => {
         if (data && data.uuid) {
           return data;
         } else {
-          res = Object.keys(res)
+          const res = Object.keys(res)
             .map(key => res[key])
             .join('\n');
           throw new Error(res);
         }
       })
-      .catch(error => {
-        console.log(error);
+      .catch(err => {
+        handleAPIQueryError(err);
       });
   };
 };
@@ -100,21 +106,25 @@ export const getQueryResult = uuid => {
 export const postQuery = post_query => {
   return () => {
     return runQuery(post_query)().catch(err => {
-      console.log(err);
+      handleAPIQueryError(err);
     });
   };
 };
 
 export const mainQuery = query => {
   return dispatch => {
-    return runQuery(query.query)().then(data => {
-      const query_result = {
-        [data.uuid]: {
-          result: { stdout: null, stderr: null },
-          ...query,
-        },
-      };
-      dispatch(pushResult(query_result));
-    });
+    return runQuery(query.query)()
+      .then(data => {
+        const query_result = {
+          [data.uuid]: {
+            result: { stdout: null, stderr: null },
+            ...query,
+          },
+        };
+        dispatch(pushResult(query_result));
+      })
+      .catch(err => {
+        handleAPIQueryError(err);
+      });
   };
 };

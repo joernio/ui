@@ -1,17 +1,3 @@
-import { windowActionApi } from '../assets/js/utils/ipcRenderer';
-
-export const sendWindowsMessage = action => {
-  windowActionApi.sendWindowAction(action);
-};
-
-export const handleOpenFileContextMenu = e => {
-  return { file_context_anchor_el: e.currentTarget };
-};
-
-export const handleCloseFileContextMenu = () => {
-  return { file_context_anchor_el: null };
-};
-
 export const handleOpenFile = e => {
   if (e?.target?.files[0]?.path) {
     let path = e.target.files[0].path;

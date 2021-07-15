@@ -1,4 +1,4 @@
-const default_state = { connected: null };
+const default_state = { connected: null, toast: null };
 
 const status = (state = default_state, action) => {
   switch (action.type) {

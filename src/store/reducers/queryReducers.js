@@ -12,6 +12,12 @@ const query = (state = default_state, action) => {
         results: state.results,
         queue: { ...state.queue, ...action.payload },
       };
+
+    case 'RESET_QUEUE':
+      return {
+        results: state.results,
+        queue: action.payload,
+      };
     default:
       return state;
   }

@@ -57,6 +57,12 @@ module.exports = {
         test: [/\.ttf$/, /\.svg$/],
         use: ['file-loader'],
       },
+      {
+        test: [/\.(woff|woff2)$/, /\.eot$/],
+        use: {
+          loader: 'url-loader',
+        },
+      },
     ],
   },
   plugins: [

@@ -1,7 +1,7 @@
 const { BrowserWindow } = require('electron');
 const { getWindowPosition } = require('./config');
 const initWebSocket = require('./webSocket');
-const { updateWindowInfo } = require('./ipcMain');
+const { updateWindowInfo, openDevTools } = require('./ipcMain');
 
 const isMac = process.platform === 'darwin';
 
@@ -28,7 +28,7 @@ const createWindow = async () => {
   });
 
   updateWindowInfo(window);
-  initWebSocket(window);
+  openDevTools(window);
 
   window.loadFile('index.html');
 

@@ -1,9 +1,17 @@
 import { ipcRenderer as ipc } from 'electron';
 import { handleWebSocketResponse } from './scripts';
+import { setConnected } from '../../../store/actions/statusActions';
+import { store } from '../../../store/configureStore';
 
 export const windowActionApi = {
   sendWindowAction: message => {
     ipc.send('window-action', message);
+  },
+  connectToWebSocketAction: ws_url => {
+    ipc.send('websocket-connect', ws_url);
+  },
+  disconnectFromWebSocketAction: () => {
+    ipc.send('websocket-disconnect');
   },
 };
 
@@ -20,18 +28,34 @@ export const NotificationApi = {
 };
 
 export const selectDirApi = {
-  selectDir: () => {
-    ipc.send('select-dir');
+  selectDir: event_name => {
+    ipc.send(event_name);
   },
-  registerListener: callback => {
-    ipc.once('selected-dir', (e, data) => callback(data));
+  registerListener: (event_name, callback) => {
+    ipc.once(event_name, (e, data) => callback(data));
+  },
+  createFile: defaultPath => {
+    ipc.send('create-file', defaultPath);
+  },
+  registerCreatedFileListener: callback => {
+    ipc.once('created-file', (e, file) => callback(file));
   },
 };
 
-const initIPCRenderer = () => {
+const initIPCRenderer = ws_url => {
+  ipc.on('websocket-connection-failed', () => {
+    store.dispatch(setConnected(false));
+  });
+
+  ipc.on('websocket-connected', () => {
+    store.dispatch(setConnected(true));
+  });
+
   ipc.on('websocket-response', (e, data) => {
     handleWebSocketResponse(data);
   });
+
+  windowActionApi.connectToWebSocketAction(ws_url);
 };
 
 export default initIPCRenderer;

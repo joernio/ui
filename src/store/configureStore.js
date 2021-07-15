@@ -7,8 +7,8 @@ import thunk from 'redux-thunk';
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['files', 'settings', 'query', 'workspace'],
-  blacklist: ['status'],
+  whitelist: ['files', 'settings', 'workspace'],
+  blacklist: ['status', 'query'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

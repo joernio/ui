@@ -1,9 +1,7 @@
 import React from 'react';
 import { dirPathKey } from '../../assets/js/utils/defaultVariables';
 import { openFile } from '../../assets/js/utils/scripts';
-import { Typography, Box } from '@material-ui/core';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { Icon } from '@blueprintjs/core';
 import { handleRootFolderCollapse, contructFilePath } from './folderScripts';
 
 function Folder(props) {
@@ -26,25 +24,27 @@ function Folder(props) {
       ? Object.keys(folder_json_model[root])
       : null;
   return (
-    <Box style={{ paddingLeft: '0.5em' }}>
-      <Typography
+    <div style={{ paddingLeft: '0.5em' }}>
+      <h3
         onClick={() =>
           openFile(contructFilePath(folder_json_model, root), props)
         }
       >
         {typeof folder_json_model[root] === 'object' ? (
           root_folder_collapsed ? (
-            <ExpandMoreIcon
+            <Icon
+              icon="chevron-down"
               onClick={e => handleSetState(handleRootFolderCollapse(e, state))}
             />
           ) : (
-            <ChevronRightIcon
+            <Icon
+              icon="chevron-right"
               onClick={e => handleSetState(handleRootFolderCollapse(e, state))}
             />
           )
         ) : null}
         {root}
-      </Typography>
+      </h3>
 
       {root_folder_collapsed
         ? keys?.map((key, _) => {
@@ -60,7 +60,7 @@ function Folder(props) {
             }
           })
         : null}
-    </Box>
+    </div>
   );
 }
 

@@ -1,6 +1,6 @@
 const defaults = {
   windowPosition: [-1, -1],
-  windowSize: [800, 600],
+  windowSize: [1300, 950],
 };
 
 const getWindowPosition = () => {

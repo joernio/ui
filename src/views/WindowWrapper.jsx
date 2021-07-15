@@ -2,88 +2,34 @@ import React from 'react';
 import clsx from 'clsx';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
-import Popover from '@material-ui/core/Popover';
-import MinimizeIcon from '@material-ui/icons/Remove';
-import CloseIcon from '@material-ui/icons/Close';
-import MaximizeIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import RestoreIcon from '@material-ui/icons/AspectRatio';
+import { Icon } from '@blueprintjs/core';
 import * as filesActions from '../store/actions/filesActions';
+import { ContextMenu2, Popover2 } from '@blueprintjs/popover2';
+import { Menu, MenuDivider, MenuItem } from '@blueprintjs/core';
 import { windowInfoApi } from '../assets/js/utils/ipcRenderer';
-import { openFile } from '../assets/js/utils/scripts';
+import styles from '../assets/js/styles/views/windowWrapperStyles';
 import {
+  openEmptyFile,
   sendWindowsMessage,
-  handleOpenFile,
-  handleOpenFileContextMenu,
-  handleCloseFileContextMenu,
-  getOpenFileName,
-} from './windowWrapperScripts';
+  wsReconnectToServer,
+  wsDisconnectFromServer,
+  openFile,
+  queueEmpty,
+  saveFile,
+} from '../assets/js/utils/scripts';
+import { handleOpenFile, getOpenFileName } from './windowWrapperScripts';
 
-const useStyles = makeStyles(theme => ({
-  titleBarStyle: {
-    position: 'fixed',
-    top: 0,
-    width: '100vw',
-    height: '2.5em',
-    backgroundColor: theme.palette.titlebar.main,
-    zIndex: 1000,
-    display: 'flex',
-    alignItems: 'center',
-  },
-  controlButtonStyle: {
-    display: 'flex',
-    width: '3em',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0)',
-    border: 'none',
-    cursor: 'pointer',
-    // fill: "gray",
-    '&:focus': {
-      outline: 'none',
-    },
-    '&:hover': {
-      backgroundColor: theme.palette.action.hover,
-    },
-    '&.close:hover': {
-      backgroundColor: theme.palette.secondary.light,
-    },
-  },
-  navItemStyle: {
-    marginLeft: '0.5em',
-    color: theme.palette.text.primary,
-  },
-  toolNameContainerStyle: {
-    display: 'flex',
-    flexGrow: 1,
-    justifyContent: 'center',
-  },
-  windowActionIconStyle: {
-    fill: theme.palette.text.primary,
-    width: '0.6em',
-    height: '0.6em',
-  },
-  connectionStatusStyle: {
-    height: '2.5em',
-    width: '13em',
-    position: 'fixed',
-    right: 0,
-    bottom: 0,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    border: '1px solid gray',
-    color: 'gray',
-  },
-}));
+const useStyles = makeStyles(styles);
 
 function WindowWrapper(props) {
-  const classes = useStyles();
+  const hiddenInputEl = React.useRef(null);
+  const classes = useStyles(props);
 
   const [state, setState] = React.useState({
     isMaximized: windowInfoApi.getWindowInfo(),
     filename: '',
-    file_context_anchor_el: null,
+    fileContextIsOpen: false,
+    connectionStatusPopoverOpen: false,
   });
 
   const handleSetState = obj => {
@@ -99,83 +45,68 @@ function WindowWrapper(props) {
     handleSetState({ filename });
   }, [props.files]);
 
-  const { isMaximized, filename, file_context_anchor_el } = state;
-  const file_context_menu_open = Boolean(file_context_anchor_el);
-  const file_popover_id = file_context_menu_open
-    ? 'file-context-popover'
-    : undefined;
+  const { isMaximized, filename, fileContextIsOpen } = state;
 
   return (
     <>
       <div className={classes.titleBarStyle}>
-        <Popover
-          id={file_popover_id}
-          open={file_context_menu_open}
-          anchorEl={file_context_anchor_el}
-          onClose={() => handleSetState(handleCloseFileContextMenu())}
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'left',
-          }}
-        >
-          <label>
-            <input
-              type="file"
-              onChange={e => openFile(handleOpenFile(e), props)}
-            />
-            Open File
-          </label>
-        </Popover>
-        <div style={{ flexGrow: 1, display: 'flex' }}>
-          <button
-            className={clsx(classes.navItemStyle, classes.controlButtonStyle)}
-            aria-describedby={file_popover_id}
-            onClick={e => handleSetState(handleOpenFileContextMenu(e))}
+        <div className={classes.titleBarRightStyle}>
+          <input
+            ref={hiddenInputEl}
+            className={classes.hiddenStyle}
+            type="file"
+            onChange={e => openFile(handleOpenFile(e), props)}
+          />
+
+          <Popover2
+            content={
+              <Menu>
+                <MenuItem
+                  text="New"
+                  icon="document"
+                  onClick={() => openEmptyFile()}
+                />
+                <MenuItem
+                  text="Open"
+                  onClick={() => hiddenInputEl.current.click()}
+                  icon="folder-shared"
+                />
+                <MenuDivider />
+                <MenuItem
+                  text="Save"
+                  icon="floppy-disk"
+                  onClick={() => saveFile()}
+                />
+                <MenuDivider />
+                <MenuItem
+                  text="Reload"
+                  icon="refresh"
+                  onClick={() => sendWindowsMessage('reload')}
+                />
+                <MenuItem
+                  text="Exit"
+                  icon="cross"
+                  onClick={() => sendWindowsMessage('close')}
+                />
+              </Menu>
+            }
+            placement="bottom-end"
+            minimal={true}
+            interactionKind="click"
+            isOpen={fileContextIsOpen}
+            onInteraction={isOpen =>
+              handleSetState({ fileContextIsOpen: isOpen })
+            }
           >
-            File
-          </button>
-          <button
-            className={clsx(classes.navItemStyle, classes.controlButtonStyle)}
-          >
-            Edit
-          </button>
-          <button
-            className={clsx(classes.navItemStyle, classes.controlButtonStyle)}
-          >
-            Selection
-          </button>
-          <button
-            className={clsx(classes.navItemStyle, classes.controlButtonStyle)}
-          >
-            View
-          </button>
-          <button
-            className={clsx(classes.navItemStyle, classes.controlButtonStyle)}
-          >
-            Go
-          </button>
-          <button
-            className={clsx(classes.navItemStyle, classes.controlButtonStyle)}
-          >
-            Run
-          </button>
-          <button
-            className={clsx(classes.navItemStyle, classes.controlButtonStyle)}
-          >
-            Terminal
-          </button>
-          <button
-            className={clsx(classes.navItemStyle, classes.controlButtonStyle)}
-          >
-            Help
-          </button>
+            <button
+              className={clsx(classes.navItemStyle, classes.controlButtonStyle)}
+            >
+              File
+            </button>
+          </Popover2>
 
           <div className={classes.toolNameContainerStyle}>
-            <div>{filename ? `${filename} - ` : null}Joern Client</div>
+            <h1>{filename ? `${filename} - ` : null}Joern Client</h1>
           </div>
         </div>
 
@@ -183,7 +114,7 @@ function WindowWrapper(props) {
           className={classes.controlButtonStyle}
           onClick={() => sendWindowsMessage('minimize')}
         >
-          <MinimizeIcon className={classes.windowActionIconStyle} />
+          <Icon icon="minus" className={classes.windowActionIconStyle} />
         </button>
 
         <button
@@ -196,9 +127,9 @@ function WindowWrapper(props) {
           }}
         >
           {isMaximized ? (
-            <MaximizeIcon className={classes.windowActionIconStyle} />
+            <Icon icon="minimize" className={classes.windowActionIconStyle} />
           ) : (
-            <RestoreIcon className={classes.windowActionIconStyle} />
+            <Icon icon="maximize" className={classes.windowActionIconStyle} />
           )}
         </button>
 
@@ -206,16 +137,78 @@ function WindowWrapper(props) {
           className={clsx('close', classes.controlButtonStyle)}
           onClick={() => sendWindowsMessage('close')}
         >
-          <CloseIcon className={classes.windowActionIconStyle} />
+          <Icon icon="cross" className={classes.windowActionIconStyle} />
         </button>
       </div>
       {props.children}
-      <div className={classes.connectionStatusStyle}>
-        <h3>Connected</h3>
-        <div className="ring-container">
-          <div className="ringring"></div>
-          <div className="circle"></div>
+      <div className={classes.statusBarStyle}>
+        <div className={classes.statusBarRightStyle}>
+          <div className={classes.refreshIconContainerStyle}>
+            {!queueEmpty(props.query.queue) ? (
+              <Icon
+                icon="refresh"
+                className={clsx(
+                  classes.refreshIconStyle,
+                  'refresh-icon-animation',
+                )}
+              />
+            ) : (
+              <Icon icon="refresh" className={clsx(classes.refreshIconStyle)} />
+            )}
+          </div>
+          {!queueEmpty(props.query.queue) ? <div>running...</div> : null}
         </div>
+
+        <ContextMenu2
+          content={
+            <div>
+              <div
+                className={classes.conStatContextContentStyle}
+                onClick={() =>
+                  wsReconnectToServer(props.settings.websocket.url)
+                }
+              >
+                Reconnect
+              </div>
+              <div
+                className={classes.conStatContextContentStyle}
+                onClick={wsDisconnectFromServer}
+              >
+                Disconnect
+              </div>
+            </div>
+          }
+        >
+          <div className={classes.connectionStatusStyle}>
+            {props.status.connected ? (
+              <>
+                <h3>Connected</h3>
+                <div className="ring-container">
+                  <div className="ringring"></div>
+                  <div className="circle"></div>
+                </div>
+              </>
+            ) : props.status.connected === false ? (
+              <>
+                <h3>Failed</h3>
+                <Icon icon="delete" intent="danger" />
+              </>
+            ) : (
+              <>
+                <h3>Connecting ...</h3>
+                <div className={classes.refreshIconContainerStyle}>
+                  <Icon
+                    icon="refresh"
+                    className={clsx(
+                      classes.refreshIconStyle,
+                      'refresh-icon-animation',
+                    )}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+        </ContextMenu2>
       </div>
     </>
   );
@@ -223,7 +216,11 @@ function WindowWrapper(props) {
 
 const mapStateToProps = state => {
   return {
+    query: state.query,
     files: state.files,
+    status: state.status,
+    workspace: state.workspace,
+    settings: state.settings,
   };
 };
 

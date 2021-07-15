@@ -22,7 +22,7 @@ function init() {
   });
 
   app.on('window-all-closed', () => {
-    app.quit();
+    if (process.platform !== 'darwin') app.quit();
   });
 
   if (isDev) {
