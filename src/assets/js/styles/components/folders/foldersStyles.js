@@ -30,7 +30,6 @@ const styles = theme => ({
         'linear-gradient(to top, transparent, black), linear-gradient(to left, transparent 17px, black 17px)',
       WebkitMaskSize: '100% 20000px',
       WebkitMaskPosition: 'left bottom',
-      // transition: "mask-position 0.3s, -webkit-mask-position 0.3s",
       '&:hover': {
         WebkitMaskPosition: 'left top',
       },

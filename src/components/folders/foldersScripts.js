@@ -45,7 +45,7 @@ const fsToJson = (arr, base, isFile) => {
     }
 
     pathToDir += `/${asset}`;
-    nestedArr = nestedArr ? nestedArr[index]?.childNodes : [];
+    nestedArr = nestedArr ? nestedArr[index === undefined ? 0 : index]?.childNodes : [];
   });
 };
 
@@ -99,9 +99,3 @@ export const createFolderJsonModel = async (workspace, callback) => {
     }
   }
 };
-
-// export const handleRootFolderCollapse = (e, { root_folder_collapsed }) => {
-//   e.preventDefault();
-//   root_folder_collapsed = !root_folder_collapsed;
-//   return { root_folder_collapsed };
-// };

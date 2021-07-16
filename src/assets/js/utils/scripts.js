@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid';
 import glob from 'glob';
 import fs from 'fs';
+import Mousetrap from 'mousetrap';
 import { Tree } from '@blueprintjs/core';
 import {
   joernManagementCommands as manCommands,
@@ -18,6 +19,9 @@ import { setToast } from '../../../store/actions/statusActions';
 import { setRecent } from '../../../store/actions/filesActions';
 import { windowActionApi, selectDirApi } from './ipcRenderer';
 import { store } from '../../../store/configureStore';
+import { mouseTrapGlobalBindig } from './extensions';
+
+mouseTrapGlobalBindig(Mousetrap);
 
 export const performEnQueueQuery = (query, queue) => {
   const key = `${Object.keys(queue).length}-${nanoid()}`;
@@ -650,4 +654,16 @@ export const handleAPIQueryError = err => {
   }
 
   store.dispatch(resetQueue({}));
+};
+
+
+
+export const initShortcuts=()=>{  
+  Mousetrap.bindGlobal(['command+s', 'ctrl+s'], function() {
+    saveFile();
+});
+};
+
+export const removeShortcuts=()=>{
+  Mousetrap.unbind(['command+s', 'ctrl+s']);
 };

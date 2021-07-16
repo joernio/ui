@@ -58,16 +58,16 @@ export const handleSwitchWorkspace = async () => {
   selectDirApi.selectDir(['openDirectory']);
 
   const path = await new Promise((resolve, reject) => {
-    selectDirApi.registerListener(value => {
-      if (value) {
-        resolve(value);
-      } else {
-        reject();
-      }
-    });
-  }).catch(() => {
-    console.log("can't select workspace path");
-  });
+                                  selectDirApi.registerListener(value => {
+                                    if (value) {
+                                      resolve(value);
+                                    } else {
+                                      reject();
+                                    }
+                                  });
+                                }).catch(() => {
+                                  console.log("can't select workspace path");
+                                });
 
   if (path) {
     const query = {
