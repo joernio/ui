@@ -8,7 +8,7 @@ const persistConfig = {
   key: 'root',
   storage,
   whitelist: ['files', 'settings', 'workspace'],
-  blacklist: ['status', 'query'],
+  blacklist: ['status', 'query', 'terminal'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import 'xterm/css/xterm.css';
 import { makeStyles } from '@material-ui/core';
 import { Icon } from '@blueprintjs/core';
+import * as terminalActions from '../../store/actions/terminalActions';
 import * as queryActions from '../../store/actions/queryActions';
 import styles from '../../assets/js/styles/views/terminal/terminalStyles';
 import {
@@ -20,6 +21,7 @@ import {
   openXTerm,
   sendQueryResultToXTerm,
   handleTerminalMaximizeToggle,
+  handleQuery,
 } from './terminalWindowScripts';
 
 const useStyles = makeStyles(styles);
@@ -32,36 +34,33 @@ function TerminalWindow(props) {
     resizeEl: React.useRef(null),
   };
 
-  const [state, setState] = React.useState({
-    term: initXterm(props.settings.prefersDarkMode),
-    fitAddon: null,
-    prev_results: null,
-    isMaximized: false,
-  });
-
   const resize = e => {
-    handleResize(state);
+    handleResize(props.terminal.fitAddon);
   };
 
   React.useEffect(() => {
-    if (refs.terminalRef.current) {
-      openXTerm(refs.terminalRef, state, props);
-      handleSetState(initFitAddon(state));
+    props.setTerm(initXterm(props.settings.prefersDarkMode));
+  }, []);
+
+  React.useEffect(() => {
+    if (refs.terminalRef.current && props.terminal.term) {
+      openXTerm(refs.terminalRef, props.terminal.term);
+      props.setFitAddon(initFitAddon(props.terminal.term));
       window.addEventListener('resize', resize);
 
       return () => window && window.removeEventListener('resize', resize);
     }
-  }, [refs.terminalRef]);
+  }, [refs.terminalRef, props.terminal.term]);
 
   React.useEffect(() => {
     const observer = new ResizeObserver(throttle(resize, 100));
     refs.terminalRef.current && observer.observe(refs.terminalRef.current);
     return () => {};
-  }, [state.fitAddon]);
+  }, [props.terminal.fitAddon]);
 
   React.useEffect(() => {
-    if (state.term) {
-      state.term.setOption('theme', {
+    if (props.terminal.term) {
+      props.terminal.term.setOption('theme', {
         background: props.settings.prefersDarkMode ? '#000000' : '#ffffff',
         foreground: props.settings.prefersDarkMode ? '#ffffff' : '#000000',
         cursorAccent: props.settings.prefersDarkMode ? '#ffffff' : '#000000',
@@ -71,20 +70,29 @@ function TerminalWindow(props) {
   }, [props.settings.prefersDarkMode]);
 
   React.useEffect(() => {
-    props.handleSetState(handleMaximize(window, state, props));
-  }, [state.isMaximized]);
+    props.handleSetState(handleMaximize(window, props));
+  }, [props.terminal.isMaximized]);
 
   React.useEffect(() => {
     setTimeout(resize, 1000);
   }, [props.terminalHeight]);
 
   React.useEffect(() => {
-    if (props.query?.results) {
-      const bool = areResultsEqual(state.prev_results, props.query.results);
-      const wroteToTerminal =
-        !bool && sendQueryResultToXTerm(state, props.query.results);
+    if (props.query?.queue && Object.keys(props.query.queue).length) {
+      handleQuery(props.query.queue);
+    }
+  }, [props.query.queue]);
 
-      wroteToTerminal && handleSetState({ prev_results: props.query.results });
+  React.useEffect(() => {
+    if (props.query?.results) {
+      const bool = areResultsEqual(
+        props.terminal.prev_results,
+        props.query.results,
+      );
+      const wroteToTerminal =
+        !bool && sendQueryResultToXTerm(props.query.results);
+
+      wroteToTerminal && props.setPrevResults(props.query.results);
     }
   }, [props.query.results]);
 
@@ -105,16 +113,8 @@ function TerminalWindow(props) {
     }
   }, [refs.resizeEl.current]);
 
-  const handleSetState = obj => {
-    if (obj) {
-      Promise.resolve(obj).then(obj => {
-        setState(state => ({ ...state, ...obj }));
-      });
-    }
-  };
-
   const { terminalHeight } = props;
-  const { isMaximized } = state;
+  const { isMaximized } = props.terminal;
 
   return (
     <div
@@ -137,7 +137,7 @@ function TerminalWindow(props) {
             icon="minimize"
             className={classes.terminalControlItemsStyle}
             onClick={() =>
-              handleSetState(handleTerminalMaximizeToggle(isMaximized))
+              props.setIsMaximized(handleTerminalMaximizeToggle(isMaximized))
             }
           />
         ) : (
@@ -145,7 +145,7 @@ function TerminalWindow(props) {
             icon="maximize"
             className={classes.terminalControlItemsStyle}
             onClick={() =>
-              handleSetState(handleTerminalMaximizeToggle(isMaximized))
+              props.setIsMaximized(handleTerminalMaximizeToggle(isMaximized))
             }
           />
         )}
@@ -156,6 +156,7 @@ function TerminalWindow(props) {
 
 const mapStateToProps = state => {
   return {
+    terminal: state.terminal,
     query: state.query,
     settings: state.settings,
   };
@@ -163,6 +164,18 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
+    setTerm: term => {
+      return dispatch(terminalActions.setTerm(term));
+    },
+    setFitAddon: fit_addon => {
+      return dispatch(terminalActions.setFitAddon(fit_addon));
+    },
+    setPrevResults: prev_results => {
+      return dispatch(terminalActions.setPrevResults(prev_results));
+    },
+    setIsMaximized: obj => {
+      return dispatch(terminalActions.setIsMaximized(obj));
+    },
     enQueueQuery: query => {
       return dispatch(queryActions.enQueueQuery(query));
     },

@@ -64,7 +64,7 @@ const mapStateToProps = state => {
   return {
     files: state.files,
     query: state.query,
-    settings: state.settings
+    settings: state.settings,
   };
 };
 

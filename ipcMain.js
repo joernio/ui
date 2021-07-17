@@ -52,19 +52,19 @@ const initIpcMain = () => {
     new Notification({ title: 'Notification', body: message }).show();
   });
 
-  ipcMain.on('select-dir', async (event) => {
+  ipcMain.on('select-dir', async event => {
     const window = getWindow(event);
     const result = await dialog.showOpenDialog(window, {
-      properties:['openDirectory'],
+      properties: ['openDirectory'],
     });
 
     window.webContents.send('selected-dir', result.filePaths[0]);
   });
 
-  ipcMain.on('select-file', async (event)=>{
+  ipcMain.on('select-file', async event => {
     const window = getWindow(event);
     const result = await dialog.showOpenDialog(window, {
-      properties:['openFile'],
+      properties: ['openFile'],
     });
 
     window.webContents.send('selected-file', result.filePaths[0]);

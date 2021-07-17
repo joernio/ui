@@ -45,7 +45,9 @@ const fsToJson = (arr, base, isFile) => {
     }
 
     pathToDir += `/${asset}`;
-    nestedArr = nestedArr ? nestedArr[index === undefined ? 0 : index]?.childNodes : [];
+    nestedArr = nestedArr
+      ? nestedArr[index === undefined ? 0 : index]?.childNodes
+      : [];
   });
 };
 

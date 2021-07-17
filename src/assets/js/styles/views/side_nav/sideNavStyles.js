@@ -1,119 +1,119 @@
 const styles = theme => ({
-    rootStyle: {
-      height: '100%',
+  rootStyle: {
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    backgroundColor: props =>
+      theme.palette.sideNav.background[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
+    width: props => props.sideNavWidth,
+    '& ul': {
       display: 'flex',
       flexDirection: 'column',
-      alignItems: 'center',
-      backgroundColor: props =>
-        theme.palette.sideNav.background[
-          props.settings.prefersDarkMode ? 'dark' : 'light'
-        ],
-      width: props => props.sideNavWidth,
-      '& ul': {
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-      },
-      '& :nth-child(1)': {
-        flexGrow: 1,
-      },
-      '& .bp3-overlay': {
-        '& .bp3-tooltip2': {
-          '& .bp3-popover2-content': {
-            backgroundColor: props =>
-              theme.palette.explorer.background[
-                props.settings.prefersDarkMode ? 'dark' : 'light'
-              ],
-          },
-          '& .bp3-popover2-arrow-fill': {
-            fill: props =>
-              theme.palette.explorer.background[
-                props.settings.prefersDarkMode ? 'dark' : 'light'
-              ],
-          },
+      height: '100%',
+    },
+    '& :nth-child(1)': {
+      flexGrow: 1,
+    },
+    '& .bp3-overlay': {
+      '& .bp3-tooltip2': {
+        '& .bp3-popover2-content': {
+          backgroundColor: props =>
+            theme.palette.explorer.background[
+              props.settings.prefersDarkMode ? 'dark' : 'light'
+            ],
+        },
+        '& .bp3-popover2-arrow-fill': {
+          fill: props =>
+            theme.palette.explorer.background[
+              props.settings.prefersDarkMode ? 'dark' : 'light'
+            ],
         },
       },
     },
-    settingsDialogStyle: {
-      '& > div > div:nth-child(1)': {
-        backgroundColor: 'rgba(0, 0, 0, 0)',
+  },
+  settingsDialogStyle: {
+    '& > div > div:nth-child(1)': {
+      backgroundColor: 'rgba(0, 0, 0, 0)',
+    },
+    '& > div > div:nth-child(2)': {
+      alignItems: 'normal',
+      minHeight: 'fit-content',
+      '&:focus': {
+        outline: 'none',
+        border: 'none',
       },
-      '& > div > div:nth-child(2)': {
-        alignItems: 'normal',
-        minHeight: 'fit-content',
-        '&:focus': {
-          outline: 'none',
-          border: 'none',
-        },
-        '& > div': {
-          paddingBottom: 0,
-          backgroundColor: 'white',
-        },
+      '& > div': {
+        paddingBottom: 0,
+        backgroundColor: 'white',
       },
     },
-    settingsDialogContentStyle: {
-      margin: ' 1em',
-      '& div': {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        '& h3': {
-          width: '100%',
-        },
-        '& h4': {
-          width: '50%',
-          color: theme.palette.sideNav.base.light,
-        },
-        '& input': {
-          height: '2.5em',
-          width: '50%',
-        },
-      },
-    },
-    switchStyle: {
+  },
+  settingsDialogContentStyle: {
+    margin: ' 1em',
+    '& div': {
       display: 'flex',
+      justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: 0,
-      '& > span': {
-        outline: 'none !important',
-      },
-    },
-    submitSectionStyle: {
-      display: 'flex',
-      justifyContent: 'center',
-      margin: '0.5em',
-      cursor: 'pointer',
+      flexWrap: 'wrap',
       '& h3': {
-        margin: '0.5em 0 0.5em 0',
+        width: '100%',
       },
-      '&:hover': {
-        backgroundColor: theme.palette.navBar.hover.light,
+      '& h4': {
+        width: '50%',
+        color: theme.palette.sideNav.base.light,
+      },
+      '& input': {
+        height: '2.5em',
+        width: '50%',
       },
     },
-    toolTipTextStyle: {
-      backgroundColor: props =>
-        theme.palette.explorer.background[
-          props.settings.prefersDarkMode ? 'dark' : 'light'
-        ],
+  },
+  switchStyle: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: 0,
+    '& > span': {
+      outline: 'none !important',
+    },
+  },
+  submitSectionStyle: {
+    display: 'flex',
+    justifyContent: 'center',
+    margin: '0.5em',
+    cursor: 'pointer',
+    '& h3': {
+      margin: '0.5em 0 0.5em 0',
+    },
+    '&:hover': {
+      backgroundColor: theme.palette.navBar.hover.light,
+    },
+  },
+  toolTipTextStyle: {
+    backgroundColor: props =>
+      theme.palette.explorer.background[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
+    color: props =>
+      theme.palette.explorer.base[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
+  },
+  iconStyle: {
+    color: props =>
+      theme.palette.sideNav.base[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
+    '&:hover': {
       color: props =>
-        theme.palette.explorer.base[
+        theme.palette.sideNav.hover[
           props.settings.prefersDarkMode ? 'dark' : 'light'
         ],
     },
-    iconStyle: {
-      color: props =>
-        theme.palette.sideNav.base[
-          props.settings.prefersDarkMode ? 'dark' : 'light'
-        ],
-      '&:hover': {
-        color: props =>
-          theme.palette.sideNav.hover[
-            props.settings.prefersDarkMode ? 'dark' : 'light'
-          ],
-      },
-      margin: '1em 0',
-    },
-  });
+    margin: '1em 0',
+  },
+});
 
 export default styles;

@@ -11,38 +11,36 @@ export const handleCloseWorkSpaceContextMenu = () => {
 };
 
 export const contructQueryWithPath = async type => {
-  
-  selectDirApi.selectDir("select-file");
+  selectDirApi.selectDir('select-file');
 
   let path = await new Promise((resolve, reject) => {
-                          selectDirApi.registerListener("selected-file", value => {
-                          if(value){
-                            resolve(value);
-                          }else{
-                            reject();
-                          }
-                          });
-                        }).catch(()=> {
-                          console.log("can't select project path")
-                        });
-
+    selectDirApi.registerListener('selected-file', value => {
+      if (value) {
+        resolve(value);
+      } else {
+        reject();
+      }
+    });
+  }).catch(() => {
+    console.log("can't select project path");
+  });
 
   let stats = await new Promise((resolve, reject) => {
-                        fs.stat(path, (err, stats) => {
-                          if (!err) {
-                            resolve(stats);
-                          } else {
-                            reject();
-                          }
-                        });
-                      });
-  
-  if(path && stats && stats.isFile()){
-      path = path.split('/');
-      path = path.slice(0, path.length - 1).join('/');
-  };
+    fs.stat(path, (err, stats) => {
+      if (!err) {
+        resolve(stats);
+      } else {
+        reject();
+      }
+    });
+  });
 
-  if(path && stats){
+  if (path && stats && stats.isFile()) {
+    path = path.split('/');
+    path = path.slice(0, path.length - 1).join('/');
+  }
+
+  if (path && stats) {
     const query = {
       query: `${type}(inputPath="${path}")`,
       origin: 'workspace',
@@ -53,21 +51,20 @@ export const contructQueryWithPath = async type => {
   }
 };
 
-
 export const handleSwitchWorkspace = async () => {
   selectDirApi.selectDir(['openDirectory']);
 
   const path = await new Promise((resolve, reject) => {
-                                  selectDirApi.registerListener(value => {
-                                    if (value) {
-                                      resolve(value);
-                                    } else {
-                                      reject();
-                                    }
-                                  });
-                                }).catch(() => {
-                                  console.log("can't select workspace path");
-                                });
+    selectDirApi.registerListener(value => {
+      if (value) {
+        resolve(value);
+      } else {
+        reject();
+      }
+    });
+  }).catch(() => {
+    console.log("can't select workspace path");
+  });
 
   if (path) {
     const query = {

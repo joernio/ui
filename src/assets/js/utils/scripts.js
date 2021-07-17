@@ -170,6 +170,7 @@ const setQueryResult = (data, store, key, results) => {
 
 export const handleWebSocketResponse = data => {
   store.dispatch(getQueryResult(data.utf8Data)).then(async data => {
+    await new Promise(r => setTimeout(r, 5000));
     const { results } = store.getState().query;
     const key = Object.keys(results)[Object.keys(results).length - 1];
     const latest = results[key];
@@ -656,14 +657,12 @@ export const handleAPIQueryError = err => {
   store.dispatch(resetQueue({}));
 };
 
-
-
-export const initShortcuts=()=>{  
-  Mousetrap.bindGlobal(['command+s', 'ctrl+s'], function() {
+export const initShortcuts = () => {
+  Mousetrap.bindGlobal(['command+s', 'ctrl+s'], function () {
     saveFile();
-});
+  });
 };
 
-export const removeShortcuts=()=>{
+export const removeShortcuts = () => {
   Mousetrap.unbind(['command+s', 'ctrl+s']);
 };

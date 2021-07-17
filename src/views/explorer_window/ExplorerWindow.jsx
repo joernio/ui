@@ -65,7 +65,7 @@ function ExplorerWindow(props) {
 const mapStateToProps = state => {
   return {
     query: state.query,
-    settings: state.settings
+    settings: state.settings,
   };
 };
 

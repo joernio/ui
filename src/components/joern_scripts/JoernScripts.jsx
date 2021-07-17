@@ -154,7 +154,7 @@ const mapStateToProps = state => {
     query: state.query,
     workspace: state.workspace,
     files: state.files,
-    settings: state.settings
+    settings: state.settings,
   };
 };
 
