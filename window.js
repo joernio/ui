@@ -1,6 +1,5 @@
 const { BrowserWindow } = require('electron');
 const { getWindowPosition } = require('./config');
-const initWebSocket = require('./webSocket');
 const { updateWindowInfo, openDevTools } = require('./ipcMain');
 
 const isMac = process.platform === 'darwin';
@@ -11,7 +10,7 @@ const createWindow = async () => {
   const window = new BrowserWindow({
     title: 'DEMO',
     // titleBarStyle: 'hiddenInset',
-    frame: true,
+    frame: false,
     // transparent: isMac,
     acceptFirstMouse: true,
     webPreferences: {
@@ -28,7 +27,7 @@ const createWindow = async () => {
   });
 
   updateWindowInfo(window);
-  openDevTools(window);
+  // openDevTools(window);
 
   window.loadFile('index.html');
 

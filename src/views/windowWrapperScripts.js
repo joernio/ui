@@ -15,3 +15,23 @@ export const getOpenFileName = props => {
     return filename;
   }
 };
+
+export const getQueriesStats=(queue, prev_queue, queriesStats)=>{
+  let prev_queue_keys = prev_queue ? Object.keys(prev_queue) : [];
+  let queue_keys = Object.keys(queue);
+
+  if(queue_keys.length > prev_queue_keys.length && !(queue_keys.length > 1)){
+    const query = queue[queue_keys[queue_keys.length - 1]];
+    queriesStats.push(query.query);
+    return {queriesStats};
+
+  }else if(queue_keys.length < prev_queue_keys.length){
+    const query = queue[queue_keys[queue_keys.length - 1]];
+    if(query){
+      queriesStats.push(query.query);
+      return {queriesStats};
+    }
+  }
+
+  //prev_queue will be used for stopping the timer;
+};
