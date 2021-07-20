@@ -666,7 +666,7 @@ export const removeShortcuts = () => {
   Mousetrap.unbind(['command+s', 'ctrl+s']);
 };
 
-export const nFormatter=num=> {
+export const nFormatter = num => {
   if (num >= 1000000000) {
     return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'G';
   }
@@ -677,4 +677,4 @@ export const nFormatter=num=> {
     return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
   }
   return num;
-}
+};

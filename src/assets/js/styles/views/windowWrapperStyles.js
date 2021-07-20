@@ -33,16 +33,16 @@ const styles = theme => ({
     alignItems: 'center',
   },
   queriesStatsSectionStyle: {
-    display: "flex",
-    alignItems: "center",
-    height: "100%",
-    cursor: "pointer",
+    display: 'flex',
+    alignItems: 'center',
+    height: '100%',
+    cursor: 'pointer',
     '&:hover': {
       backgroundColor: props =>
         theme.palette.navBar.hover[
           props.settings.prefersDarkMode ? 'dark' : 'light'
         ],
-    }
+    },
   },
   refreshIconContainerStyle: {
     position: 'relative',
@@ -130,7 +130,7 @@ const styles = theme => ({
     left: '2',
   },
   queriesStatsStyle: {
-    margin: "auto 0.5em auto 0"
+    margin: 'auto 0.5em auto 0',
   },
   hiddenStyle: {
     display: 'none',

@@ -6,24 +6,18 @@ import { Icon } from '@blueprintjs/core';
 import * as filesActions from '../store/actions/filesActions';
 import { ContextMenu2, Popover2 } from '@blueprintjs/popover2';
 import { Menu, MenuDivider, MenuItem } from '@blueprintjs/core';
+import QueriesStats from '../components/queries_stats/QueriesStats';
 import { windowInfoApi } from '../assets/js/utils/ipcRenderer';
 import styles from '../assets/js/styles/views/windowWrapperStyles';
-import { usePrevious } from '../assets/js/utils/hooks';
 import {
   openEmptyFile,
   sendWindowsMessage,
   wsReconnectToServer,
   wsDisconnectFromServer,
   openFile,
-  queueEmpty,
   saveFile,
-  nFormatter,
 } from '../assets/js/utils/scripts';
-import {
-  handleOpenFile,
-  getOpenFileName,
-  getQueriesStats,
-} from './windowWrapperScripts';
+import { handleOpenFile, getOpenFileName } from './windowWrapperScripts';
 
 const useStyles = makeStyles(styles);
 
@@ -35,7 +29,7 @@ function WindowWrapper(props) {
     isMaximized: windowInfoApi.getWindowInfo(),
     filename: '',
     fileContextIsOpen: false,
-    connectionStatusPopoverOpen: false,
+    queryStatsPopoverIsOpen: false,
     queriesStats: [],
     prev_queue: {},
   });
@@ -53,22 +47,7 @@ function WindowWrapper(props) {
     handleSetState({ filename });
   }, [props.files]);
 
-  const prev_queue = usePrevious(
-    props.query.queue ? { ...props.query.queue } : {},
-  );
-
-  React.useEffect(() => {
-    if (props.query.queue) {
-      handleSetState({
-        ...getQueriesStats(props.query.queue, prev_queue, state.queriesStats),
-      });
-      //should only be concerned with the first item in the queue
-      //when queue changes, if the first item in the queue is not in queryStats, add it and start the timer
-      //then (track previous queue and current queue to keep track the item that was removed from the queue) if an item was removed from the queue, find the item that was removed and stop the timer
-    }
-  }, [props.query.queue]);
-
-  const { isMaximized, filename, fileContextIsOpen, queriesStats } = state;
+  const { isMaximized, filename, fileContextIsOpen } = state;
 
   return (
     <>
@@ -166,28 +145,7 @@ function WindowWrapper(props) {
       {props.children}
       <div className={classes.statusBarStyle}>
         <div className={classes.statusBarRightStyle}>
-          <div className={classes.queriesStatsSectionStyle}>
-            <div className={classes.refreshIconContainerStyle}>
-              {!queueEmpty(props.query.queue) ? (
-                <Icon
-                  icon="refresh"
-                  className={clsx(
-                    classes.refreshIconStyle,
-                    'refresh-icon-animation',
-                  )}
-                />
-              ) : (
-                <Icon
-                  icon="refresh"
-                  className={clsx(classes.refreshIconStyle)}
-                />
-              )}
-            </div>
-            <p className={classes.queriesStatsStyle}>
-              {nFormatter(queriesStats.length)}
-            </p>
-            {!queueEmpty(props.query.queue) ? <div>running...</div> : null}
-          </div>
+          <QueriesStats />
         </div>
 
         <ContextMenu2

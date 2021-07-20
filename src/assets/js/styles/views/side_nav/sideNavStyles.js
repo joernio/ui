@@ -20,16 +20,10 @@ const styles = theme => ({
     '& .bp3-overlay': {
       '& .bp3-tooltip2': {
         '& .bp3-popover2-content': {
-          backgroundColor: props =>
-            theme.palette.explorer.background[
-              props.settings.prefersDarkMode ? 'dark' : 'light'
-            ],
+          backgroundColor: theme.palette.explorer.background.light,
         },
         '& .bp3-popover2-arrow-fill': {
-          fill: props =>
-            theme.palette.explorer.background[
-              props.settings.prefersDarkMode ? 'dark' : 'light'
-            ],
+          fill: theme.palette.explorer.background.light,
         },
       },
     },
@@ -92,14 +86,8 @@ const styles = theme => ({
     },
   },
   toolTipTextStyle: {
-    backgroundColor: props =>
-      theme.palette.explorer.background[
-        props.settings.prefersDarkMode ? 'dark' : 'light'
-      ],
-    color: props =>
-      theme.palette.explorer.base[
-        props.settings.prefersDarkMode ? 'dark' : 'light'
-      ],
+    backgroundColor: theme.palette.explorer.background.light,
+    color: theme.palette.explorer.base.light,
   },
   iconStyle: {
     color: props =>
