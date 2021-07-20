@@ -1,4 +1,5 @@
 import fs from 'fs';
+import {handleSetToast} from '../../assets/js/utils/scripts';
 
 import { selectDirApi } from '../../assets/js/utils/ipcRenderer';
 
@@ -35,7 +36,9 @@ export const contructQueryWithPath = async type => {
     });
   });
 
-  if (path && stats && stats.isFile()) {
+  const isJavaArtifact = path && (path.endsWith(".jar") || path.endsWith(".war") || path.endsWith(".ear"));
+
+  if (path && stats && stats.isFile() && !isJavaArtifact) {
     path = path.split('/');
     path = path.slice(0, path.length - 1).join('/');
   }
@@ -46,6 +49,14 @@ export const contructQueryWithPath = async type => {
       origin: 'workspace',
       ignore: false,
     };
+
+    if(!isJavaArtifact){
+      handleSetToast({
+          icon: 'info-sign',
+          intent: 'primary',
+          message: "the whole directory was imported. file imports are only valid for java artifacts",
+        });
+    }
 
     return query;
   }

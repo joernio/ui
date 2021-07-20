@@ -241,21 +241,17 @@ export const saveFile = path => {
         .then(() => {
           fs.writeFile(path, file_content, err => {
             if (!err) {
-              store.dispatch(
-                setToast({
+              handleSetToast({
                   icon: 'info-sign',
                   intent: 'success',
                   message: 'saved successfully',
-                }),
-              );
+                })
             } else {
-              store.dispatch(
-                setToast({
+              handleSetToast({
                   icon: 'warning-sign',
                   intent: 'danger',
                   message: 'error saving file',
-                }),
-              );
+                })
             }
           });
         })
@@ -279,13 +275,11 @@ export const saveFile = path => {
               }
             });
           }).catch(() => {
-            store.dispatch(
-              setToast({
+            handleSetToast({
                 icon: 'warning-sign',
                 intent: 'danger',
                 message: "couldn't create file",
-              }),
-            );
+              })
           });
 
           if (file && !file.canceled) {
@@ -299,21 +293,17 @@ export const saveFile = path => {
             if (!readOnly) {
               fs.writeFile(file.filePath.toString(), file_content, err => {
                 if (err) {
-                  store.dispatch(
-                    setToast({
+                  handleSetToast({
                       icon: 'warning-sign',
                       intent: 'danger',
                       message: "can't save to file",
-                    }),
-                  );
+                    })
                 } else {
-                  store.dispatch(
-                    setToast({
+                  handleSetToast({
                       icon: 'info-sign',
                       intent: 'success',
                       message: 'saved successfully',
-                    }),
-                  );
+                    });
 
                   delete files.recent[path];
 
@@ -324,26 +314,22 @@ export const saveFile = path => {
                 }
               });
             } else {
-              store.dispatch(
-                setToast({
+              handleSetToast({
                   icon: 'warning-sign',
                   intent: 'danger',
                   message: 'can only save .sc files',
-                }),
-              );
+                })
             }
           } else {
             console.log('file creation was cancelled');
           }
         });
   } else {
-    store.dispatch(
-      setToast({
+    handleSetToast({
         icon: 'warning-sign',
         intent: 'danger',
         message: 'can only save .sc files',
-      }),
-    );
+      });
   }
 };
 
@@ -371,44 +357,37 @@ export const deleteFile = path => {
         .then(() => {
           fs.unlink(path, err => {
             if (!err) {
-              store.dispatch(
-                setToast({
+              handleSetToast({
                   icon: 'info-sign',
                   intent: 'success',
                   message: 'file deleted successfully',
-                }),
-              );
+                });
+
               delete files.recent[path];
               store.dispatch(setRecent(files.recent));
               store.dispatch(enQueueQuery(addWorkSpaceQueryToQueue()));
             } else {
-              store.dispatch(
-                setToast({
+        handleSetToast({
                   icon: 'warning-sign',
                   intent: 'danger',
                   message: 'file cannot be deleted',
-                }),
-              );
+                });
             }
           });
         })
         .catch(() => {
-          store.dispatch(
-            setToast({
+          handleSetToast({
               icon: 'warning-sign',
               intent: 'danger',
               message: 'file not found',
-            }),
-          );
+            });
         });
   } else {
-    store.dispatch(
-      setToast({
+    handleSetToast({
         icon: 'warning-sign',
         intent: 'danger',
         message: 'can only delete .sc files',
-      }),
-    );
+      });
   }
 };
 
@@ -629,8 +608,7 @@ export const addWorkSpaceQueryToQueue = () => {
 export const handleAPIQueryError = err => {
   if (err === apiErrorStrings.ws_not_connected) {
     const ws_url = store.getState().settings.websocket.url;
-    store.dispatch(
-      setToast({
+    handleSetToast({
         action: {
           onClick: () => {
             wsReconnectToServer(ws_url);
@@ -641,16 +619,13 @@ export const handleAPIQueryError = err => {
         icon: 'warning-sign',
         intent: 'danger',
         message: 'Not connected to websocket',
-      }),
-    );
+      });
   } else if (err.message.includes('401')) {
-    store.dispatch(
-      setToast({
+    handleSetToast({
         icon: 'warning-sign',
         intent: 'danger',
         message: 'authentication error. Your server requires authentication',
-      }),
-    );
+      });
   }
 
   store.dispatch(resetQueue({}));
@@ -665,6 +640,13 @@ export const initShortcuts = () => {
 export const removeShortcuts = () => {
   Mousetrap.unbind(['command+s', 'ctrl+s']);
 };
+
+export const handleSetToast = toast => {
+  store.dispatch(
+    setToast(toast),
+  );
+};
+
 
 export const nFormatter = num => {
   if (num >= 1000000000) {
