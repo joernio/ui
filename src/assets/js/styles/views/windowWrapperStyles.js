@@ -32,6 +32,18 @@ const styles = theme => ({
     display: 'flex',
     alignItems: 'center',
   },
+  queriesStatsSectionStyle: {
+    display: 'flex',
+    alignItems: 'center',
+    height: '100%',
+    cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: props =>
+        theme.palette.navBar.hover[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
+  },
   refreshIconContainerStyle: {
     position: 'relative',
     height: '16px',
@@ -116,6 +128,9 @@ const styles = theme => ({
   refreshIconStyle: {
     position: 'absolute',
     left: '2',
+  },
+  queriesStatsStyle: {
+    margin: 'auto 0.5em auto 0',
   },
   hiddenStyle: {
     display: 'none',

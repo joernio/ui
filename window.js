@@ -1,6 +1,5 @@
 const { BrowserWindow } = require('electron');
 const { getWindowPosition } = require('./config');
-const initWebSocket = require('./webSocket');
 const { updateWindowInfo, openDevTools } = require('./ipcMain');
 
 const isMac = process.platform === 'darwin';

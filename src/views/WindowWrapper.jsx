@@ -6,6 +6,7 @@ import { Icon } from '@blueprintjs/core';
 import * as filesActions from '../store/actions/filesActions';
 import { ContextMenu2, Popover2 } from '@blueprintjs/popover2';
 import { Menu, MenuDivider, MenuItem } from '@blueprintjs/core';
+import QueriesStats from '../components/queries_stats/QueriesStats';
 import { windowInfoApi } from '../assets/js/utils/ipcRenderer';
 import styles from '../assets/js/styles/views/windowWrapperStyles';
 import {
@@ -14,7 +15,6 @@ import {
   wsReconnectToServer,
   wsDisconnectFromServer,
   openFile,
-  queueEmpty,
   saveFile,
 } from '../assets/js/utils/scripts';
 import { handleOpenFile, getOpenFileName } from './windowWrapperScripts';
@@ -29,7 +29,9 @@ function WindowWrapper(props) {
     isMaximized: windowInfoApi.getWindowInfo(),
     filename: '',
     fileContextIsOpen: false,
-    connectionStatusPopoverOpen: false,
+    queryStatsPopoverIsOpen: false,
+    queriesStats: [],
+    prev_queue: {},
   });
 
   const handleSetState = obj => {
@@ -143,20 +145,7 @@ function WindowWrapper(props) {
       {props.children}
       <div className={classes.statusBarStyle}>
         <div className={classes.statusBarRightStyle}>
-          <div className={classes.refreshIconContainerStyle}>
-            {!queueEmpty(props.query.queue) ? (
-              <Icon
-                icon="refresh"
-                className={clsx(
-                  classes.refreshIconStyle,
-                  'refresh-icon-animation',
-                )}
-              />
-            ) : (
-              <Icon icon="refresh" className={clsx(classes.refreshIconStyle)} />
-            )}
-          </div>
-          {!queueEmpty(props.query.queue) ? <div>running...</div> : null}
+          <QueriesStats />
         </div>
 
         <ContextMenu2
