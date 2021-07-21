@@ -1,11 +1,11 @@
 {
-  "name": "joern_frontend",
-  "version": "1.0.0",
-  "description": "",
+  "name": "joern_desktop_client",
+  "version": "v1.0.0-a.1",
+  "description": "The Bug Hunter's Workbench",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "watch": "webpack --config webpack.common.js --watch",
+    "build": "webpack --config webpack.common.js",
     "rebuild": "electron-rebuild",
     "prettify": "prettier --config ./.prettierrc.yaml --write \"./**/*.{js,jsx}\""
   },
@@ -14,6 +14,7 @@
   "devDependencies": {
     "@babel/core": "^7.14.0",
     "electron": "^13.1.1",
+    "electron-builder": "^22.11.7",
     "electron-rebuild": "^2.3.5",
     "electron-reload": "^1.5.0",
     "file-loader": "^6.2.0",
