@@ -4,6 +4,7 @@ node_modules/
 build/
 /.pnp
 
+package-lock.json
 .pnp.js
 
 
@@ -44,3 +45,6 @@ yarn-error.log*
 debug.log
 
 .env
+.yarn/
+
+out/

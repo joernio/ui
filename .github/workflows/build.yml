@@ -1,0 +1,106 @@
+name: Build/release
+
+on:
+  push:
+    branches:
+      - release
+    paths:
+      - '**'
+      - '!.gitignore'
+      - '!.prettierrc.yaml'
+      - '!prettierignore'
+      - '!README.md'
+
+  workflow_dispatch:
+
+jobs:
+  init:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'checkout'
+        uses: actions/checkout@v1
+
+      - name: 'Get Release Tag'
+        id: release_tag
+        uses: 'WyriHaximus/github-action-get-previous-tag@v1'
+
+      - name: 'create release_tag file'
+        run: |
+          echo ${{steps.release_tag.outputs.tag}} > release_tag.txt
+
+      - name: 'Upload Tag Artifact'
+        uses: actions/upload-artifact@v2
+        with:
+          name: 'release_tag'
+          path: |
+            ./release_tag.txt
+          retention-days: 1
+
+  build:
+    needs: init
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+
+      - name: Build Electron app
+        run: |
+          npm install
+          npm run prod-build
+          npm install @electron-forge/cli -D
+          npx electron-forge import
+          npx electron-forge make
+
+      - name: 'Upload Ubuntu Artifacts'
+        uses: actions/upload-artifact@v2
+        if: matrix.os == 'ubuntu-latest'
+        with:
+          name: 'ubuntu_build'
+          path: |
+            ./out/**/joern-desktop-client*.*
+            ./out/**/joern_desktop_client*.*
+          retention-days: 1
+
+      - name: 'Upload Macos Artifacts'
+        uses: actions/upload-artifact@v2
+        if: matrix.os == 'macos-latest'
+        with:
+          name: 'macos_build'
+          path: |
+            ./out/make/zip/darwin/x64/joern_desktop_client-darwin-x64*.zip
+          retention-days: 1
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'checkout'
+        uses: actions/checkout@v2
+
+      - name: 'Download Artifacts'
+        uses: actions/download-artifact@v2
+
+      - name: 'Write content of release_tag artifact to steps'
+        id: cat_to_steps
+        run: echo ::set-output name=release_tag::$(cat ./release_tag/release_tag.txt)
+
+      - name: Release Electron app
+        uses: 'marvinpinto/action-automatic-releases@latest'
+        with:
+          repo_token: '${{ secrets.GITHUB_TOKEN }}'
+          automatic_release_tag: ${{ steps.cat_to_steps.outputs.release_tag }}
+          prerelease: true
+          files: |
+            ./ubuntu_build/**/joern-desktop-client*.*
+            ./ubuntu_build/**/joern_desktop_client*.*
+            ./macos_build/joern_desktop_client*.*
