@@ -75,7 +75,12 @@ export const forNodeAtPath = (nodes, path, callback) => {
 };
 
 export const performPushResult = (result, results) => {
+  results = {...results};
   const key = Object.keys(result)[0];
+  const keys = Object.keys(results);
+  
+  if(keys.length >= 500) delete results[keys[0]];
+
   results[key] = result[key];
   return results;
 };
@@ -143,6 +148,11 @@ const performPostQuery = (store, result) => {
 };
 
 const setQueryResult = (data, store, key, results) => {
+
+  if(results[key].t_0 && !results[key].t_1){
+    results[key].t_1 = performance.now();
+  }
+
   if (!results[key].result.stdout && !results[key].result.stderr) {
     if (data.stdout) {
       results[key]['result']['stdout'] = data.stdout;
@@ -169,7 +179,7 @@ const setQueryResult = (data, store, key, results) => {
 };
 
 export const handleWebSocketResponse = data => {
-  store.dispatch(getQueryResult(data.utf8Data)).then(async data => {
+  store.dispatch(getQueryResult(data.utf8Data)).then(data => {
     const { results } = store.getState().query;
     const key = Object.keys(results)[Object.keys(results).length - 1];
     const latest = results[key];
