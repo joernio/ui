@@ -12,16 +12,18 @@ export const handleCloseWorkSpaceContextMenu = () => {
 };
 
 export const contructQueryWithPath = async type => {
-  selectDirApi.selectDir('select-file');
+
+  selectDirApi.selectDir(type === 'importCode' ? 'select-dir' : 'select-file');
 
   let path = await new Promise((resolve, reject) => {
-    selectDirApi.registerListener('selected-file', value => {
-      if (value) {
-        resolve(value);
-      } else {
-        reject();
-      }
-    });
+    selectDirApi.registerListener(type === 'importCode' ?
+          'selected-dir' : 'selected-file', value => {
+          if (value) {
+            resolve(value);
+          } else {
+            reject();
+          }
+        });
   }).catch(() => {
     console.log("can't select project path");
   });
@@ -36,12 +38,12 @@ export const contructQueryWithPath = async type => {
     });
   });
 
-  const isJavaArtifact = path && (path.endsWith(".jar") || path.endsWith(".war") || path.endsWith(".ear"));
+  // const isJavaArtifact = path && (path.endsWith(".jar") || path.endsWith(".war") || path.endsWith(".ear"));
 
-  if (path && stats && stats.isFile() && !isJavaArtifact) {
-    path = path.split('/');
-    path = path.slice(0, path.length - 1).join('/');
-  }
+  // if (path && stats && stats.isFile() && !isJavaArtifact) {
+  //   path = path.split('/');
+  //   path = path.slice(0, path.length - 1).join('/');
+  // }
 
   if (path && stats) {
     const query = {
@@ -50,13 +52,13 @@ export const contructQueryWithPath = async type => {
       ignore: false,
     };
 
-    if(!isJavaArtifact){
-      handleSetToast({
-          icon: 'info-sign',
-          intent: 'primary',
-          message: "the whole directory was imported. file imports are only valid for java artifacts",
-        });
-    }
+    // if(!isJavaArtifact){
+    //   handleSetToast({
+    //       icon: 'info-sign',
+    //       intent: 'primary',
+    //       message: "the whole directory was imported. file imports are only valid for java artifacts",
+    //     });
+    // }
 
     return query;
   }
