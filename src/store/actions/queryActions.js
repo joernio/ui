@@ -118,6 +118,8 @@ export const mainQuery = query => {
         const query_result = {
           [data.uuid]: {
             result: { stdout: null, stderr: null },
+            t_0: performance.now(),
+            t_1: null,
             ...query,
           },
         };

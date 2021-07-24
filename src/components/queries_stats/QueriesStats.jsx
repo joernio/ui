@@ -4,11 +4,10 @@ import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { Icon } from '@blueprintjs/core';
 import { Popover2, Tooltip2 } from '@blueprintjs/popover2';
-import { usePrevious } from '../../assets/js/utils/hooks';
 import styles from '../../assets/js/styles/components/queries_stats/queriesStatsStyles';
 
 import { queueEmpty, nFormatter } from '../../assets/js/utils/scripts';
-import { getQueriesStats, updateQueriesStats } from './queriesStatsScripts';
+import { countQueries, updateQueriesStats } from './queriesStatsScripts';
 
 const useStyles = makeStyles(styles);
 
@@ -18,6 +17,7 @@ function QueriesStats(props) {
 
   const [state, setState] = React.useState({
     queriesStatsPopoverIsOpen: false,
+    queriesCount: 0,
     queriesStats: [],
   });
 
@@ -29,25 +29,19 @@ function QueriesStats(props) {
     }
   };
 
-  const prev_queue = usePrevious(
-    props.query.queue ? { ...props.query.queue } : {},
-  );
-
   React.useEffect(() => {
-    if (props.query.queue) {
-      handleSetState({
-        ...getQueriesStats(props.query.queue, prev_queue, state.queriesStats),
-      });
+    if (props.query?.results) {
+      handleSetState(countQueries(props.query.results));
     }
-  }, [props.query.queue]);
+  }, [props.query?.results]);
 
   React.useEffect(() => {
-    if (state.queriesStatsPopoverIsOpen) {
+    if (state.queriesStatsPopoverIsOpen && props.query?.results) {
       updateQueryIntervalID = setInterval(
         () =>
           setState(state => ({
             ...state,
-            ...updateQueriesStats(state.queriesStats),
+            ...updateQueriesStats(props.query.results),
           })),
         100,
       );
@@ -58,7 +52,7 @@ function QueriesStats(props) {
     return () => clearInterval(updateQueryIntervalID);
   }, [state.queriesStatsPopoverIsOpen]);
 
-  const { queriesStatsPopoverIsOpen, queriesStats } = state;
+  const { queriesStatsPopoverIsOpen, queriesCount, queriesStats } = state;
   return (
     <Popover2
       className={classes.queriesStatsPopoverStyles}
@@ -85,8 +79,8 @@ function QueriesStats(props) {
                   </Tooltip2>
 
                   <div className={classes.quriesStatsEllapsedTimeStyle}>
-                    {query_stat.t1
-                      ? nFormatter(Math.ceil(query_stat.t1)) + ' ms'
+                    {query_stat.t_elapsed
+                      ? nFormatter(Math.ceil(query_stat.t_elapsed)) + ' ms'
                       : null}
                   </div>
                 </div>
@@ -126,9 +120,7 @@ function QueriesStats(props) {
             <Icon icon="refresh" className={clsx(classes.refreshIconStyle)} />
           )}
         </div>
-        <p className={classes.queriesStatsStyle}>
-          {nFormatter(queriesStats.length)}
-        </p>
+        <p className={classes.queriesStatsStyle}>{nFormatter(queriesCount)}</p>
         {!queueEmpty(props.query.queue) ? <div>running...</div> : null}
       </div>
     </Popover2>
