@@ -38,8 +38,8 @@ function TerminalWindow(props) {
     handleResize(props.terminal.fitAddon);
   };
 
-  React.useEffect(() => {
-    props.setTerm(initXterm(props.settings.prefersDarkMode));
+  React.useEffect(async () => {
+    props.setTerm(await initXterm(props.settings.prefersDarkMode));
   }, []);
 
   React.useEffect(() => {
@@ -83,14 +83,14 @@ function TerminalWindow(props) {
     }
   }, [props.query.queue]);
 
-  React.useEffect(() => {
+  React.useEffect(async () => {
     if (props.query?.results) {
       const bool = areResultsEqual(
         props.terminal.prev_results,
         props.query.results,
       );
       const wroteToTerminal =
-        !bool && sendQueryResultToXTerm(props.query.results);
+        !bool && (await sendQueryResultToXTerm(props.query.results));
 
       wroteToTerminal && props.setPrevResults(props.query.results);
     }
