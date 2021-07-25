@@ -24,4 +24,5 @@ export const joernManagementCommands = {
 
 export const apiErrorStrings = {
   ws_not_connected: 'WS_NOT_CONNECTED',
+  no_result_for_uuid: 'No result found for specified UUID'
 };

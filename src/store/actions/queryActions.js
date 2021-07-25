@@ -90,11 +90,13 @@ export const getQueryResult = uuid => {
       .then(data => {
         if (data && data.uuid) {
           return data;
+        } else if(data && data.err){
+           throw new Error(data.err);
         } else {
-          const res = Object.keys(res)
-            .map(key => res[key])
+          const err = Object.keys(data)
+            .map(key => data[key])
             .join('\n');
-          throw new Error(res);
+          throw new Error(err);
         }
       })
       .catch(err => {
