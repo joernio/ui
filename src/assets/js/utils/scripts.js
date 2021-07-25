@@ -154,27 +154,45 @@ const setQueryResult = (data, store, key, results) => {
   }
 
   if (!results[key].result.stdout && !results[key].result.stderr) {
-    if (data.stdout) {
-      results[key]['result']['stdout'] = data.stdout;
-    }
+      if(!data){
+           results[key]['result']['stderr'] = "query failed";
+      }else{
+            if (data.stdout) {
+              results[key]['result']['stdout'] = data.stdout;
+            };
+        
+            if (data.stderr) {
+              results[key]['result']['stderr'] = data.stderr;
+            };
+      }
 
-    if (data.stderr) {
-      results[key]['result']['stderr'] = data.stderr;
-    }
-
-    store.dispatch(setResults(results));
+      store.dispatch(setResults(results));
   } else if (
     results[key].query.startsWith(manCommands.switchWorkspace) ||
     results[key].query === 'project'
   ) {
-    if (data.stdout) {
-      const projects = parseProjects(data);
-      results[key]['workspace'] = { projects };
+
+     
+      if(!data && !results[key].result.stdout && !results[key].result.stderr){
+           results[key]['result']['stderr'] = "query failed";
+      }else{
+          if (data.stdout) {
+            const projects = parseProjects(data);
+            results[key]['workspace'] = { projects };
+          }
+      }
+
       store.dispatch(setResults(results));
-    }
+
   } else {
-    results[key]['project'] = parseProject(data);
-    store.dispatch(setResults(results));
+
+        if(!data && !results[key].result.stdout && !results[key].result.stderr){
+             results[key]['result']['stderr'] = "query failed";
+        }else{
+             results[key]['project'] = parseProject(data);
+        }
+
+        store.dispatch(setResults(results));
   }
 };
 
@@ -636,7 +654,13 @@ export const handleAPIQueryError = err => {
         intent: 'danger',
         message: 'authentication error. Your server requires authentication',
       });
-  }
+  } else if(err.message === apiErrorStrings.no_result_for_uuid){
+    handleSetToast({
+      icon: 'warning-sign',
+      intent: 'danger',
+      message: `${err.message}. Ensure that no other program is subscribed to the websocket`,
+    });
+  };
 
   store.dispatch(resetQueue({}));
 };
