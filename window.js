@@ -10,7 +10,7 @@ const createWindow = async () => {
   const window = new BrowserWindow({
     title: 'DEMO',
     // titleBarStyle: 'hiddenInset',
-    frame: false,
+    frame: true,
     // transparent: isMac,
     acceptFirstMouse: true,
     webPreferences: {
