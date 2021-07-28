@@ -1,4 +1,4 @@
-import { forNodeAtPath } from '../../assets/js/utils/scripts';
+import { forNodeAtPath, forEachNode } from '../../assets/js/utils/scripts';
 import { store } from '../configureStore';
 
 export const setRecent = payload => {
@@ -49,4 +49,22 @@ export const expandOrCollapseFolder = (nodePath, bool) => {
 
     dispatch(setFolders(updatedFolders));
   };
+};
+
+
+export const setIsSelected = nodePath => {
+  return dispatch => {
+    const updatedFolders = store.getState().files.folders;
+
+    forEachNode(updatedFolders, node =>{
+      node.className = 'folder';
+    });
+
+    forNodeAtPath(updatedFolders, nodePath, node => {
+      node.className = 'folder selected';
+    });
+
+    dispatch(setFolders(updatedFolders));
+  }
+
 };

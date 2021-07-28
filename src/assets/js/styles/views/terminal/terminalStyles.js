@@ -1,6 +1,7 @@
 const styles = theme => ({
   terminalStyle: {
     width: '100%',
+    zIndex: 0,
     backgroundColor: props =>
       props.settings.prefersDarkMode ? '#000000' : '#ffffff',
     borderTop: props =>
@@ -19,18 +20,20 @@ const styles = theme => ({
     bottom: 0,
     '& .xterm .xterm-viewport': {
       overflowY: 'scroll',
-      maskImage:
-        'linear-gradient(to top, transparent, black), linear-gradient(to left, transparent 17px, black 17px)',
-      maskSize: '100% 20000px',
-      maskPosition: 'left bottom',
-      WebkitMaskImage:
-        'linear-gradient(to top, transparent, black), linear-gradient(to left, transparent 17px, black 17px)',
-      WebkitMaskSize: '100% 20000px',
-      WebkitMaskPosition: 'left bottom',
-      transition: 'mask-position 0.3s, -webkit-mask-position 0.3s',
-      '&:hover': {
-        WebkitMaskPosition: 'left top',
-      },
+      '&::-webkit-scrollbar':{
+        width: '12px',
+    },
+    '&::-webkit-scrollbar-track':{
+        backgroundColor: props=>theme.palette.scrollbar.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
+    },
+    
+    '&::-webkit-scrollbar-thumb':{
+      backgroundColor: props=>theme.palette.scrollbar.base[props.settings.prefersDarkMode ? 'dark' : 'light'],
+    },
+    
+    '&::-webkit-scrollbar-thumb:hover':{
+        backgroundColor: props=>theme.palette.scrollbar.hover[props.settings.prefersDarkMode ? 'dark' : 'light'],
+    }
     },
   },
   terminalOpen: {
@@ -53,7 +56,7 @@ const styles = theme => ({
       props.settings.prefersDarkMode ? '#000000' : '#ffffff',
     zIndex: 5,
     width: '100%',
-    height: '1.3em',
+    height: '2em',
     paddingTop: '0.5em',
     display: 'flex',
     justifyContent: 'flex-end',

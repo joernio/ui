@@ -1,6 +1,7 @@
 const { BrowserWindow } = require('electron');
 const { getWindowPosition } = require('./config');
 const { updateWindowInfo, openDevTools } = require('./ipcMain');
+const path = require('path');
 
 const isMac = process.platform === 'darwin';
 
@@ -8,15 +9,17 @@ const createWindow = async () => {
   const { position, size } = getWindowPosition();
 
   const window = new BrowserWindow({
-    title: 'DEMO',
+    title: 'Joern Client',
     // titleBarStyle: 'hiddenInset',
-    frame: false,
+    // icon: path.resolve(__dirname, './src/assets/image/icon.svg'),
+    frame: true,
     // transparent: isMac,
     acceptFirstMouse: true,
     webPreferences: {
       nodeIntegration: true,
       worldSafeExecuteJavaScript: true,
       contextIsolation: false,
+      // defaultFontSize: 30
     },
     width: size[0],
     height: size[1],
@@ -25,6 +28,8 @@ const createWindow = async () => {
     minWidth: 370,
     minHeight: 190,
   });
+
+  window.setMenuBarVisibility(false);
 
   updateWindowInfo(window);
   // openDevTools(window);

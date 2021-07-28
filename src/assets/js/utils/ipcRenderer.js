@@ -7,6 +7,9 @@ export const windowActionApi = {
   sendWindowAction: message => {
     ipc.send('window-action', message);
   },
+  setOpenFileName: filename => {
+    ipc.send('set-open-file-name', filename);
+  },
   connectToWebSocketAction: ws_url => {
     ipc.send('websocket-connect', ws_url);
   },

@@ -13,13 +13,11 @@ import {
   queueEmpty,
   addToQueue,
   addWorkSpaceQueryToQueue,
-  handleScrollTop,
-} from '../../assets/js/utils/scripts';
-import {
   handleSwitchWorkspace,
   contructQueryWithPath,
-  handleToggleProjectsVisible,
-} from './workspaceScripts';
+  handleScrollTop,
+} from '../../assets/js/utils/scripts';
+import { handleToggleProjectsVisible } from './workspaceScripts';
 
 const useStyles = makeStyles(styles);
 
@@ -67,33 +65,30 @@ function Workspace(props) {
       !queueEmpty(props.query.queue) ? (
         <ContextMenu2
           content={
-            <Menu className={classes.contextMenuStyle}>
+            <Menu className={classes.menuStyle}>
               <MenuItem
-                className={classes.contextMenuItemStyle}
+                className={classes.menuItemStyle}
                 onClick={() => addToQueue(addWorkSpaceQueryToQueue(), props)}
                 text="Refresh"
               ></MenuItem>
 
               <MenuItem
-                className={classes.contextMenuItemStyle}
+                className={classes.menuItemStyle}
                 onClick={async () =>
                   addToQueue(await contructQueryWithPath('importCode'), props)
                 }
                 text="Import Code"
               ></MenuItem>
               <MenuItem
-                className={classes.contextMenuItemStyle}
+                className={classes.menuItemStyle}
                 onClick={async () =>
                   addToQueue(await contructQueryWithPath('importCpg'), props)
                 }
                 text="Import Cpg"
               ></MenuItem>
-              <MenuDivider />
+              <MenuDivider className={classes.menuDividerStyle} />
               <MenuItem
-                className={clsx(
-                  classes.contextMenuItemStyle,
-                  classes.warningStyle,
-                )}
+                className={classes.menuItemStyle}
                 onClick={async () =>
                   addToQueue(await handleSwitchWorkspace(), props)
                 }
@@ -102,7 +97,7 @@ function Workspace(props) {
             </Menu>
           }
         >
-          <div className={classes.rootStyle}>
+          <div className={classes.rootStyle} tabIndex="0">
             <div
               className={classes.titleSectionStyle}
               onClick={() =>
@@ -156,7 +151,7 @@ function Workspace(props) {
       ) : (
         <>
           <div
-            className={classes.emptyWorkspaceElementStyles}
+            className={classes.emptyWorkspaceElementStyle}
             onClick={async () =>
               addToQueue(await contructQueryWithPath('importCode'), props)
             }
@@ -165,7 +160,7 @@ function Workspace(props) {
           </div>
 
           <div
-            className={classes.emptyWorkspaceElementStyles}
+            className={classes.emptyWorkspaceElementStyle}
             onClick={async () =>
               addToQueue(await contructQueryWithPath('importCpg'), props)
             }
@@ -174,7 +169,7 @@ function Workspace(props) {
           </div>
 
           <div
-            className={classes.emptyWorkspaceElementStyles}
+            className={classes.emptyWorkspaceElementStyle}
             onClick={async () =>
               addToQueue(await handleSwitchWorkspace(), props)
             }

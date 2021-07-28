@@ -90,6 +90,11 @@ const initIpcMain = () => {
 
     window.webContents.send('created-file', file);
   });
+
+  ipcMain.on('set-open-file-name', (event, filename)=> {
+    const window = getWindow(event);
+    window.setTitle(filename ? `${filename} - Joern Client`: 'Joern Client');
+  });
 };
 
 const updateWindowInfo = window => {

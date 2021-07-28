@@ -216,12 +216,20 @@ export const handleScrollTop = e => {
   return e.target.scrollTop > 0 ? { scrolled: true } : { scrolled: false };
 };
 
-export const openFile = (path, props) => {
+export const openFile = (path) => {
   if (path) {
-    const files = props.files;
+    const files = {...store.getState().files};
     delete files.recent[path];
     files.recent[path] = true;
-    props.setRecent(files);
+    store.dispatch(setRecent(files));
+  }
+};
+
+export const closeFile = (path) => {
+  if (path) {
+    const files = {...store.getState().files};
+    delete files.recent[path];
+    store.dispatch(setRecent(files));
   }
 };
 
@@ -465,12 +473,13 @@ export const getFolderStructureRootPath = workspace => {
       }
     });
 
-  path = path
-    ? path
-        .split('/')
-        .slice(0, path.split('/').length - 1)
-        .join('/')
-    : null;
+  // path = path
+  //   ? path
+  //       .split('/')
+  //       .slice(0, path.split('/').length - 1)
+  //       .join('/')
+  //   : null;
+
   let root = path ? path.split('/') : null;
   root = root ? root[root.length - 1] : null;
 
@@ -631,6 +640,86 @@ export const addWorkSpaceQueryToQueue = () => {
   };
 
   return query;
+};
+
+export const contructQueryWithPath = async type => {
+
+  selectDirApi.selectDir(type === 'importCode' ? 'select-dir' : 'select-file');
+
+  let path = await new Promise((resolve, reject) => {
+    selectDirApi.registerListener(type === 'importCode' ?
+          'selected-dir' : 'selected-file', value => {
+          if (value) {
+            resolve(value);
+          } else {
+            reject();
+          }
+        });
+  }).catch(() => {
+    console.log("can't select project path");
+  });
+
+  let stats = await new Promise((resolve, reject) => {
+    fs.stat(path, (err, stats) => {
+      if (!err) {
+        resolve(stats);
+      } else {
+        reject();
+      }
+    });
+  });
+
+  // const isJavaArtifact = path && (path.endsWith(".jar") || path.endsWith(".war") || path.endsWith(".ear"));
+
+  // if (path && stats && stats.isFile() && !isJavaArtifact) {
+  //   path = path.split('/');
+  //   path = path.slice(0, path.length - 1).join('/');
+  // }
+
+  if (path && stats) {
+    const query = {
+      query: `${type}(inputPath="${path}")`,
+      origin: 'workspace',
+      ignore: false,
+    };
+
+    // if(!isJavaArtifact){
+    //   handleSetToast({
+    //       icon: 'info-sign',
+    //       intent: 'primary',
+    //       message: "the whole directory was imported. file imports are only valid for java artifacts",
+    //     });
+    // }
+
+    return query;
+  }
+};
+
+export const handleSwitchWorkspace = async () => {
+
+  selectDirApi.selectDir('select-dir');
+
+  const path = await new Promise((resolve, reject) => {
+    selectDirApi.registerListener('selected-dir', value => {
+      if (value) {
+        resolve(value);
+      } else {
+        reject();
+      }
+    });
+  }).catch(() => {
+    console.log("can't select workspace path");
+  });
+
+  if (path) {
+    const query = {
+      query: `switchWorkspace("${path}")`,
+      origin: 'workspace',
+      ignore: false,
+    };
+
+    return query;
+  }
 };
 
 export const handleAPIQueryError = err => {

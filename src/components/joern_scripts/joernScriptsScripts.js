@@ -16,7 +16,7 @@ export const handleToggleScriptsVisible = scriptsVisible => {
 
 export const runScript = (path, props) => {
   if (path) {
-    openFile(path, props);
+    openFile(path);
 
     new Promise((resolve, reject) => {
       fs.readFile(path, 'utf8', (err, data) => {

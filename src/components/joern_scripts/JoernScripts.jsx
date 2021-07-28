@@ -68,7 +68,7 @@ function JoernScripts(props) {
   scripts = { ...scripts, ...recentScripts };
 
   return Object.keys(props.workspace.projects).length > 0 ? (
-    <div className={classes.rootStyle}>
+    <div className={classes.rootStyle} tabIndex="0">
       <div
         className={classes.titleSectionStyle}
         onClick={() =>
@@ -102,20 +102,17 @@ function JoernScripts(props) {
               return (
                 <ContextMenu2
                   content={
-                    <Menu>
+                    <Menu className={classes.menuStyle}>
                       <MenuItem
-                        className={classes.contextMenuItemStyle}
+                        className={classes.menuItemStyle}
                         onClick={() => {
                           saveFile(path);
                         }}
                         text="Save"
                       />
-                      <MenuDivider />
+                      <MenuDivider className={classes.menuDividerStyle} />
                       <MenuItem
-                        className={clsx(
-                          classes.contextMenuItemStyle,
-                          classes.dangerStyle,
-                        )}
+                        className={classes.menuItemStyle}
                         onClick={() => {
                           deleteFile(path);
                         }}
@@ -124,11 +121,11 @@ function JoernScripts(props) {
                     </Menu>
                   }
                 >
-                  <div className={classes.scriptSectionStyle}>
+                  <div className={classes.scriptSectionStyle} tabindex="0">
                     <h3
                       className={classes.scriptNameStyle}
                       key={path}
-                      onClick={() => (path ? openFile(path, props) : null)}
+                      onClick={() => (path ? openFile(path) : null)}
                     >
                       {filename}
                     </h3>

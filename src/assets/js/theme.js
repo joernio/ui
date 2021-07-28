@@ -77,7 +77,49 @@ const createTheme = mode =>
           dark: '#CBCBCB',
         },
       },
-    },
+      menu: {
+        background: {
+          light: '#FFFFFF',
+          dark: '#252526'
+        },
+        base: {
+          light: '#737373',
+          dark: '#CCCCCC'
+        },
+        hover: {
+         light: '#0060C0',
+         dark: '#094771'
+        }
+      },
+      button: {
+        background: {
+        light: '#007ACC',
+        dark: '#0E639C'
+        },
+        base: {
+         light: '#000000',
+         dark: '#FFFFFF',
+        },
+        hover: {
+         light: '#0062A3',
+         dark: '#1177BB'
+        }
+      },
+      scrollbar: {
+        background: {
+          light: 'rgba(0,0,0,0)',
+          dark: 'rgba(255,255,255,0)'
+        },
+        base: {
+          light: 'rgba(0,0,0,0.24)',
+          dark: 'rgba(255, 255, 255, 0.16)'
+        },
+        hover: {
+          light: 'rgba(0,0,0,0.4255)',
+          dark: 'rgba(255,255,255,0.22)'
+        }
+     }
+   }
   });
 
 export default createTheme;

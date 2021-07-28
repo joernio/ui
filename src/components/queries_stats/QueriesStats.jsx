@@ -63,7 +63,7 @@ function QueriesStats(props) {
               <div className={classes.queriesStatsQueryContainerStyle}>
                 <div>
                   <Tooltip2
-                    popoverClassName={classes.queriesStatsToolTipStyle}
+                    popoverClassName={classes.toolTipStyle}
                     content={
                       <div className={classes.toolTipTextStyle}>
                         {query_stat.query}

@@ -25,11 +25,7 @@ function Folder(props) {
       : null;
   return (
     <div style={{ paddingLeft: '0.5em' }}>
-      <h3
-        onClick={() =>
-          openFile(contructFilePath(folder_json_model, root), props)
-        }
-      >
+      <h3 onClick={() => openFile(contructFilePath(folder_json_model, root))}>
         {typeof folder_json_model[root] === 'object' ? (
           root_folder_collapsed ? (
             <Icon

@@ -7,6 +7,7 @@ import { Icon } from '@blueprintjs/core';
 import * as terminalActions from '../../store/actions/terminalActions';
 import * as queryActions from '../../store/actions/queryActions';
 import styles from '../../assets/js/styles/views/terminal/terminalStyles';
+import { usePrevious } from '../../assets/js/utils/hooks';
 import {
   initResize,
   throttle,
@@ -22,6 +23,7 @@ import {
   sendQueryResultToXTerm,
   handleTerminalMaximizeToggle,
   handleQuery,
+  handleEmptyWorkspace,
 } from './terminalWindowScripts';
 
 const useStyles = makeStyles(styles);
@@ -42,6 +44,14 @@ function TerminalWindow(props) {
     props.setTerm(await initXterm(props.settings.prefersDarkMode));
   }, []);
 
+  const prev_workspace = usePrevious(
+    props.workspace ? JSON.parse(JSON.stringify(props.workspace)) : {},
+  );
+
+  React.useEffect(() => {
+    props.setIsMaximized(handleEmptyWorkspace(props.workspace, prev_workspace));
+  }, [props.workspace]);
+
   React.useEffect(() => {
     if (refs.terminalRef.current && props.terminal.term) {
       openXTerm(refs.terminalRef, props.terminal.term);
@@ -53,9 +63,11 @@ function TerminalWindow(props) {
   }, [refs.terminalRef, props.terminal.term]);
 
   React.useEffect(() => {
-    const observer = new ResizeObserver(throttle(resize, 100));
+    const observer = new ResizeObserver(throttle(resize, 50));
     refs.terminalRef.current && observer.observe(refs.terminalRef.current);
-    return () => {};
+
+    return () =>
+      refs.terminalRef.current && observer.unobserve(refs.terminalRef.current);
   }, [props.terminal.fitAddon]);
 
   React.useEffect(() => {
@@ -158,6 +170,7 @@ const mapStateToProps = state => {
   return {
     terminal: state.terminal,
     query: state.query,
+    workspace: state.workspace,
     settings: state.settings,
   };
 };

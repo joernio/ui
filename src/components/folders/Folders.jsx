@@ -54,12 +54,18 @@ function Folders(props) {
     props.expandOrCollapseFolder(nodePath, !node.isExpanded);
   }, []);
 
+  const handleNodeSelection = React.useCallback(nodePath => {
+    props.setIsSelected(nodePath);
+  });
+
   const handleNodeClick = React.useCallback((node, nodePath, e) => {
     if (node.hasCaret) {
       handleToggleFolderExpand(node, nodePath);
     } else {
-      openFile(node.id, props);
+      openFile(node.id);
     }
+
+    handleNodeSelection(nodePath);
   }, []);
 
   const { foldersVisible, scrolled } = state;
@@ -77,6 +83,7 @@ function Folders(props) {
         classes.rootStyle,
         props.settings.prefersDarkMode ? 'folders-dark' : 'folders-light',
       )}
+      tabIndex="0"
     >
       <div
         className={classes.titleSectionStyle}
@@ -140,6 +147,9 @@ const mapDispatchToProps = dispatch => {
     },
     setFolders: folders => {
       return dispatch(filesActions.setFolders(folders));
+    },
+    setIsSelected: nodePath => {
+      return dispatch(filesActions.setIsSelected(nodePath));
     },
   };
 };

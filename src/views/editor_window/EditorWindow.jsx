@@ -50,7 +50,7 @@ function EditorWindow(props) {
         width="100%"
         height="100%"
         theme={settings.prefersDarkMode ? 'vs-dark' : 'vs-light'}
-        language="javascript"
+        language="typescript"
         value={files?.openFileContent}
         options={options}
         onChange={(newValue, _) => props.setOpenFileContent(newValue)}
