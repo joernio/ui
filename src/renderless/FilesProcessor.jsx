@@ -15,13 +15,13 @@ function FilesProcessor(props) {
         file_path,
         props.files.recent,
       );
-      file_path && !fileInRecentlyOpened && openFile(file_path, props);
+      file_path && !fileInRecentlyOpened && openFile(file_path);
     }
   }, [props.workspace]);
 
   React.useEffect(() => {
     const file_path = isFilePathInQueryResult(props.query.results);
-    file_path && openFile(file_path, props);
+    file_path && openFile(file_path);
   }, [props.query.results]);
 
   return null;

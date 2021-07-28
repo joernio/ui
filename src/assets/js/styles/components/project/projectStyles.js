@@ -5,6 +5,14 @@ const styles = theme => ({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingRight: '0.5em',
+    '&:hover': {
+      backgroundColor: props => theme.palette.explorer.hover[props.settings.prefersDarkMode ? 'dark' : 'light']
+    },
+    '&:focus': {
+      backgroundColor: '#0090F150',
+      border: '1px solid #0090F1',
+      outline: 'none'
+    }
   },
   projectNameStyle: {
     color: props =>
@@ -19,18 +27,32 @@ const styles = theme => ({
     marginTop: '0.2em',
     marginBottom: '0.2em',
   },
-  contextMenuItemStyle: {
-    textTransform: 'capitalize',
-    backgroundColor: 'rgba(0,0,0,0)',
-    paddingRight: '12px',
-    paddingLeft: '12px',
-    '&:hover': {
-      backgroundColor: theme.palette.action.hover,
-    },
-    '& svg': {
-      marginRight: '0.5em',
-    },
-  },
+
+  menuStyle:{
+    backgroundColor: props => theme.palette.menu.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
+    borderRadius: 0
+   },
+   menuItemStyle:{
+     borderRadius: 0,
+     textTransform: 'capitalize',
+     paddingRight: '12px',
+     paddingLeft: '12px',
+     color: props => theme.palette.menu.base[props.settings.prefersDarkMode ? 'dark' : 'light'],
+     '& span': {
+       color: props => `${theme.palette.menu.base[props.settings.prefersDarkMode ? 'dark' : 'light']} !important`,
+       marginRight: '0.5em',
+     },
+     '&:hover':{
+       backgroundColor: props => theme.palette.menu.hover[props.settings.prefersDarkMode ? 'dark' : 'light'],
+       color: "#FFFFFF",
+       '& span': {
+         color: "#FFFFFF !important"
+       },
+     }
+   },
+   menuDividerStyle: {
+     borderTop: props =>  `1px solid ${theme.palette.menu.base[props.settings.prefersDarkMode ? 'dark' : 'light']}50`,
+   },
   iconStyle: {
     color: props =>
       theme.palette.sideNav.base[

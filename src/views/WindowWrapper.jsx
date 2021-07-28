@@ -4,10 +4,11 @@ import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { Icon } from '@blueprintjs/core';
 import * as filesActions from '../store/actions/filesActions';
+import * as queryActions from '../store/actions/queryActions';
 import { ContextMenu2, Popover2 } from '@blueprintjs/popover2';
 import { Menu, MenuDivider, MenuItem } from '@blueprintjs/core';
 import QueriesStats from '../components/queries_stats/QueriesStats';
-import { windowInfoApi } from '../assets/js/utils/ipcRenderer';
+import { windowInfoApi, windowActionApi } from '../assets/js/utils/ipcRenderer';
 import styles from '../assets/js/styles/views/windowWrapperStyles';
 import {
   openEmptyFile,
@@ -16,6 +17,9 @@ import {
   wsDisconnectFromServer,
   openFile,
   saveFile,
+  handleSwitchWorkspace,
+  contructQueryWithPath,
+  addToQueue,
 } from '../assets/js/utils/scripts';
 import { handleOpenFile, getOpenFileName } from './windowWrapperScripts';
 
@@ -27,11 +31,7 @@ function WindowWrapper(props) {
 
   const [state, setState] = React.useState({
     isMaximized: windowInfoApi.getWindowInfo(),
-    filename: '',
     fileContextIsOpen: false,
-    queryStatsPopoverIsOpen: false,
-    queriesStats: [],
-    prev_queue: {},
   });
 
   const handleSetState = obj => {
@@ -44,10 +44,10 @@ function WindowWrapper(props) {
 
   React.useEffect(() => {
     const filename = getOpenFileName(props);
-    handleSetState({ filename });
+    windowActionApi.setOpenFileName(filename);
   }, [props.files]);
 
-  const { isMaximized, filename, fileContextIsOpen } = state;
+  const { fileContextIsOpen } = state;
 
   return (
     <>
@@ -57,35 +57,65 @@ function WindowWrapper(props) {
             ref={hiddenInputEl}
             className={classes.hiddenStyle}
             type="file"
-            onChange={e => openFile(handleOpenFile(e), props)}
+            onChange={e => openFile(handleOpenFile(e))}
           />
 
           <Popover2
             content={
-              <Menu>
+              <Menu className={classes.menuStyle}>
                 <MenuItem
-                  text="New"
+                  className={classes.menuItemStyle}
+                  text="New File"
                   icon="document"
                   onClick={() => openEmptyFile()}
                 />
                 <MenuItem
-                  text="Open"
+                  className={classes.menuItemStyle}
+                  text="Open File"
                   onClick={() => hiddenInputEl.current.click()}
                   icon="folder-shared"
                 />
-                <MenuDivider />
                 <MenuItem
-                  text="Save"
+                  className={classes.menuItemStyle}
+                  text="Save File"
                   icon="floppy-disk"
                   onClick={() => saveFile()}
                 />
-                <MenuDivider />
+                <MenuDivider className={classes.menuDividerStyle} />
                 <MenuItem
+                  className={classes.menuItemStyle}
+                  onClick={async () =>
+                    addToQueue(await contructQueryWithPath('importCode'), props)
+                  }
+                  icon="import"
+                  text="Import Code"
+                ></MenuItem>
+                <MenuItem
+                  className={classes.menuItemStyle}
+                  onClick={async () =>
+                    addToQueue(await contructQueryWithPath('importCpg'), props)
+                  }
+                  icon="import"
+                  text="Import Cpg"
+                ></MenuItem>
+                <MenuDivider className={classes.menuDividerStyle} />
+                <MenuItem
+                  className={classes.menuItemStyle}
+                  onClick={async () =>
+                    addToQueue(await handleSwitchWorkspace(), props)
+                  }
+                  icon="swap-horizontal"
+                  text="Switch Workspace"
+                ></MenuItem>
+                <MenuDivider className={classes.menuDividerStyle} />
+                <MenuItem
+                  className={classes.menuItemStyle}
                   text="Reload"
                   icon="refresh"
                   onClick={() => sendWindowsMessage('reload')}
                 />
                 <MenuItem
+                  className={classes.menuItemStyle}
                   text="Exit"
                   icon="cross"
                   onClick={() => sendWindowsMessage('close')}
@@ -107,12 +137,12 @@ function WindowWrapper(props) {
             </button>
           </Popover2>
 
-          <div className={classes.toolNameContainerStyle}>
+          {/* <div className={classes.toolNameContainerStyle}>
             <h1>{filename ? `${filename} - ` : null}Joern Client</h1>
-          </div>
+          </div> */}
         </div>
 
-        <button
+        {/* <button
           className={classes.controlButtonStyle}
           onClick={() => sendWindowsMessage('minimize')}
         >
@@ -140,7 +170,7 @@ function WindowWrapper(props) {
           onClick={() => sendWindowsMessage('close')}
         >
           <Icon icon="cross" className={classes.windowActionIconStyle} />
-        </button>
+        </button> */}
       </div>
       {props.children}
       <div className={classes.statusBarStyle}>
@@ -173,7 +203,7 @@ function WindowWrapper(props) {
               <>
                 <h3>Connected</h3>
                 <div className="ring-container">
-                  <div className="ringring"></div>
+                  {/* <div className="ringring"></div> */}
                   <div className="circle"></div>
                 </div>
               </>
@@ -217,6 +247,9 @@ const mapDispatchToProps = dispatch => {
   return {
     setRecent: files => {
       return dispatch(filesActions.setRecent(files));
+    },
+    enQueueQuery: query => {
+      return dispatch(queryActions.enQueueQuery(query));
     },
   };
 };

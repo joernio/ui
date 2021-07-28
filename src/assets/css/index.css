@@ -14,10 +14,6 @@ body {
   flex-direction: column;
 }
 
-/* scroll-box-shadow {
-  box-shadow: inset 0px 2px 8px 1px #DBDBDB;
-} */
-
 .ring-container {
   position: relative;
   display: flex;
@@ -75,6 +71,22 @@ body {
   background-color: rgba(66, 143, 219, 0.8);
 }
 
+.editor-line-no-highlight {
+  background-color: rgba(66, 143, 219, 0);
+}
+
+.folders-dark:focus,
+.folders-light:focus {
+  border: 1px solid #0090f1;
+  outline: none;
+}
+
+.folders-dark:focus .folder.selected > div:nth-child(1),
+.folders-light:focus .folder.selected > div:nth-child(1) {
+  background-color: #0090f150;
+  border: 1px solid #0090f1;
+}
+
 /* ####### dark theme folders section caret icon ######## */
 .folders-dark .folder > div > span:nth-child(1) {
   padding: 0;
@@ -109,14 +121,19 @@ body {
 }
 /* #################################################### */
 
-/* #616161 */
-/* #F0FFF6 */
-
 .folders-dark .folder > div {
   padding-left: 0.9em !important;
   padding-top: 0.2em;
   padding-bottom: 0.2em;
   height: auto;
+}
+
+.folders-dark .folder > div:nth-child(1):hover {
+  background-color: #2a2d2e;
+}
+
+.folders-light .folder > div:nth-child(1):hover {
+  background-color: #e8e8e8;
 }
 
 .folders-light .folder > div > span:nth-child(1) {
@@ -147,27 +164,9 @@ body {
   color: #616161;
 }
 
-/* #616161 */
-/* #F0FFF6 */
-
 .folders-light .folder > div {
   padding-left: 0.9em !important;
   padding-top: 0.2em;
   padding-bottom: 0.2em;
   height: auto;
 }
-
-/* .settings-dialog-backdrop {
-  background-color: rgba(0, 0, 0, 0);
-}
-
-
-opacity: 1;
--webkit-transform: scale(1);
--webkit-box-align: center;
-display: flex;
--webkit-box-pack: center;
-justify-content: center;
--webkit-user-select: none;
-align-items: normal;
-min-height: fit-content; */

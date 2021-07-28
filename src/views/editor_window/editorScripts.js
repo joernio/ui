@@ -2,8 +2,11 @@ import fs from 'fs';
 import { isFilePathInQueryResult } from '../../assets/js/utils/scripts';
 import { Range } from 'monaco-editor';
 
+let delta_decorations = [];
+
 export const handleFileAddedToRecent = async (refs, props) => {
-  let path = props?.files?.recent && Object.keys(props.files.recent);
+  let path = props?.files?.recent ? {...props.files.recent} : null;
+  path = path && Object.keys(path);
   path = path ? path.pop() : null;
 
   return await readRecentFile(path)
@@ -12,8 +15,7 @@ export const handleFileAddedToRecent = async (refs, props) => {
 
       const { startLine, endLine } = shouldGoToLine(props);
 
-      startLine &&
-        setTimeout(() => {
+      setTimeout(() => {
           goToLine(refs.editorEl.current.editor, startLine);
           highlightRange(refs.editorEl.current.editor, {
             startLine,
@@ -31,8 +33,8 @@ export const handleFileAddedToRecent = async (refs, props) => {
 };
 
 export const goToLine = (editor, row = 1, column = 1) => {
-  editor.setPosition({ column: column, lineNumber: row });
-  editor.revealLineInCenter(row);
+  editor.setPosition({ column: column, lineNumber: row ? row : 1 });
+  editor.revealLineInCenter(row ? row : 1);
 };
 
 export const highlightRange = (editor, range) => {
@@ -40,22 +42,24 @@ export const highlightRange = (editor, range) => {
 
   if (range.startLine && !range.endLine) {
     rangeArr.push(range.startLine, 0, range.startLine, 0);
-  } else if (range.endLine && !range.startLine) {
+  } else if (!range.startLine && range.endLine) {
     rangeArr.push(range.endLine, 0, range.endLine, 0);
   } else if (range.startLine && range.endLine) {
     rangeArr.push(range.startLine, 0, range.endLine, 0);
+  } else {
+    rangeArr.push(0, 0, 0, 0);
   }
 
   if (rangeArr.length) {
-    editor.deltaDecorations(
-      [],
+    delta_decorations = editor.deltaDecorations(
+      delta_decorations,
       [
         {
           range: new Range(...rangeArr),
-          options: {
+          options: range.startLine || range.endLine ? {
             isWholeLine: true,
             inlineClassName: 'editor-line-highlight',
-          },
+          }:{},
         },
       ],
     );
@@ -63,14 +67,11 @@ export const highlightRange = (editor, range) => {
 };
 
 export const editorDidMount = (editor, monaco) => {
-  editor.focus();
-  monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-    validate: false,
-    schemaValidation: 'ignore',
-  });
 
-  monaco.languages.json.jsonDefaults.setModeConfiguration({
-    diagnostics: false,
+  editor.focus();
+  monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+    noSemanticValidation: true,
+    noSyntaxValidation: true,
   });
 };
 
@@ -134,7 +135,7 @@ const isLineNumberInQueryResult = results => {
 };
 
 export const shouldGoToLine = props => {
-  let { recent: recent_file } = props.files;
+  let { recent: recent_file } = {...props.files};
   recent_file = Object.keys(recent_file)?.pop();
 
   const { results } = props.query;

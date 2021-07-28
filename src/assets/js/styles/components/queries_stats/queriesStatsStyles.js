@@ -3,20 +3,35 @@ const styles = theme => ({
     height: '100%',
   },
   queriesStatsPopoverContentContainerStyle: {
+    backgroundColor: props=>theme.palette.navBar.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
+    color: props=>theme.palette.navBar.base[props.settings.prefersDarkMode ? 'dark' : 'light'],
+    padding: '0.4em',
     width: '300px',
     maxHeight: '50vh',
     overflowY: 'scroll',
-    maskImage:
-      'linear-gradient(to top, transparent, black), linear-gradient(to left, transparent 17px, black 17px)',
-    maskSize: '100% 20000px',
-    maskPosition: 'left bottom',
-    WebkitMaskImage:
-      'linear-gradient(to top, transparent, black), linear-gradient(to left, transparent 17px, black 17px)',
-    WebkitMaskSize: '100% 20000px',
-    WebkitMaskPosition: 'left bottom',
-    '&:hover': {
-      WebkitMaskPosition: 'left top',
-    },
+  
+  '&::-webkit-scrollbar':{
+      width: '12px',
+  },
+  '&::-webkit-scrollbar-track':{
+      backgroundColor: props=>theme.palette.scrollbar.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
+  },
+  
+  '&::-webkit-scrollbar-thumb':{
+      backgroundColor: props=>theme.palette.scrollbar.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
+  },
+  
+  '&:hover::-webkit-scrollbar-thumb': {
+      backgroundColor: props=>theme.palette.scrollbar.base[props.settings.prefersDarkMode ? 'dark' : 'light'],
+      transition: theme.transitions.create('background-color', {
+        easing: theme.transitions.easing.linear,
+        duration: 1000,
+      }),
+  },
+  
+  '&::-webkit-scrollbar-thumb:hover':{
+      backgroundColor: props=>theme.palette.scrollbar.hover[props.settings.prefersDarkMode ? 'dark' : 'light'],
+  }
   },
   queriesStatsSectionStyle: {
     display: 'flex',
@@ -41,17 +56,17 @@ const styles = theme => ({
       justifyContent: 'space-between',
     },
   },
-  queriesStatsToolTipStyle: {
+  toolTipStyle: {
     '& .bp3-popover2-content': {
-      backgroundColor: theme.palette.explorer.background.light,
+      backgroundColor: props=>theme.palette.navBar.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
     },
     '& .bp3-popover2-arrow-fill': {
-      fill: theme.palette.explorer.background.light,
+      fill: props=>theme.palette.navBar.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
     },
   },
   toolTipTextStyle: {
-    backgroundColor: theme.palette.explorer.background.light,
-    color: theme.palette.explorer.base.light,
+    backgroundColor: props=>theme.palette.navBar.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
+    color: props=>theme.palette.navBar.base[props.settings.prefersDarkMode ? 'dark' : 'light'],
   },
   queriesStatsQueryPreviewStyle: {
     maxWidth: '100px',

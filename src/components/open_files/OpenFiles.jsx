@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import * as filesActions from '../../store/actions/filesActions';
 import { Icon } from '@blueprintjs/core';
-import { openFile } from '../../assets/js/utils/scripts';
+import { openFile, closeFile } from '../../assets/js/utils/scripts';
 import styles from '../../assets/js/styles/components/open_files/openFilesStyles';
 import {
   getEditorFilesFromRecent,
@@ -52,7 +52,7 @@ function OpenFiles(props) {
   const { files, filesVisible, scrolled } = state;
 
   return Object.keys(props.workspace.projects).length > 0 ? (
-    <div className={classes.rootStyle}>
+    <div className={classes.rootStyle} tabIndex="0">
       <div
         className={classes.titleSectionStyle}
         onClick={() => handleSetState(handleToggleFilesVisible(filesVisible))}
@@ -62,7 +62,7 @@ function OpenFiles(props) {
         ) : (
           <Icon className={classes.iconStyle} icon="chevron-right" />
         )}
-        <h2 className={classes.titleStyle}>Editor</h2>
+        <h2 className={classes.titleStyle}>Open Editor</h2>
       </div>
       <div
         ref={filesContainerEl}
@@ -82,14 +82,19 @@ function OpenFiles(props) {
               let filename = path.split('/');
               filename = filename[filename.length - 1];
               return (
-                <div className={classes.fileSectionStyle}>
+                <div className={classes.fileSectionStyle} tabIndex="0">
                   <h3
                     className={classes.fileNameStyle}
                     key={path}
-                    onClick={() => (path ? openFile(path, props) : null)}
+                    onClick={() => (path ? openFile(path) : null)}
                   >
                     {filename}
                   </h3>
+                  <Icon
+                    icon="small-cross"
+                    className={classes.iconStyle}
+                    onClick={() => (path ? closeFile(path) : null)}
+                  />
                 </div>
               );
             })

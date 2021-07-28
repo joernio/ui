@@ -1,13 +1,14 @@
 const styles = theme => ({
   rootStyle: {
-    borderTop: '1px solid rgba(255, 255, 255, 0.12)',
+    borderTop: props=> `1px solid rgba${props.settings.prefersDarkMode ? '(255,255,255,0.2)' : '(0,0,0,0.2)'}` ,
     overflowY: 'hidden',
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column'
   },
   titleSectionStyle: {
     display: 'flex',
     alignItems: 'center',
+    cursor: 'pointer'
   },
   titleStyle: {
     textTransform: 'uppercase',
@@ -22,17 +23,24 @@ const styles = theme => ({
   },
   foldersSectionStyle: {
     overflowY: 'scroll',
-    maskImage:
-      'linear-gradient(to top, transparent, black), linear-gradient(to left, transparent 17px, black 17px)',
-    maskSize: '100% 20000px',
-    maskPosition: 'left bottom',
-    WebkitMaskImage:
-      'linear-gradient(to top, transparent, black), linear-gradient(to left, transparent 17px, black 17px)',
-    WebkitMaskSize: '100% 20000px',
-    WebkitMaskPosition: 'left bottom',
-    '&:hover': {
-      WebkitMaskPosition: 'left top',
-    },
+    '&::-webkit-scrollbar':{
+      width: '12px',
+  },
+  '&::-webkit-scrollbar-track':{
+      backgroundColor: props=>theme.palette.scrollbar.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
+  },
+  
+  '&::-webkit-scrollbar-thumb':{
+      backgroundColor: props=>theme.palette.scrollbar.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
+  },
+  
+  '&:hover::-webkit-scrollbar-thumb': {
+      backgroundColor: props=>theme.palette.scrollbar.base[props.settings.prefersDarkMode ? 'dark' : 'light'],
+  },
+  
+  '&::-webkit-scrollbar-thumb:hover':{
+      backgroundColor: props=>theme.palette.scrollbar.hover[props.settings.prefersDarkMode ? 'dark' : 'light'],
+  }
   },
   scrolledStyle: {
     boxShadow: props =>

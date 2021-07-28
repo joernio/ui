@@ -32,23 +32,26 @@ const styles = theme => ({
     display: 'flex',
     alignItems: 'center',
   },
-  queriesStatsSectionStyle: {
-    display: 'flex',
-    alignItems: 'center',
-    height: '100%',
-    cursor: 'pointer',
-    '&:hover': {
-      backgroundColor: props =>
-        theme.palette.navBar.hover[
-          props.settings.prefersDarkMode ? 'dark' : 'light'
-        ],
-    },
+  menuStyle:{
+   backgroundColor: props => theme.palette.menu.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
+   borderRadius: 0
   },
-  refreshIconContainerStyle: {
-    position: 'relative',
-    height: '16px',
-    width: '16px',
-    margin: '0 0.5em 0 1em',
+  menuItemStyle:{
+    borderRadius: 0,
+    color: props => theme.palette.menu.base[props.settings.prefersDarkMode ? 'dark' : 'light'],
+    '& span': {
+      color: props => `${theme.palette.menu.base[props.settings.prefersDarkMode ? 'dark' : 'light']} !important`,
+    },
+    '&:hover':{
+      backgroundColor: props => theme.palette.menu.hover[props.settings.prefersDarkMode ? 'dark' : 'light'],
+      color: "#FFFFFF",
+      '& span': {
+        color: "#FFFFFF !important"
+      },
+    }
+  },
+  menuDividerStyle: {
+    borderTop: props =>  `1px solid ${theme.palette.menu.base[props.settings.prefersDarkMode ? 'dark' : 'light']}50`,
   },
   controlButtonStyle: {
     color: props =>
@@ -124,13 +127,6 @@ const styles = theme => ({
     '&:hover': {
       backgroundColor: theme.palette.navBar.hover.light,
     },
-  },
-  refreshIconStyle: {
-    position: 'absolute',
-    left: '2',
-  },
-  queriesStatsStyle: {
-    margin: 'auto 0.5em auto 0',
   },
   hiddenStyle: {
     display: 'none',

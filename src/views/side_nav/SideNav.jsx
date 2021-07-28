@@ -43,12 +43,13 @@ function SideNav(props) {
       <div className={clsx(classes.rootStyle, 'side-nav')}>
         <div>
           <Tooltip2
+            popoverClassName={classes.toolTipStyle}
             content={<span className={classes.toolTipTextStyle}>explorer</span>}
             placement="right"
             usePortal={false}
           >
             <Icon
-              icon="code"
+              icon="control"
               iconSize={25}
               className={classes.iconStyle}
               onClick={() => props.handleSetState(handleDrawerToggle(props))}
@@ -57,6 +58,7 @@ function SideNav(props) {
         </div>
 
         <Tooltip2
+          popoverClassName={classes.toolTipStyle}
           content={<span className={classes.toolTipTextStyle}>terminal</span>}
           placement="right"
           usePortal={false}
@@ -70,6 +72,7 @@ function SideNav(props) {
         </Tooltip2>
 
         <Tooltip2
+          popoverClassName={classes.toolTipStyle}
           content={<span className={classes.toolTipTextStyle}>settings</span>}
           placement="right"
           usePortal={false}
@@ -132,7 +135,7 @@ function SideNav(props) {
               onBlur={e => handleSetState(handleOnChange(e, values))}
             />
           </div>
-          <Divider />
+          <Divider className={classes.menuDividerStyle} />
           <div>
             <h3>Web Socket</h3>
             <h4>URL</h4>
@@ -145,7 +148,7 @@ function SideNav(props) {
               onBlur={e => handleSetState(handleOnChange(e, values))}
             />
           </div>
-          <Divider />
+          <Divider className={classes.menuDividerStyle} />
           <div>
             <h3>GUI</h3>
             <h4>Dark Theme</h4>
@@ -171,15 +174,24 @@ function SideNav(props) {
             />
           </div>
         </div>
-        <Divider />
-        <div
-          className={classes.submitSectionStyle}
-          onClick={() => {
-            props.setSettings(collectSettingsValues(values));
-            handleSetState(toggleSettingsDialog(state.isSettingsDialogOpen));
-          }}
-        >
-          <h3>save</h3>
+        <Divider className={classes.menuDividerStyle} />
+        <div className={classes.submitSectionStyle}>
+          <h3
+            onClick={() =>
+              handleSetState(toggleSettingsDialog(state.isSettingsDialogOpen))
+            }
+          >
+            Cancel
+          </h3>
+          <h3
+            className="save"
+            onClick={() => {
+              props.setSettings(collectSettingsValues(values));
+              handleSetState(toggleSettingsDialog(state.isSettingsDialogOpen));
+            }}
+          >
+            Save
+          </h3>
         </div>
       </Dialog>
     </>

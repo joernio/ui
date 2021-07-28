@@ -42,6 +42,19 @@ export const handleResize = fitAddon => {
   fitAddon && fitAddon.fit();
 };
 
+export const handleEmptyWorkspace = (workspace, prev_workspace) => {
+  if(workspace && Object.keys(workspace.projects).length < 1){
+    return { isMaximized: true };
+  }else if(workspace && 
+          Object.keys(workspace.projects).length > 0 &&
+          Object.keys(prev_workspace?.projects ? prev_workspace.projects : {}).length < 1
+         ){
+         return {isMaximized: false};
+     };
+
+  return {};
+};
+
 export const openXTerm = (terminalRef, term) => {
   if (term) {
     term.onKey(async e => {

@@ -23,27 +23,27 @@ function Project(props) {
   return (
     <ContextMenu2
       content={
-        <Menu>
+        <Menu className={classes.menuStyle}>
           <MenuItem
-            className={classes.contextMenuItemStyle}
+            className={classes.menuItemStyle}
             onClick={() => addToQueue(handleOpenProject(name), props)}
             text="open"
           />
           <MenuItem
-            className={classes.contextMenuItemStyle}
+            className={classes.menuItemStyle}
             onClick={() => addToQueue(handleCloseProject(name), props)}
             text="close"
           />
-          <MenuDivider />
+          <MenuDivider className={classes.menuDividerStyle} />
           <MenuItem
-            className={clsx(classes.contextMenuItemStyle, classes.dangerStyle)}
+            className={classes.menuItemStyle}
             onClick={() => addToQueue(handleDeleteProject(name), props)}
             text="delete"
           />
         </Menu>
       }
     >
-      <div key={index} className={classes.projectSectionStyle}>
+      <div key={index} className={classes.projectSectionStyle} tabIndex="0">
         <h3 className={classes.projectNameStyle} key={`${name}-${index}`}>
           {name}
         </h3>
