@@ -1,6 +1,7 @@
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import { enQueueQuery } from '../../store/actions/queryActions';
+import { windowActionApi } from '../../assets/js/utils/ipcRenderer';
 import {
   setHistory,
   setTerminalBusy,
@@ -43,14 +44,16 @@ export const handleResize = fitAddon => {
 };
 
 export const handleEmptyWorkspace = (workspace, prev_workspace) => {
-  if(workspace && Object.keys(workspace.projects).length < 1){
+  if (workspace && Object.keys(workspace.projects).length < 1) {
     return { isMaximized: true };
-  }else if(workspace && 
-          Object.keys(workspace.projects).length > 0 &&
-          Object.keys(prev_workspace?.projects ? prev_workspace.projects : {}).length < 1
-         ){
-         return {isMaximized: false};
-     };
+  } else if (
+    workspace &&
+    Object.keys(workspace.projects).length > 0 &&
+    Object.keys(prev_workspace?.projects ? prev_workspace.projects : {})
+      .length < 1
+  ) {
+    return { isMaximized: false };
+  }
 
   return {};
 };
@@ -65,9 +68,11 @@ export const openXTerm = (terminalRef, term) => {
   }
 };
 
-export const termWrite = (term, value)=> new Promise(r=>term.write(value, r));
+export const termWrite = (term, value) =>
+  new Promise(r => term.write(value, r));
 
-export const termWriteLn = (term, value)=> new Promise(r=>term.writeln(value, r));
+export const termWriteLn = (term, value) =>
+  new Promise(r => term.writeln(value, r));
 
 export const getNext = history => {
   let next = Object.keys(history.next_queries);
@@ -94,8 +99,7 @@ export const removeOldestQueryFromHistory = (history, prev_keys) => {
 };
 
 export const addQueryToHistory = (history, queue, key) => {
-
-  while(Object.keys(history.next_queries).length > 0){
+  while (Object.keys(history.next_queries).length > 0) {
     history = rotateNext(history);
   }
 
@@ -158,7 +162,7 @@ export const initXterm = async prefersDarkMode => {
 
   let shellprompt = joernDefaultPrompt;
 
-  term.prompt = async()=>{
+  term.prompt = async () => {
     await termWrite(term, shellprompt);
   };
 
@@ -201,7 +205,10 @@ export const resizeHandler = (terminalHeight, diff, props, window) => {
 
 export const handleQuery = queue => {
   let { history } = store.getState().terminal;
-  history = {prev_queries: {...history.prev_queries}, next_queries: {...history.next_queries}};
+  history = {
+    prev_queries: { ...history.prev_queries },
+    next_queries: { ...history.next_queries },
+  };
   let key = Object.keys(queue);
   key = key[key.length - 1];
 
@@ -210,7 +217,6 @@ export const handleQuery = queue => {
     !history.prev_queries[key] &&
     !history.next_queries[key]
   ) {
-
     history = addQueryToHistory(history, queue, key);
 
     let prev_keys = Object.keys(history.prev_queries);
@@ -228,10 +234,19 @@ export const handleXTermOnData = async (term, e) => {
   const printable = !ev.altKey && !ev.ctrlKey && !ev.metaKey;
   const { history, busy } = store.getState().terminal;
 
+  if (ev.code === 'KeyC' && ev.ctrlKey) {
+    windowActionApi.copyToClipBoard(term.getSelection());
+  } else if (ev.code === 'KeyV' && ev.ctrlKey && !busy) {
+    windowActionApi.pasteFromClipBoard();
+    windowActionApi.registerPasteFromClipBoardListener(async str => {
+      data_obj.data += str;
+      await termWrite(term, str);
+    });
+  }
+
   if (busy) return;
 
   if (ev.code === 'Enter') {
-
     const query = {
       query: data_obj.data,
       origin: 'terminal',
@@ -241,17 +256,13 @@ export const handleXTermOnData = async (term, e) => {
     store.dispatch(setTerminalBusy(true));
     data_obj.data = '';
     await termWriteLn(term, '');
-
   } else if (ev.code === 'Backspace') {
-
     if (term._core.buffer.x > 8) {
       // Do not delete the prompt
       await termWrite(term, '\b \b');
       data_obj.data = data_obj.data.slice(0, data_obj.data.length - 1);
     }
-
   } else if (ev.code === 'ArrowUp') {
-
     ev.preventDefault();
     let prev_query = getPrev(history);
     let new_history = rotatePrev({ ...history });
@@ -259,9 +270,7 @@ export const handleXTermOnData = async (term, e) => {
     await termWrite(term, prev_query.query ? prev_query.query : '');
     data_obj.data = prev_query.query ? prev_query.query : '';
     store.dispatch(setHistory(new_history));
-
   } else if (ev.code === 'ArrowDown') {
-
     ev.preventDefault();
     let next_query = getNext(history);
     let new_history = rotateNext({ ...history });
@@ -269,9 +278,7 @@ export const handleXTermOnData = async (term, e) => {
     await termWrite(term, next_query.query ? next_query.query : '');
     data_obj.data = next_query.query ? next_query.query : '';
     store.dispatch(setHistory(new_history));
-
   } else if (printable) {
-
     const max_char = Math.round(
       term._core._viewportScrollArea.offsetWidth / 9.077922077922079,
     );
@@ -279,7 +286,6 @@ export const handleXTermOnData = async (term, e) => {
     await termWrite(term, e.key);
     data_obj.data += e.key;
   }
-
 };
 
 export const sendQueryResultToXTerm = async results => {
@@ -295,27 +301,25 @@ export const sendQueryResultToXTerm = async results => {
     if (latest.result.stdout) {
       const lines = latest.result.stdout.split('\n');
 
-      for(let i=0; i < lines.length; i++){
+      for (let i = 0; i < lines.length; i++) {
         if (i < 1) await moveCursorToLineStart(term);
         await termWriteLn(term, ' ' + lines[i]);
-      };
+      }
 
       await term.prompt();
       store.dispatch(setTerminalBusy(false));
       return true;
-
     } else if (latest.result.stderr) {
       const lines = latest.result.stderr.split('\n');
 
-      for(let i=0; i < lines.length; i++){
+      for (let i = 0; i < lines.length; i++) {
         if (i < 1) await moveCursorToLineStart(term);
         await termWriteLn(term, ' ' + lines[i]);
-      };
+      }
 
       await term.prompt();
       store.dispatch(setTerminalBusy(false));
       return true;
-
     }
   } else if (
     term &&
@@ -327,16 +331,15 @@ export const sendQueryResultToXTerm = async results => {
       await termWriteLn(term, 'Running script .....');
       store.dispatch(setTerminalBusy(true));
     } else if (latest.origin !== 'terminal') {
-
       const lines = latest.query.split('\n');
 
-      for(let i=0; i < lines.length; i++){
+      for (let i = 0; i < lines.length; i++) {
         if (i < 1) {
           await termWriteLn(term, lines[i]);
         } else {
           await termWriteLn(term, ' ' + lines[i]);
         }
-      };
+      }
 
       store.dispatch(setTerminalBusy(true));
     }

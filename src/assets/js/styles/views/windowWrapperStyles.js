@@ -32,26 +32,45 @@ const styles = theme => ({
     display: 'flex',
     alignItems: 'center',
   },
-  menuStyle:{
-   backgroundColor: props => theme.palette.menu.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
-   borderRadius: 0
-  },
-  menuItemStyle:{
+  menuStyle: {
+    backgroundColor: props =>
+      theme.palette.menu.background[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
     borderRadius: 0,
-    color: props => theme.palette.menu.base[props.settings.prefersDarkMode ? 'dark' : 'light'],
+  },
+  menuItemStyle: {
+    borderRadius: 0,
+    color: props =>
+      theme.palette.menu.base[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
     '& span': {
-      color: props => `${theme.palette.menu.base[props.settings.prefersDarkMode ? 'dark' : 'light']} !important`,
+      color: props =>
+        `${
+          theme.palette.menu.base[
+            props.settings.prefersDarkMode ? 'dark' : 'light'
+          ]
+        } !important`,
     },
-    '&:hover':{
-      backgroundColor: props => theme.palette.menu.hover[props.settings.prefersDarkMode ? 'dark' : 'light'],
-      color: "#FFFFFF",
+    '&:hover': {
+      backgroundColor: props =>
+        theme.palette.menu.hover[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+      color: '#FFFFFF',
       '& span': {
-        color: "#FFFFFF !important"
+        color: '#FFFFFF !important',
       },
-    }
+    },
   },
   menuDividerStyle: {
-    borderTop: props =>  `1px solid ${theme.palette.menu.base[props.settings.prefersDarkMode ? 'dark' : 'light']}50`,
+    borderTop: props =>
+      `1px solid ${
+        theme.palette.menu.base[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ]
+      }50`,
   },
   controlButtonStyle: {
     color: props =>

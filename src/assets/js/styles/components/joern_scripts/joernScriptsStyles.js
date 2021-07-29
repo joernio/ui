@@ -1,15 +1,18 @@
 const styles = theme => ({
   rootStyle: {
-    borderBottom: props=> `1px solid rgba${props.settings.prefersDarkMode ? '(0,0,0,0.2)' : '(255,255,255,0.2)'}` ,
+    borderBottom: props =>
+      `1px solid rgba${
+        props.settings.prefersDarkMode ? '(0,0,0,0.2)' : '(255,255,255,0.2)'
+      }`,
     '&:focus': {
       border: '1px solid #0090F1',
-      outline: 'none'
-    }
+      outline: 'none',
+    },
   },
   titleSectionStyle: {
     display: 'flex',
     alignItems: 'center',
-    cursor: 'pointer'
+    cursor: 'pointer',
   },
   titleStyle: {
     textTransform: 'uppercase',
@@ -25,24 +28,36 @@ const styles = theme => ({
   scriptsSectionStyle: {
     paddingLeft: '1.3em',
     overflowY: 'scroll',
-    '&::-webkit-scrollbar':{
+    '&::-webkit-scrollbar': {
       width: '12px',
-  },
-  '&::-webkit-scrollbar-track':{
-      backgroundColor: props=>theme.palette.scrollbar.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
-  },
-  
-  '&::-webkit-scrollbar-thumb':{
-      backgroundColor: props=>theme.palette.scrollbar.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
-  },
-  
-  '&:hover::-webkit-scrollbar-thumb': {
-      backgroundColor: props=>theme.palette.scrollbar.base[props.settings.prefersDarkMode ? 'dark' : 'light'],
-  },
-  
-  '&::-webkit-scrollbar-thumb:hover':{
-      backgroundColor: props=>theme.palette.scrollbar.hover[props.settings.prefersDarkMode ? 'dark' : 'light'],
-  }
+    },
+    '&::-webkit-scrollbar-track': {
+      backgroundColor: props =>
+        theme.palette.scrollbar.background[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
+
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: props =>
+        theme.palette.scrollbar.background[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
+
+    '&:hover::-webkit-scrollbar-thumb': {
+      backgroundColor: props =>
+        theme.palette.scrollbar.base[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
+
+    '&::-webkit-scrollbar-thumb:hover': {
+      backgroundColor: props =>
+        theme.palette.scrollbar.hover[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
   },
   scriptSectionStyle: {
     display: 'flex',
@@ -51,35 +66,57 @@ const styles = theme => ({
     paddingRight: '0.5em',
     cursor: 'context-menu',
     '&:hover': {
-      backgroundColor: props => theme.palette.explorer.hover[props.settings.prefersDarkMode ? 'dark' : 'light']
+      backgroundColor: props =>
+        theme.palette.explorer.hover[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
     },
     '&:focus': {
       backgroundColor: '#0090F150',
       border: '1px solid #0090F1',
-      outline: 'none'
-    }
+      outline: 'none',
+    },
   },
-  menuStyle:{
-    backgroundColor: props => theme.palette.menu.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
-    borderRadius: 0
-   },
-   menuItemStyle:{
-     borderRadius: 0,
-     color: props => theme.palette.menu.base[props.settings.prefersDarkMode ? 'dark' : 'light'],
-     '& span': {
-       color: props => `${theme.palette.menu.base[props.settings.prefersDarkMode ? 'dark' : 'light']} !important`,
-     },
-     '&:hover':{
-       backgroundColor: props => theme.palette.menu.hover[props.settings.prefersDarkMode ? 'dark' : 'light'],
-       color: "#FFFFFF",
-       '& span': {
-         color: "#FFFFFF !important"
-       },
-     }
-   },
-   menuDividerStyle: {
-     borderTop: props =>  `1px solid ${theme.palette.menu.base[props.settings.prefersDarkMode ? 'dark' : 'light']}50`,
-   },
+  menuStyle: {
+    backgroundColor: props =>
+      theme.palette.menu.background[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
+    borderRadius: 0,
+  },
+  menuItemStyle: {
+    borderRadius: 0,
+    color: props =>
+      theme.palette.menu.base[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
+    '& span': {
+      color: props =>
+        `${
+          theme.palette.menu.base[
+            props.settings.prefersDarkMode ? 'dark' : 'light'
+          ]
+        } !important`,
+    },
+    '&:hover': {
+      backgroundColor: props =>
+        theme.palette.menu.hover[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+      color: '#FFFFFF',
+      '& span': {
+        color: '#FFFFFF !important',
+      },
+    },
+  },
+  menuDividerStyle: {
+    borderTop: props =>
+      `1px solid ${
+        theme.palette.menu.base[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ]
+      }50`,
+  },
   scriptNameStyle: {
     maxWidth: '180px',
     color: props =>

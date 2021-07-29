@@ -25,6 +25,12 @@ export const setPrevResults = prev_results => {
   };
 };
 
+export const setPrevWorkspace = prev_workspace => {
+  return dispatch => {
+    dispatch(setTerminal({ prev_workspace }));
+  };
+};
+
 export const setIsMaximized = obj => {
   return dispatch => {
     dispatch(setTerminal(obj));

@@ -18,15 +18,25 @@ function EditorWindow(props) {
   };
 
   React.useEffect(async () => {
-    if (refs.editorEl.current) {
+    let is_open_project =
+      props.workspace?.projects &&
+      Object.keys(props.workspace.projects).filter(name =>
+        props.workspace.projects[name].open ? true : false,
+      );
+    is_open_project = is_open_project && is_open_project.length;
+
+    if (refs.editorEl.current && is_open_project) {
       const { openFileContent, isReadOnly } = await handleFileAddedToRecent(
         refs,
         props,
       );
       props.setOpenFileContent(openFileContent);
       props.setOpenFileIsReadOnly(isReadOnly);
+    } else {
+      props.setOpenFileContent('');
+      props.setOpenFileIsReadOnly(true);
     }
-  }, [props.files.recent]);
+  }, [props.files.recent, props.workspace.projects]);
 
   const { settings, files } = props;
 
@@ -64,6 +74,7 @@ const mapStateToProps = state => {
   return {
     files: state.files,
     query: state.query,
+    workspace: state.workspace,
     settings: state.settings,
   };
 };
