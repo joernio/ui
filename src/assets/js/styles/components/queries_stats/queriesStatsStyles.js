@@ -3,35 +3,53 @@ const styles = theme => ({
     height: '100%',
   },
   queriesStatsPopoverContentContainerStyle: {
-    backgroundColor: props=>theme.palette.navBar.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
-    color: props=>theme.palette.navBar.base[props.settings.prefersDarkMode ? 'dark' : 'light'],
+    backgroundColor: props =>
+      theme.palette.navBar.background[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
+    color: props =>
+      theme.palette.navBar.base[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
     padding: '0.4em',
     width: '300px',
     maxHeight: '50vh',
     overflowY: 'scroll',
-  
-  '&::-webkit-scrollbar':{
+
+    '&::-webkit-scrollbar': {
       width: '12px',
-  },
-  '&::-webkit-scrollbar-track':{
-      backgroundColor: props=>theme.palette.scrollbar.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
-  },
-  
-  '&::-webkit-scrollbar-thumb':{
-      backgroundColor: props=>theme.palette.scrollbar.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
-  },
-  
-  '&:hover::-webkit-scrollbar-thumb': {
-      backgroundColor: props=>theme.palette.scrollbar.base[props.settings.prefersDarkMode ? 'dark' : 'light'],
+    },
+    '&::-webkit-scrollbar-track': {
+      backgroundColor: props =>
+        theme.palette.scrollbar.background[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
+
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: props =>
+        theme.palette.scrollbar.background[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
+
+    '&:hover::-webkit-scrollbar-thumb': {
+      backgroundColor: props =>
+        theme.palette.scrollbar.base[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
       transition: theme.transitions.create('background-color', {
         easing: theme.transitions.easing.linear,
         duration: 1000,
       }),
-  },
-  
-  '&::-webkit-scrollbar-thumb:hover':{
-      backgroundColor: props=>theme.palette.scrollbar.hover[props.settings.prefersDarkMode ? 'dark' : 'light'],
-  }
+    },
+
+    '&::-webkit-scrollbar-thumb:hover': {
+      backgroundColor: props =>
+        theme.palette.scrollbar.hover[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
   },
   queriesStatsSectionStyle: {
     display: 'flex',
@@ -58,15 +76,27 @@ const styles = theme => ({
   },
   toolTipStyle: {
     '& .bp3-popover2-content': {
-      backgroundColor: props=>theme.palette.navBar.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
+      backgroundColor: props =>
+        theme.palette.navBar.background[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
     },
     '& .bp3-popover2-arrow-fill': {
-      fill: props=>theme.palette.navBar.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
+      fill: props =>
+        theme.palette.navBar.background[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
     },
   },
   toolTipTextStyle: {
-    backgroundColor: props=>theme.palette.navBar.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
-    color: props=>theme.palette.navBar.base[props.settings.prefersDarkMode ? 'dark' : 'light'],
+    backgroundColor: props =>
+      theme.palette.navBar.background[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
+    color: props =>
+      theme.palette.navBar.base[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
   },
   queriesStatsQueryPreviewStyle: {
     maxWidth: '100px',

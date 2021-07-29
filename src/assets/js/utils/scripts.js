@@ -20,6 +20,7 @@ import { setRecent } from '../../../store/actions/filesActions';
 import { windowActionApi, selectDirApi } from './ipcRenderer';
 import { store } from '../../../store/configureStore';
 import { mouseTrapGlobalBindig } from './extensions';
+import workspace from '../../../store/reducers/workSpaceReducers';
 
 mouseTrapGlobalBindig(Mousetrap);
 
@@ -75,11 +76,11 @@ export const forNodeAtPath = (nodes, path, callback) => {
 };
 
 export const performPushResult = (result, results) => {
-  results = {...results};
+  results = { ...results };
   const key = Object.keys(result)[0];
   const keys = Object.keys(results);
-  
-  if(keys.length >= 500) delete results[keys[0]];
+
+  if (keys.length >= 500) delete results[keys[0]];
 
   results[key] = result[key];
   return results;
@@ -148,51 +149,46 @@ const performPostQuery = (store, result) => {
 };
 
 const setQueryResult = (data, store, key, results) => {
-
-  if(results[key].t_0 && !results[key].t_1){
+  if (results[key].t_0 && !results[key].t_1) {
     results[key].t_1 = performance.now();
   }
 
   if (!results[key].result.stdout && !results[key].result.stderr) {
-      if(!data){
-           results[key]['result']['stderr'] = "query failed";
-      }else{
-            if (data.stdout) {
-              results[key]['result']['stdout'] = data.stdout;
-            };
-        
-            if (data.stderr) {
-              results[key]['result']['stderr'] = data.stderr;
-            };
+    if (!data) {
+      results[key]['result']['stderr'] = 'query failed';
+    } else {
+      if (data.stdout) {
+        results[key]['result']['stdout'] = data.stdout;
       }
 
-      store.dispatch(setResults(results));
+      if (data.stderr) {
+        results[key]['result']['stderr'] = data.stderr;
+      }
+    }
+
+    store.dispatch(setResults(results));
   } else if (
     results[key].query.startsWith(manCommands.switchWorkspace) ||
     results[key].query === 'project'
   ) {
-
-     
-      if(!data && !results[key].result.stdout && !results[key].result.stderr){
-           results[key]['result']['stderr'] = "query failed";
-      }else{
-          if (data.stdout) {
-            const projects = parseProjects(data);
-            results[key]['workspace'] = { projects };
-          }
+    if (!data && !results[key].result.stdout && !results[key].result.stderr) {
+      results[key]['result']['stderr'] = 'query failed';
+    } else {
+      if (data.stdout) {
+        const projects = parseProjects(data);
+        results[key]['workspace'] = { projects };
       }
+    }
 
-      store.dispatch(setResults(results));
-
+    store.dispatch(setResults(results));
   } else {
+    if (!data && !results[key].result.stdout && !results[key].result.stderr) {
+      results[key]['result']['stderr'] = 'query failed';
+    } else {
+      results[key]['project'] = parseProject(data);
+    }
 
-        if(!data && !results[key].result.stdout && !results[key].result.stderr){
-             results[key]['result']['stderr'] = "query failed";
-        }else{
-             results[key]['project'] = parseProject(data);
-        }
-
-        store.dispatch(setResults(results));
+    store.dispatch(setResults(results));
   }
 };
 
@@ -212,22 +208,33 @@ export const handleWebSocketResponse = data => {
   });
 };
 
+export const getWorkspace = result => {
+  result = JSON.parse(JSON.stringify(result));
+
+  //  if(result.workspace){
+  //    return workspace
+  //  }else if(result.query ==="workspace"){
+  //    workspace = parseProjects(result.result);
+  //    return workspace;
+  //  }
+};
+
 export const handleScrollTop = e => {
   return e.target.scrollTop > 0 ? { scrolled: true } : { scrolled: false };
 };
 
-export const openFile = (path) => {
+export const openFile = path => {
   if (path) {
-    const files = {...store.getState().files};
+    const files = { ...store.getState().files };
     delete files.recent[path];
     files.recent[path] = true;
     store.dispatch(setRecent(files));
   }
 };
 
-export const closeFile = (path) => {
+export const closeFile = path => {
   if (path) {
-    const files = {...store.getState().files};
+    const files = { ...store.getState().files };
     delete files.recent[path];
     store.dispatch(setRecent(files));
   }
@@ -278,16 +285,16 @@ export const saveFile = path => {
           fs.writeFile(path, file_content, err => {
             if (!err) {
               handleSetToast({
-                  icon: 'info-sign',
-                  intent: 'success',
-                  message: 'saved successfully',
-                })
+                icon: 'info-sign',
+                intent: 'success',
+                message: 'saved successfully',
+              });
             } else {
               handleSetToast({
-                  icon: 'warning-sign',
-                  intent: 'danger',
-                  message: 'error saving file',
-                })
+                icon: 'warning-sign',
+                intent: 'danger',
+                message: 'error saving file',
+              });
             }
           });
         })
@@ -312,10 +319,10 @@ export const saveFile = path => {
             });
           }).catch(() => {
             handleSetToast({
-                icon: 'warning-sign',
-                intent: 'danger',
-                message: "couldn't create file",
-              })
+              icon: 'warning-sign',
+              intent: 'danger',
+              message: "couldn't create file",
+            });
           });
 
           if (file && !file.canceled) {
@@ -330,16 +337,16 @@ export const saveFile = path => {
               fs.writeFile(file.filePath.toString(), file_content, err => {
                 if (err) {
                   handleSetToast({
-                      icon: 'warning-sign',
-                      intent: 'danger',
-                      message: "can't save to file",
-                    })
+                    icon: 'warning-sign',
+                    intent: 'danger',
+                    message: "can't save to file",
+                  });
                 } else {
                   handleSetToast({
-                      icon: 'info-sign',
-                      intent: 'success',
-                      message: 'saved successfully',
-                    });
+                    icon: 'info-sign',
+                    intent: 'success',
+                    message: 'saved successfully',
+                  });
 
                   delete files.recent[path];
 
@@ -351,10 +358,10 @@ export const saveFile = path => {
               });
             } else {
               handleSetToast({
-                  icon: 'warning-sign',
-                  intent: 'danger',
-                  message: 'can only save .sc files',
-                })
+                icon: 'warning-sign',
+                intent: 'danger',
+                message: 'can only save .sc files',
+              });
             }
           } else {
             console.log('file creation was cancelled');
@@ -362,10 +369,10 @@ export const saveFile = path => {
         });
   } else {
     handleSetToast({
-        icon: 'warning-sign',
-        intent: 'danger',
-        message: 'can only save .sc files',
-      });
+      icon: 'warning-sign',
+      intent: 'danger',
+      message: 'can only save .sc files',
+    });
   }
 };
 
@@ -394,36 +401,36 @@ export const deleteFile = path => {
           fs.unlink(path, err => {
             if (!err) {
               handleSetToast({
-                  icon: 'info-sign',
-                  intent: 'success',
-                  message: 'file deleted successfully',
-                });
+                icon: 'info-sign',
+                intent: 'success',
+                message: 'file deleted successfully',
+              });
 
               delete files.recent[path];
               store.dispatch(setRecent(files.recent));
               store.dispatch(enQueueQuery(addWorkSpaceQueryToQueue()));
             } else {
-        handleSetToast({
-                  icon: 'warning-sign',
-                  intent: 'danger',
-                  message: 'file cannot be deleted',
-                });
+              handleSetToast({
+                icon: 'warning-sign',
+                intent: 'danger',
+                message: 'file cannot be deleted',
+              });
             }
           });
         })
         .catch(() => {
           handleSetToast({
-              icon: 'warning-sign',
-              intent: 'danger',
-              message: 'file not found',
-            });
+            icon: 'warning-sign',
+            intent: 'danger',
+            message: 'file not found',
+          });
         });
   } else {
     handleSetToast({
-        icon: 'warning-sign',
-        intent: 'danger',
-        message: 'can only delete .sc files',
-      });
+      icon: 'warning-sign',
+      intent: 'danger',
+      message: 'can only delete .sc files',
+    });
   }
 };
 
@@ -643,18 +650,19 @@ export const addWorkSpaceQueryToQueue = () => {
 };
 
 export const contructQueryWithPath = async type => {
-
   selectDirApi.selectDir(type === 'importCode' ? 'select-dir' : 'select-file');
 
   let path = await new Promise((resolve, reject) => {
-    selectDirApi.registerListener(type === 'importCode' ?
-          'selected-dir' : 'selected-file', value => {
-          if (value) {
-            resolve(value);
-          } else {
-            reject();
-          }
-        });
+    selectDirApi.registerListener(
+      type === 'importCode' ? 'selected-dir' : 'selected-file',
+      value => {
+        if (value) {
+          resolve(value);
+        } else {
+          reject();
+        }
+      },
+    );
   }).catch(() => {
     console.log("can't select project path");
   });
@@ -696,7 +704,6 @@ export const contructQueryWithPath = async type => {
 };
 
 export const handleSwitchWorkspace = async () => {
-
   selectDirApi.selectDir('select-dir');
 
   const path = await new Promise((resolve, reject) => {
@@ -726,30 +733,30 @@ export const handleAPIQueryError = err => {
   if (err === apiErrorStrings.ws_not_connected) {
     const ws_url = store.getState().settings.websocket.url;
     handleSetToast({
-        action: {
-          onClick: () => {
-            wsReconnectToServer(ws_url);
-            wsReconnectToServer(ws_url); //hack: somehow calling wsReconnectToServer once doesn't connect to the websocket
-          },
-          text: 'Connect Now',
+      action: {
+        onClick: () => {
+          wsReconnectToServer(ws_url);
+          wsReconnectToServer(ws_url); //hack: somehow calling wsReconnectToServer once doesn't connect to the websocket
         },
-        icon: 'warning-sign',
-        intent: 'danger',
-        message: 'Not connected to websocket',
-      });
+        text: 'Connect Now',
+      },
+      icon: 'warning-sign',
+      intent: 'danger',
+      message: 'Not connected to websocket',
+    });
   } else if (err.message.includes('401')) {
     handleSetToast({
-        icon: 'warning-sign',
-        intent: 'danger',
-        message: 'authentication error. Your server requires authentication',
-      });
-  } else if(err.message === apiErrorStrings.no_result_for_uuid){
+      icon: 'warning-sign',
+      intent: 'danger',
+      message: 'authentication error. Your server requires authentication',
+    });
+  } else if (err.message === apiErrorStrings.no_result_for_uuid) {
     handleSetToast({
       icon: 'warning-sign',
       intent: 'danger',
       message: `${err.message}. Ensure that no other program is subscribed to the websocket`,
     });
-  };
+  }
 
   store.dispatch(resetQueue({}));
 };
@@ -765,11 +772,8 @@ export const removeShortcuts = () => {
 };
 
 export const handleSetToast = toast => {
-  store.dispatch(
-    setToast(toast),
-  );
+  store.dispatch(setToast(toast));
 };
-
 
 export const nFormatter = num => {
   if (num >= 1000000000) {

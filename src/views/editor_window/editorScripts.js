@@ -5,7 +5,7 @@ import { Range } from 'monaco-editor';
 let delta_decorations = [];
 
 export const handleFileAddedToRecent = async (refs, props) => {
-  let path = props?.files?.recent ? {...props.files.recent} : null;
+  let path = props?.files?.recent ? { ...props.files.recent } : null;
   path = path && Object.keys(path);
   path = path ? path.pop() : null;
 
@@ -16,12 +16,12 @@ export const handleFileAddedToRecent = async (refs, props) => {
       const { startLine, endLine } = shouldGoToLine(props);
 
       setTimeout(() => {
-          goToLine(refs.editorEl.current.editor, startLine);
-          highlightRange(refs.editorEl.current.editor, {
-            startLine,
-            endLine,
-          });
-        }, 1000);
+        goToLine(refs.editorEl.current.editor, startLine);
+        highlightRange(refs.editorEl.current.editor, {
+          startLine,
+          endLine,
+        });
+      }, 1000);
 
       return { openFileContent: data, isReadOnly: readOnly };
     })
@@ -51,23 +51,22 @@ export const highlightRange = (editor, range) => {
   }
 
   if (rangeArr.length) {
-    delta_decorations = editor.deltaDecorations(
-      delta_decorations,
-      [
-        {
-          range: new Range(...rangeArr),
-          options: range.startLine || range.endLine ? {
-            isWholeLine: true,
-            inlineClassName: 'editor-line-highlight',
-          }:{},
-        },
-      ],
-    );
+    delta_decorations = editor.deltaDecorations(delta_decorations, [
+      {
+        range: new Range(...rangeArr),
+        options:
+          range.startLine || range.endLine
+            ? {
+                isWholeLine: true,
+                inlineClassName: 'editor-line-highlight',
+              }
+            : {},
+      },
+    ]);
   }
 };
 
 export const editorDidMount = (editor, monaco) => {
-
   editor.focus();
   monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
     noSemanticValidation: true,
@@ -135,7 +134,7 @@ const isLineNumberInQueryResult = results => {
 };
 
 export const shouldGoToLine = props => {
-  let { recent: recent_file } = {...props.files};
+  let { recent: recent_file } = { ...props.files };
   recent_file = Object.keys(recent_file)?.pop();
 
   const { results } = props.query;

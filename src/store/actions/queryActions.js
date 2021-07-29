@@ -86,7 +86,6 @@ export const runQuery = query_string => {
 
 export const getQueryResult = uuid => {
   return () => {
-
     // if(store.getState().query.results[uuid]){//if result already in query results, don't attempt to fetch result again;
     //   const result = store.getState().query.results[uuid];
     //   console.log("inside getQueryResult: result is: ", result);
@@ -99,8 +98,8 @@ export const getQueryResult = uuid => {
       .then(data => {
         if (data && data.uuid) {
           return data;
-        } else if(data && data.err){
-           throw new Error(data.err);
+        } else if (data && data.err) {
+          throw new Error(data.err);
         } else {
           const err = Object.keys(data)
             .map(key => data[key])

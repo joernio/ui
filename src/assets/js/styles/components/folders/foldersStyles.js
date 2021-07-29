@@ -1,14 +1,17 @@
 const styles = theme => ({
   rootStyle: {
-    borderTop: props=> `1px solid rgba${props.settings.prefersDarkMode ? '(255,255,255,0.2)' : '(0,0,0,0.2)'}` ,
+    borderTop: props =>
+      `1px solid rgba${
+        props.settings.prefersDarkMode ? '(255,255,255,0.2)' : '(0,0,0,0.2)'
+      }`,
     overflowY: 'hidden',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
   },
   titleSectionStyle: {
     display: 'flex',
     alignItems: 'center',
-    cursor: 'pointer'
+    cursor: 'pointer',
   },
   titleStyle: {
     textTransform: 'uppercase',
@@ -23,24 +26,36 @@ const styles = theme => ({
   },
   foldersSectionStyle: {
     overflowY: 'scroll',
-    '&::-webkit-scrollbar':{
+    '&::-webkit-scrollbar': {
       width: '12px',
-  },
-  '&::-webkit-scrollbar-track':{
-      backgroundColor: props=>theme.palette.scrollbar.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
-  },
-  
-  '&::-webkit-scrollbar-thumb':{
-      backgroundColor: props=>theme.palette.scrollbar.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
-  },
-  
-  '&:hover::-webkit-scrollbar-thumb': {
-      backgroundColor: props=>theme.palette.scrollbar.base[props.settings.prefersDarkMode ? 'dark' : 'light'],
-  },
-  
-  '&::-webkit-scrollbar-thumb:hover':{
-      backgroundColor: props=>theme.palette.scrollbar.hover[props.settings.prefersDarkMode ? 'dark' : 'light'],
-  }
+    },
+    '&::-webkit-scrollbar-track': {
+      backgroundColor: props =>
+        theme.palette.scrollbar.background[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
+
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: props =>
+        theme.palette.scrollbar.background[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
+
+    '&:hover::-webkit-scrollbar-thumb': {
+      backgroundColor: props =>
+        theme.palette.scrollbar.base[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
+
+    '&::-webkit-scrollbar-thumb:hover': {
+      backgroundColor: props =>
+        theme.palette.scrollbar.hover[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
   },
   scrolledStyle: {
     boxShadow: props =>

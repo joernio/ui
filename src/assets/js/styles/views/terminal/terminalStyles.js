@@ -20,20 +20,29 @@ const styles = theme => ({
     bottom: 0,
     '& .xterm .xterm-viewport': {
       overflowY: 'scroll',
-      '&::-webkit-scrollbar':{
+      '&::-webkit-scrollbar': {
         width: '12px',
-    },
-    '&::-webkit-scrollbar-track':{
-        backgroundColor: props=>theme.palette.scrollbar.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
-    },
-    
-    '&::-webkit-scrollbar-thumb':{
-      backgroundColor: props=>theme.palette.scrollbar.base[props.settings.prefersDarkMode ? 'dark' : 'light'],
-    },
-    
-    '&::-webkit-scrollbar-thumb:hover':{
-        backgroundColor: props=>theme.palette.scrollbar.hover[props.settings.prefersDarkMode ? 'dark' : 'light'],
-    }
+      },
+      '&::-webkit-scrollbar-track': {
+        backgroundColor: props =>
+          theme.palette.scrollbar.background[
+            props.settings.prefersDarkMode ? 'dark' : 'light'
+          ],
+      },
+
+      '&::-webkit-scrollbar-thumb': {
+        backgroundColor: props =>
+          theme.palette.scrollbar.base[
+            props.settings.prefersDarkMode ? 'dark' : 'light'
+          ],
+      },
+
+      '&::-webkit-scrollbar-thumb:hover': {
+        backgroundColor: props =>
+          theme.palette.scrollbar.hover[
+            props.settings.prefersDarkMode ? 'dark' : 'light'
+          ],
+      },
     },
   },
   terminalOpen: {

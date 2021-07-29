@@ -1,16 +1,22 @@
 const styles = theme => ({
   rootStyle: {
-    borderTop: props=> `1px solid rgba${props.settings.prefersDarkMode ? '(255,255,255,0.2)' : '(0,0,0,0.2)'}` ,
-    borderBottom: props=> `1px solid rgba${props.settings.prefersDarkMode ? '(0,0,0,0.2)' : '(255,255,255,0.2)'}` ,
+    borderTop: props =>
+      `1px solid rgba${
+        props.settings.prefersDarkMode ? '(255,255,255,0.2)' : '(0,0,0,0.2)'
+      }`,
+    borderBottom: props =>
+      `1px solid rgba${
+        props.settings.prefersDarkMode ? '(0,0,0,0.2)' : '(255,255,255,0.2)'
+      }`,
     '&:focus': {
       border: '1px solid #0090F1',
-      outline: 'none'
-    }
+      outline: 'none',
+    },
   },
   titleSectionStyle: {
     display: 'flex',
     alignItems: 'center',
-    cursor: 'pointer'
+    cursor: 'pointer',
   },
   titleStyle: {
     textTransform: 'uppercase',
@@ -26,39 +32,54 @@ const styles = theme => ({
   filesSectionStyle: {
     paddingLeft: '1.3em',
     overflowY: 'scroll',
-    '&::-webkit-scrollbar':{
+    '&::-webkit-scrollbar': {
       width: '12px',
-  },
-  '&::-webkit-scrollbar-track':{
-      backgroundColor: props=>theme.palette.scrollbar.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
-  },
-  
-  '&::-webkit-scrollbar-thumb':{
-      backgroundColor: props=>theme.palette.scrollbar.background[props.settings.prefersDarkMode ? 'dark' : 'light'],
-  },
-  
-  '&:hover::-webkit-scrollbar-thumb': {
-      backgroundColor: props=>theme.palette.scrollbar.base[props.settings.prefersDarkMode ? 'dark' : 'light'],
-  },
-  
-  '&::-webkit-scrollbar-thumb:hover':{
-      backgroundColor: props=>theme.palette.scrollbar.hover[props.settings.prefersDarkMode ? 'dark' : 'light'],
-  }
+    },
+    '&::-webkit-scrollbar-track': {
+      backgroundColor: props =>
+        theme.palette.scrollbar.background[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
+
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: props =>
+        theme.palette.scrollbar.background[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
+
+    '&:hover::-webkit-scrollbar-thumb': {
+      backgroundColor: props =>
+        theme.palette.scrollbar.base[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
+
+    '&::-webkit-scrollbar-thumb:hover': {
+      backgroundColor: props =>
+        theme.palette.scrollbar.hover[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
   },
   fileSectionStyle: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingRight: '0.5em',
-    cursor: "pointer",
+    cursor: 'pointer',
     '&:hover': {
-      backgroundColor: props => theme.palette.explorer.hover[props.settings.prefersDarkMode ? 'dark' : 'light']
+      backgroundColor: props =>
+        theme.palette.explorer.hover[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
     },
     '&:focus': {
       backgroundColor: '#0090F150',
       border: '1px solid #0090F1',
-      outline: 'none'
-    }
+      outline: 'none',
+    },
   },
   fileNameStyle: {
     maxWidth: '180px',

@@ -1,5 +1,6 @@
 const { BrowserWindow, ipcMain, Notification, dialog } = require('electron');
 const initWebSocket = require('./webSocket');
+const { handleClipBoardActivity } = require('./utils');
 
 const getWindow = event => {
   const window = BrowserWindow.fromId(event.frameId);
@@ -91,9 +92,19 @@ const initIpcMain = () => {
     window.webContents.send('created-file', file);
   });
 
-  ipcMain.on('set-open-file-name', (event, filename)=> {
+  ipcMain.on('set-open-file-name', (event, filename) => {
     const window = getWindow(event);
-    window.setTitle(filename ? `${filename} - Joern Client`: 'Joern Client');
+    window.setTitle(filename ? `${filename} - Joern Client` : 'Joern Client');
+  });
+
+  ipcMain.on('copy', (event, str) => {
+    handleClipBoardActivity('copy', str);
+  });
+
+  ipcMain.on('paste', event => {
+    const window = getWindow(event);
+    const clip_board_value = handleClipBoardActivity('paste');
+    window.webContents.send('pasted-from-clipboard', clip_board_value);
   });
 };
 

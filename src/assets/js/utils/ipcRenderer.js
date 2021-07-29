@@ -16,6 +16,15 @@ export const windowActionApi = {
   disconnectFromWebSocketAction: () => {
     ipc.send('websocket-disconnect');
   },
+  copyToClipBoard: str => {
+    ipc.send('copy', str);
+  },
+  pasteFromClipBoard: () => {
+    return ipc.send('paste');
+  },
+  registerPasteFromClipBoardListener: callback => {
+    ipc.once('pasted-from-clipboard', (e, str) => callback(str));
+  },
 };
 
 export const windowInfoApi = {

@@ -51,12 +51,11 @@ export const expandOrCollapseFolder = (nodePath, bool) => {
   };
 };
 
-
 export const setIsSelected = nodePath => {
   return dispatch => {
     const updatedFolders = store.getState().files.folders;
 
-    forEachNode(updatedFolders, node =>{
+    forEachNode(updatedFolders, node => {
       node.className = 'folder';
     });
 
@@ -65,6 +64,5 @@ export const setIsSelected = nodePath => {
     });
 
     dispatch(setFolders(updatedFolders));
-  }
-
+  };
 };

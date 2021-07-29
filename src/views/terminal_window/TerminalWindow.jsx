@@ -7,7 +7,6 @@ import { Icon } from '@blueprintjs/core';
 import * as terminalActions from '../../store/actions/terminalActions';
 import * as queryActions from '../../store/actions/queryActions';
 import styles from '../../assets/js/styles/views/terminal/terminalStyles';
-import { usePrevious } from '../../assets/js/utils/hooks';
 import {
   initResize,
   throttle,
@@ -44,12 +43,15 @@ function TerminalWindow(props) {
     props.setTerm(await initXterm(props.settings.prefersDarkMode));
   }, []);
 
-  const prev_workspace = usePrevious(
-    props.workspace ? JSON.parse(JSON.stringify(props.workspace)) : {},
-  );
-
   React.useEffect(() => {
-    props.setIsMaximized(handleEmptyWorkspace(props.workspace, prev_workspace));
+    props.setIsMaximized(
+      handleEmptyWorkspace(props.workspace, props.terminal.prev_workspace),
+    );
+    props.setPrevWorkspace({
+      prev_workspace: props.workspace
+        ? JSON.parse(JSON.stringify(props.workspace))
+        : {},
+    });
   }, [props.workspace]);
 
   React.useEffect(() => {
@@ -185,6 +187,9 @@ const mapDispatchToProps = dispatch => {
     },
     setPrevResults: prev_results => {
       return dispatch(terminalActions.setPrevResults(prev_results));
+    },
+    setPrevWorkspace: prev_workspace => {
+      return dispatch(terminalActions.setPrevWorkspace(prev_workspace));
     },
     setIsMaximized: obj => {
       return dispatch(terminalActions.setIsMaximized(obj));
