@@ -2,6 +2,7 @@ import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import { enQueueQuery } from '../../store/actions/queryActions';
 import { windowActionApi } from '../../assets/js/utils/ipcRenderer';
+import { printable } from '../../assets/js/utils/defaultVariables';
 import {
   setHistory,
   setTerminalBusy,
@@ -203,7 +204,7 @@ export const resizeHandler = (terminalHeight, diff, props, window) => {
   }
 };
 
-export const handleQuery = queue => {
+export const handleAddQueryToHistory = queue => {
   let { history } = store.getState().terminal;
   history = {
     prev_queries: { ...history.prev_queries },
@@ -231,7 +232,7 @@ export const handleQuery = queue => {
 
 export const handleXTermOnData = async (term, e) => {
   const ev = e.domEvent;
-  const printable = !ev.altKey && !ev.ctrlKey && !ev.metaKey;
+  const not_combination_keys = !ev.altKey && !ev.ctrlKey && !ev.metaKey;
   const { history, busy } = store.getState().terminal;
 
   if (ev.code === 'KeyC' && ev.ctrlKey) {
@@ -278,7 +279,7 @@ export const handleXTermOnData = async (term, e) => {
     await termWrite(term, next_query.query ? next_query.query : '');
     data_obj.data = next_query.query ? next_query.query : '';
     store.dispatch(setHistory(new_history));
-  } else if (printable) {
+  } else if (not_combination_keys && printable[e.key]) {
     const max_char = Math.round(
       term._core._viewportScrollArea.offsetWidth / 9.077922077922079,
     );

@@ -21,7 +21,7 @@ import {
   openXTerm,
   sendQueryResultToXTerm,
   handleTerminalMaximizeToggle,
-  handleQuery,
+  handleAddQueryToHistory,
   handleEmptyWorkspace,
 } from './terminalWindowScripts';
 
@@ -93,7 +93,7 @@ function TerminalWindow(props) {
 
   React.useEffect(() => {
     if (props.query?.queue && Object.keys(props.query.queue).length) {
-      handleQuery(props.query.queue);
+      handleAddQueryToHistory(props.query.queue);
     }
   }, [props.query.queue]);
 
