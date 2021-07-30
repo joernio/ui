@@ -9,31 +9,23 @@ import {
 } from '../../store/actions/terminalActions';
 import { store } from '../../store/configureStore';
 
-import {
-  joernWelcomeScreen,
-  joernDefaultPrompt,
-} from '../../assets/js/utils/defaultVariables';
+import { terminalVariables as TV } from '../../assets/js/utils/defaultVariables';
 
-const data_obj = { data: '' };
+const data_obj = { data: '', cursorPosition: 0 };
 
-export const moveCursorToLineStart = async term => {
-  for (let i = 0; i <= 9; i++) {
-    await termWrite(term, '\b \b');
+const updateData = str => {
+  if (str) {
+    data_obj.data = `${data_obj.data.slice(
+      0,
+      data_obj.cursorPosition,
+    )}${str}${data_obj.data.slice(data_obj.cursorPosition)}`;
+  } else {
+    data_obj.data = '';
   }
 };
 
-export const clearLine = async term => {
-  await new Promise(resolve => {
-    const clearLineSync = term => {
-      if (term._core.buffer.x > 8) {
-        term.write('\b \b', () => clearLineSync(term));
-      } else {
-        resolve();
-      }
-    };
-
-    clearLineSync(term);
-  });
+const updateCursorPosition = value => {
+  data_obj.cursorPosition = value;
 };
 
 export const handleTerminalMaximizeToggle = bool => {
@@ -62,7 +54,7 @@ export const handleEmptyWorkspace = (workspace, prev_workspace) => {
 export const openXTerm = (terminalRef, term) => {
   if (term) {
     term.onKey(async e => {
-      await handleXTermOnData(term, e);
+      await handleXTermOnKey(term, e);
     });
 
     term.open(terminalRef.current);
@@ -150,6 +142,191 @@ export const initFitAddon = term => {
   }
 };
 
+export const handleCopyToClipBoard = str => {
+  windowActionApi.copyToClipBoard(str);
+};
+
+export const handlePasteFromClipBoard = term => {
+  windowActionApi.pasteFromClipBoard();
+  windowActionApi.registerPasteFromClipBoardListener(async str => {
+    updateData(str);
+    updateCursorPosition(data_obj.cursorPosition + str.length);
+    await termWrite(
+      term,
+      TV.clearLine +
+        TV.joernDefaultPrompt +
+        data_obj.data +
+        TV.carriageReturn +
+        TV.cursorPositionFromStart
+          .split('<n>')
+          .join(8 + data_obj.cursorPosition),
+    );
+  });
+};
+
+export const handleEnter = async term => {
+  const query = {
+    query: data_obj.data,
+    origin: 'terminal',
+    ignore: false,
+  };
+  store.dispatch(enQueueQuery(query));
+  store.dispatch(setTerminalBusy(true));
+  updateData(null);
+  updateCursorPosition(0);
+  await termWriteLn(term, '');
+};
+
+export const handleBackspace = async term => {
+  const data = data_obj.data;
+  const cursorPosition = data_obj.cursorPosition;
+  updateData(null);
+  updateCursorPosition(0);
+  updateData(
+    data.slice(0, cursorPosition > 0 ? cursorPosition - 1 : 0) +
+      data.slice(cursorPosition),
+  );
+  updateCursorPosition(cursorPosition > 0 ? cursorPosition - 1 : 0);
+  await termWrite(
+    term,
+    TV.clearLine +
+      TV.joernDefaultPrompt +
+      data_obj.data +
+      TV.carriageReturn +
+      TV.cursorPositionFromStart.split('<n>').join(8 + data_obj.cursorPosition),
+  );
+};
+
+export const handleArrowUp = async (term, history, ev) => {
+  ev.preventDefault();
+  let prev_query = getPrev(history);
+  let new_history = rotatePrev({ ...history });
+  updateData(null);
+  updateCursorPosition(0);
+  updateData(prev_query.query ? prev_query.query : null);
+  updateCursorPosition(
+    prev_query.query ? data_obj.cursorPosition + prev_query.query.length : 0,
+  );
+  await termWrite(
+    term,
+    TV.clearLine +
+      TV.joernDefaultPrompt +
+      data_obj.data +
+      TV.carriageReturn +
+      TV.cursorPositionFromStart.split('<n>').join(8 + data_obj.cursorPosition),
+  );
+  store.dispatch(setHistory(new_history));
+};
+
+export const handleArrowDown = async (term, history, ev) => {
+  ev.preventDefault();
+  let next_query = getNext(history);
+  let new_history = rotateNext({ ...history });
+  updateData(null);
+  updateCursorPosition(0);
+  updateData(next_query.query ? next_query.query : null);
+  updateCursorPosition(
+    next_query.query ? data_obj.cursorPosition + next_query.query.length : 0,
+  );
+  await termWrite(
+    term,
+    TV.clearLine +
+      TV.joernDefaultPrompt +
+      data_obj.data +
+      TV.carriageReturn +
+      TV.cursorPositionFromStart.split('<n>').join(8 + data_obj.cursorPosition),
+  );
+  store.dispatch(setHistory(new_history));
+};
+
+export const handleArrowLeft = async term => {
+  updateCursorPosition(
+    data_obj.cursorPosition > 0 ? data_obj.cursorPosition - 1 : 0,
+  );
+  await termWrite(
+    term,
+    TV.clearLine +
+      TV.joernDefaultPrompt +
+      data_obj.data +
+      TV.carriageReturn +
+      TV.cursorPositionFromStart.split('<n>').join(8 + data_obj.cursorPosition),
+  );
+};
+
+export const handleArrowRight = async term => {
+  updateCursorPosition(
+    data_obj.cursorPosition < data_obj.data.length
+      ? data_obj.cursorPosition + 1
+      : data_obj.data.length,
+  );
+  await termWrite(
+    term,
+    TV.clearLine +
+      TV.joernDefaultPrompt +
+      data_obj.data +
+      TV.carriageReturn +
+      TV.cursorPositionFromStart.split('<n>').join(8 + data_obj.cursorPosition),
+  );
+};
+
+export const handlePrintable = async (term, e) => {
+  updateData(e.key);
+  updateCursorPosition(data_obj.cursorPosition + e.key.length);
+  await termWrite(
+    term,
+    TV.clearLine +
+      TV.joernDefaultPrompt +
+      data_obj.data +
+      TV.carriageReturn +
+      TV.cursorPositionFromStart.split('<n>').join(8 + data_obj.cursorPosition),
+  );
+};
+
+export const handleWriteQueryResult = async (term, latest) => {
+  updateData(null);
+  updateCursorPosition(0);
+
+  const res_type = latest.result.stdout
+    ? 'stdout'
+    : latest.result.stderr
+    ? 'stderr'
+    : null;
+  const lines = res_type ? latest.result[res_type].split('\n') : [];
+
+  for (let i = 0; i < lines.length; i++) {
+    await termWriteLn(term, TV.clearLine + ' ' + lines[i]);
+  }
+
+  await term.prompt();
+  store.dispatch(setTerminalBusy(false));
+  return true;
+};
+
+export const handleWriteScriptQuery = async term => {
+  updateData(null);
+  updateCursorPosition(0);
+
+  await termWriteLn(term, TV.clearLine + ' Running script .....');
+  store.dispatch(setTerminalBusy(true));
+};
+
+export const handleWriteQuery = async (term, latest) => {
+  updateData(null);
+  updateCursorPosition(0);
+
+  const lines = latest.query.split('\n');
+
+  for (let i = 0; i < lines.length; i++) {
+    if (i < 1) {
+      await termWriteLn(term, TV.clearLine + TV.joernDefaultPrompt + lines[i]);
+    } else {
+      await termWriteLn(term, TV.clearLine + ' ' + lines[i]);
+    }
+  }
+
+  store.dispatch(setTerminalBusy(true));
+};
+
 export const initXterm = async prefersDarkMode => {
   const term = new Terminal({
     cursorBlink: true,
@@ -161,13 +338,13 @@ export const initXterm = async prefersDarkMode => {
     },
   });
 
-  let shellprompt = joernDefaultPrompt;
+  let shellprompt = TV.carriageReturn + TV.newLine + TV.joernDefaultPrompt;
 
   term.prompt = async () => {
     await termWrite(term, shellprompt);
   };
 
-  await termWrite(term, joernWelcomeScreen);
+  await termWrite(term, TV.joernWelcomeScreen);
   await term.prompt();
 
   return term;
@@ -230,62 +407,35 @@ export const handleAddQueryToHistory = queue => {
   }
 };
 
-export const handleXTermOnData = async (term, e) => {
+export const handleXTermOnKey = async (term, e) => {
   const ev = e.domEvent;
   const not_combination_keys = !ev.altKey && !ev.ctrlKey && !ev.metaKey;
   const { history, busy } = store.getState().terminal;
 
   if (ev.code === 'KeyC' && ev.ctrlKey) {
-    windowActionApi.copyToClipBoard(term.getSelection());
-  } else if (ev.code === 'KeyV' && ev.ctrlKey && !busy) {
-    windowActionApi.pasteFromClipBoard();
-    windowActionApi.registerPasteFromClipBoardListener(async str => {
-      data_obj.data += str;
-      await termWrite(term, str);
-    });
+    handleCopyToClipBoard(term.getSelection());
+  }
+
+  if (ev.code === 'KeyV' && ev.ctrlKey && !busy) {
+    handlePasteFromClipBoard(term);
   }
 
   if (busy) return;
 
   if (ev.code === 'Enter') {
-    const query = {
-      query: data_obj.data,
-      origin: 'terminal',
-      ignore: false,
-    };
-    store.dispatch(enQueueQuery(query));
-    store.dispatch(setTerminalBusy(true));
-    data_obj.data = '';
-    await termWriteLn(term, '');
+    await handleEnter(term);
   } else if (ev.code === 'Backspace') {
-    if (term._core.buffer.x > 8) {
-      // Do not delete the prompt
-      await termWrite(term, '\b \b');
-      data_obj.data = data_obj.data.slice(0, data_obj.data.length - 1);
-    }
+    await handleBackspace(term);
   } else if (ev.code === 'ArrowUp') {
-    ev.preventDefault();
-    let prev_query = getPrev(history);
-    let new_history = rotatePrev({ ...history });
-    await clearLine(term);
-    await termWrite(term, prev_query.query ? prev_query.query : '');
-    data_obj.data = prev_query.query ? prev_query.query : '';
-    store.dispatch(setHistory(new_history));
+    await handleArrowUp(term, history, ev);
   } else if (ev.code === 'ArrowDown') {
-    ev.preventDefault();
-    let next_query = getNext(history);
-    let new_history = rotateNext({ ...history });
-    await clearLine(term);
-    await termWrite(term, next_query.query ? next_query.query : '');
-    data_obj.data = next_query.query ? next_query.query : '';
-    store.dispatch(setHistory(new_history));
+    await handleArrowDown(term, history, ev);
+  } else if (ev.code === 'ArrowLeft') {
+    await handleArrowLeft(term);
+  } else if (ev.code === 'ArrowRight') {
+    await handleArrowRight(term);
   } else if (not_combination_keys && printable[e.key]) {
-    const max_char = Math.round(
-      term._core._viewportScrollArea.offsetWidth / 9.077922077922079,
-    );
-    if (max_char === term._core.buffer.x) await termWrite(term, '         '); //don't write under the prompt text to avoid writing text that can't be deleted
-    await termWrite(term, e.key);
-    data_obj.data += e.key;
+    await handlePrintable(term, e);
   }
 };
 
@@ -299,29 +449,7 @@ export const sendQueryResultToXTerm = async results => {
     (latest?.result.stdout || latest?.result.stderr) &&
     !latest?.ignore
   ) {
-    if (latest.result.stdout) {
-      const lines = latest.result.stdout.split('\n');
-
-      for (let i = 0; i < lines.length; i++) {
-        if (i < 1) await moveCursorToLineStart(term);
-        await termWriteLn(term, ' ' + lines[i]);
-      }
-
-      await term.prompt();
-      store.dispatch(setTerminalBusy(false));
-      return true;
-    } else if (latest.result.stderr) {
-      const lines = latest.result.stderr.split('\n');
-
-      for (let i = 0; i < lines.length; i++) {
-        if (i < 1) await moveCursorToLineStart(term);
-        await termWriteLn(term, ' ' + lines[i]);
-      }
-
-      await term.prompt();
-      store.dispatch(setTerminalBusy(false));
-      return true;
-    }
+    return await handleWriteQueryResult(term, latest);
   } else if (
     term &&
     !latest?.ignore &&
@@ -329,20 +457,9 @@ export const sendQueryResultToXTerm = async results => {
     !(latest?.result?.stdout && latest?.result?.stderr)
   ) {
     if (latest.origin === 'script') {
-      await termWriteLn(term, 'Running script .....');
-      store.dispatch(setTerminalBusy(true));
+      await handleWriteScriptQuery(term);
     } else if (latest.origin !== 'terminal') {
-      const lines = latest.query.split('\n');
-
-      for (let i = 0; i < lines.length; i++) {
-        if (i < 1) {
-          await termWriteLn(term, lines[i]);
-        } else {
-          await termWriteLn(term, ' ' + lines[i]);
-        }
-      }
-
-      store.dispatch(setTerminalBusy(true));
+      await handleWriteQuery(term, latest);
     }
   }
 };
