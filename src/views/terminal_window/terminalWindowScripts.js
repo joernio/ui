@@ -28,6 +28,15 @@ const updateCursorPosition = value => {
   data_obj.cursorPosition = value;
 };
 
+export const constructInputToWrite = () => TV.clearLine +
+                                 TV.joernDefaultPrompt +
+                                 data_obj.data +
+                                 TV.carriageReturn +
+                                 TV.cursorPositionFromStart.split('<n>').join(
+                                 TV.joernDefaultPrompt.length + data_obj.cursorPosition);
+
+export const constructOutputToWrite = (prompt=' ', value="Running script .....") => TV.clearLine + prompt + value;
+
 export const handleTerminalMaximizeToggle = bool => {
   return { isMaximized: !bool };
 };
@@ -151,16 +160,7 @@ export const handlePasteFromClipBoard = term => {
   windowActionApi.registerPasteFromClipBoardListener(async str => {
     updateData(str);
     updateCursorPosition(data_obj.cursorPosition + str.length);
-    await termWrite(
-      term,
-      TV.clearLine +
-        TV.joernDefaultPrompt +
-        data_obj.data +
-        TV.carriageReturn +
-        TV.cursorPositionFromStart
-          .split('<n>')
-          .join(8 + data_obj.cursorPosition),
-    );
+    await termWrite(term, constructInputToWrite());
   });
 };
 
@@ -187,14 +187,7 @@ export const handleBackspace = async term => {
       data.slice(cursorPosition),
   );
   updateCursorPosition(cursorPosition > 0 ? cursorPosition - 1 : 0);
-  await termWrite(
-    term,
-    TV.clearLine +
-      TV.joernDefaultPrompt +
-      data_obj.data +
-      TV.carriageReturn +
-      TV.cursorPositionFromStart.split('<n>').join(8 + data_obj.cursorPosition),
-  );
+  await termWrite(term, constructInputToWrite());
 };
 
 export const handleArrowUp = async (term, history, ev) => {
@@ -207,14 +200,7 @@ export const handleArrowUp = async (term, history, ev) => {
   updateCursorPosition(
     prev_query.query ? data_obj.cursorPosition + prev_query.query.length : 0,
   );
-  await termWrite(
-    term,
-    TV.clearLine +
-      TV.joernDefaultPrompt +
-      data_obj.data +
-      TV.carriageReturn +
-      TV.cursorPositionFromStart.split('<n>').join(8 + data_obj.cursorPosition),
-  );
+  await termWrite(term, constructInputToWrite());
   store.dispatch(setHistory(new_history));
 };
 
@@ -228,14 +214,7 @@ export const handleArrowDown = async (term, history, ev) => {
   updateCursorPosition(
     next_query.query ? data_obj.cursorPosition + next_query.query.length : 0,
   );
-  await termWrite(
-    term,
-    TV.clearLine +
-      TV.joernDefaultPrompt +
-      data_obj.data +
-      TV.carriageReturn +
-      TV.cursorPositionFromStart.split('<n>').join(8 + data_obj.cursorPosition),
-  );
+  await termWrite(term, constructInputToWrite());
   store.dispatch(setHistory(new_history));
 };
 
@@ -243,14 +222,7 @@ export const handleArrowLeft = async term => {
   updateCursorPosition(
     data_obj.cursorPosition > 0 ? data_obj.cursorPosition - 1 : 0,
   );
-  await termWrite(
-    term,
-    TV.clearLine +
-      TV.joernDefaultPrompt +
-      data_obj.data +
-      TV.carriageReturn +
-      TV.cursorPositionFromStart.split('<n>').join(8 + data_obj.cursorPosition),
-  );
+  await termWrite(term, constructInputToWrite());
 };
 
 export const handleArrowRight = async term => {
@@ -259,14 +231,7 @@ export const handleArrowRight = async term => {
       ? data_obj.cursorPosition + 1
       : data_obj.data.length,
   );
-  await termWrite(
-    term,
-    TV.clearLine +
-      TV.joernDefaultPrompt +
-      data_obj.data +
-      TV.carriageReturn +
-      TV.cursorPositionFromStart.split('<n>').join(8 + data_obj.cursorPosition),
-  );
+  await termWrite(term, constructInputToWrite());
 };
 
 export const handlePrintable = async (term, e) => {
@@ -274,11 +239,7 @@ export const handlePrintable = async (term, e) => {
   updateCursorPosition(data_obj.cursorPosition + e.key.length);
   await termWrite(
     term,
-    TV.clearLine +
-      TV.joernDefaultPrompt +
-      data_obj.data +
-      TV.carriageReturn +
-      TV.cursorPositionFromStart.split('<n>').join(8 + data_obj.cursorPosition),
+    constructInputToWrite()
   );
 };
 
@@ -294,7 +255,7 @@ export const handleWriteQueryResult = async (term, latest) => {
   const lines = res_type ? latest.result[res_type].split('\n') : [];
 
   for (let i = 0; i < lines.length; i++) {
-    await termWriteLn(term, TV.clearLine + ' ' + lines[i]);
+    await termWriteLn(term, constructOutputToWrite(null, lines[i]));
   }
 
   await term.prompt();
@@ -306,7 +267,7 @@ export const handleWriteScriptQuery = async term => {
   updateData(null);
   updateCursorPosition(0);
 
-  await termWriteLn(term, TV.clearLine + ' Running script .....');
+  await termWriteLn(term, constructOutputToWrite(null, null));
   store.dispatch(setTerminalBusy(true));
 };
 
@@ -318,9 +279,9 @@ export const handleWriteQuery = async (term, latest) => {
 
   for (let i = 0; i < lines.length; i++) {
     if (i < 1) {
-      await termWriteLn(term, TV.clearLine + TV.joernDefaultPrompt + lines[i]);
+      await termWriteLn(term, constructOutputToWrite(TV.joernDefaultPrompt, lines[i]));
     } else {
-      await termWriteLn(term, TV.clearLine + ' ' + lines[i]);
+      await termWriteLn(term, constructOutputToWrite(null, lines[i]));
     }
   }
 
