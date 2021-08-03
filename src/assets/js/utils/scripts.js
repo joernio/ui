@@ -20,7 +20,6 @@ import { setRecent } from '../../../store/actions/filesActions';
 import { windowActionApi, selectDirApi } from './ipcRenderer';
 import { store } from '../../../store/configureStore';
 import { mouseTrapGlobalBindig } from './extensions';
-import workspace from '../../../store/reducers/workSpaceReducers';
 
 mouseTrapGlobalBindig(Mousetrap);
 
@@ -460,7 +459,8 @@ export const isFilePathInQueryResult = results => {
 
 export const getDirectories = src =>
   new Promise((resolve, reject) => {
-    glob(src + '/**/*', (err, path) => {
+    glob(src + '/**/*', {
+      ignore: [src + "/**/node_modules/**",src + "/**/vendor/**"]}, (err, path) => {
       if (!err) {
         resolve(path);
       } else {
@@ -469,7 +469,7 @@ export const getDirectories = src =>
     });
   });
 
-export const getFolderStructureRootPath = workspace => {
+export const getFolderStructureRootPathFromWorkspace = workspace => {
   const { projects } = workspace;
   let path = null;
 

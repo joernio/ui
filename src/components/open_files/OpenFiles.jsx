@@ -4,7 +4,11 @@ import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import * as filesActions from '../../store/actions/filesActions';
 import { Icon } from '@blueprintjs/core';
-import { openFile, closeFile } from '../../assets/js/utils/scripts';
+import {
+  openFile,
+  closeFile,
+  handleScrollTop,
+} from '../../assets/js/utils/scripts';
 import styles from '../../assets/js/styles/components/open_files/openFilesStyles';
 import {
   getEditorFilesFromRecent,

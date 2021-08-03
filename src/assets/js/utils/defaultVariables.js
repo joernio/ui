@@ -44,3 +44,5 @@ export const printable = {"0": true,
                           "]":true,"}":true,"\\":true,"|":true,";":true,":":true,",":true,"<":true,".":true,
                           ">":true,"/":true,"?":true,"'":true, "\"":true," ":true,"  ":true
                         }
+
+export const foldersToIgnore = ['.git', 'node_modules']

@@ -4,14 +4,22 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import * as queryActions from '../../store/actions/queryActions';
 import * as filesActions from '../../store/actions/filesActions';
+import { Menu, MenuItem } from '@blueprintjs/core';
+import { ContextMenu2 } from '@blueprintjs/popover2';
 import { Icon } from '@blueprintjs/core';
 import { Classes, Tree } from '@blueprintjs/core';
-import { handleScrollTop, openFile } from '../../assets/js/utils/scripts';
+import {
+  handleScrollTop,
+  openFile,
+  getFolderStructureRootPathFromWorkspace,
+} from '../../assets/js/utils/scripts';
 import styles from '../../assets/js/styles/components/folders/foldersStyles';
 
 import {
   createFolderJsonModel,
   handleToggleFoldersVisible,
+  selectFolderStructureRootPath,
+  shouldSwitchFolder,
 } from './foldersScripts';
 
 const useStyles = makeStyles(styles);
@@ -22,6 +30,7 @@ function Folders(props) {
   const [state, setState] = React.useState({
     scrolled: false,
     foldersVisible: true,
+    prev_workspace: {},
   });
 
   React.useEffect(() => {
@@ -37,9 +46,23 @@ function Folders(props) {
   }, [foldersContainerEl.current]);
 
   React.useEffect(() => {
-    createFolderJsonModel(props.workspace, folders =>
-      props.setFolders(folders),
-    );
+    if (
+      shouldSwitchFolder(
+        state.prev_workspace,
+        props.workspace ? props.workspace : {},
+      )
+    ) {
+      createFolderJsonModel(
+        getFolderStructureRootPathFromWorkspace(props.workspace),
+        folders => props.setFolders(folders),
+      );
+    }
+
+    handleSetState({
+      prev_workspace: JSON.parse(
+        JSON.stringify(props.workspace ? props.workspace : {}),
+      ),
+    });
   }, [props.workspace]);
 
   const handleSetState = obj => {
@@ -85,19 +108,36 @@ function Folders(props) {
       )}
       tabIndex="0"
     >
-      <div
-        className={classes.titleSectionStyle}
-        onClick={() =>
-          handleSetState(handleToggleFoldersVisible(foldersVisible))
+      <ContextMenu2
+        content={
+          <Menu className={classes.menuStyle}>
+            <MenuItem
+              className={classes.menuItemStyle}
+              onClick={async () =>
+                createFolderJsonModel(
+                  await selectFolderStructureRootPath(),
+                  folders => props.setFolders(folders),
+                )
+              }
+              text="Switch Folder"
+            />
+          </Menu>
         }
       >
-        {foldersVisible ? (
-          <Icon className={classes.iconStyle} icon="chevron-down" />
-        ) : (
-          <Icon className={classes.iconStyle} icon="chevron-right" />
-        )}
-        <h2 className={classes.titleStyle}>Folders</h2>
-      </div>
+        <div
+          className={classes.titleSectionStyle}
+          onClick={() =>
+            handleSetState(handleToggleFoldersVisible(foldersVisible))
+          }
+        >
+          {foldersVisible ? (
+            <Icon className={classes.iconStyle} icon="chevron-down" />
+          ) : (
+            <Icon className={classes.iconStyle} icon="chevron-right" />
+          )}
+          <h2 className={classes.titleStyle}>Folders</h2>
+        </div>
+      </ContextMenu2>
       <div
         ref={foldersContainerEl}
         className={clsx(
