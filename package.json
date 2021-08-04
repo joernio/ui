@@ -1,6 +1,6 @@
 {
   "name": "joern_desktop_client",
-  "version": "1.0.0-a.2",
+  "version": "1.0.0-a.5",
   "description": "The Bug Hunter's Workbench",
   "main": "main.js",
   "scripts": {

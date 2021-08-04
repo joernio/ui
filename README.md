@@ -118,3 +118,78 @@ npx electron-forge make
 After the step completes, you should find a folder named out in your project root. open "make" folder inside "out" to access your build. (rpm and deb for Linux, zip file for mac). copy the build to a different directory and install.
 
 Note: run "git reset --hard" to get your project back to its initial stage or else you might face issues with further attempts to pull from git or run "npm start".
+
+# How To Release A New Version
+
+1. Switch to release branch
+2. Pull from master
+3. Update version of package.json
+4. Commit changes
+5. Tag the latest commit
+6. push tag and commit to remote release branch
+7. Merge release branch into master
+
+### Switch to release branch
+
+1. To switch to release branch run:
+
+```commandline
+git checkout release
+```
+
+To verify that you are now on the release branch run:
+
+```commandline
+git branch
+```
+
+### Pull from master
+
+1. to pull the changes to be released from origin master, run:
+
+```commandline
+git pull origin master
+```
+
+If no merge conflicts occurred, then you are good to go. If you get a merge conflict, it is likely that conflicting changes were added to the release or master branch, you MUST fix this before continuing.
+
+### Update version of package.json
+
+1. go to the package.json file and bump up the version. Note that the version name MUST not start with a leading "v" or the build will fail. An example version name for the package.json file is "1.0.0-a.5".
+
+### Commit changes
+
+1. To commit the changes made to package.json, run:
+
+```commandline
+git add .
+git commit -m <commit message here>
+```
+
+It is important that the commit message reflects what changes were made. An example commit message is "bumped package.json file version to 1.0.0-a.5"
+
+### Tag The latest commit
+
+1. To tag the latest commit, run:
+
+```commandline
+git tag <sermver version>
+```
+
+Note: Though an annotated tag will probably work as well, it is recommended that you use lightweight tagging (like was done in the git command above). Also, note that the version name MUST comply with the semantic versioning specification for this to work. An Example version name is "v1.0.0-a.5".
+
+### Push tag and commit to the remote release branch
+
+1. To push tag and commit to the remote release branch, run:
+
+```commandline
+git push origin <tag name> && git push origin release
+```
+
+Note: tag name should be the tag you created in step "5" to avoid messing up the versioning. Also to avoid unintended issues, ALWAYS push the tag before pushing the commit.
+
+After this wait for the build to complete
+
+### Merge release branch into Master
+
+1. After the build has been completed, go to Github and create a PR comparing release branch and master. Merge this PR.

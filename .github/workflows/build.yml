@@ -15,6 +15,7 @@ on:
 
 jobs:
   init:
+    # if: ${{(github.event_name == 'workflow_dispatch') || (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))}}
     runs-on: ubuntu-latest
     steps:
       - name: 'checkout'
@@ -38,11 +39,8 @@ jobs:
 
   build:
     needs: init
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest]
+    # if: ${{(github.event_name == 'workflow_dispatch') || (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))}}
+    runs-on: ubuntu-latest
 
     steps:
       - name: Check out Git repository
@@ -63,7 +61,7 @@ jobs:
 
       - name: 'Upload Ubuntu Artifacts'
         uses: actions/upload-artifact@v2
-        if: matrix.os == 'ubuntu-latest'
+        # if: matrix.os == 'ubuntu-latest'
         with:
           name: 'ubuntu_build'
           path: |
@@ -71,17 +69,18 @@ jobs:
             ./out/**/joern_desktop_client*.*
           retention-days: 1
 
-      - name: 'Upload Macos Artifacts'
-        uses: actions/upload-artifact@v2
-        if: matrix.os == 'macos-latest'
-        with:
-          name: 'macos_build'
-          path: |
-            ./out/make/zip/darwin/x64/joern_desktop_client-darwin-x64*.zip
-          retention-days: 1
+      # - name: 'Upload Macos Artifacts'
+      #   uses: actions/upload-artifact@v2
+      #   if: matrix.os == 'macos-latest'
+      #   with:
+      #     name: 'macos_build'
+      #     path: |
+      #       ./out/make/zip/darwin/x64/joern_desktop_client-darwin-x64*.zip
+      #     retention-days: 1
 
   release:
     needs: build
+    # if: ${{(github.event_name == 'workflow_dispatch') || (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))}}
     runs-on: ubuntu-latest
     steps:
       - name: 'checkout'
@@ -103,4 +102,4 @@ jobs:
           files: |
             ./ubuntu_build/**/joern-desktop-client*.*
             ./ubuntu_build/**/joern_desktop_client*.*
-            ./macos_build/joern_desktop_client*.*
+        # ./macos_build/joern_desktop_client*.*
