@@ -1,12 +1,44 @@
 import fs from 'fs';
 
-import {
-  getDirectories,
-  getFolderStructureRootPath,
-} from '../../assets/js/utils/scripts';
+import { getDirectories, handleSetToast } from '../../assets/js/utils/scripts';
+import { foldersToIgnore } from '../../assets/js/utils/defaultVariables';
+import { selectDirApi } from '../../assets/js/utils/ipcRenderer';
 
 export const handleToggleFoldersVisible = foldersVisible => {
   return { foldersVisible: !foldersVisible };
+};
+
+export const shouldSwitchFolder = (prev_workspace, workspace) => {
+  if (
+    Object.keys(workspace?.projects ? workspace?.projects : {}).length ===
+    Object.keys(prev_workspace?.projects ? prev_workspace?.projects : {}).length
+  ) {
+    let notEqual = false;
+
+    Object.keys(workspace?.projects ? workspace?.projects : {}).forEach(
+      name => {
+        if (
+          workspace.projects[name]?.open !== prev_workspace.projects[name]?.open
+        ) {
+          notEqual = true;
+        }
+      },
+    );
+
+    Object.keys(
+      prev_workspace?.projects ? prev_workspace?.projects : {},
+    ).forEach(name => {
+      if (
+        workspace.projects[name]?.open !== prev_workspace.projects[name]?.open
+      ) {
+        notEqual = true;
+      }
+    });
+
+    return notEqual;
+  } else {
+    return true;
+  }
 };
 
 const fsToJson = (arr, base, isFile) => {
@@ -66,14 +98,32 @@ export const getRoot = (folder_json_model, root) => {
   }
 };
 
-export const createFolderJsonModel = async (workspace, callback) => {
-  let { path: root_path } = getFolderStructureRootPath(workspace);
+export const selectFolderStructureRootPath = async () => {
+  selectDirApi.selectDir('select-dir');
 
+  const path = await new Promise((resolve, reject) => {
+    selectDirApi.registerListener('selected-dir', value => {
+      if (value) {
+        resolve(value);
+      } else {
+        reject();
+      }
+    });
+  }).catch(() => {
+    console.log("can't select workspace path");
+  });
+
+  return { path };
+};
+
+export const createFolderJsonModel = async (obj, callback) => {
+  let { path: root_path } = obj;
   if (root_path) {
     const paths = await getDirectories(root_path).catch(err => {});
 
     let counter = 0;
     const folder_json_model = [];
+    let failed;
 
     if (Array.isArray(paths)) {
       paths.forEach(async path => {
@@ -85,19 +135,39 @@ export const createFolderJsonModel = async (workspace, callback) => {
               reject(err);
             }
           });
+        }).catch(err => {
+          failed = true;
         });
 
         counter += 1;
 
         const isFile = stats ? stats.isFile() : null;
         const arr = path.split('/').filter(value => (value ? true : false));
-        fsToJson(arr, folder_json_model, isFile);
+
+        if (
+          isFile ||
+          !(
+            foldersToIgnore.includes(arr[arr.length - 1]) &&
+            arr[arr.length - 1].startsWith('.')
+          )
+        ) {
+          fsToJson(arr, folder_json_model, isFile);
+        }
 
         if (counter === paths.length) {
           const root = getRoot(folder_json_model, root_path);
           callback([root]);
         }
       });
+
+      if (failed) {
+        handleSetToast({
+          icon: 'warning-sign',
+          intent: 'danger',
+          message:
+            'error opening folder. Make sure that this folder is healthy then try again.',
+        });
+      }
     }
   }
 };

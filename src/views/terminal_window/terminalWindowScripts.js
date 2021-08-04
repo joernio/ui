@@ -28,16 +28,19 @@ const updateCursorPosition = value => {
   data_obj.cursorPosition = value;
 };
 
-export const constructInputToWrite = () => TV.clearLine +
-                                 TV.joernDefaultPrompt +
-                                 data_obj.data +
-                                 TV.carriageReturn +
-                                 TV.cursorPositionFromStart.split('<n>').join(
-                                 TV.joernDefaultPrompt.length + data_obj.cursorPosition);
+export const constructInputToWrite = () =>
+  TV.clearLine +
+  TV.joernDefaultPrompt +
+  data_obj.data +
+  TV.carriageReturn +
+  TV.cursorPositionFromStart
+    .split('<n>')
+    .join(TV.joernDefaultPrompt.length + data_obj.cursorPosition);
 
-export const constructOutputToWrite = (prompt, value) => TV.clearLine + 
-                                                         (prompt !== null ? prompt : ' ') + 
-                                                         (value !== null ? value : "Running script .....");
+export const constructOutputToWrite = (prompt, value) =>
+  TV.clearLine +
+  (prompt !== null ? prompt : ' ') +
+  (value !== null ? value : 'Running script .....');
 
 export const handleTerminalMaximizeToggle = bool => {
   return { isMaximized: !bool };
@@ -239,10 +242,7 @@ export const handleArrowRight = async term => {
 export const handlePrintable = async (term, e) => {
   updateData(e.key);
   updateCursorPosition(data_obj.cursorPosition + e.key.length);
-  await termWrite(
-    term,
-    constructInputToWrite()
-  );
+  await termWrite(term, constructInputToWrite());
 };
 
 export const handleWriteQueryResult = async (term, latest) => {
@@ -281,7 +281,10 @@ export const handleWriteQuery = async (term, latest) => {
 
   for (let i = 0; i < lines.length; i++) {
     if (i < 1) {
-      await termWriteLn(term, constructOutputToWrite(TV.joernDefaultPrompt, lines[i]));
+      await termWriteLn(
+        term,
+        constructOutputToWrite(TV.joernDefaultPrompt, lines[i]),
+      );
     } else {
       await termWriteLn(term, constructOutputToWrite(null, lines[i]));
     }

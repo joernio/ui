@@ -8,10 +8,52 @@ const styles = theme => ({
     display: 'flex',
     flexDirection: 'column',
   },
+
+  menuStyle: {
+    backgroundColor: props =>
+      theme.palette.menu.background[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
+    borderRadius: 0,
+  },
+  menuItemStyle: {
+    borderRadius: 0,
+    color: props =>
+      theme.palette.menu.base[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
+    '& span': {
+      color: props =>
+        `${
+          theme.palette.menu.base[
+            props.settings.prefersDarkMode ? 'dark' : 'light'
+          ]
+        } !important`,
+    },
+    '&:hover': {
+      backgroundColor: props =>
+        theme.palette.menu.hover[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+      color: '#FFFFFF',
+      '& span': {
+        color: '#FFFFFF !important',
+      },
+    },
+  },
+  menuDividerStyle: {
+    borderTop: props =>
+      `1px solid ${
+        theme.palette.menu.base[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ]
+      }50`,
+  },
+
   titleSectionStyle: {
     display: 'flex',
     alignItems: 'center',
-    cursor: 'pointer',
+    cursor: 'context-menu',
   },
   titleStyle: {
     textTransform: 'uppercase',

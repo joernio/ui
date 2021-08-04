@@ -3,7 +3,7 @@ import fs from 'fs';
 import {
   openFile,
   getDirectories,
-  getFolderStructureRootPath,
+  getFolderStructureRootPathFromWorkspace,
 } from '../../assets/js/utils/scripts';
 
 export const addToQueue = (query, props) => {
@@ -39,7 +39,7 @@ export const runScript = (path, props) => {
 };
 
 export const getJoernScripts = async props => {
-  let { path } = getFolderStructureRootPath(props.workspace);
+  let { path } = getFolderStructureRootPathFromWorkspace(props.workspace);
 
   if (path) {
     const scripts = await getDirectories(path).then(paths => {
