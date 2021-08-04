@@ -35,7 +35,9 @@ export const constructInputToWrite = () => TV.clearLine +
                                  TV.cursorPositionFromStart.split('<n>').join(
                                  TV.joernDefaultPrompt.length + data_obj.cursorPosition);
 
-export const constructOutputToWrite = (prompt=' ', value="Running script .....") => TV.clearLine + prompt + value;
+export const constructOutputToWrite = (prompt, value) => TV.clearLine + 
+                                                         (prompt !== null ? prompt : ' ') + 
+                                                         (value !== null ? value : "Running script .....");
 
 export const handleTerminalMaximizeToggle = bool => {
   return { isMaximized: !bool };
