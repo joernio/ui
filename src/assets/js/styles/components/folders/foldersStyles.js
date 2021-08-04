@@ -49,7 +49,7 @@ const styles = theme => ({
         ]
       }50`,
   },
-  
+
   titleSectionStyle: {
     display: 'flex',
     alignItems: 'center',

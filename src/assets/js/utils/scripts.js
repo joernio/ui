@@ -459,14 +459,19 @@ export const isFilePathInQueryResult = results => {
 
 export const getDirectories = src =>
   new Promise((resolve, reject) => {
-    glob(src + '/**/*', {
-      ignore: [src + "/**/node_modules/**",src + "/**/vendor/**"]}, (err, path) => {
-      if (!err) {
-        resolve(path);
-      } else {
-        reject(err);
-      }
-    });
+    glob(
+      src + '/**/*',
+      {
+        ignore: [src + '/**/node_modules/**', src + '/**/vendor/**'],
+      },
+      (err, path) => {
+        if (!err) {
+          resolve(path);
+        } else {
+          reject(err);
+        }
+      },
+    );
   });
 
 export const getFolderStructureRootPathFromWorkspace = workspace => {
