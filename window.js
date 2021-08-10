@@ -19,7 +19,6 @@ const createWindow = async () => {
       nodeIntegration: true,
       worldSafeExecuteJavaScript: true,
       contextIsolation: false,
-      // defaultFontSize: 30
     },
     width: size[0],
     height: size[1],
