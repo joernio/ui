@@ -46,6 +46,9 @@ function EditorWindow(props) {
     readOnly: files.openFileIsReadOnly,
     cursorStyle: 'line',
     automaticLayout: true,
+    fontSize: settings?.fontSize
+      ? Number(settings.fontSize.split('px')[0])
+      : 16,
   };
 
   return (

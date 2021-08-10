@@ -89,8 +89,15 @@ function TerminalWindow(props) {
         cursorAccent: props.settings.prefersDarkMode ? '#ffffff' : '#000000',
         cursor: props.settings.prefersDarkMode ? '#ffffff' : '#000000',
       });
+
+      props.terminal.term.setOption(
+        'fontSize',
+        props?.settings?.fontSize
+          ? Number(props.settings.fontSize.split('px')[0])
+          : 16,
+      );
     }
-  }, [props.settings.prefersDarkMode]);
+  }, [props.settings.prefersDarkMode, props.settings.fontSize]);
 
   React.useEffect(() => {
     props.handleSetState(handleMaximize(window, props));

@@ -179,10 +179,8 @@ function SideNav(props) {
 
             <h4>Font Size</h4>
             <input
-              disabled={true}
-              type="text"
+              type="number"
               id="font_size"
-              placeholder="disabled"
               value={values['font_size']}
               onChange={e => handleSetState(handleOnChange(e, values))}
               onBlur={e => handleSetState(handleOnChange(e, values))}
