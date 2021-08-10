@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/core';
 import { Icon } from '@blueprintjs/core';
 import * as terminalActions from '../../store/actions/terminalActions';
 import * as queryActions from '../../store/actions/queryActions';
+import * as settingsActions from '../../store/actions/settingsActions';
 import styles from '../../assets/js/styles/views/terminal/terminalStyles';
 import {
   initResize,
@@ -14,6 +15,7 @@ import {
 } from '../../assets/js/utils/scripts';
 import {
   initXterm,
+  initCircuitUI,
   initFitAddon,
   handleResize,
   handleMaximize,
@@ -32,6 +34,7 @@ function TerminalWindow(props) {
 
   const refs = {
     terminalRef: React.useRef(null),
+    circuitUIRef: React.useRef(null),
     resizeEl: React.useRef(null),
   };
 
@@ -56,13 +59,19 @@ function TerminalWindow(props) {
 
   React.useEffect(() => {
     if (refs.terminalRef.current && props.terminal.term) {
-      openXTerm(refs.terminalRef, props.terminal.term);
+      openXTerm(refs, props.terminal.term);
       props.setFitAddon(initFitAddon(props.terminal.term));
       window.addEventListener('resize', resize);
 
       return () => window && window.removeEventListener('resize', resize);
     }
   }, [refs.terminalRef, props.terminal.term]);
+
+  React.useEffect(() => {
+    if (refs.circuitUIRef.current) {
+      return initCircuitUI(refs);
+    }
+  }, [refs.circuitUIRef]);
 
   React.useEffect(() => {
     const observer = new ResizeObserver(throttle(resize, 50));
@@ -88,7 +97,7 @@ function TerminalWindow(props) {
   }, [props.terminal.isMaximized]);
 
   React.useEffect(() => {
-    setTimeout(resize, 1000);
+    setTimeout(resize, 500);
   }, [props.terminalHeight]);
 
   React.useEffect(() => {
@@ -104,7 +113,7 @@ function TerminalWindow(props) {
         props.query.results,
       );
       const wroteToTerminal =
-        !bool && (await sendQueryResultToXTerm(props.query.results));
+        !bool && (await sendQueryResultToXTerm(props.query.results, refs));
 
       wroteToTerminal && props.setPrevResults(props.query.results);
     }
@@ -129,6 +138,7 @@ function TerminalWindow(props) {
 
   const { terminalHeight } = props;
   const { isMaximized } = props.terminal;
+  const { prefersTerminalView } = props.settings;
 
   return (
     <div
@@ -140,6 +150,24 @@ function TerminalWindow(props) {
     >
       <div ref={refs.resizeEl} className={classes.resizeHandleStyle}></div>
       <div className={classes.terminalControlContainerStyle}>
+        {prefersTerminalView ? (
+          <Icon
+            icon="application"
+            className={classes.terminalControlItemsStyle}
+            onClick={() =>
+              props.setSettings({ prefersTerminalView: !prefersTerminalView })
+            }
+          />
+        ) : (
+          <Icon
+            icon="console"
+            className={classes.terminalControlItemsStyle}
+            onClick={() =>
+              props.setSettings({ prefersTerminalView: !prefersTerminalView })
+            }
+          />
+        )}
+
         <Icon
           icon="minus"
           className={classes.terminalControlItemsStyle}
@@ -163,6 +191,13 @@ function TerminalWindow(props) {
             }
           />
         )}
+      </div>
+      <div ref={refs.circuitUIRef} className={classes.circuitUIStyle}>
+        <div id="circuit-ui-results-container"></div>
+        <div id="circuit-ui-input-container">
+          <input type="text" placeholder="▰  query" />
+          <button>Run Query ↵</button>
+        </div>
       </div>
     </div>
   );
@@ -193,6 +228,9 @@ const mapDispatchToProps = dispatch => {
     },
     setIsMaximized: obj => {
       return dispatch(terminalActions.setIsMaximized(obj));
+    },
+    setSettings: values => {
+      return dispatch(settingsActions.setSettings(values));
     },
     enQueueQuery: query => {
       return dispatch(queryActions.enQueueQuery(query));

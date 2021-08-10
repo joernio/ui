@@ -8,6 +8,17 @@ body {
   height: 100vh;
 }
 
+pre {
+  display: inline;
+  margin: 0;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+
 #electron {
   height: 100%;
   display: flex;
