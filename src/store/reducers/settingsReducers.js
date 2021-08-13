@@ -8,6 +8,7 @@ const default_state = {
     url: 'ws://localhost:8080/connect',
   },
   prefersDarkMode: true,
+  prefersTerminalView: true,
   fontSize: '16px',
 };
 

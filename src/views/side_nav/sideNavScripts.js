@@ -1,5 +1,3 @@
-import { processSize } from 'react-monaco-editor/lib/utils';
-
 export const toggleSettingsDialog = isSettingsDialogOpen => {
   return {
     isSettingsDialogOpen: !isSettingsDialogOpen,
@@ -18,10 +16,12 @@ export const handleTerminalToggle = props => {
 export const handleOnChange = (e, values) => {
   if (e.target.id === 'prefers_dark_mode') {
     values[e.target.id] = e.target.checked;
+  } else if(e.target.id === 'prefers_terminal_view'){
+    values[e.target.id] = e.target.checked;
   } else {
     values[e.target.id] = e.target.value;
   }
-  return values;
+  return {values};
 };
 
 export const getSettingsInitialValues = settings => {
@@ -34,6 +34,7 @@ export const getSettingsInitialValues = settings => {
   initialSettings['ws_url'] = settings?.websocket?.url;
 
   initialSettings['prefers_dark_mode'] = settings?.prefersDarkMode;
+  initialSettings['prefers_terminal_view'] = settings?.prefersTerminalView;
   initialSettings['font_size'] = settings?.fontSize;
 
   return initialSettings;
@@ -50,6 +51,7 @@ export const collectSettingsValues = values => {
       url: values['ws_url'],
     },
     prefersDarkMode: values['prefers_dark_mode'],
+    prefersTerminalView: values['prefers_terminal_view'],
     fontSize: values['font_size'],
   };
 

@@ -25,8 +25,12 @@ function SideNav(props) {
   const [state, setState] = React.useState({
     anchorEl: null,
     settingsDialogIsOpen: false,
-    values: { ...getSettingsInitialValues(props.settings) },
+    values: {},
   });
+
+  React.useEffect(() => {
+    handleSetState({ values: getSettingsInitialValues(props.settings) });
+  }, [props.settings]);
 
   const handleSetState = obj => {
     if (obj) {
@@ -158,6 +162,17 @@ function SideNav(props) {
               id="prefers_dark_mode"
               innerLabel="off"
               defaultChecked={values['prefers_dark_mode']}
+              onChange={e => handleSetState(handleOnChange(e, values))}
+              onBlur={e => handleSetState(handleOnChange(e, values))}
+            />
+
+            <h4>Prefers Terminal View</h4>
+            <Switch
+              className={classes.switchStyle}
+              innerLabelChecked="on"
+              id="prefers_terminal_view"
+              innerLabel="off"
+              defaultChecked={values['prefers_terminal_view']}
               onChange={e => handleSetState(handleOnChange(e, values))}
               onBlur={e => handleSetState(handleOnChange(e, values))}
             />
