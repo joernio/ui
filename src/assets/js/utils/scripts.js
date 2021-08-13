@@ -792,3 +792,9 @@ export const nFormatter = num => {
   }
   return num;
 };
+
+
+export const handleFontSizeChange =(doc, fontSize)=>{
+  doc.children[0].style.fontSize = fontSize;
+  doc.children[0].children[1].style.fontSize = fontSize;
+};
