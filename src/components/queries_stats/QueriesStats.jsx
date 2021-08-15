@@ -106,7 +106,10 @@ function QueriesStats(props) {
         handleSetState({ queriesStatsPopoverIsOpen: isOpen })
       }
     >
-      <div className={classes.queriesStatsSectionStyle}>
+      <div
+        className={classes.queriesStatsSectionStyle}
+        data-test="queries-stats"
+      >
         <div className={classes.refreshIconContainerStyle}>
           {!queueEmpty(props.query.queue) ? (
             <Icon

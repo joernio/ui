@@ -1,4 +1,4 @@
-const default_state = { path: '', projects: {} };
+export const default_state = { path: '', projects: {} };
 
 const workspace = (state = default_state, action) => {
   switch (action.type) {

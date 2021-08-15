@@ -41,6 +41,7 @@ function ExplorerWindow(props) {
         [classes.drawerOpen]: drawerWidth,
         [classes.drawerClose]: !drawerWidth,
       })}
+      data-test="explorer-window"
     >
       <div ref={resizeEl} className={classes.resizeHandleStyle}></div>
       <h1 className={classes.titleStyle}>explorer</h1>

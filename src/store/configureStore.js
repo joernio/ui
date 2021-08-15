@@ -11,8 +11,10 @@ const persistConfig = {
   blacklist: ['status', 'query', 'terminal', 'files', 'workspace'],
 };
 
+const middlewares = [thunk];
+
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-const store = createStore(persistedReducer, applyMiddleware(thunk));
+const store = createStore(persistedReducer, applyMiddleware(...middlewares));
 const persistor = persistStore(store);
-export { store, persistor };
+export { middlewares, store, persistor };

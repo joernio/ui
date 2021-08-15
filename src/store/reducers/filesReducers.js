@@ -1,11 +1,11 @@
-const defaultState = {
+export const default_state = {
   recent: {},
   folders: [],
   openFileContent: '',
   openFileIsReadOnly: true,
 };
 
-const files = (state = defaultState, action) => {
+const files = (state = default_state, action) => {
   switch (action.type) {
     case 'SET_RECENT':
       return {

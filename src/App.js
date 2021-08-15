@@ -30,17 +30,17 @@ function App(props) {
   const theme = createTheme(props.settings.prefersDarkMode);
 
   return (
-    <>
+    <div data-test='app'>
       <ThemeProvider theme={theme}>
         <WindowWrapper>
           <Window />
         </WindowWrapper>
-      </ThemeProvider>
+        </ThemeProvider>
       <Toaster />
       <QueryProcessor />
       <WorkspaceProcessor />
       <FilesProcessor />
-    </>
+    </div>
   );
 }
 

@@ -24,7 +24,6 @@ function EditorWindow(props) {
         props.workspace.projects[name].open ? true : false,
       );
     is_open_project = is_open_project && is_open_project.length;
-
     if (refs.editorEl.current && is_open_project) {
       const { openFileContent, isReadOnly } = await handleFileAddedToRecent(
         refs,
@@ -57,6 +56,7 @@ function EditorWindow(props) {
         classes.editorContainerStyle,
         props.drawerWidth ? classes.drawerOpenStyle : classes.drawerCloseStyle,
       )}
+      data-test="editor-window"
     >
       <MonacoEditor
         ref={refs.editorEl}
