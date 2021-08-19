@@ -1,4 +1,5 @@
 import fs from 'fs';
+import * as editorScripts from './editorScripts';
 import { isFilePathInQueryResult } from '../../assets/js/utils/scripts';
 import { Range } from 'monaco-editor';
 
@@ -9,15 +10,15 @@ export const handleFileAddedToRecent = async (refs, props) => {
   path = path && Object.keys(path);
   path = path ? path.pop() : null;
 
-  return await readRecentFile(path)
+  return await editorScripts.readRecentFile(path)
     .then(data => {
       const readOnly = path.slice(path.length - 3) === '.sc' ? false : true;
 
-      const { startLine, endLine } = shouldGoToLine(props);
+      const { startLine, endLine } = editorScripts.shouldGoToLine(props);
 
       setTimeout(() => {
-        goToLine(refs.editorEl.current.editor, startLine);
-        highlightRange(refs.editorEl.current.editor, {
+        editorScripts.goToLine(refs.editorEl.current.editor, startLine);
+        editorScripts.highlightRange(refs.editorEl.current.editor, {
           startLine,
           endLine,
         });
@@ -90,11 +91,13 @@ export const readRecentFile = path => {
   });
 };
 
-const isLineNumberInQueryResult = results => {
+export const isLineNumberInQueryResult = results => {
   const latest = results[Object.keys(results)[Object.keys(results).length - 1]];
   let range = { startLine: null, endLine: null };
 
-  if (latest?.result.stdout && latest.result.stdout.includes('lineNumber')) {
+  if (latest?.result.stdout && 
+    typeof latest.result.stdout === "string" 
+    && latest.result.stdout.includes('lineNumber')) {
     try {
       let startLine = latest.result.stdout.split(
         'lineNumber -> Some(value = ',
@@ -141,7 +144,7 @@ export const shouldGoToLine = props => {
   const file_path = isFilePathInQueryResult(results);
 
   if (file_path === recent_file && recent_file) {
-    return isLineNumberInQueryResult(results);
+    return editorScripts.isLineNumberInQueryResult(results);
   } else {
     return { startLine: null, endLine: null };
   }

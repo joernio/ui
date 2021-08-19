@@ -14,9 +14,8 @@ export const handleTerminalToggle = props => {
 };
 
 export const handleOnChange = (e, values) => {
-  if (e.target.id === 'prefers_dark_mode') {
-    values[e.target.id] = e.target.checked;
-  } else if(e.target.id === 'prefers_terminal_view'){
+  if (e.target.id === 'prefers_dark_mode' ||
+      e.target.id === 'prefers_terminal_view') {
     values[e.target.id] = e.target.checked;
   } else {
     values[e.target.id] = e.target.value;
