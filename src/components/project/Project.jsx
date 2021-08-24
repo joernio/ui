@@ -22,6 +22,7 @@ function Project(props) {
 
   return (
     <ContextMenu2
+      data-test="project"
       content={
         <Menu className={classes.menuStyle}>
           <MenuItem

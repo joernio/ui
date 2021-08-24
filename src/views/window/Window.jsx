@@ -46,7 +46,6 @@ function Window(props) {
   };
 
   const {
-    drawerOpen,
     sideNavWidth,
     topNavHeight,
     statusBarHeight,
@@ -54,7 +53,7 @@ function Window(props) {
     terminalHeight,
   } = state;
   return (
-    <div className={classes.windowStyle}>
+    <div className={classes.windowStyle} data-test="window">
       <div className={classes.sideNavAndExplorerSectionStyle}>
         <SideNav
           drawerWidth={drawerWidth}
@@ -63,7 +62,6 @@ function Window(props) {
           handleSetState={handleSetState}
         />
         <ExplorerWindow
-          drawerOpen={drawerOpen}
           drawerWidth={drawerWidth}
           sideNavWidth={sideNavWidth}
           handleSetState={handleSetState}

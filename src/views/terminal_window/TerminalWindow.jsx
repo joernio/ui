@@ -154,6 +154,7 @@ function TerminalWindow(props) {
         [classes.terminalOpen]: terminalHeight,
         [classes.terminalClose]: !terminalHeight,
       })}
+      data-test="terminal-window"
     >
       <div ref={refs.resizeEl} className={classes.resizeHandleStyle}></div>
       <div className={classes.terminalControlContainerStyle}>

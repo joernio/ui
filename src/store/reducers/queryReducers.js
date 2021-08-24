@@ -1,4 +1,4 @@
-const default_state = { results: {}, queue: {} };
+export const default_state = { results: {}, queue: {} };
 
 const query = (state = default_state, action) => {
   switch (action.type) {

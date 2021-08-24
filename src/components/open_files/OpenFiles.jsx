@@ -56,7 +56,7 @@ function OpenFiles(props) {
   const { files, filesVisible, scrolled } = state;
 
   return Object.keys(props.workspace.projects).length > 0 ? (
-    <div className={classes.rootStyle} tabIndex="0">
+    <div className={classes.rootStyle} tabIndex="0" data-test="open-files">
       <div
         className={classes.titleSectionStyle}
         onClick={() => handleSetState(handleToggleFilesVisible(filesVisible))}

@@ -60,7 +60,7 @@ function Workspace(props) {
   const { projectsVisible, scrolled } = state;
 
   return (
-    <>
+    <div data-test="workspace">
       {Object.keys(props.workspace.projects).length > 0 ||
       !queueEmpty(props.query.queue) ? (
         <ContextMenu2
@@ -178,7 +178,7 @@ function Workspace(props) {
           </div>
         </>
       )}
-    </>
+    </div>
   );
 }
 

@@ -107,6 +107,7 @@ function Folders(props) {
         props.settings.prefersDarkMode ? 'folders-dark' : 'folders-light',
       )}
       tabIndex="0"
+      data-test="folders"
     >
       <ContextMenu2
         content={

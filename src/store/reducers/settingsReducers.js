@@ -1,4 +1,4 @@
-const default_state = {
+export const default_state = {
   server: {
     url: 'http://localhost:8080',
     auth_username: '',

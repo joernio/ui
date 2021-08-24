@@ -436,7 +436,10 @@ export const deleteFile = path => {
 export const isFilePathInQueryResult = results => {
   const latest = results[Object.keys(results)[Object.keys(results).length - 1]];
 
-  if (latest?.result.stdout && latest.result.stdout.includes('filename')) {
+  if (latest?.result.stdout && 
+    typeof latest.result.stdout === "string" 
+    && latest.result.stdout.includes('filename')) {
+      
     let file_path;
 
     try {

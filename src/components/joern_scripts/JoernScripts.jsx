@@ -68,7 +68,7 @@ function JoernScripts(props) {
   scripts = { ...scripts, ...recentScripts };
 
   return Object.keys(props.workspace.projects).length > 0 ? (
-    <div className={classes.rootStyle} tabIndex="0">
+    <div className={classes.rootStyle} tabIndex="0" data-test="joern-scripts">
       <div
         className={classes.titleSectionStyle}
         onClick={() =>

@@ -50,7 +50,7 @@ function WindowWrapper(props) {
   const { fileContextIsOpen } = state;
 
   return (
-    <>
+    <div data-test="window-wrapper">
       <div className={classes.titleBarStyle}>
         <div className={classes.titleBarRightStyle}>
           <input
@@ -229,7 +229,7 @@ function WindowWrapper(props) {
           </div>
         </ContextMenu2>
       </div>
-    </>
+    </div>
   );
 }
 

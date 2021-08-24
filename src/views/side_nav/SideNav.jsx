@@ -43,7 +43,7 @@ function SideNav(props) {
   const { values } = state;
 
   return (
-    <>
+    <div data-test="side-nav">
       <div className={clsx(classes.rootStyle, 'side-nav')}>
         <div>
           <Tooltip2
@@ -207,7 +207,7 @@ function SideNav(props) {
           </h3>
         </div>
       </Dialog>
-    </>
+    </div>
   );
 }
 

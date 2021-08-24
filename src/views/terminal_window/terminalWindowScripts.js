@@ -11,31 +11,33 @@ import { store } from '../../store/configureStore';
 
 import { terminalVariables as TV } from '../../assets/js/utils/defaultVariables';
 
-const data_obj = { data: '', cursorPosition: 0 };
+import * as TWS from './terminalWindowScripts';
 
-const updateData = str => {
+export const data_obj = { data: '', cursorPosition: 0 };
+
+export const updateData = str => {
   if (str) {
-    data_obj.data = `${data_obj.data.slice(
+    TWS.data_obj.data = `${TWS.data_obj.data.slice(
       0,
-      data_obj.cursorPosition,
-    )}${str}${data_obj.data.slice(data_obj.cursorPosition)}`;
+      TWS.data_obj.cursorPosition,
+    )}${str}${TWS.data_obj.data.slice(TWS.data_obj.cursorPosition)}`;
   } else {
-    data_obj.data = '';
+    TWS.data_obj.data = '';
   }
 };
 
-const updateCursorPosition = value => {
-  data_obj.cursorPosition = value;
+export const updateCursorPosition = value => {
+  TWS.data_obj.cursorPosition = value;
 };
 
 export const constructInputToWrite = () =>
   TV.clearLine +
   TV.joernDefaultPrompt +
-  data_obj.data +
+  TWS.data_obj.data +
   TV.carriageReturn +
   TV.cursorPositionFromStart
     .split('<n>')
-    .join(TV.joernDefaultPrompt.length + data_obj.cursorPosition);
+    .join(TV.joernDefaultPrompt.length + TWS.data_obj.cursorPosition);
 
 export const constructOutputToWrite = (prompt, value, isCircuitUI) =>{
   if(isCircuitUI){
@@ -73,7 +75,7 @@ export const handleEmptyWorkspace = (workspace, prev_workspace) => {
 export const openXTerm = (refs, term) => {
   if (term) {
     term.onKey(async e => {
-      await handleXTermOnKey(term, refs, e);
+      await TWS.handleXTermOnKey(term, refs, e);
     });
 
     term.open(refs.terminalRef.current);
@@ -101,7 +103,7 @@ export const getPrev = history => {
   if (prev) {
     return prev;
   } else {
-    return getNext(history);
+    return TWS.getNext(history);
   }
 };
 
@@ -112,7 +114,7 @@ export const removeOldestQueryFromHistory = (history, prev_keys) => {
 
 export const addQueryToHistory = (history, queue, key) => {
   while (Object.keys(history.next_queries).length > 0) {
-    history = rotateNext(history);
+    history = TWS.rotateNext(history);
   }
 
   history.prev_queries[key] = queue[key];
@@ -168,101 +170,102 @@ export const handleCopyToClipBoard = str => {
 export const handlePasteFromClipBoard = (term, refs) => {
   windowActionApi.pasteFromClipBoard();
   windowActionApi.registerPasteFromClipBoardListener(async str => {
-    updateData(str);
-    updateCursorPosition(data_obj.cursorPosition + str.length);
-    await termWrite(term, constructInputToWrite());
-    handleWriteToCircuitUIInput(refs);
+    TWS.updateData(str);
+    TWS.updateCursorPosition(TWS.data_obj.cursorPosition + str.length);
+    await TWS.termWrite(term, TWS.constructInputToWrite());
+    TWS.handleWriteToCircuitUIInput(refs);
   });
 };
 
 export const handleEnter = async (term, refs) => {
   const query = {
-    query: data_obj.data,
+    query: TWS.data_obj.data,
     origin: 'terminal',
     ignore: false,
   };
   store.dispatch(enQueueQuery(query));
   store.dispatch(setTerminalBusy(true));
-  await termWriteLn(term, '');
-  handleWriteToCircuitUIResponse(refs, constructOutputToWrite(null, data_obj.data, true), "query");
-  updateData(null);
-  updateCursorPosition(0);
-  handleWriteToCircuitUIInput(refs);
+  await TWS.termWriteLn(term, '');
+  TWS.handleWriteToCircuitUIResponse(refs, TWS.constructOutputToWrite(null, TWS.data_obj.data, true), "query");
+  TWS.updateData(null);
+  TWS.updateCursorPosition(0);
+  TWS.handleWriteToCircuitUIInput(refs);
 };
 
 export const handleBackspace = async (term, refs) => {
-  const data = data_obj.data;
-  const cursorPosition = data_obj.cursorPosition;
-  updateData(null);
-  updateCursorPosition(0);
-  updateData(
+  const data = TWS.data_obj.data;
+  const cursorPosition = TWS.data_obj.cursorPosition;
+  TWS.updateData(null);
+  TWS.updateCursorPosition(0);
+  TWS.updateData(
     data.slice(0, cursorPosition > 0 ? cursorPosition - 1 : 0) +
       data.slice(cursorPosition),
   );
-  updateCursorPosition(cursorPosition > 0 ? cursorPosition - 1 : 0);
-  await termWrite(term, constructInputToWrite());
-  handleWriteToCircuitUIInput(refs);
+  TWS.updateCursorPosition(cursorPosition > 0 ? cursorPosition - 1 : 0);
+  await TWS.termWrite(term, TWS.constructInputToWrite());
+  TWS.handleWriteToCircuitUIInput(refs);
 };
 
 export const handleArrowUp = async (term, refs, history, ev) => {
   ev.preventDefault();
-  let prev_query = getPrev(history);
-  let new_history = rotatePrev({ ...history });
-  updateData(null);
-  updateCursorPosition(0);
-  updateData(prev_query.query ? prev_query.query : null);
-  updateCursorPosition(
-    prev_query.query ? data_obj.cursorPosition + prev_query.query.length : 0,
+  let prev_query = TWS.getPrev(history);
+  let new_history = TWS.rotatePrev({ ...history });
+  TWS.updateData(null);
+  TWS.updateCursorPosition(0);
+  TWS.updateData(prev_query.query ? prev_query.query : null);
+  TWS.updateCursorPosition(
+    prev_query.query ? TWS.data_obj.cursorPosition + prev_query.query.length : 0,
   );
-  await termWrite(term, constructInputToWrite());
-  handleWriteToCircuitUIInput(refs);
+  refs.circuitUIRef.current.children[1].children[0].value = TWS.data_obj.data;
+  await TWS.termWrite(term, TWS.constructInputToWrite());
+  TWS.handleWriteToCircuitUIInput(refs);
   store.dispatch(setHistory(new_history));
 };
 
 export const handleArrowDown = async (term, refs, history, ev) => {
   ev.preventDefault();
-  let next_query = getNext(history);
-  let new_history = rotateNext({ ...history });
-  updateData(null);
-  updateCursorPosition(0);
-  updateData(next_query.query ? next_query.query : null);
-  updateCursorPosition(
-    next_query.query ? data_obj.cursorPosition + next_query.query.length : 0,
+  let next_query = TWS.getNext(history);
+  let new_history = TWS.rotateNext({ ...history });
+  TWS.updateData(null);
+  TWS.updateCursorPosition(0);
+  TWS.updateData(next_query.query ? next_query.query : null);
+  TWS.updateCursorPosition(
+    next_query.query ? TWS.data_obj.cursorPosition + next_query.query.length : 0,
   );
-  refs.circuitUIRef.current.children[1].children[0].value = data_obj.data;
-  await termWrite(term, constructInputToWrite());
-  handleWriteToCircuitUIInput(refs);
+  refs.circuitUIRef.current.children[1].children[0].value = TWS.data_obj.data;
+  await TWS.termWrite(term, TWS.constructInputToWrite());
+  TWS.handleWriteToCircuitUIInput(refs);
   store.dispatch(setHistory(new_history));
 };
 
 export const handleArrowLeft = async (term, refs) => {
-  updateCursorPosition(
-    data_obj.cursorPosition > 0 ? data_obj.cursorPosition - 1 : 0,
+  TWS.updateCursorPosition(
+    TWS.data_obj.cursorPosition > 0 ? TWS.data_obj.cursorPosition - 1 : 0,
   );
-  await termWrite(term, constructInputToWrite());
-  handleWriteToCircuitUIInput(refs);
+  await TWS.termWrite(term, TWS.constructInputToWrite());
+  TWS.handleWriteToCircuitUIInput(refs);
 };
 
 export const handleArrowRight = async (term, refs) => {
-  updateCursorPosition(
-    data_obj.cursorPosition < data_obj.data.length
-      ? data_obj.cursorPosition + 1
-      : data_obj.data.length,
+  TWS.updateCursorPosition(
+    TWS.data_obj.cursorPosition < TWS.data_obj.data.length
+      ? TWS.data_obj.cursorPosition + 1
+      : TWS.data_obj.data.length,
   );
-  await termWrite(term, constructInputToWrite());
-  handleWriteToCircuitUIInput(refs);
+  await TWS.termWrite(term, TWS.constructInputToWrite());
+  TWS.handleWriteToCircuitUIInput(refs);
 };
 
 export const handlePrintable = async (term, refs, e) => {
-  updateData(e.key);
-  updateCursorPosition(data_obj.cursorPosition + e.key.length);
-  await termWrite(term, constructInputToWrite());
-  handleWriteToCircuitUIInput(refs);
+  TWS.updateData(e.key);
+  TWS.updateCursorPosition(TWS.data_obj.cursorPosition + e.key.length);
+  await TWS.termWrite(term, TWS.constructInputToWrite());
+  TWS.handleWriteToCircuitUIInput(refs);
 };
 
 export const handleWriteQueryResult = async (term, refs, latest) => {
-  updateData(null);
-  updateCursorPosition(0);
+  TWS.updateData(null);
+  TWS.updateCursorPosition(0);
 
   const res_type = latest.result.stdout
     ? 'stdout'
@@ -272,10 +275,10 @@ export const handleWriteQueryResult = async (term, refs, latest) => {
   const lines = res_type ? latest.result[res_type].split('\n') : [];
 
   for (let i = 0; i < lines.length; i++) {
-    await termWriteLn(term, constructOutputToWrite(null, lines[i]));
+    await TWS.termWriteLn(term, TWS.constructOutputToWrite(null, lines[i]));
   };
 
-  handleWriteToCircuitUIResponse(refs, constructOutputToWrite(null, lines.join("\n"), true), res_type);
+  TWS.handleWriteToCircuitUIResponse(refs, TWS.constructOutputToWrite(null, lines.join("\n"), true), res_type);
 
 
   await term.prompt();
@@ -284,32 +287,32 @@ export const handleWriteQueryResult = async (term, refs, latest) => {
 };
 
 export const handleWriteScriptQuery = async (term, refs) => {
-  updateData(null);
-  updateCursorPosition(0);
+  TWS.updateData(null);
+  TWS.updateCursorPosition(0);
 
-  await termWriteLn(term, constructOutputToWrite(null, null));
-  handleWriteToCircuitUIResponse(refs, constructOutputToWrite(null, "Running script .....", true), "query");
+  await TWS.termWriteLn(term, TWS.constructOutputToWrite(null, null));
+  TWS.handleWriteToCircuitUIResponse(refs, TWS.constructOutputToWrite(null, "Running script .....", true), "query");
   store.dispatch(setTerminalBusy(true));
 };
 
 export const handleWriteQuery = async (term, refs, latest) => {
-  updateData(null);
-  updateCursorPosition(0);
+  TWS.updateData(null);
+  TWS.updateCursorPosition(0);
 
   const lines = latest.query.split('\n');
 
   for (let i = 0; i < lines.length; i++) {
     if (i < 1) {
-      await termWriteLn(
+      await TWS.termWriteLn(
         term,
-        constructOutputToWrite(TV.joernDefaultPrompt, lines[i]),
+        TWS.constructOutputToWrite(TV.joernDefaultPrompt, lines[i]),
       );
     } else {
-      await termWriteLn(term, constructOutputToWrite(null, lines[i]));
+      await TWS.termWriteLn(term, TWS.constructOutputToWrite(null, lines[i]));
     }
   }
 
-  handleWriteToCircuitUIResponse(refs, constructOutputToWrite(null, lines.join("\n"), true), "query");
+  TWS.handleWriteToCircuitUIResponse(refs, TWS.constructOutputToWrite(null, lines.join("\n"), true), "query");
 
   store.dispatch(setTerminalBusy(true));
 };
@@ -328,10 +331,10 @@ export const initXterm = async prefersDarkMode => {
   let shellprompt = TV.carriageReturn + TV.newLine + TV.joernDefaultPrompt;
 
   term.prompt = async () => {
-    await termWrite(term, shellprompt);
+    await TWS.termWrite(term, shellprompt);
   };
 
-  await termWrite(term, TV.joernWelcomeScreen);
+  await TWS.termWrite(term, TV.joernWelcomeScreen);
   await term.prompt();
 
   return term;
@@ -384,8 +387,8 @@ export const handleWriteToCircuitUIResponse=(refs, value, res_type)=>{
 
 export const handleWriteToCircuitUIInput=(refs)=>{
     const input = refs.circuitUIRef.current.children[1].children[0];
-    input.value = data_obj.data;
-    input.setSelectionRange(data_obj.cursorPosition, data_obj.cursorPosition);
+    input.value = TWS.data_obj.data;
+    input.setSelectionRange(TWS.data_obj.cursorPosition, TWS.data_obj.cursorPosition);
   };
 
 export const handleMaximize = (window, props) => {
