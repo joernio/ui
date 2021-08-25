@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import * as queryActions from '../../store/actions/queryActions';
-import * as filesActions from '../../store/actions/filesActions';
 import { Icon } from '@blueprintjs/core';
 import { MenuDivider, Menu, MenuItem } from '@blueprintjs/core';
 import { ContextMenu2 } from '@blueprintjs/popover2';
@@ -159,9 +158,6 @@ const mapDispatchToProps = dispatch => {
   return {
     enQueueQuery: query => {
       return dispatch(queryActions.enQueueQuery(query));
-    },
-    setRecent: files => {
-      return dispatch(filesActions.setRecent(files));
     },
   };
 };

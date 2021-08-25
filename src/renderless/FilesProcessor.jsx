@@ -1,23 +1,29 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import * as filesActions from '../store/actions/filesActions';
-import { openFile, isFilePathInQueryResult } from '../assets/js/utils/scripts';
 import {
-  getFilePathToOpen,
-  isFileInRecentlyOpened,
-} from './filesProcessorScripts';
+  openFile,
+  isFilePathInQueryResult,
+  refreshRecent,
+  refreshOpenFiles,
+} from '../assets/js/utils/scripts';
+// import { getFilePathToOpen, isFileInOpenFiles } from './filesProcessorScripts';
 
 function FilesProcessor(props) {
-  React.useEffect(async () => {
-    if (props?.workspace?.projects) {
-      const file_path = await getFilePathToOpen(props.workspace);
-      const fileInRecentlyOpened = isFileInRecentlyOpened(
-        file_path,
-        props.files.recent,
-      );
-      file_path && !fileInRecentlyOpened && openFile(file_path);
-    }
-  }, [props.workspace]);
+  // React.useEffect(async () => {
+  //   if (props?.workspace?.projects) {
+  //     const file_path = await getFilePathToOpen(props.workspace);
+  //     const fileInOpenFiles = isFileInOpenFiles(
+  //       file_path,
+  //       props.files.openFiles,
+  //     );
+  //     file_path && !fileInOpenFiles && openFile(file_path);
+  //   }
+  // }, [props.workspace]);
+
+  React.useEffect(() => {
+    refreshRecent();
+    refreshOpenFiles();
+  }, []);
 
   React.useEffect(() => {
     const file_path = isFilePathInQueryResult(props.query.results);
@@ -35,12 +41,4 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    setRecent: files => {
-      return dispatch(filesActions.setRecent(files));
-    },
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(FilesProcessor);
+export default connect(mapStateToProps, null)(FilesProcessor);

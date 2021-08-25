@@ -18,9 +18,9 @@ export const getOpenProjectInputPath = workspace => {
   return { path, root };
 };
 
-export const isFileInRecentlyOpened = (file_path, recent) => {
+export const isFileInOpenFiles = (file_path, openFiles) => {
   if (file_path) {
-    return Object.keys(recent).includes(file_path);
+    return Object.keys(openFiles).includes(file_path);
   } else {
     return true;
   }

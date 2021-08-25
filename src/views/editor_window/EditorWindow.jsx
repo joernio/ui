@@ -1,10 +1,11 @@
 import React from 'react';
 import clsx from 'clsx';
 import MonacoEditor from 'react-monaco-editor';
+import EditorTabs from '../../components/editor_tabs/EditorTabs';
 import { connect } from 'react-redux';
 import * as filesActions from '../../store/actions/filesActions';
 import { makeStyles } from '@material-ui/core';
-import { editorDidMount, handleFileAddedToRecent } from './editorScripts';
+import { editorDidMount, handleChangeMadeToOpenFiles } from './editorScripts';
 import styles from '../../assets/js/styles/views/editor_window/editorWindowStyles';
 
 const useStyles = makeStyles(styles);
@@ -17,23 +18,9 @@ function EditorWindow(props) {
     editorEl: React.useRef(null),
   };
 
-  React.useEffect(async () => {
-    let is_open_project =
-      props.workspace?.projects &&
-      Object.keys(props.workspace.projects).filter(name =>
-        props.workspace.projects[name].open ? true : false,
-      );
-    is_open_project = is_open_project && is_open_project.length;
-    if (refs.editorEl.current && is_open_project) {
-      const { openFileContent, isReadOnly } = await handleFileAddedToRecent(
-        refs,
-        props,
-      );
-      props.setOpenFileContent(openFileContent);
-      props.setOpenFileIsReadOnly(isReadOnly);
-    } else {
-      props.setOpenFileContent('');
-      props.setOpenFileIsReadOnly(true);
+  React.useEffect(() => {
+    if (refs.editorEl.current) {
+      handleChangeMadeToOpenFiles(refs, props);
     }
   }, [props.files.recent, props.workspace.projects]);
 
@@ -58,10 +45,11 @@ function EditorWindow(props) {
       )}
       data-test="editor-window"
     >
+      <EditorTabs />
       <MonacoEditor
         ref={refs.editorEl}
         width="100%"
-        height="100%"
+        height="90%"
         theme={settings.prefersDarkMode ? 'vs-dark' : 'vs-light'}
         language="typescript"
         value={files?.openFileContent}

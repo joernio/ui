@@ -1,7 +1,21 @@
 import { forNodeAtPath, forEachNode } from '../../assets/js/utils/scripts';
 import { store } from '../configureStore';
 
+export const setFiles = payload => {
+   return dispatch => {
+     dispatch({
+       type: 'SET_FILES',
+       payload
+     })
+   };
+};
+
 export const setRecent = payload => {
+  const recent_keys = Object.keys(payload.recent ? payload.recent : {});
+  if(recent_keys.length > 50){
+     delete payload.recent[recent_keys[0]];
+  };
+
   return dispatch => {
     dispatch({
       type: 'SET_RECENT',
@@ -16,6 +30,24 @@ export const setFolders = payload => {
       type: 'SET_FOLDERS',
       payload,
     });
+  };
+};
+
+export const setOpenFiles = payload => {
+  return dispatch => {
+    dispatch({
+      type: 'SET_OPEN_FILES',
+      payload
+    })
+  };
+};
+
+export const setOpenFilePath = payload => {
+  return dispatch => {
+    dispatch({
+      type: 'SET_OPEN_FILE_PATH',
+      payload
+    })
   };
 };
 

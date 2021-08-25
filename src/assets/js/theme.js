@@ -69,8 +69,8 @@ const createTheme = mode =>
           dark: '#1E1E1E',
         },
         base: {
-          light: '#ECECEC',
-          dark: '#6D6D6D',
+          light: '#000000',
+          dark: '#D4D4C9',
         },
         hover: {
           light: '#A5A5A5',

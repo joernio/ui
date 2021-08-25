@@ -45,6 +45,7 @@
     "@testing-library/user-event": "^12.6.0",
     "axios": "^0.21.1",
     "babel-loader": "^8.2.2",
+    "chokidar": "^3.5.2",
     "css-loader": "^5.2.4",
     "glob": "^7.1.7",
     "monaco-editor": "^0.24.0",

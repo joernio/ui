@@ -2,7 +2,6 @@ import React from 'react';
 import clsx from 'clsx';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
-import * as filesActions from '../../store/actions/filesActions';
 import { Icon } from '@blueprintjs/core';
 import {
   openFile,
@@ -11,7 +10,7 @@ import {
 } from '../../assets/js/utils/scripts';
 import styles from '../../assets/js/styles/components/open_files/openFilesStyles';
 import {
-  getEditorFilesFromRecent,
+  getEditorFilesFromOpenFiles,
   handleToggleFilesVisible,
 } from './openFilesScripts';
 
@@ -27,11 +26,11 @@ function OpenFiles(props) {
   });
 
   React.useEffect(() => {
-    if (props.files?.recent) {
-      const files = getEditorFilesFromRecent(props);
+    if (props.files?.openFiles) {
+      const files = getEditorFilesFromOpenFiles(props);
       handleSetState({ files: files ? files : {} });
     }
-  }, [props.files.recent]);
+  }, [props.files.openFiles]);
 
   React.useEffect(() => {
     const callback = e => handleSetState(handleScrollTop(e));
@@ -117,12 +116,4 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    setRecent: files => {
-      return dispatch(filesActions.setRecent(files));
-    },
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(OpenFiles);
+export default connect(mapStateToProps, null)(OpenFiles);

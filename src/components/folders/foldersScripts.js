@@ -3,6 +3,24 @@ import fs from 'fs';
 import { getDirectories, handleSetToast } from '../../assets/js/utils/scripts';
 import { foldersToIgnore } from '../../assets/js/utils/defaultVariables';
 import { selectDirApi } from '../../assets/js/utils/ipcRenderer';
+import { setFolders } from '../../store/actions/filesActions';
+import { store } from '../../store/configureStore';
+import chokidar from 'chokidar';
+
+
+const vars = {
+            chokidarWatcher: null,
+            chokidarConfig: src =>({
+                  ignored: [src + '/**/node_modules/**', src + '/**/vendor/**'],            
+                  awaitWriteFinish: {
+                    stabilityThreshold: 2000,
+                    pollInterval: 100
+                  },
+                  ignorePermissionErrors: true
+                })
+          };
+
+
 
 export const handleToggleFoldersVisible = foldersVisible => {
   return { foldersVisible: !foldersVisible };
@@ -39,6 +57,49 @@ export const shouldSwitchFolder = (prev_workspace, workspace) => {
   } else {
     return true;
   }
+};
+
+
+export const watchFolderPath = (path)=>{
+
+   if(vars.chokidarWatcher){
+
+     vars.chokidarWatcher.close().then(()=>{
+      console.log("path to watch: ",path);
+      if(path){
+        vars.chokidarWatcher = chokidar.watch(path, vars.chokidarConfig(path));
+
+        vars.chokidarWatcher.on('all',()=>{
+          console.log("listener set: ");
+          createFolderJsonModel(
+            {path},
+            folders => {
+              store.dispatch(setFolders(folders));
+            },
+          )
+        });
+      };
+
+     });
+     
+   }else{
+
+    console.log("----- path to watch: ",path);
+
+    if(path){
+      vars.chokidarWatcher = chokidar.watch(path, vars.chokidarConfig(path));
+
+      vars.chokidarWatcher.on('all',()=>{
+        console.log("-----listener set: ");
+        createFolderJsonModel(
+          {path},
+          folders => {
+            store.dispatch(setFolders(folders));
+          },
+        )
+      });
+    };
+   };
 };
 
 const fsToJson = (arr, base, isFile) => {
@@ -117,6 +178,7 @@ export const selectFolderStructureRootPath = async () => {
 };
 
 export const createFolderJsonModel = async (obj, callback) => {
+  console.log("createFolderJsonModel was triggered: obj", obj);
   let { path: root_path } = obj;
   if (root_path) {
     const paths = await getDirectories(root_path).catch(err => {});
@@ -156,7 +218,7 @@ export const createFolderJsonModel = async (obj, callback) => {
 
         if (counter === paths.length) {
           const root = getRoot(folder_json_model, root_path);
-          callback([root]);
+          callback([root], root_path);
         }
       });
 
