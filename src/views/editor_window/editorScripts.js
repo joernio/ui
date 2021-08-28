@@ -1,36 +1,19 @@
-import fs from 'fs';
 import * as editorScripts from './editorScripts';
 import { isFilePathInQueryResult } from '../../assets/js/utils/scripts';
 import { Range } from 'monaco-editor';
 
 let delta_decorations = [];
 
-export const handleFileAddedToRecent = async (refs, props) => {
-  let path = props?.files?.recent ? { ...props.files.recent } : null;
-  path = path && Object.keys(path);
-  path = path ? path.pop() : null;
+export const handleChangeMadeToOpenFiles = (refs, props) => {
+  const { startLine, endLine } = editorScripts.shouldGoToLine(props);
 
-  return await editorScripts.readRecentFile(path)
-    .then(data => {
-      const readOnly = path.slice(path.length - 3) === '.sc' ? false : true;
-
-      const { startLine, endLine } = editorScripts.shouldGoToLine(props);
-
-      setTimeout(() => {
-        editorScripts.goToLine(refs.editorEl.current.editor, startLine);
-        editorScripts.highlightRange(refs.editorEl.current.editor, {
-          startLine,
-          endLine,
-        });
-      }, 1000);
-
-      return { openFileContent: data, isReadOnly: readOnly };
-    })
-    .catch(() => {
-      if (!path || path === path.split('/')[path.split('/').length - 1]) {
-        return { openFileContent: '', isReadOnly: false };
-      }
+  setTimeout(() => {
+    editorScripts.goToLine(refs.editorEl.current.editor, startLine);
+    editorScripts.highlightRange(refs.editorEl.current.editor, {
+      startLine,
+      endLine,
     });
+  }, 1000);
 };
 
 export const goToLine = (editor, row = 1, column = 1) => {
@@ -75,29 +58,15 @@ export const editorDidMount = (editor, monaco) => {
   });
 };
 
-export const readRecentFile = path => {
-  return new Promise((resolve, reject) => {
-    if (path) {
-      fs.readFile(path, 'utf8', (err, data) => {
-        if (!err) {
-          resolve(data);
-        } else {
-          reject(err);
-        }
-      });
-    } else {
-      reject();
-    }
-  });
-};
-
 export const isLineNumberInQueryResult = results => {
   const latest = results[Object.keys(results)[Object.keys(results).length - 1]];
   let range = { startLine: null, endLine: null };
 
-  if (latest?.result.stdout && 
-    typeof latest.result.stdout === "string" 
-    && latest.result.stdout.includes('lineNumber')) {
+  if (
+    latest?.result.stdout &&
+    typeof latest.result.stdout === 'string' &&
+    latest.result.stdout.includes('lineNumber')
+  ) {
     try {
       let startLine = latest.result.stdout.split(
         'lineNumber -> Some(value = ',

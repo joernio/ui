@@ -10,9 +10,14 @@
     "build": "webpack --config webpack.dev.js",
     "prod-build": "webpack --config webpack.prod.js",
     "watch": "webpack --config webpack.dev.js --watch",
-    "test": "jest --silent",
+    "test": "jest",
     "rebuild": "electron-rebuild",
     "prettify": "prettier --config ./.prettierrc.yaml --write \"./**/*.{js,jsx}\""
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "prettier --config ./.prettierrc.yaml --write  \"./**/*.{js,jsx}\" && git add -A"
+    }
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
@@ -45,6 +50,7 @@
     "@testing-library/user-event": "^12.6.0",
     "axios": "^0.21.1",
     "babel-loader": "^8.2.2",
+    "chokidar": "^3.5.2",
     "css-loader": "^5.2.4",
     "glob": "^7.1.7",
     "monaco-editor": "^0.24.0",

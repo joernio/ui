@@ -1,8 +1,8 @@
-export const getEditorFilesFromRecent = props => {
-  if (props.files.recent) {
+export const getEditorFilesFromOpenFiles = props => {
+  if (props.files.openFiles) {
     let files = {};
 
-    let filesArr = Object.keys(props.files.recent).reverse();
+    let filesArr = Object.keys(props.files.openFiles).reverse();
 
     filesArr.forEach(value => {
       files[value] = true;

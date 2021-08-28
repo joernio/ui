@@ -6,9 +6,8 @@ export const handleOpenFile = e => {
 };
 
 export const getOpenFileName = props => {
-  if (props?.files?.recent) {
-    let filename = Object.keys(props.files.recent);
-    filename = filename ? filename.pop() : null;
+  if (props?.files?.openFilePath) {
+    let filename = props.files.openFilePath;
     filename = filename ? filename.split('/') : null;
     filename = filename ? filename[filename.length - 1] : null;
 

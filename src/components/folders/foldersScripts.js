@@ -3,6 +3,21 @@ import fs from 'fs';
 import { getDirectories, handleSetToast } from '../../assets/js/utils/scripts';
 import { foldersToIgnore } from '../../assets/js/utils/defaultVariables';
 import { selectDirApi } from '../../assets/js/utils/ipcRenderer';
+import { setFolders } from '../../store/actions/filesActions';
+import { store } from '../../store/configureStore';
+import chokidar from 'chokidar';
+
+const vars = {
+  chokidarWatcher: null,
+  chokidarConfig: src => ({
+    ignored: [src + '/**/node_modules/**', src + '/**/vendor/**'],
+    awaitWriteFinish: {
+      stabilityThreshold: 2000,
+      pollInterval: 100,
+    },
+    ignorePermissionErrors: true,
+  }),
+};
 
 export const handleToggleFoldersVisible = foldersVisible => {
   return { foldersVisible: !foldersVisible };
@@ -38,6 +53,32 @@ export const shouldSwitchFolder = (prev_workspace, workspace) => {
     return notEqual;
   } else {
     return true;
+  }
+};
+
+export const watchFolderPath = path => {
+  if (vars.chokidarWatcher) {
+    vars.chokidarWatcher.close().then(() => {
+      if (path) {
+        vars.chokidarWatcher = chokidar.watch(path, vars.chokidarConfig(path));
+
+        vars.chokidarWatcher.on('all', () => {
+          createFolderJsonModel({ path }, folders => {
+            store.dispatch(setFolders(folders));
+          });
+        });
+      }
+    });
+  } else {
+    if (path) {
+      vars.chokidarWatcher = chokidar.watch(path, vars.chokidarConfig(path));
+
+      vars.chokidarWatcher.on('all', () => {
+        createFolderJsonModel({ path }, folders => {
+          store.dispatch(setFolders(folders));
+        });
+      });
+    }
   }
 };
 
@@ -156,7 +197,7 @@ export const createFolderJsonModel = async (obj, callback) => {
 
         if (counter === paths.length) {
           const root = getRoot(folder_json_model, root_path);
-          callback([root]);
+          callback([root], root_path);
         }
       });
 

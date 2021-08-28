@@ -10,6 +10,7 @@ import { Icon } from '@blueprintjs/core';
 import { Classes, Tree } from '@blueprintjs/core';
 import {
   handleScrollTop,
+  openProjectExists,
   openFile,
   getFolderStructureRootPathFromWorkspace,
 } from '../../assets/js/utils/scripts';
@@ -20,6 +21,7 @@ import {
   handleToggleFoldersVisible,
   selectFolderStructureRootPath,
   shouldSwitchFolder,
+  watchFolderPath,
 } from './foldersScripts';
 
 const useStyles = makeStyles(styles);
@@ -54,8 +56,15 @@ function Folders(props) {
     ) {
       createFolderJsonModel(
         getFolderStructureRootPathFromWorkspace(props.workspace),
-        folders => props.setFolders(folders),
+        (folders, root_path) => {
+          props.setFolders(folders);
+          watchFolderPath(root_path);
+        },
       );
+    }
+
+    if (!openProjectExists(props.workspace)) {
+      props.setFolders([]);
     }
 
     handleSetState({
@@ -117,7 +126,10 @@ function Folders(props) {
               onClick={async () =>
                 createFolderJsonModel(
                   await selectFolderStructureRootPath(),
-                  folders => props.setFolders(folders),
+                  (folders, root_path) => {
+                    props.setFolders(folders);
+                    watchFolderPath(root_path);
+                  },
                 )
               }
               text="Switch Folder"
@@ -179,9 +191,6 @@ const mapDispatchToProps = dispatch => {
   return {
     enQueueQuery: query => {
       return dispatch(queryActions.enQueueQuery(query));
-    },
-    setRecent: files => {
-      return dispatch(filesActions.setRecent(files));
     },
     expandOrCollapseFolder: (nodePath, bool) => {
       return dispatch(filesActions.expandOrCollapseFolder(nodePath, bool));

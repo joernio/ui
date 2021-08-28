@@ -16,7 +16,7 @@ import {
   enQueueQuery,
 } from '../../../store/actions/queryActions';
 import { setToast } from '../../../store/actions/statusActions';
-import { setRecent } from '../../../store/actions/filesActions';
+import { setFiles } from '../../../store/actions/filesActions';
 import { windowActionApi, selectDirApi } from './ipcRenderer';
 import { store } from '../../../store/configureStore';
 import { mouseTrapGlobalBindig } from './extensions';
@@ -207,41 +207,133 @@ export const handleWebSocketResponse = data => {
   });
 };
 
-export const getWorkspace = result => {
-  result = JSON.parse(JSON.stringify(result));
-
-  //  if(result.workspace){
-  //    return workspace
-  //  }else if(result.query ==="workspace"){
-  //    workspace = parseProjects(result.result);
-  //    return workspace;
-  //  }
-};
-
 export const handleScrollTop = e => {
   return e.target.scrollTop > 0 ? { scrolled: true } : { scrolled: false };
 };
 
-export const openFile = path => {
+export const openFile = async path => {
   if (path) {
     const files = { ...store.getState().files };
-    delete files.recent[path];
+    files.recent = { ...files.recent };
     files.recent[path] = true;
-    store.dispatch(setRecent(files));
+
+    if (!Object.keys(files.openFiles).includes(path)) {
+      const entries = Object.entries({ ...files.openFiles });
+      const new_entries = [];
+
+      if (entries.length === 0) {
+        new_entries.push([path, true]);
+      }
+
+      entries.forEach((entry, index) => {
+        if (entry[0] === files.openFilePath) {
+          new_entries.push([...entry], [path, true]);
+        } else {
+          new_entries.push([...entry]);
+
+          if (index === entries.length - 1) new_entries.push([path, true]);
+        }
+      });
+      files.openFiles = Object.fromEntries(new_entries);
+    }
+
+    files.openFilePath = path;
+
+    const { openFileContent, openFileIsReadOnly } = await readFile(path)
+      .then(data => {
+        const openFileIsReadOnly =
+          path.slice(path.length - 3) === '.sc' ? false : true;
+
+        return { openFileContent: data, openFileIsReadOnly };
+      })
+      .catch(() => {
+        handleSetToast({
+          icon: 'warning-sign',
+          intent: 'danger',
+          message: 'error opening file',
+        });
+        if (!path || path === path.split('/')[path.split('/').length - 1]) {
+          return {
+            openFileContent: '',
+            openFileIsReadOnly:
+              path && path.startsWith('untitled') ? false : true,
+          };
+        }
+      });
+
+    files.openFileContent = openFileContent;
+    files.openFileIsReadOnly = openFileIsReadOnly;
+    store.dispatch(setFiles(files));
   }
 };
 
-export const closeFile = path => {
+export const closeFile = async path => {
   if (path) {
     const files = { ...store.getState().files };
-    delete files.recent[path];
-    store.dispatch(setRecent(files));
+
+    let openFiles = { ...files.openFiles };
+    let openFilesKeys = Object.keys(openFiles);
+    openFilesKeys.forEach((key, index) => {
+      if (key === path) {
+        const prevArr = openFilesKeys.slice(0, index);
+        const nextArr = openFilesKeys.slice(index + 1);
+        files.openFilePath = nextArr[0] || prevArr.pop() || '';
+      }
+    });
+
+    const entries = Object.entries(openFiles);
+    const new_entries = entries.filter(entry =>
+      entry[0] !== path ? true : false,
+    );
+    files.openFiles = Object.fromEntries(new_entries);
+
+    const { openFileContent, openFileIsReadOnly } = await readFile(
+      files.openFilePath,
+    )
+      .then(data => {
+        const openFileIsReadOnly =
+          files.openFilePath.slice(files.openFilePath.length - 3) === '.sc'
+            ? false
+            : true;
+
+        return { openFileContent: data, openFileIsReadOnly };
+      })
+      .catch(() => {
+        if (files.openFilePath !== '') {
+          handleSetToast({
+            icon: 'warning-sign',
+            intent: 'danger',
+            message: 'error closing file',
+          });
+        }
+
+        if (
+          !files.openFilePath ||
+          files.openFilePath ===
+            files.openFilePath.split('/')[
+              files.openFilePath.split('/').length - 1
+            ]
+        ) {
+          return {
+            openFileContent: '',
+            openFileIsReadOnly:
+              files.openFilePath && files.openFilePath.startsWith('untitled')
+                ? false
+                : true,
+          };
+        }
+      });
+
+    files.openFileContent = openFileContent;
+    files.openFileIsReadOnly = openFileIsReadOnly;
+
+    store.dispatch(setFiles(files));
   }
 };
 
 export const openEmptyFile = () => {
-  const files = store.getState().files;
-  let last_untitled = Object.keys(files).filter(file =>
+  const files = { ...store.getState().files };
+  let last_untitled = Object.keys(files.openFiles).filter(file =>
     file.startsWith('untitled') ? true : false,
   );
   let index = 0;
@@ -250,17 +342,40 @@ export const openEmptyFile = () => {
     if (Number(count) > index) index = Number(count);
   });
 
-  files.recent[`untitled (${index + 1})`] = true;
-  store.dispatch(setRecent(files));
+  const file_name = `untitled (${index + 1})`;
+
+  const entries = Object.entries({ ...files.openFiles });
+  const new_entries = [];
+
+  if (entries.length === 0) {
+    new_entries.push([file_name, true]);
+  }
+
+  entries.forEach((entry, index) => {
+    if (entry[0] === files.openFilePath) {
+      new_entries.push([...entry], [file_name, true]);
+    } else {
+      new_entries.push([...entry]);
+
+      if (index === entries.length - 1) new_entries.push([file_name, true]);
+    }
+  });
+  files.openFiles = Object.fromEntries(new_entries);
+
+  files.openFilePath = file_name;
+
+  files.openFileContent = '';
+  files.openFileIsReadOnly = false;
+
+  store.dispatch(setFiles(files));
 };
 
 export const saveFile = path => {
   const file_content = store.getState().files.openFileContent;
-  const files = store.getState().files;
+  const files = { ...store.getState().files };
 
   if (!path) {
-    path = Object.keys(files.recent);
-    path = path[path.length - 1];
+    path = files.openFilePath;
   }
 
   const readOnly = path && path.slice(path.length - 3) === '.sc' ? false : true;
@@ -347,11 +462,22 @@ export const saveFile = path => {
                     message: 'saved successfully',
                   });
 
-                  delete files.recent[path];
-
                   files.recent[file.filePath.toString()] = true;
+                  files.openFilePath = file.filePath.toString();
 
-                  store.dispatch(setRecent(files.recent));
+                  const entries = Object.entries({ ...files.openFiles });
+                  const new_entries = [];
+                  entries.forEach(entry => {
+                    if (entry[0] === path) {
+                      new_entries.push([files.openFilePath, true]);
+                    } else {
+                      new_entries.push([...entry]);
+                    }
+                  });
+
+                  files.openFiles = Object.fromEntries(new_entries);
+
+                  store.dispatch(setFiles(files));
                   store.dispatch(enQueueQuery(addWorkSpaceQueryToQueue()));
                 }
               });
@@ -376,70 +502,144 @@ export const saveFile = path => {
 };
 
 export const deleteFile = path => {
-  const files = store.getState().files;
+  if (path) {
+    const readOnly =
+      path && path.slice(path.length - 3) === '.sc' ? false : true;
 
-  if (!path) {
-    path = Object.keys(files.recent);
-    path = path[path.length - 1];
-  }
-
-  const readOnly = path && path.slice(path.length - 3) === '.sc' ? false : true;
-
-  if (!readOnly || path.startsWith('untitled')) {
-    path &&
-      new Promise((resolve, reject) => {
-        fs.stat(path, (err, stats) => {
-          if (!err && stats.isFile()) {
-            resolve(stats);
-          } else {
-            reject(err);
-          }
-        });
-      })
-        .then(() => {
-          fs.unlink(path, err => {
-            if (!err) {
-              handleSetToast({
-                icon: 'info-sign',
-                intent: 'success',
-                message: 'file deleted successfully',
-              });
-
-              delete files.recent[path];
-              store.dispatch(setRecent(files.recent));
-              store.dispatch(enQueueQuery(addWorkSpaceQueryToQueue()));
+    if (!readOnly) {
+      path &&
+        new Promise((resolve, reject) => {
+          fs.stat(path, (err, stats) => {
+            if (!err && stats.isFile()) {
+              resolve(stats);
             } else {
-              handleSetToast({
-                icon: 'warning-sign',
-                intent: 'danger',
-                message: 'file cannot be deleted',
-              });
+              reject(err);
             }
           });
         })
-        .catch(() => {
-          handleSetToast({
-            icon: 'warning-sign',
-            intent: 'danger',
-            message: 'file not found',
+          .then(() => {
+            fs.unlink(path, err => {
+              if (!err) {
+                handleSetToast({
+                  icon: 'info-sign',
+                  intent: 'success',
+                  message: 'file deleted successfully',
+                });
+                closeFile(path);
+                refreshRecent();
+                store.dispatch(enQueueQuery(addWorkSpaceQueryToQueue()));
+              } else {
+                handleSetToast({
+                  icon: 'warning-sign',
+                  intent: 'danger',
+                  message: 'file cannot be deleted',
+                });
+              }
+            });
+          })
+          .catch(() => {
+            handleSetToast({
+              icon: 'warning-sign',
+              intent: 'danger',
+              message: 'file not found',
+            });
           });
+    } else {
+      handleSetToast({
+        icon: 'warning-sign',
+        intent: 'danger',
+        message: 'can only delete .sc files',
+      });
+    }
+  }
+};
+
+export const readFile = path => {
+  return new Promise((resolve, reject) => {
+    if (path) {
+      fs.readFile(path, 'utf8', (err, data) => {
+        if (!err) {
+          resolve(data);
+        } else {
+          reject(err);
+        }
+      });
+    } else {
+      reject();
+    }
+  });
+};
+
+export const refreshRecent = async () => {
+  const files = { ...store.getState().files };
+  if (
+    typeof files.recent === 'object' &&
+    Object.keys(files.recent).length > 0
+  ) {
+    const recent = { ...files.recent };
+    let recent_entries = Object.entries(recent);
+
+    recent_entries = recent_entries.map(entry => {
+      return new Promise(r => {
+        fs.stat(entry[0], err => {
+          if (!err) {
+            return r(entry);
+          } else {
+            return r(false);
+          }
         });
-  } else {
-    handleSetToast({
-      icon: 'warning-sign',
-      intent: 'danger',
-      message: 'can only delete .sc files',
+      });
     });
+
+    recent_entries = await Promise.all(recent_entries);
+
+    recent_entries = recent_entries.filter(entry =>
+      entry !== false ? true : false,
+    );
+
+    files.recent = Object.fromEntries(recent_entries);
+    store.dispatch(setFiles(files));
+  }
+};
+
+export const refreshOpenFiles = async () => {
+  const files = { ...store.getState().files };
+  if (
+    typeof files.openFiles === 'object' &&
+    Object.keys(files.openFiles).length > 0
+  ) {
+    const openFiles = { ...files.openFiles };
+    let open_files_entries = Object.entries(openFiles);
+
+    open_files_entries = open_files_entries.map(entry => {
+      return new Promise(r => {
+        fs.stat(entry[0], (err, stats) => {
+          if (!err && stats.isFile()) {
+            return r(entry);
+          } else {
+            return r(false);
+          }
+        });
+      }).then(value => value);
+    });
+
+    open_files_entries = await Promise.all(open_files_entries);
+    open_files_entries = open_files_entries.filter(entry =>
+      entry !== false ? true : false,
+    );
+    files.openFiles = Object.fromEntries(open_files_entries);
+    store.dispatch(setFiles(files));
   }
 };
 
 export const isFilePathInQueryResult = results => {
   const latest = results[Object.keys(results)[Object.keys(results).length - 1]];
 
-  if (latest?.result.stdout && 
-    typeof latest.result.stdout === "string" 
-    && latest.result.stdout.includes('filename')) {
-      
+  if (
+    latest?.result.stdout &&
+    typeof latest.result.stdout === 'string' &&
+    latest.result.stdout.includes('filename')
+  ) {
     let file_path;
 
     try {
@@ -608,6 +808,15 @@ export const areResultsEqual = (prev_results, results) => {
   } else {
     return true; //this is a trick to force the code not to perform the action that depends on this function.
   }
+};
+
+export const openProjectExists = workspace => {
+  let is_open_project =
+    workspace?.projects &&
+    Object.keys(workspace.projects).filter(name =>
+      workspace.projects[name].open ? true : false,
+    );
+  return is_open_project && is_open_project.length;
 };
 
 export const latestIsManCommand = results => {
@@ -796,8 +1005,7 @@ export const nFormatter = num => {
   return num;
 };
 
-
-export const handleFontSizeChange =(doc, fontSize)=>{
+export const handleFontSizeChange = (doc, fontSize) => {
   doc.children[0].style.fontSize = fontSize;
   doc.children[0].children[1].style.fontSize = fontSize;
 };
