@@ -57,7 +57,6 @@ function Folders(props) {
       createFolderJsonModel(
         getFolderStructureRootPathFromWorkspace(props.workspace),
         (folders, root_path) => {
-          console.log('root_path: ', root_path);
           props.setFolders(folders);
           watchFolderPath(root_path);
         },
@@ -128,7 +127,6 @@ function Folders(props) {
                 createFolderJsonModel(
                   await selectFolderStructureRootPath(),
                   (folders, root_path) => {
-                    console.log('root_path: ', root_path);
                     props.setFolders(folders);
                     watchFolderPath(root_path);
                   },

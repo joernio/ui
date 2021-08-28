@@ -8,8 +8,6 @@ export const getEditorFilesFromOpenFiles = props => {
       files[value] = true;
     });
 
-    console.log("inside getEditorFilesFromOpenFiles: ", files);
-
     return files;
   }
 };

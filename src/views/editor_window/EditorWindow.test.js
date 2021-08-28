@@ -2,16 +2,18 @@ import 'jsdom-global/register';
 import React from 'react';
 import EditorWindow from './EditorWindow';
 import MonacoEditor from 'react-monaco-editor';
-import {default_state as settings} from '../../store/reducers/settingsReducers';
-import {default_state as files} from '../../store/reducers/filesReducers';
-import {default_state as query} from '../../store/reducers/queryReducers';
-import {default_state as workspace} from '../../store/reducers/workSpaceReducers';
-import {mount} from 'enzyme';
-import {findByTestAttr, testStore} from '../../assets/js/utils/testUtils';
-import { editorDidMount, handleFileAddedToRecent } from './editorScripts';
+import EditorTabs from '../../components/editor_tabs/EditorTabs';
+import { makeStyles } from '@material-ui/core/styles';
+import { default_state as settings } from '../../store/reducers/settingsReducers';
+import { default_state as files } from '../../store/reducers/filesReducers';
+import { default_state as query } from '../../store/reducers/queryReducers';
+import { default_state as workspace } from '../../store/reducers/workSpaceReducers';
+import { mount } from 'enzyme';
+import { findByTestAttr, testStore } from '../../assets/js/utils/testUtils';
+import { editorDidMount, handleChangeMadeToOpenFiles } from './editorScripts';
 // import {setWorkSpace} from '../../store/actions/workSpaceActions';
 
-const mock_file_content = "abcdefgh";
+const mock_file_content = 'abcdefgh';
 // const mock_workspace = {
 //     path:"/home/raymond/Desktop/workspace",
 //     projects:{
@@ -24,113 +26,103 @@ const mock_file_content = "abcdefgh";
 //       }
 //   };
 
-jest.mock('react-monaco-editor', ()=>({
-    __esModule: true,
-    default: jest.fn(({editorDidMount})=>{
-        editorDidMount();
-        return <div data-test="monaco-editor"></div>;
-    })
+jest.mock('@material-ui/core/styles', () => ({
+  __esModule: true,
+  makeStyles: jest.fn(() => () => ({})),
 }));
 
-jest.mock('./editorScripts', ()=>({
-    __esModule: true,
-    editorDidMount: jest.fn(()=>{}),
-    handleFileAddedToRecent: jest.fn(()=>(new Promise(r=>r({openFileContent: mock_file_content, isReadOnly: false}))))
+jest.mock('react-monaco-editor', () => ({
+  __esModule: true,
+  default: jest.fn(({ editorDidMount }) => {
+    editorDidMount();
+    return <div data-test="monaco-editor"></div>;
+  }),
 }));
 
+jest.mock('../../components/editor_tabs/EditorTabs', () => ({
+  __esModule: true,
+  default: jest.fn(() => <div data-test="editor-tabs"></div>),
+}));
 
-const setUp =(initialState={})=> {
-    const store = testStore(initialState);
-    const wrapper = mount(<EditorWindow store={store}/>);
-    return {wrapper, store};
-}
+jest.mock('./editorScripts', () => ({
+  __esModule: true,
+  editorDidMount: jest.fn(() => {}),
+  handleChangeMadeToOpenFiles: jest.fn(() => {}),
+}));
 
-describe('EditorWindow component:', ()=>{
-    let wrapper, monaco_editor, store;
+const setUp = (initialState = {}) => {
+  const store = testStore(initialState);
+  const wrapper = mount(<EditorWindow store={store} />);
+  return { wrapper, store };
+};
 
-    beforeEach(()=>{
-        let wrapper_and_store = setUp({settings, files, query, workspace});
-        wrapper = wrapper_and_store.wrapper;
-        store = wrapper_and_store.store;
-        monaco_editor = wrapper.find(MonacoEditor);
-    });
+describe('EditorWindow component:', () => {
+  let wrapper, monaco_editor, editor_tabs, store;
 
-    it('EditorWindow.jsx Should render without errors', ()=> {
-        const component = findByTestAttr(wrapper, 'editor-window');
-        expect(component.length).toBe(1);
-    });
+  beforeEach(() => {
+    let wrapper_and_store = setUp({ settings, files, query, workspace });
+    wrapper = wrapper_and_store.wrapper;
+    store = wrapper_and_store.store;
+    editor_tabs = wrapper.find(EditorTabs);
+    monaco_editor = wrapper.find(MonacoEditor);
+  });
 
-    it('expect editorDidMount to have been called', ()=>{
-        expect(editorDidMount).toHaveBeenCalled(); 
-    });
+  it('EditorWindow.jsx Should render without errors', () => {
+    const component = findByTestAttr(wrapper, 'editor-window');
+    expect(component.length).toBe(1);
+  });
 
-    it('expect openFileContent to be "" ', ()=>{
-      expect(store.getState().files.openFileContent).toBe('');
-    });
+  it('expect makeStyles to have been called', () => {
+    expect(makeStyles).toHaveBeenCalled();
+  });
 
-    it('expect openFileIsReadOnly to be true', ()=>{
-     expect(store.getState().files.openFileIsReadOnly).toBe(true);
-    });
+  // it('expect handleChangeMadeToOpenFiles to have been called', ()=>{
+  //   expect(handleChangeMadeToOpenFiles).toHaveBeenCalled();
+  // });
 
-    it('expect monaco_editor component.length to be 1', ()=>{
-        const component = findByTestAttr(monaco_editor, 'monaco-editor');
-        expect(component.length).toBe(1);
-    });
+  it('expect editorDidMount to have been called', () => {
+    expect(editorDidMount).toHaveBeenCalled();
+  });
 
-    it('expect monaco_editor.props().width to be "100%"', ()=>{
-       expect(monaco_editor.props().width).toBe("100%");
-    });
+  it('expect editor_tabs component.length to be 1', () => {
+    const component = findByTestAttr(editor_tabs, 'editor-tabs');
+    expect(component.length).toBe(1);
+  });
 
-    it('expect monaco_editor.props().height to be "100%"', ()=>{
-       expect(monaco_editor.props().height).toBe("100%");
-    });
+  it('expect monaco_editor component.length to be 1', () => {
+    const component = findByTestAttr(monaco_editor, 'monaco-editor');
+    expect(component.length).toBe(1);
+  });
 
-    it('expect monaco_editor.props().theme oneof vs-dark and vs-light', ()=>{
-       expect(["vs-dark", "vs-light"]).toContain(monaco_editor.props().theme);
-    });
+  it('expect monaco_editor.props().width to be "100%"', () => {
+    expect(monaco_editor.props().width).toBe('100%');
+  });
 
-    it('expect monaco_editor.props().language to be "typescript"', ()=>{
-       expect(monaco_editor.props().language).toBe("typescript");
-    });
+  it('expect monaco_editor.props().height to be "90%"', () => {
+    expect(monaco_editor.props().height).toBe('90%');
+  });
 
-    it('expect monaco_editor.props().value to be ""', ()=>{
-       expect(monaco_editor.props().value).toBe("");
-    });
+  it('expect monaco_editor.props().theme oneof vs-dark and vs-light', () => {
+    expect(['vs-dark', 'vs-light']).toContain(monaco_editor.props().theme);
+  });
 
-    it('expect typeof monaco_editor.props().options to be "object"', ()=>{
-       expect(typeof monaco_editor.props().options).toBe("object");
-    });
+  it('expect monaco_editor.props().language to be "typescript"', () => {
+    expect(monaco_editor.props().language).toBe('typescript');
+  });
 
-    it('expect typeof monaco_editor.props().onChange to be "function"', ()=>{
-       expect(typeof monaco_editor.props().onChange).toBe("function");
-    });
+  it('expect monaco_editor.props().value to be ""', () => {
+    expect(monaco_editor.props().value).toBe('');
+  });
 
-    it('expect typeof monaco_editor.props().editorDidMount to be "function"', ()=>{
-        expect(typeof monaco_editor.props().editorDidMount).toBe("function");
-     });
+  it('expect typeof monaco_editor.props().options to be "object"', () => {
+    expect(typeof monaco_editor.props().options).toBe('object');
+  });
 
-    // it('expect change to workspace project to trigger handleFileAddedToRecent and update openFileContent and isReadOnly', ()=>{
-    //   act(()=>{
-    //      store.dispatch(setWorkSpace(mock_workspace));
-    //   });
+  it('expect typeof monaco_editor.props().onChange to be "function"', () => {
+    expect(typeof monaco_editor.props().onChange).toBe('function');
+  });
 
-    // // await act(() => new Promise(process.nextTick));
-    // // wrapper.update(); 
-
-    // //   expect(handleFileAddedToRecent).toHaveBeenCalled();
-    //   expect(store.getState().files.openFileContent).toBe(mock_file_content);
-    //   expect(store.getState().files.isReadOnly).toBe(false);
-    // });
-
-    // afterEach(()=>{
-    //     wrapper.unmount();
-    // })
-
-
-
-    // it('expect unmounting app.js to call removeShortcuts', ()=>{
-    //  wrapper.unmount();
-    //  expect(removeShortcuts).toHaveBeenCalled();
-    // });
-
-})
+  it('expect typeof monaco_editor.props().editorDidMount to be "function"', () => {
+    expect(typeof monaco_editor.props().editorDidMount).toBe('function');
+  });
+});

@@ -13,7 +13,7 @@ function EditorTabs(props) {
 
   const { openFiles } = props.files;
   return (
-    <div className={classes.editorTabsContainerStyle}>
+    <div className={classes.editorTabsContainerStyle} data-test="editor-tabs">
       {Object.keys(openFiles ? openFiles : {}).map(path => {
         let filename = path.split('/');
         filename = filename[filename.length - 1];

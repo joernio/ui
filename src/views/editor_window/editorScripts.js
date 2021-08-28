@@ -5,17 +5,15 @@ import { Range } from 'monaco-editor';
 let delta_decorations = [];
 
 export const handleChangeMadeToOpenFiles = (refs, props) => {
+  const { startLine, endLine } = editorScripts.shouldGoToLine(props);
 
-      const { startLine, endLine } = editorScripts.shouldGoToLine(props);
-
-      setTimeout(() => {
-        editorScripts.goToLine(refs.editorEl.current.editor, startLine);
-        editorScripts.highlightRange(refs.editorEl.current.editor, {
-          startLine,
-          endLine,
-        });
-      }, 1000);
-
+  setTimeout(() => {
+    editorScripts.goToLine(refs.editorEl.current.editor, startLine);
+    editorScripts.highlightRange(refs.editorEl.current.editor, {
+      startLine,
+      endLine,
+    });
+  }, 1000);
 };
 
 export const goToLine = (editor, row = 1, column = 1) => {
@@ -60,14 +58,15 @@ export const editorDidMount = (editor, monaco) => {
   });
 };
 
-
 export const isLineNumberInQueryResult = results => {
   const latest = results[Object.keys(results)[Object.keys(results).length - 1]];
   let range = { startLine: null, endLine: null };
 
-  if (latest?.result.stdout && 
-    typeof latest.result.stdout === "string" 
-    && latest.result.stdout.includes('lineNumber')) {
+  if (
+    latest?.result.stdout &&
+    typeof latest.result.stdout === 'string' &&
+    latest.result.stdout.includes('lineNumber')
+  ) {
     try {
       let startLine = latest.result.stdout.split(
         'lineNumber -> Some(value = ',

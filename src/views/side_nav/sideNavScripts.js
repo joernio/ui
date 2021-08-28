@@ -14,13 +14,15 @@ export const handleTerminalToggle = props => {
 };
 
 export const handleOnChange = (e, values) => {
-  if (e.target.id === 'prefers_dark_mode' ||
-      e.target.id === 'prefers_terminal_view') {
+  if (
+    e.target.id === 'prefers_dark_mode' ||
+    e.target.id === 'prefers_terminal_view'
+  ) {
     values[e.target.id] = e.target.checked;
   } else {
     values[e.target.id] = e.target.value;
   }
-  return {values};
+  return { values };
 };
 
 export const getSettingsInitialValues = settings => {
@@ -34,7 +36,7 @@ export const getSettingsInitialValues = settings => {
 
   initialSettings['prefers_dark_mode'] = settings?.prefersDarkMode;
   initialSettings['prefers_terminal_view'] = settings?.prefersTerminalView;
-  initialSettings['font_size'] = Number(settings?.fontSize.split("px")[0]);
+  initialSettings['font_size'] = Number(settings?.fontSize.split('px')[0]);
 
   return initialSettings;
 };

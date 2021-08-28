@@ -2,7 +2,11 @@ import React from 'react';
 import { ThemeProvider } from '@material-ui/core/styles';
 import createTheme from './assets/js/theme';
 import initIPCRenderer from './assets/js/utils/ipcRenderer';
-import { initShortcuts, removeShortcuts, handleFontSizeChange } from './assets/js/utils/scripts';
+import {
+  initShortcuts,
+  removeShortcuts,
+  handleFontSizeChange,
+} from './assets/js/utils/scripts';
 import { connect } from 'react-redux';
 
 import WindowWrapper from './views/WindowWrapper';
@@ -23,19 +27,20 @@ function App(props) {
       initIPCRenderer(props.settings.websocket.url);
   }, [props.settings.websocket]);
 
-  React.useEffect(()=>{
-    props.settings?.fontSize && handleFontSizeChange(document, props.settings.fontSize);
-  },[props.settings.fontSize])
+  React.useEffect(() => {
+    props.settings?.fontSize &&
+      handleFontSizeChange(document, props.settings.fontSize);
+  }, [props.settings.fontSize]);
 
   const theme = createTheme(props.settings.prefersDarkMode);
 
   return (
-    <div data-test='app'>
+    <div data-test="app">
       <ThemeProvider theme={theme}>
         <WindowWrapper>
           <Window />
         </WindowWrapper>
-        </ThemeProvider>
+      </ThemeProvider>
       <Toaster />
       <QueryProcessor />
       <WorkspaceProcessor />

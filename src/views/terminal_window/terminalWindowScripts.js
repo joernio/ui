@@ -39,14 +39,16 @@ export const constructInputToWrite = () =>
     .split('<n>')
     .join(TV.joernDefaultPrompt.length + TWS.data_obj.cursorPosition);
 
-export const constructOutputToWrite = (prompt, value, isCircuitUI) =>{
-  if(isCircuitUI){
+export const constructOutputToWrite = (prompt, value, isCircuitUI) => {
+  if (isCircuitUI) {
     return `<pre>${value}</pre>`;
-  };
+  }
 
-  return TV.clearLine +
-  (prompt !== null ? prompt : ' ') +
-  (value !== null ? value : 'Running script .....');
+  return (
+    TV.clearLine +
+    (prompt !== null ? prompt : ' ') +
+    (value !== null ? value : 'Running script .....')
+  );
 };
 
 export const handleTerminalMaximizeToggle = bool => {
@@ -186,7 +188,11 @@ export const handleEnter = async (term, refs) => {
   store.dispatch(enQueueQuery(query));
   store.dispatch(setTerminalBusy(true));
   await TWS.termWriteLn(term, '');
-  TWS.handleWriteToCircuitUIResponse(refs, TWS.constructOutputToWrite(null, TWS.data_obj.data, true), "query");
+  TWS.handleWriteToCircuitUIResponse(
+    refs,
+    TWS.constructOutputToWrite(null, TWS.data_obj.data, true),
+    'query',
+  );
   TWS.updateData(null);
   TWS.updateCursorPosition(0);
   TWS.handleWriteToCircuitUIInput(refs);
@@ -214,7 +220,9 @@ export const handleArrowUp = async (term, refs, history, ev) => {
   TWS.updateCursorPosition(0);
   TWS.updateData(prev_query.query ? prev_query.query : null);
   TWS.updateCursorPosition(
-    prev_query.query ? TWS.data_obj.cursorPosition + prev_query.query.length : 0,
+    prev_query.query
+      ? TWS.data_obj.cursorPosition + prev_query.query.length
+      : 0,
   );
   refs.circuitUIRef.current.children[1].children[0].value = TWS.data_obj.data;
   await TWS.termWrite(term, TWS.constructInputToWrite());
@@ -230,7 +238,9 @@ export const handleArrowDown = async (term, refs, history, ev) => {
   TWS.updateCursorPosition(0);
   TWS.updateData(next_query.query ? next_query.query : null);
   TWS.updateCursorPosition(
-    next_query.query ? TWS.data_obj.cursorPosition + next_query.query.length : 0,
+    next_query.query
+      ? TWS.data_obj.cursorPosition + next_query.query.length
+      : 0,
   );
   refs.circuitUIRef.current.children[1].children[0].value = TWS.data_obj.data;
   await TWS.termWrite(term, TWS.constructInputToWrite());
@@ -276,10 +286,13 @@ export const handleWriteQueryResult = async (term, refs, latest) => {
 
   for (let i = 0; i < lines.length; i++) {
     await TWS.termWriteLn(term, TWS.constructOutputToWrite(null, lines[i]));
-  };
+  }
 
-  TWS.handleWriteToCircuitUIResponse(refs, TWS.constructOutputToWrite(null, lines.join("\n"), true), res_type);
-
+  TWS.handleWriteToCircuitUIResponse(
+    refs,
+    TWS.constructOutputToWrite(null, lines.join('\n'), true),
+    res_type,
+  );
 
   await term.prompt();
   store.dispatch(setTerminalBusy(false));
@@ -291,7 +304,11 @@ export const handleWriteScriptQuery = async (term, refs) => {
   TWS.updateCursorPosition(0);
 
   await TWS.termWriteLn(term, TWS.constructOutputToWrite(null, null));
-  TWS.handleWriteToCircuitUIResponse(refs, TWS.constructOutputToWrite(null, "Running script .....", true), "query");
+  TWS.handleWriteToCircuitUIResponse(
+    refs,
+    TWS.constructOutputToWrite(null, 'Running script .....', true),
+    'query',
+  );
   store.dispatch(setTerminalBusy(true));
 };
 
@@ -312,7 +329,11 @@ export const handleWriteQuery = async (term, refs, latest) => {
     }
   }
 
-  TWS.handleWriteToCircuitUIResponse(refs, TWS.constructOutputToWrite(null, lines.join("\n"), true), "query");
+  TWS.handleWriteToCircuitUIResponse(
+    refs,
+    TWS.constructOutputToWrite(null, lines.join('\n'), true),
+    'query',
+  );
 
   store.dispatch(setTerminalBusy(true));
 };
@@ -340,56 +361,73 @@ export const initXterm = async prefersDarkMode => {
   return term;
 };
 
-export const initCircuitUI=refs=>{
+export const initCircuitUI = refs => {
   const el = refs.circuitUIRef.current;
 
-  el.children[1].children[0].addEventListener("keydown", async function handleInitCircuitUIInputKeyDown(e){
-   const { term } = store.getState().terminal;
-   await handleXTermOnKey(term, refs, {domEvent: e});
-  }, false);
+  el.children[1].children[0].addEventListener(
+    'keydown',
+    async function handleInitCircuitUIInputKeyDown(e) {
+      const { term } = store.getState().terminal;
+      await handleXTermOnKey(term, refs, { domEvent: e });
+    },
+    false,
+  );
 
-  el.children[1].children[1].addEventListener("click", async function handleInitCircuitUIButtonClick(e){
-    const { term, busy } = store.getState().terminal;
-    if(!busy){
-      await handleEnter(term, refs);
-    }
-  }, false);
+  el.children[1].children[1].addEventListener(
+    'click',
+    async function handleInitCircuitUIButtonClick(e) {
+      const { term, busy } = store.getState().terminal;
+      if (!busy) {
+        await handleEnter(term, refs);
+      }
+    },
+    false,
+  );
 
-  return ()=>{
-    el.children[1].children[0].removeEventListener("keydown", handleInitCircuitUIInputKeyDown);
-    el.children[1].children[1].removeEventListener("click", handleInitCircuitUIButtonClick);
-  }
+  return () => {
+    el.children[1].children[0].removeEventListener(
+      'keydown',
+      handleInitCircuitUIInputKeyDown,
+    );
+    el.children[1].children[1].removeEventListener(
+      'click',
+      handleInitCircuitUIButtonClick,
+    );
+  };
 };
 
-export const handleWriteToCircuitUIResponse=(refs, value, res_type)=>{
+export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
   const circuitUIResEl = refs.circuitUIRef.current.children[0];
   const containerDiv = circuitUIResEl.ownerDocument.createElement('div');
-  if(res_type === "query"){
-  containerDiv.classList.add('query');
-  }else{
-   containerDiv.classList.add('response');
-  };
+  if (res_type === 'query') {
+    containerDiv.classList.add('query');
+  } else {
+    containerDiv.classList.add('response');
+  }
 
   const p = circuitUIResEl.ownerDocument.createElement('p');
   p.innerHTML = value;
-  
-  if(res_type === "stderr"){
+
+  if (res_type === 'stderr') {
     const errEl = circuitUIResEl.ownerDocument.createElement('span');
-    errEl.classList.add("error");
-    errEl.innerText = "ERROR";
+    errEl.classList.add('error');
+    errEl.innerText = 'ERROR';
     p.prepend(errEl);
-  };
+  }
 
   containerDiv.append(p);
   circuitUIResEl.append(containerDiv);
   circuitUIResEl.scrollTop = circuitUIResEl.scrollHeight;
 };
 
-export const handleWriteToCircuitUIInput=(refs)=>{
-    const input = refs.circuitUIRef.current.children[1].children[0];
-    input.value = TWS.data_obj.data;
-    input.setSelectionRange(TWS.data_obj.cursorPosition, TWS.data_obj.cursorPosition);
-  };
+export const handleWriteToCircuitUIInput = refs => {
+  const input = refs.circuitUIRef.current.children[1].children[0];
+  input.value = TWS.data_obj.data;
+  input.setSelectionRange(
+    TWS.data_obj.cursorPosition,
+    TWS.data_obj.cursorPosition,
+  );
+};
 
 export const handleMaximize = (window, props) => {
   if (props.terminal.isMaximized) {
@@ -448,7 +486,7 @@ export const handleAddQueryToHistory = queue => {
   }
 };
 
-export const handleXTermOnKey = async (term, refs,  e) => {
+export const handleXTermOnKey = async (term, refs, e) => {
   const ev = e.domEvent;
   const not_combination_keys = !ev.altKey && !ev.ctrlKey && !ev.metaKey;
   const { history, busy } = store.getState().terminal;
@@ -468,7 +506,7 @@ export const handleXTermOnKey = async (term, refs,  e) => {
   } else if (ev.code === 'Backspace') {
     await handleBackspace(term, refs);
   } else if (ev.code === 'ArrowUp') {
-    await handleArrowUp(term, refs,  history, ev);
+    await handleArrowUp(term, refs, history, ev);
   } else if (ev.code === 'ArrowDown') {
     await handleArrowDown(term, refs, history, ev);
   } else if (ev.code === 'ArrowLeft') {
