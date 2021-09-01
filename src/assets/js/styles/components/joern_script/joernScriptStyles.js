@@ -1,10 +1,10 @@
 const styles = theme => ({
-  projectSectionStyle: {
-    cursor: 'context-menu',
+  scriptSectionStyle: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingRight: '0.5em',
+    cursor: 'context-menu',
     '&:hover': {
       backgroundColor: props =>
         theme.palette.explorer.hover[
@@ -17,21 +17,15 @@ const styles = theme => ({
       outline: 'none',
     },
   },
-  projectNameStyle: {
-    flexGrow: 1,
-    color: props =>
-      theme.palette.explorer.base[
-        props.settings.prefersDarkMode ? 'dark' : 'light'
-      ],
-    textOverflow: 'ellipsis',
-    maxWidth: '180px',
-    overflow: 'hidden',
-    fontSize: '0.9rem',
-    fontWeight: 400,
-    marginTop: '0.2em',
-    marginBottom: '0.2em',
+  taggedScriptSectionStyle: {
+    paddingLeft: '0.65em',
   },
-
+  selectedStyle: {
+    backgroundColor: '#0090F150',
+    '&:hover': {
+      backgroundColor: '#0090f16b !important',
+    },
+  },
   menuStyle: {
     backgroundColor: props =>
       theme.palette.menu.background[
@@ -41,9 +35,6 @@ const styles = theme => ({
   },
   menuItemStyle: {
     borderRadius: 0,
-    textTransform: 'capitalize',
-    paddingRight: '12px',
-    paddingLeft: '12px',
     color: props =>
       theme.palette.menu.base[
         props.settings.prefersDarkMode ? 'dark' : 'light'
@@ -55,7 +46,6 @@ const styles = theme => ({
             props.settings.prefersDarkMode ? 'dark' : 'light'
           ]
         } !important`,
-      marginRight: '0.5em',
     },
     '&:hover': {
       backgroundColor: props =>
@@ -76,6 +66,21 @@ const styles = theme => ({
         ]
       }50`,
   },
+  scriptNameStyle: {
+    flexGrow: 1,
+    maxWidth: '180px',
+    color: props =>
+      theme.palette.explorer.base[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
+    textOverflow: 'ellipsis',
+    maxWidth: props => (props.hasTag ? '170px' : '180px'),
+    overflow: 'hidden',
+    fontSize: '0.9rem',
+    fontWeight: 400,
+    marginTop: '0.2em',
+    marginBottom: '0.2em',
+  },
   iconStyle: {
     color: props =>
       theme.palette.sideNav.base[
@@ -86,6 +91,18 @@ const styles = theme => ({
         props.settings.prefersDarkMode
           ? theme.palette.sideNav.hover.dark
           : theme.palette.sideNav.background.light,
+    },
+  },
+  contextMenuItemStyle: {
+    textTransform: 'capitalize',
+    backgroundColor: 'rgba(0,0,0,0)',
+    paddingRight: '12px',
+    paddingLeft: '12px',
+    '&:hover': {
+      backgroundColor: theme.palette.action.hover,
+    },
+    '& svg': {
+      marginRight: '0.5em',
     },
   },
   dangerStyle: {

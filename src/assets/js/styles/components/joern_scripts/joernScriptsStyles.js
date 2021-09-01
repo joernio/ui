@@ -15,8 +15,19 @@ const styles = theme => ({
     cursor: 'pointer',
   },
   titleStyle: {
+    flexGrow: 1,
     textTransform: 'uppercase',
     fontWeight: 'bold',
+    fontSize: '0.8rem',
+    marginTop: '0.3em',
+    marginBottom: '0.3em',
+    color: props =>
+      theme.palette.explorer.base[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
+  },
+  tagNameStyle: {
+    textTransform: 'uppercase',
     fontSize: '0.8rem',
     marginTop: '0.3em',
     marginBottom: '0.3em',
@@ -59,24 +70,6 @@ const styles = theme => ({
         ],
     },
   },
-  scriptSectionStyle: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingRight: '0.5em',
-    cursor: 'context-menu',
-    '&:hover': {
-      backgroundColor: props =>
-        theme.palette.explorer.hover[
-          props.settings.prefersDarkMode ? 'dark' : 'light'
-        ],
-    },
-    '&:focus': {
-      backgroundColor: '#0090F150',
-      border: '1px solid #0090F1',
-      outline: 'none',
-    },
-  },
   menuStyle: {
     backgroundColor: props =>
       theme.palette.menu.background[
@@ -109,28 +102,6 @@ const styles = theme => ({
       },
     },
   },
-  menuDividerStyle: {
-    borderTop: props =>
-      `1px solid ${
-        theme.palette.menu.base[
-          props.settings.prefersDarkMode ? 'dark' : 'light'
-        ]
-      }50`,
-  },
-  scriptNameStyle: {
-    maxWidth: '180px',
-    color: props =>
-      theme.palette.explorer.base[
-        props.settings.prefersDarkMode ? 'dark' : 'light'
-      ],
-    textOverflow: 'ellipsis',
-    maxWidth: '180px',
-    overflow: 'hidden',
-    fontSize: '0.9rem',
-    fontWeight: 400,
-    marginTop: '0.2em',
-    marginBottom: '0.2em',
-  },
   scriptsVisible: {
     transition: `mask-position 0.3s, -webkit-mask-position 0.3s,${theme.transitions.create(
       'height',
@@ -149,6 +120,141 @@ const styles = theme => ({
     }),
     height: 0,
   },
+
+  scriptsArgsDialogStyle: {
+    '& > div > div:nth-child(1)': {
+      backgroundColor: 'rgba(0, 0, 0, 0)',
+    },
+    '& > div > div:nth-child(2)': {
+      alignItems: 'normal',
+      minHeight: 'fit-content',
+      '&:focus': {
+        outline: 'none',
+        border: 'none',
+      },
+      '& > div': {
+        paddingBottom: 0,
+        backgroundColor: props =>
+          theme.palette.menu.background[
+            props.settings.prefersDarkMode ? 'dark' : 'light'
+          ],
+        borderRadius: 0,
+        '& > div:nth-child(1)': {
+          borderRadius: 0,
+          backgroundColor: props =>
+            theme.palette.menu.background[
+              props.settings.prefersDarkMode ? 'dark' : 'light'
+            ],
+          color: theme.palette.sideNav.base.light,
+          margin: '1em',
+          padding: 0,
+          minHeight: 0,
+          // '& h4': {
+          //   color: props =>
+          //     props.settings.prefersDarkMode ? '#FFFFFF' : '#000000',
+          //   outline: props =>
+          //     `1px solid ${
+          //       theme.palette.menu.background[
+          //         props.settings.prefersDarkMode ? 'dark' : 'light'
+          //       ]
+          //     }`,
+          //   paddingBottom: '0.8em',
+          // },
+        },
+      },
+    },
+  },
+  scriptsArgsDialogContentStyle: {
+    margin: ' 1em',
+    backgroundColor: props =>
+      theme.palette.menu.background[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
+    '& div': {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      flexWrap: 'wrap',
+      '& h3': {
+        width: '100%',
+        margin: '0.6em 0',
+        color: theme.palette.sideNav.base.light,
+      },
+      '& h4': {
+        width: '50%',
+        margin: '0.6em 0',
+        borderBottom: 0,
+        color: theme.palette.sideNav.base.light,
+      },
+      '& input': {
+        height: '2em',
+        width: '50%',
+        border: props =>
+          `1px solid rgba(206, 206, 206, ${
+            props.settings.prefersDarkMode ? '0' : '1'
+          })`,
+        backgroundColor: props =>
+          `rgba(60, 60, 60, ${props.settings.prefersDarkMode ? '1' : '0'})`,
+        color: props =>
+          props.settings.prefersDarkMode ? '#C3CCCC' : '#616161',
+        '&:focus': {
+          outline: '0',
+          border: props =>
+            `1px solid ${
+              theme.palette.menu.hover[
+                props.settings.prefersDarkMode ? 'dark' : 'light'
+              ]
+            }`,
+        },
+        '&:disabled': {
+          backgroundColor: props =>
+            `rgba(60, 60, 60, ${
+              props.settings.prefersDarkMode ? '0.5' : '0.05'
+            })`,
+        },
+      },
+    },
+  },
+  runSectionStyle: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    paddingBottom: '0.2em',
+    '& h3': {
+      color: props =>
+        theme.palette.button.base[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+      backgroundColor: props =>
+        theme.palette.navBar.hover[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+      cursor: 'pointer',
+      margin: '0.3em',
+      padding: '0.5em 0.8em',
+    },
+    '& h3.run': {
+      margin: '0.3em 1em',
+      color: theme.palette.button.base.dark,
+      backgroundColor: props =>
+        theme.palette.button.background[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+      '&:hover': {
+        backgroundColor: props =>
+          theme.palette.button.hover[
+            props.settings.prefersDarkMode ? 'dark' : 'light'
+          ],
+      },
+    },
+  },
+  menuDividerStyle: {
+    borderTop: props =>
+      `1px solid ${
+        theme.palette.menu.base[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ]
+      }50`,
+  },
   iconStyle: {
     color: props =>
       theme.palette.sideNav.base[
@@ -160,6 +266,10 @@ const styles = theme => ({
           ? theme.palette.sideNav.hover.dark
           : theme.palette.sideNav.background.light,
     },
+  },
+  verticalMoreStyle: {
+    transform: 'rotate(90deg)',
+    marginRight: '1.3em',
   },
   scrolledStyle: {
     boxShadow: props =>

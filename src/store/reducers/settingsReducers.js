@@ -1,3 +1,5 @@
+import { homedir } from 'os';
+
 export const default_state = {
   server: {
     url: 'http://localhost:8080',
@@ -10,6 +12,7 @@ export const default_state = {
   prefersDarkMode: true,
   prefersTerminalView: true,
   fontSize: '16px',
+  scriptsDir: `${homedir()}/bin/joern/joern-cli/scripts`,
 };
 
 const settings = (state = default_state, action) => {

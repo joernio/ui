@@ -78,7 +78,12 @@ function WindowWrapper(props) {
                   className={classes.menuItemStyle}
                   text="Save File"
                   icon="floppy-disk"
-                  onClick={() => saveFile()}
+                  onClick={() =>
+                    saveFile(
+                      props.files.openFilePath,
+                      props.settings.scriptsDir,
+                    )
+                  }
                 />
                 <MenuDivider className={classes.menuDividerStyle} />
                 <MenuItem

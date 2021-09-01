@@ -37,6 +37,7 @@ export const getSettingsInitialValues = settings => {
   initialSettings['prefers_dark_mode'] = settings?.prefersDarkMode;
   initialSettings['prefers_terminal_view'] = settings?.prefersTerminalView;
   initialSettings['font_size'] = Number(settings?.fontSize.split('px')[0]);
+  initialSettings['scripts_dir'] = settings?.scriptsDir;
 
   return initialSettings;
 };
@@ -54,6 +55,7 @@ export const collectSettingsValues = values => {
     prefersDarkMode: values['prefers_dark_mode'],
     prefersTerminalView: values['prefers_terminal_view'],
     fontSize: `${values['font_size']}px`,
+    scriptsDir: values['scripts_dir'],
   };
 
   return settings;

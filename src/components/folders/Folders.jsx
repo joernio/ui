@@ -12,16 +12,17 @@ import {
   handleScrollTop,
   openProjectExists,
   openFile,
+  watchFolderPath,
   getFolderStructureRootPathFromWorkspace,
 } from '../../assets/js/utils/scripts';
 import styles from '../../assets/js/styles/components/folders/foldersStyles';
 
 import {
+  chokidarVars,
   createFolderJsonModel,
   handleToggleFoldersVisible,
   selectFolderStructureRootPath,
   shouldSwitchFolder,
-  watchFolderPath,
 } from './foldersScripts';
 
 const useStyles = makeStyles(styles);
@@ -58,7 +59,12 @@ function Folders(props) {
         getFolderStructureRootPathFromWorkspace(props.workspace),
         (folders, root_path) => {
           props.setFolders(folders);
-          watchFolderPath(root_path);
+
+          watchFolderPath(root_path, chokidarVars, () => {
+            createFolderJsonModel({ path: root_path }, folders => {
+              props.setFolders(folders);
+            });
+          });
         },
       );
     }
@@ -102,12 +108,9 @@ function Folders(props) {
 
   const { foldersVisible, scrolled } = state;
 
-  const { projects } = props.workspace;
   const { folders } = props.files;
-  let isOpenProject =
-    projects &&
-    Object.keys(projects).filter(name => (projects[name].open ? true : false));
-  isOpenProject = isOpenProject && isOpenProject.length;
+
+  const isOpenProject = openProjectExists(props.workspace);
 
   return Object.keys(props.workspace.projects).length > 0 ? (
     <div
@@ -128,7 +131,11 @@ function Folders(props) {
                   await selectFolderStructureRootPath(),
                   (folders, root_path) => {
                     props.setFolders(folders);
-                    watchFolderPath(root_path);
+                    watchFolderPath(root_path, chokidarVars, () => {
+                      createFolderJsonModel({ path: root_path }, folders => {
+                        props.setFolders(folders);
+                      });
+                    });
                   },
                 )
               }

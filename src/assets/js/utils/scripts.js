@@ -14,11 +14,14 @@ import {
   setResults,
   resetQueue,
   enQueueQuery,
+  deQueueScriptsQuery,
 } from '../../../store/actions/queryActions';
 import { setToast } from '../../../store/actions/statusActions';
 import { setFiles } from '../../../store/actions/filesActions';
 import { windowActionApi, selectDirApi } from './ipcRenderer';
 import { store } from '../../../store/configureStore';
+import chokidar from 'chokidar';
+
 import { mouseTrapGlobalBindig } from './extensions';
 
 mouseTrapGlobalBindig(Mousetrap);
@@ -85,6 +88,14 @@ export const performPushResult = (result, results) => {
   return results;
 };
 
+export const getResultObjWithPostQueryKey = (results, post_query_key) => {
+  for (let key in results) {
+    if (key && results[key]['post_query_uuid'] === post_query_key) {
+      return key;
+    }
+  }
+};
+
 export const parseProjects = data => {
   if (data.stdout.split('=')[1].trim().startsWith('empty')) {
     return {};
@@ -132,8 +143,9 @@ export const parseProject = data => {
   return { name, inputPath, path };
 };
 
-const performPostQuery = (store, result) => {
+const performPostQuery = (store, results, key) => {
   let post_query;
+  let result = results[key];
 
   if (
     result.query.startsWith(manCommands.switchWorkspace) ||
@@ -144,7 +156,7 @@ const performPostQuery = (store, result) => {
     post_query = 'project';
   }
 
-  store.dispatch(postQuery(post_query));
+  store.dispatch(postQuery(post_query, key));
 };
 
 const setQueryResult = (data, store, key, results) => {
@@ -194,15 +206,27 @@ const setQueryResult = (data, store, key, results) => {
 export const handleWebSocketResponse = data => {
   store.dispatch(getQueryResult(data.utf8Data)).then(data => {
     const { results } = store.getState().query;
-    const key = Object.keys(results)[Object.keys(results).length - 1];
-    const latest = results[key];
+    let key = data.uuid;
+    let result_obj = results[key];
 
-    if (!latest.result.stdout && !latest.result.stderr) {
-      setQueryResult(data, store, key, results);
-      performPostQuery(store, results[key]);
-    } else {
-      setQueryResult(data, store, key, results);
-      store.dispatch(deQueueQuery());
+    if (!result_obj) {
+      key = getResultObjWithPostQueryKey(results, data.uuid);
+      result_obj = results[key];
+    }
+
+    if (result_obj) {
+      if (!result_obj.result.stdout && !result_obj.result.stderr) {
+        setQueryResult(data, store, key, results);
+        if (result_obj.origin === 'script') {
+          store.dispatch(deQueueScriptsQuery());
+          store.dispatch(enQueueQuery(addWorkSpaceQueryToQueue()));
+        } else {
+          performPostQuery(store, results, key);
+        }
+      } else {
+        setQueryResult(data, store, key, results);
+        store.dispatch(deQueueQuery());
+      }
     }
   });
 };
@@ -370,18 +394,14 @@ export const openEmptyFile = () => {
   store.dispatch(setFiles(files));
 };
 
-export const saveFile = path => {
+export const saveFile = async (path, base_dir) => {
   const file_content = store.getState().files.openFileContent;
   const files = { ...store.getState().files };
-
-  if (!path) {
-    path = files.openFilePath;
-  }
 
   const readOnly = path && path.slice(path.length - 3) === '.sc' ? false : true;
 
   if (!readOnly || path.startsWith('untitled')) {
-    path &&
+    (await path) &&
       new Promise((resolve, reject) => {
         fs.stat(path, (err, stats) => {
           if (
@@ -395,28 +415,38 @@ export const saveFile = path => {
           }
         });
       })
-        .then(() => {
-          fs.writeFile(path, file_content, err => {
-            if (!err) {
+        .then(() =>
+          new Promise((res, rej) => {
+            fs.writeFile(path, file_content, err => {
+              if (!err) {
+                res();
+              } else {
+                rej();
+              }
+            });
+          })
+            .then(() => {
               handleSetToast({
                 icon: 'info-sign',
                 intent: 'success',
                 message: 'saved successfully',
               });
-            } else {
+            })
+            .catch(() => {
               handleSetToast({
                 icon: 'warning-sign',
                 intent: 'danger',
                 message: 'error saving file',
               });
-            }
-          });
-        })
+            }),
+        )
         .catch(async () => {
-          const workspace_path = store.getState().workspace.path;
           let new_path;
-          if (workspace_path) {
-            new_path = `${workspace_path}/${path}`;
+
+          if (base_dir) {
+            new_path = `${base_dir}/${path}`;
+          } else if (store.getState().workspace.path) {
+            new_path = `${store.getState().workspace.path}/${path}`;
           } else {
             new_path = `/${path}`;
           }
@@ -448,14 +478,16 @@ export const saveFile = path => {
                 : true;
 
             if (!readOnly) {
-              fs.writeFile(file.filePath.toString(), file_content, err => {
-                if (err) {
-                  handleSetToast({
-                    icon: 'warning-sign',
-                    intent: 'danger',
-                    message: "can't save to file",
-                  });
-                } else {
+              await new Promise((res, rej) => {
+                fs.writeFile(file.filePath.toString(), file_content, err => {
+                  if (err) {
+                    rej();
+                  } else {
+                    res();
+                  }
+                });
+              })
+                .then(() => {
                   handleSetToast({
                     icon: 'info-sign',
                     intent: 'success',
@@ -479,8 +511,14 @@ export const saveFile = path => {
 
                   store.dispatch(setFiles(files));
                   store.dispatch(enQueueQuery(addWorkSpaceQueryToQueue()));
-                }
-              });
+                })
+                .catch(() => {
+                  handleSetToast({
+                    icon: 'warning-sign',
+                    intent: 'danger',
+                    message: "can't save to file",
+                  });
+                });
             } else {
               handleSetToast({
                 icon: 'warning-sign',
@@ -501,13 +539,13 @@ export const saveFile = path => {
   }
 };
 
-export const deleteFile = path => {
+export const deleteFile = async path => {
   if (path) {
     const readOnly =
       path && path.slice(path.length - 3) === '.sc' ? false : true;
 
     if (!readOnly) {
-      path &&
+      (await path) &&
         new Promise((resolve, reject) => {
           fs.stat(path, (err, stats) => {
             if (!err && stats.isFile()) {
@@ -517,26 +555,33 @@ export const deleteFile = path => {
             }
           });
         })
-          .then(() => {
-            fs.unlink(path, err => {
-              if (!err) {
+          .then(() =>
+            new Promise((res, rej) => {
+              fs.unlink(path, err => {
+                if (!err) {
+                  res();
+                } else {
+                  rej();
+                }
+              });
+            })
+              .then(async () => {
                 handleSetToast({
                   icon: 'info-sign',
                   intent: 'success',
                   message: 'file deleted successfully',
                 });
-                closeFile(path);
-                refreshRecent();
-                store.dispatch(enQueueQuery(addWorkSpaceQueryToQueue()));
-              } else {
+                await closeFile(path);
+                await refreshRecent();
+              })
+              .catch(() => {
                 handleSetToast({
                   icon: 'warning-sign',
                   intent: 'danger',
                   message: 'file cannot be deleted',
                 });
-              }
-            });
-          })
+              }),
+          )
           .catch(() => {
             handleSetToast({
               icon: 'warning-sign',
@@ -676,6 +721,24 @@ export const getDirectories = src =>
       },
     );
   });
+
+export const watchFolderPath = (path, vars, callback) => {
+  if (vars.chokidarWatcher) {
+    vars.chokidarWatcher.close().then(() => {
+      if (path) {
+        vars.chokidarWatcher = chokidar.watch(path, vars.chokidarConfig(path));
+
+        vars.chokidarWatcher.on('all', callback);
+      }
+    });
+  } else {
+    if (path) {
+      vars.chokidarWatcher = chokidar.watch(path, vars.chokidarConfig(path));
+
+      vars.chokidarWatcher.on('all', callback);
+    }
+  }
+};
 
 export const getFolderStructureRootPathFromWorkspace = workspace => {
   const { projects } = workspace;
@@ -980,7 +1043,10 @@ export const handleAPIQueryError = err => {
 
 export const initShortcuts = () => {
   Mousetrap.bindGlobal(['command+s', 'ctrl+s'], function () {
-    saveFile();
+    saveFile(
+      store.getState().files.openFilePath,
+      store.getState().settings.scriptsDir,
+    );
   });
 };
 
@@ -1008,4 +1074,104 @@ export const nFormatter = num => {
 export const handleFontSizeChange = (doc, fontSize) => {
   doc.children[0].style.fontSize = fontSize;
   doc.children[0].children[1].style.fontSize = fontSize;
+};
+
+export const generateScriptImportQuery = async (
+  path_to_script,
+  path_to_workspace,
+) => {
+  if (!path_to_script || !path_to_script.endsWith('.sc')) {
+    handleSetToast({
+      icon: 'warning-sign',
+      intent: 'danger',
+      message: 'script path is not valid',
+    });
+
+    return;
+  }
+
+  if (!path_to_workspace || !path_to_workspace.endsWith('workspace')) {
+    handleSetToast({
+      icon: 'warning-sign',
+      intent: 'danger',
+      message: 'workspace path is invalid',
+    });
+
+    return;
+  }
+
+  let error = await new Promise((res, rej) => {
+    fs.stat(path_to_script, err => {
+      if (!err) {
+        res();
+      } else {
+        rej();
+      }
+    });
+  }).catch(() => {
+    handleSetToast({
+      icon: 'warning-sign',
+      intent: 'danger',
+      message: 'script path does not exist',
+    });
+
+    return true;
+  });
+
+  error = await new Promise((res, rej) => {
+    fs.stat(path_to_workspace, err => {
+      if (!err) {
+        res();
+      } else {
+        rej();
+      }
+    });
+  }).catch(() => {
+    handleSetToast({
+      icon: 'warning-sign',
+      intent: 'danger',
+      message: 'workspace path does not exist',
+    });
+
+    return true;
+  });
+
+  if (error) return;
+
+  let modified_path_to_script = path_to_script;
+  path_to_workspace = path_to_workspace.split('/workspace').join('');
+  path_to_workspace.split('/').forEach(folder => {
+    if (modified_path_to_script.split('/' + folder + '/').length > 1) {
+      modified_path_to_script = modified_path_to_script.split(folder);
+      modified_path_to_script.splice(0, 1);
+      modified_path_to_script = modified_path_to_script.join(folder);
+    } else {
+      modified_path_to_script = '.^' + modified_path_to_script;
+    }
+  });
+
+  modified_path_to_script = modified_path_to_script.slice(
+    0,
+    modified_path_to_script.length - 3,
+  );
+
+  modified_path_to_script = modified_path_to_script
+    .split('/')
+    .filter(value => (value ? true : false))
+    .map(value => (value.startsWith('.^') ? value : '.`' + value + '`'))
+    .join('');
+
+  if (
+    modified_path_to_script.split('.').length ===
+    path_to_workspace.split('/').length + path_to_script.split('/').length
+  ) {
+    //if workspace and script are not in the same drive
+    handleSetToast({
+      icon: 'warning-sign',
+      intent: 'danger',
+      message: 'an error occured while trying to run script',
+    });
+  } else {
+    return 'import $file' + modified_path_to_script;
+  }
 };
