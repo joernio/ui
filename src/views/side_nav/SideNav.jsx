@@ -185,6 +185,16 @@ function SideNav(props) {
               onChange={e => handleSetState(handleOnChange(e, values))}
               onBlur={e => handleSetState(handleOnChange(e, values))}
             />
+
+            <h4>Default Scripts Directory</h4>
+            <input
+              type="text"
+              id="scripts_dir"
+              placeholder="/home/........"
+              value={values['scripts_dir']}
+              onChange={e => handleSetState(handleOnChange(e, values))}
+              onBlur={e => handleSetState(handleOnChange(e, values))}
+            />
           </div>
         </div>
         <Divider className={classes.menuDividerStyle} />

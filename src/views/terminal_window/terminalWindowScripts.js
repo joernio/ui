@@ -299,17 +299,24 @@ export const handleWriteQueryResult = async (term, refs, latest) => {
   return true;
 };
 
-export const handleWriteScriptQuery = async (term, refs) => {
+export const handleWriteScriptQuery = async (term, refs, latest) => {
+  const { busy } = store.getState().terminal;
+
   TWS.updateData(null);
   TWS.updateCursorPosition(0);
 
-  await TWS.termWriteLn(term, TWS.constructOutputToWrite(null, null));
+  await TWS.termWriteLn(
+    term,
+    TWS.constructOutputToWrite(TV.joernDefaultPrompt, latest.query),
+  );
   TWS.handleWriteToCircuitUIResponse(
     refs,
-    TWS.constructOutputToWrite(null, 'Running script .....', true),
+    TWS.constructOutputToWrite(null, latest.query, true),
     'query',
   );
-  store.dispatch(setTerminalBusy(true));
+
+  !busy && (await term.prompt());
+  // store.dispatch(setTerminalBusy(true));
 };
 
 export const handleWriteQuery = async (term, refs, latest) => {
@@ -536,7 +543,7 @@ export const sendQueryResultToXTerm = async (results, refs) => {
     !(latest?.result?.stdout && latest?.result?.stderr)
   ) {
     if (latest.origin === 'script') {
-      await handleWriteScriptQuery(term, refs);
+      await handleWriteScriptQuery(term, refs, latest);
     } else if (latest.origin !== 'terminal') {
       await handleWriteQuery(term, refs, latest);
     }

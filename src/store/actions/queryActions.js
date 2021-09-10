@@ -37,6 +37,24 @@ export const resetQueue = payload => {
   };
 };
 
+export const setScriptsQueue = payload => {
+  return dispatch => {
+    return dispatch({
+      type: 'SET_SCRIPTS_QUEUE',
+      payload,
+    });
+  };
+};
+
+export const resetScriptsQueue = payload => {
+  return dispatch => {
+    return dispatch({
+      type: 'RESET_SCRIPTS_QUEUE',
+      payload,
+    });
+  };
+};
+
 export const enQueueQuery = query => {
   return dispatch => {
     const { queue } = store.getState().query;
@@ -48,7 +66,7 @@ export const enQueueQuery = query => {
 export const deQueueQuery = () => {
   return dispatch => {
     const { queue } = store.getState().query;
-    const { queue: updated_queue, result: query } = performDeQueueQuery(queue);
+    const { queue: updated_queue, query } = performDeQueueQuery(queue);
     dispatch(setQueue(updated_queue));
     return query;
   };
@@ -58,6 +76,31 @@ export const peekQueue = () => {
   return () => {
     const { queue } = store.getState().query;
     return performPeekQueue(queue);
+  };
+};
+
+export const enQueueScriptsQuery = query => {
+  return dispatch => {
+    const { scriptsQueue } = store.getState().query;
+    const updated_scripts_queue = performEnQueueQuery(query, scriptsQueue);
+    dispatch(setScriptsQueue(updated_scripts_queue));
+  };
+};
+
+export const deQueueScriptsQuery = () => {
+  return dispatch => {
+    const { scriptsQueue } = store.getState().query;
+    const { queue: updated_scripts_queue, query } =
+      performDeQueueQuery(scriptsQueue);
+    dispatch(setScriptsQueue(updated_scripts_queue));
+    return query;
+  };
+};
+
+export const peekScriptsQueue = () => {
+  return () => {
+    const { scriptsQueue } = store.getState().query;
+    return performPeekQueue(scriptsQueue);
   };
 };
 
@@ -113,11 +156,21 @@ export const getQueryResult = uuid => {
   };
 };
 
-export const postQuery = post_query => {
+export const postQuery = (post_query, main_result_key) => {
   return () => {
-    return runQuery(post_query)().catch(err => {
-      handleAPIQueryError(err);
-    });
+    return runQuery(post_query)()
+      .then(data => {
+        const { results } = store.getState().query;
+        const result = results[main_result_key];
+
+        if (result) {
+          result['post_query_uuid'] = data.uuid;
+          dispatch(setResults(results));
+        }
+      })
+      .catch(err => {
+        handleAPIQueryError(err);
+      });
   };
 };
 
