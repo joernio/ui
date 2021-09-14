@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import * as queryActions from '../../store/actions/queryActions';
 import { MenuDivider, Menu, MenuItem } from '@blueprintjs/core';
-import { ContextMenu2 } from '@blueprintjs/popover2';
+import { Popover2 } from '@blueprintjs/popover2';
 import { Icon } from '@blueprintjs/core';
 import Project from '../../components/project/Project';
 import styles from '../../assets/js/styles/components/workspace/workspaceStyles';
@@ -33,6 +33,7 @@ function Workspace(props) {
   const [state, setState] = React.useState({
     projectsVisible: true,
     scrolled: false,
+    workspaceMenuIsOpen: false,
   });
 
   React.useEffect(() => {
@@ -57,97 +58,127 @@ function Workspace(props) {
     }
   };
 
-  const { projectsVisible, scrolled } = state;
+  const { projectsVisible, scrolled, workspaceMenuIsOpen } = state;
 
   return (
     <div data-test="workspace">
       {Object.keys(props.workspace.projects).length > 0 ||
       !queueEmpty(props.query.queue) ? (
-        <ContextMenu2
-          content={
-            <Menu className={classes.menuStyle}>
-              <MenuItem
-                className={classes.menuItemStyle}
-                onClick={() => addToQueue(addWorkSpaceQueryToQueue(), props)}
-                text="Refresh"
-              ></MenuItem>
-
-              <MenuItem
-                className={classes.menuItemStyle}
-                onClick={async () =>
-                  addToQueue(await contructQueryWithPath('importCode'), props)
+        <div className={classes.rootStyle} tabIndex="0">
+          <div className={classes.titleSectionStyle}>
+            {projectsVisible ? (
+              <Icon
+                className={classes.iconStyle}
+                icon="chevron-down"
+                onClick={() =>
+                  handleSetState(handleToggleProjectsVisible(projectsVisible))
                 }
-                text="Import Code"
-              ></MenuItem>
-              <MenuItem
-                className={classes.menuItemStyle}
-                onClick={async () =>
-                  addToQueue(await contructQueryWithPath('importCpg'), props)
+              />
+            ) : (
+              <Icon
+                className={classes.iconStyle}
+                icon="chevron-right"
+                onClick={() =>
+                  handleSetState(handleToggleProjectsVisible(projectsVisible))
                 }
-                text="Import Cpg"
-              ></MenuItem>
-              <MenuDivider className={classes.menuDividerStyle} />
-              <MenuItem
-                className={classes.menuItemStyle}
-                onClick={async () =>
-                  addToQueue(await handleSwitchWorkspace(), props)
-                }
-                text="Switch Workspace"
-              ></MenuItem>
-            </Menu>
-          }
-        >
-          <div className={classes.rootStyle} tabIndex="0">
-            <div
-              className={classes.titleSectionStyle}
+              />
+            )}
+            <h2
+              className={classes.titleStyle}
               onClick={() =>
                 handleSetState(handleToggleProjectsVisible(projectsVisible))
               }
             >
-              {projectsVisible ? (
-                <Icon className={classes.iconStyle} icon="chevron-down" />
-              ) : (
-                <Icon className={classes.iconStyle} icon="chevron-right" />
-              )}
-              <h2 className={classes.titleStyle}>Workspace</h2>
-              {!queueEmpty(props.query.queue) &&
-              latestIsManCommand(props.query.results) ? (
-                <Icon
-                  icon="refresh"
-                  className={clsx(
-                    classes.iconStyle,
-                    classes.refreshIconStyle,
-                    'refresh-icon-animation',
-                  )}
-                />
-              ) : null}
-            </div>
+              Workspace
+            </h2>
+            {!queueEmpty(props.query.queue) &&
+            latestIsManCommand(props.query.results) ? (
+              <Icon
+                icon="refresh"
+                className={clsx(classes.iconStyle, 'refresh-icon-animation')}
+              />
+            ) : null}
 
-            <div
-              ref={refs.projectsContainerEl}
-              className={clsx(
-                classes.projectsSectionStyle,
-                {
-                  [classes.scrolledStyle]: scrolled,
-                },
-                {
-                  [classes.projectsVisible]: projectsVisible,
-                  [classes.projectsHidden]: !projectsVisible,
-                },
-              )}
+            <Popover2
+              content={
+                <Menu className={classes.menuStyle}>
+                  <MenuItem
+                    className={classes.menuItemStyle}
+                    onClick={() =>
+                      addToQueue(addWorkSpaceQueryToQueue(), props)
+                    }
+                    text="Refresh"
+                  ></MenuItem>
+
+                  <MenuItem
+                    className={classes.menuItemStyle}
+                    onClick={async () =>
+                      addToQueue(
+                        await contructQueryWithPath('importCode'),
+                        props,
+                      )
+                    }
+                    text="Import Code"
+                  ></MenuItem>
+                  <MenuItem
+                    className={classes.menuItemStyle}
+                    onClick={async () =>
+                      addToQueue(
+                        await contructQueryWithPath('importCpg'),
+                        props,
+                      )
+                    }
+                    text="Import Cpg"
+                  ></MenuItem>
+                  <MenuDivider className={classes.menuDividerStyle} />
+                  <MenuItem
+                    className={classes.menuItemStyle}
+                    onClick={async () =>
+                      addToQueue(await handleSwitchWorkspace(), props)
+                    }
+                    text="Switch Workspace"
+                  ></MenuItem>
+                </Menu>
+              }
+              placement="top-start"
+              interactionKind="click"
+              minimal={true}
+              isOpen={workspaceMenuIsOpen}
+              onInteraction={bool =>
+                handleSetState({ workspaceMenuIsOpen: bool })
+              }
             >
-              {projectsVisible &&
-                Object.keys(props.workspace.projects).map((name, index) => (
-                  <Project
-                    key={`${name}-${index}`}
-                    name={name}
-                    index={index}
-                    {...props}
-                  />
-                ))}
-            </div>
+              <Icon
+                icon="more"
+                className={clsx(classes.iconStyle, classes.verticalMoreStyle)}
+              />
+            </Popover2>
           </div>
-        </ContextMenu2>
+
+          <div
+            ref={refs.projectsContainerEl}
+            className={clsx(
+              classes.projectsSectionStyle,
+              {
+                [classes.scrolledStyle]: scrolled,
+              },
+              {
+                [classes.projectsVisible]: projectsVisible,
+                [classes.projectsHidden]: !projectsVisible,
+              },
+            )}
+          >
+            {projectsVisible &&
+              Object.keys(props.workspace.projects).map((name, index) => (
+                <Project
+                  key={`${name}-${index}`}
+                  name={name}
+                  index={index}
+                  {...props}
+                />
+              ))}
+          </div>
+        </div>
       ) : (
         <>
           <div
