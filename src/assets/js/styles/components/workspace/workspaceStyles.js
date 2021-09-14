@@ -16,14 +16,15 @@ const styles = theme => ({
   titleSectionStyle: {
     display: 'flex',
     alignItems: 'center',
-    cursor: 'context-menu',
   },
   titleStyle: {
+    flexGrow: 1,
     textTransform: 'uppercase',
     fontWeight: 'bold',
     fontSize: '0.8rem',
     marginTop: '0.3em',
     marginBottom: '0.3em',
+    cursor: 'pointer',
     color: props =>
       theme.palette.explorer.base[
         props.settings.prefersDarkMode ? 'dark' : 'light'
@@ -136,6 +137,7 @@ const styles = theme => ({
     height: 0,
   },
   iconStyle: {
+    cursor: 'pointer',
     color: props =>
       theme.palette.sideNav.base[
         props.settings.prefersDarkMode ? 'dark' : 'light'
@@ -147,9 +149,9 @@ const styles = theme => ({
           : theme.palette.sideNav.background.light,
     },
   },
-  refreshIconStyle: {
-    position: 'absolute',
-    right: '20px',
+  verticalMoreStyle: {
+    transform: 'rotate(90deg)',
+    marginRight: '1.3em',
   },
   scrolledStyle: {
     boxShadow: props =>

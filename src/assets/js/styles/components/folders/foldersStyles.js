@@ -53,9 +53,9 @@ const styles = theme => ({
   titleSectionStyle: {
     display: 'flex',
     alignItems: 'center',
-    cursor: 'context-menu',
   },
   titleStyle: {
+    cursor: 'pointer',
     flexGrow: 1,
     textTransform: 'uppercase',
     fontWeight: 'bold',
@@ -113,6 +113,7 @@ const styles = theme => ({
     marginRight: '1.3em',
   },
   iconStyle: {
+    cursor: 'pointer',
     color: props =>
       theme.palette.sideNav.base[
         props.settings.prefersDarkMode ? 'dark' : 'light'
