@@ -56,6 +56,7 @@ const styles = theme => ({
     cursor: 'context-menu',
   },
   titleStyle: {
+    flexGrow: 1,
     textTransform: 'uppercase',
     fontWeight: 'bold',
     fontSize: '0.8rem',
@@ -106,6 +107,10 @@ const styles = theme => ({
           props.settings.prefersDarkMode ? 'dark' : 'light'
         ]
       }`,
+  },
+  verticalMoreStyle: {
+    transform: 'rotate(90deg)',
+    marginRight: '1.3em',
   },
   iconStyle: {
     color: props =>
