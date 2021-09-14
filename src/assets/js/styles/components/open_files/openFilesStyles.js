@@ -69,7 +69,19 @@ const styles = theme => ({
     alignItems: 'center',
     paddingRight: '0.5em',
     cursor: 'pointer',
+    '& > .unsaved-cross-icon': {
+      display: 'none',
+    },
+    '& > .unsaved-icon': {
+      display: 'block',
+    },
     '&:hover': {
+      '& > .unsaved-cross-icon': {
+        display: 'block',
+      },
+      '& > .unsaved-icon': {
+        display: 'none',
+      },
       backgroundColor: props =>
         theme.palette.explorer.hover[
           props.settings.prefersDarkMode ? 'dark' : 'light'

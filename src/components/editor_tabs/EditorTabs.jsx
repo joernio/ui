@@ -3,15 +3,35 @@ import clsx from 'clsx';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { Icon } from '@blueprintjs/core';
+import DiscardDialog from '../discard_dialog/DiscardDialog';
 import styles from '../../assets/js/styles/components/editor_tabs/editorTabsStyles.js';
-import { openFile, closeFile } from '../../assets/js/utils/scripts';
+import {
+  openFile,
+  closeFile,
+  discardDialogHandler,
+} from '../../assets/js/utils/scripts';
 
 const useStyles = makeStyles(styles);
 
 function EditorTabs(props) {
   const classes = useStyles(props);
 
-  const { openFiles } = props.files;
+  const [state, setState] = React.useState({
+    openDiscardDialog: false,
+    discardDialogCallback: () => {},
+  });
+
+  const handleSetState = obj => {
+    if (obj) {
+      Promise.resolve(obj).then(obj => {
+        setState(state => ({ ...state, ...obj }));
+      });
+    }
+  };
+
+  const { openFiles, openFilePath } = props.files;
+  const { openDiscardDialog, discardDialogCallback } = state;
+
   return (
     <div className={classes.editorTabsContainerStyle} data-test="editor-tabs">
       {Object.keys(openFiles ? openFiles : {}).map(path => {
@@ -27,23 +47,45 @@ function EditorTabs(props) {
           >
             <div
               className={classes.editorTabTitleStyle}
-              onClick={() => (path ? openFile(path) : null)}
+              onClick={() =>
+                handleSetState(
+                  discardDialogHandler(openFiles, openFilePath, () => {
+                    openFile(path);
+                  }),
+                )
+              }
             >
               <Icon icon="document" className={classes.iconStyle} />
               {filename}
             </div>
+            {openFiles[path] === false ? (
+              <Icon
+                icon="dot"
+                className={clsx('unsaved-icon', classes.iconStyle)}
+              />
+            ) : null}
             <Icon
               icon="small-cross"
-              className={clsx(
-                'close-icon',
-                classes.iconStyle,
-                classes.closeIconStyle,
-              )}
-              onClick={() => (path ? closeFile(path) : null)}
+              className={clsx(classes.iconStyle, classes.closeIconStyle, {
+                'unsaved-close-icon-style': openFiles[path] === false,
+                'saved-close-icon-style': openFiles[path] !== false,
+              })}
+              onClick={() =>
+                handleSetState(
+                  discardDialogHandler(openFiles, openFilePath, () => {
+                    closeFile(path);
+                  }),
+                )
+              }
             />
           </div>
         );
       })}
+      <DiscardDialog
+        handleSetState={handleSetState}
+        openDiscardDialog={openDiscardDialog}
+        callback={discardDialogCallback}
+      />
     </div>
   );
 }

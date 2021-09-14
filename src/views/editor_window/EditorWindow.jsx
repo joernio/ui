@@ -5,7 +5,11 @@ import EditorTabs from '../../components/editor_tabs/EditorTabs';
 import { connect } from 'react-redux';
 import * as filesActions from '../../store/actions/filesActions';
 import { makeStyles } from '@material-ui/core';
-import { editorDidMount, handleChangeMadeToOpenFiles } from './editorScripts';
+import {
+  editorDidMount,
+  handleChangeMadeToOpenFiles,
+  handleEditorOnChange,
+} from './editorScripts';
 import styles from '../../assets/js/styles/views/editor_window/editorWindowStyles';
 
 const useStyles = makeStyles(styles);
@@ -57,7 +61,7 @@ function EditorWindow(props) {
         language="typescript"
         value={files?.openFileContent}
         options={options}
-        onChange={(newValue, _) => props.setOpenFileContent(newValue)}
+        onChange={(newValue, _) => handleEditorOnChange(newValue, props)}
         editorDidMount={editorDidMount}
       />
     </div>
@@ -80,6 +84,9 @@ const mapDispatchToProps = dispatch => {
     },
     setOpenFileIsReadOnly: bool => {
       return dispatch(filesActions.setOpenFileIsReadOnly(bool));
+    },
+    setOpenFiles: openFiles => {
+      return dispatch(filesActions.setOpenFiles(openFiles));
     },
   };
 };
