@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import * as queryActions from '../../store/actions/queryActions';
 import * as filesActions from '../../store/actions/filesActions';
 import { Menu, MenuItem } from '@blueprintjs/core';
-import { ContextMenu2 } from '@blueprintjs/popover2';
+import { Popover2 } from '@blueprintjs/popover2';
 import { Icon } from '@blueprintjs/core';
 import { Classes, Tree } from '@blueprintjs/core';
 import {
@@ -34,6 +34,7 @@ function Folders(props) {
     scrolled: false,
     foldersVisible: true,
     prev_workspace: {},
+    foldersMenuIsOpen: false,
   });
 
   React.useEffect(() => {
@@ -106,7 +107,7 @@ function Folders(props) {
     handleNodeSelection(nodePath);
   }, []);
 
-  const { foldersVisible, scrolled } = state;
+  const { foldersVisible, scrolled, foldersMenuIsOpen } = state;
 
   const { folders } = props.files;
 
@@ -121,43 +122,68 @@ function Folders(props) {
       tabIndex="0"
       data-test="folders"
     >
-      <ContextMenu2
-        content={
-          <Menu className={classes.menuStyle}>
-            <MenuItem
-              className={classes.menuItemStyle}
-              onClick={async () =>
-                createFolderJsonModel(
-                  await selectFolderStructureRootPath(),
-                  (folders, root_path) => {
-                    props.setFolders(folders);
-                    watchFolderPath(root_path, chokidarVars, () => {
-                      createFolderJsonModel({ path: root_path }, folders => {
-                        props.setFolders(folders);
-                      });
-                    });
-                  },
-                )
-              }
-              text="Switch Folder"
-            />
-          </Menu>
-        }
-      >
-        <div
-          className={classes.titleSectionStyle}
+      <div className={classes.titleSectionStyle}>
+        {foldersVisible ? (
+          <Icon
+            className={classes.iconStyle}
+            icon="chevron-down"
+            onClick={() =>
+              handleSetState(handleToggleFoldersVisible(foldersVisible))
+            }
+          />
+        ) : (
+          <Icon
+            className={classes.iconStyle}
+            icon="chevron-right"
+            onClick={() =>
+              handleSetState(handleToggleFoldersVisible(foldersVisible))
+            }
+          />
+        )}
+        <h2
+          className={classes.titleStyle}
           onClick={() =>
             handleSetState(handleToggleFoldersVisible(foldersVisible))
           }
         >
-          {foldersVisible ? (
-            <Icon className={classes.iconStyle} icon="chevron-down" />
-          ) : (
-            <Icon className={classes.iconStyle} icon="chevron-right" />
-          )}
-          <h2 className={classes.titleStyle}>Folders</h2>
-        </div>
-      </ContextMenu2>
+          Folders
+        </h2>
+
+        <Popover2
+          content={
+            <Menu className={classes.menuStyle}>
+              <MenuItem
+                className={classes.menuItemStyle}
+                onClick={async () =>
+                  createFolderJsonModel(
+                    await selectFolderStructureRootPath(),
+                    (folders, root_path) => {
+                      props.setFolders(folders);
+                      watchFolderPath(root_path, chokidarVars, () => {
+                        createFolderJsonModel({ path: root_path }, folders => {
+                          props.setFolders(folders);
+                        });
+                      });
+                    },
+                  )
+                }
+                text="Switch Folder"
+              />
+            </Menu>
+          }
+          placement="top-start"
+          interactionKind="click"
+          minimal={true}
+          isOpen={foldersMenuIsOpen}
+          onInteraction={bool => handleSetState({ foldersMenuIsOpen: bool })}
+        >
+          <Icon
+            icon="more"
+            className={clsx(classes.iconStyle, classes.verticalMoreStyle)}
+          />
+        </Popover2>
+      </div>
+
       <div
         ref={foldersContainerEl}
         className={clsx(
