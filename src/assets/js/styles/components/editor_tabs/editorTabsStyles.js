@@ -61,12 +61,24 @@ const styles = theme => ({
       theme.palette.editorNavBar.base[
         props.settings.prefersDarkMode ? 'dark' : 'light'
       ],
-    '& > .close-icon': {
+    '& > .unsaved-close-icon-style': {
+      display: 'none',
+    },
+    '& > .saved-close-icon-style': {
       visibility: 'hidden',
     },
+    '& > .unsaved-icon': {
+      display: 'block',
+    },
     '&:hover': {
-      '& > .close-icon': {
+      '& > .unsaved-close-icon-style': {
+        display: 'block',
+      },
+      '& > .saved-close-icon-style': {
         visibility: 'visible',
+      },
+      '& > .unsaved-icon': {
+        display: 'none',
       },
     },
   },

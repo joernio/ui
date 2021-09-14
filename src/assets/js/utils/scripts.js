@@ -17,7 +17,7 @@ import {
   deQueueScriptsQuery,
 } from '../../../store/actions/queryActions';
 import { setToast } from '../../../store/actions/statusActions';
-import { setFiles } from '../../../store/actions/filesActions';
+import { setFiles, setOpenFiles } from '../../../store/actions/filesActions';
 import { windowActionApi, selectDirApi } from './ipcRenderer';
 import { store } from '../../../store/configureStore';
 import chokidar from 'chokidar';
@@ -235,6 +235,23 @@ export const handleScrollTop = e => {
   return e.target.scrollTop > 0 ? { scrolled: true } : { scrolled: false };
 };
 
+export const discardDialogHandler = (openFiles, openFilePath, callback) => {
+  if (openFiles[openFilePath] === false) {
+    return { openDiscardDialog: true, discardDialogCallback: callback };
+  }
+
+  callback();
+};
+
+export const getOpenFileName = path => {
+  if (path) {
+    path = path ? path.split('/') : null;
+    path = path ? path[path.length - 1] : null;
+
+    return path;
+  }
+};
+
 export const openFile = async path => {
   if (path) {
     const files = { ...store.getState().files };
@@ -271,17 +288,18 @@ export const openFile = async path => {
         return { openFileContent: data, openFileIsReadOnly };
       })
       .catch(() => {
-        handleSetToast({
-          icon: 'warning-sign',
-          intent: 'danger',
-          message: 'error opening file',
-        });
         if (!path || path === path.split('/')[path.split('/').length - 1]) {
           return {
             openFileContent: '',
             openFileIsReadOnly:
               path && path.startsWith('untitled') ? false : true,
           };
+        } else {
+          handleSetToast({
+            icon: 'warning-sign',
+            intent: 'danger',
+            message: 'error opening file',
+          });
         }
       });
 
@@ -323,7 +341,13 @@ export const closeFile = async path => {
         return { openFileContent: data, openFileIsReadOnly };
       })
       .catch(() => {
-        if (files.openFilePath !== '') {
+        if (
+          files.openFilePath !== '' &&
+          files.openFilePath !==
+            files.openFilePath.split('/')[
+              files.openFilePath.split('/').length - 1
+            ]
+        ) {
           handleSetToast({
             icon: 'warning-sign',
             intent: 'danger',
@@ -401,8 +425,8 @@ export const saveFile = async (path, base_dir) => {
   const readOnly = path && path.slice(path.length - 3) === '.sc' ? false : true;
 
   if (!readOnly || path.startsWith('untitled')) {
-    (await path) &&
-      new Promise((resolve, reject) => {
+    path &&
+      (await new Promise((resolve, reject) => {
         fs.stat(path, (err, stats) => {
           if (
             !err &&
@@ -431,6 +455,10 @@ export const saveFile = async (path, base_dir) => {
                 intent: 'success',
                 message: 'saved successfully',
               });
+
+              const openFiles = { ...files.openFiles };
+              openFiles[path] = true;
+              store.dispatch(setOpenFiles(openFiles));
             })
             .catch(() => {
               handleSetToast({
@@ -438,6 +466,10 @@ export const saveFile = async (path, base_dir) => {
                 intent: 'danger',
                 message: 'error saving file',
               });
+
+              const openFiles = { ...files.openFiles };
+              openFiles[path] = true;
+              store.dispatch(setOpenFiles(openFiles));
             }),
         )
         .catch(async () => {
@@ -529,7 +561,7 @@ export const saveFile = async (path, base_dir) => {
           } else {
             console.log('file creation was cancelled');
           }
-        });
+        }));
   } else {
     handleSetToast({
       icon: 'warning-sign',
@@ -674,6 +706,14 @@ export const refreshOpenFiles = async () => {
     );
     files.openFiles = Object.fromEntries(open_files_entries);
     store.dispatch(setFiles(files));
+
+    if (
+      !files.openFilePath ||
+      files.openFilePath ===
+        files.openFilePath.split('/')[files.openFilePath.split('/').length - 1]
+    ) {
+      openFile(Object.keys(files.openFiles ? files.openFiles : {})[0]);
+    }
   }
 };
 

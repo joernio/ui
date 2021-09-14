@@ -149,17 +149,6 @@ const styles = theme => ({
           margin: '1em',
           padding: 0,
           minHeight: 0,
-          // '& h4': {
-          //   color: props =>
-          //     props.settings.prefersDarkMode ? '#FFFFFF' : '#000000',
-          //   outline: props =>
-          //     `1px solid ${
-          //       theme.palette.menu.background[
-          //         props.settings.prefersDarkMode ? 'dark' : 'light'
-          //       ]
-          //     }`,
-          //   paddingBottom: '0.8em',
-          // },
         },
       },
     },

@@ -7,6 +7,7 @@ import * as queryActions from '../store/actions/queryActions';
 import { ContextMenu2, Popover2 } from '@blueprintjs/popover2';
 import { Menu, MenuDivider, MenuItem } from '@blueprintjs/core';
 import QueriesStats from '../components/queries_stats/QueriesStats';
+import DiscardDialog from '../components/discard_dialog/DiscardDialog';
 import { windowInfoApi, windowActionApi } from '../assets/js/utils/ipcRenderer';
 import styles from '../assets/js/styles/views/windowWrapperStyles';
 import {
@@ -16,11 +17,13 @@ import {
   wsDisconnectFromServer,
   openFile,
   saveFile,
+  getOpenFileName,
   handleSwitchWorkspace,
   contructQueryWithPath,
   addToQueue,
+  discardDialogHandler,
 } from '../assets/js/utils/scripts';
-import { handleOpenFile, getOpenFileName } from './windowWrapperScripts';
+import { handleOpenFile } from './windowWrapperScripts';
 
 const useStyles = makeStyles(styles);
 
@@ -31,6 +34,8 @@ function WindowWrapper(props) {
   const [state, setState] = React.useState({
     isMaximized: windowInfoApi.getWindowInfo(),
     fileContextIsOpen: false,
+    openDiscardDialog: false,
+    discardDialogCallback: () => {},
   });
 
   const handleSetState = obj => {
@@ -42,11 +47,12 @@ function WindowWrapper(props) {
   };
 
   React.useEffect(() => {
-    const filename = getOpenFileName(props);
+    const filename = getOpenFileName(props?.files?.openFilePath);
     windowActionApi.setOpenFileName(filename);
   }, [props.files]);
 
-  const { fileContextIsOpen } = state;
+  const { fileContextIsOpen, openDiscardDialog, discardDialogCallback } = state;
+  const { openFiles, openFilePath } = props.files;
 
   return (
     <div data-test="window-wrapper">
@@ -116,13 +122,25 @@ function WindowWrapper(props) {
                   className={classes.menuItemStyle}
                   text="Reload"
                   icon="refresh"
-                  onClick={() => sendWindowsMessage('reload')}
+                  onClick={() =>
+                    handleSetState(
+                      discardDialogHandler(openFiles, openFilePath, () => {
+                        sendWindowsMessage('reload');
+                      }),
+                    )
+                  }
                 />
                 <MenuItem
                   className={classes.menuItemStyle}
                   text="Exit"
                   icon="cross"
-                  onClick={() => sendWindowsMessage('close')}
+                  onClick={() =>
+                    handleSetState(
+                      discardDialogHandler(openFiles, openFilePath, () => {
+                        sendWindowsMessage('close');
+                      }),
+                    )
+                  }
                 />
               </Menu>
             }
@@ -233,6 +251,11 @@ function WindowWrapper(props) {
           </div>
         </ContextMenu2>
       </div>
+      <DiscardDialog
+        handleSetState={handleSetState}
+        openDiscardDialog={openDiscardDialog}
+        callback={discardDialogCallback}
+      />
     </div>
   );
 }

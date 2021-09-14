@@ -7,12 +7,14 @@ import {
   openFile,
   closeFile,
   handleScrollTop,
+  discardDialogHandler,
 } from '../../assets/js/utils/scripts';
 import styles from '../../assets/js/styles/components/open_files/openFilesStyles';
 import {
   getEditorFilesFromOpenFiles,
   handleToggleFilesVisible,
 } from './openFilesScripts';
+import DiscardDialog from '../discard_dialog/DiscardDialog';
 
 const useStyles = makeStyles(styles);
 
@@ -23,6 +25,8 @@ function OpenFiles(props) {
     files: {},
     filesVisible: true,
     scrolled: false,
+    openDiscardDialog: false,
+    discardDialogCallback: () => {},
   });
 
   React.useEffect(() => {
@@ -52,7 +56,15 @@ function OpenFiles(props) {
     }
   };
 
-  const { files, filesVisible, scrolled } = state;
+  const {
+    files,
+    filesVisible,
+    scrolled,
+    openDiscardDialog,
+    discardDialogCallback,
+  } = state;
+
+  const { openFiles, openFilePath } = props.files;
 
   return Object.keys(props.workspace.projects).length > 0 ? (
     <div className={classes.rootStyle} tabIndex="0" data-test="open-files">
@@ -89,20 +101,47 @@ function OpenFiles(props) {
                   <h3
                     className={classes.fileNameStyle}
                     key={path}
-                    onClick={() => (path ? openFile(path) : null)}
+                    onClick={() =>
+                      handleSetState(
+                        discardDialogHandler(openFiles, openFilePath, () => {
+                          openFile(path);
+                        }),
+                      )
+                    }
                   >
                     {filename}
                   </h3>
+
+                  {files[path] === false ? (
+                    <Icon
+                      icon="dot"
+                      className={clsx('unsaved-icon', classes.iconStyle)}
+                    />
+                  ) : null}
+
                   <Icon
                     icon="small-cross"
-                    className={classes.iconStyle}
-                    onClick={() => (path ? closeFile(path) : null)}
+                    className={clsx(classes.iconStyle, {
+                      'unsaved-cross-icon': files[path] === false,
+                    })}
+                    onClick={() =>
+                      handleSetState(
+                        discardDialogHandler(openFiles, openFilePath, () => {
+                          closeFile(path);
+                        }),
+                      )
+                    }
                   />
                 </div>
               );
             })
           : null}
       </div>
+      <DiscardDialog
+        handleSetState={handleSetState}
+        openDiscardDialog={openDiscardDialog}
+        callback={discardDialogCallback}
+      />
     </div>
   ) : null;
 }

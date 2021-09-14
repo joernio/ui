@@ -16,6 +16,15 @@ export const handleChangeMadeToOpenFiles = (refs, props) => {
   }, 1000);
 };
 
+export const handleEditorOnChange = (newValue, props) => {
+  props.setOpenFileContent(newValue);
+  if (props.files.openFiles[props.files.openFilePath] === true) {
+    const openFiles = { ...props.files.openFiles };
+    openFiles[props.files.openFilePath] = false;
+    props.setOpenFiles(openFiles);
+  }
+};
+
 export const goToLine = (editor, row = 1, column = 1) => {
   editor.setPosition({ column: column, lineNumber: row ? row : 1 });
   editor.revealLineInCenter(row ? row : 1);

@@ -4,13 +4,3 @@ export const handleOpenFile = e => {
     return path;
   }
 };
-
-export const getOpenFileName = props => {
-  if (props?.files?.openFilePath) {
-    let filename = props.files.openFilePath;
-    filename = filename ? filename.split('/') : null;
-    filename = filename ? filename[filename.length - 1] : null;
-
-    return filename;
-  }
-};
