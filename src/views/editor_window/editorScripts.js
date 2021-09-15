@@ -1,10 +1,14 @@
 import * as editorScripts from './editorScripts';
-import { isFilePathInQueryResult } from '../../assets/js/utils/scripts';
+import {
+  isFilePathInQueryResult,
+  openFile,
+} from '../../assets/js/utils/scripts';
 import { Range } from 'monaco-editor';
 
 let delta_decorations = [];
 
-export const handleChangeMadeToOpenFiles = (refs, props) => {
+handleEditorGoToLineAndHighlight;
+export const handleEditorGoToLineAndHighlight = (refs, props) => {
   const { startLine, endLine } = editorScripts.shouldGoToLine(props);
 
   setTimeout(() => {
@@ -115,13 +119,12 @@ export const isLineNumberInQueryResult = results => {
 };
 
 export const shouldGoToLine = props => {
-  let { recent: recent_file } = { ...props.files };
-  recent_file = Object.keys(recent_file)?.pop();
+  let open_file_path = props.files.openFilePath;
 
   const { results } = props.query;
   const file_path = isFilePathInQueryResult(results);
 
-  if (file_path === recent_file && recent_file) {
+  if (file_path === open_file_path && open_file_path) {
     return editorScripts.isLineNumberInQueryResult(results);
   } else {
     return { startLine: null, endLine: null };
