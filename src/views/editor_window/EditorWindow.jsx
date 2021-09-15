@@ -7,7 +7,7 @@ import * as filesActions from '../../store/actions/filesActions';
 import { makeStyles } from '@material-ui/core';
 import {
   editorDidMount,
-  handleChangeMadeToOpenFiles,
+  handleEditorGoToLineAndHighlight,
   handleEditorOnChange,
 } from './editorScripts';
 import styles from '../../assets/js/styles/views/editor_window/editorWindowStyles';
@@ -24,7 +24,7 @@ function EditorWindow(props) {
 
   React.useEffect(() => {
     if (refs.editorEl.current) {
-      handleChangeMadeToOpenFiles(refs, props);
+      handleEditorGoToLineAndHighlight(refs, props);
     }
   }, [props.files.recent, props.workspace.projects]);
 
