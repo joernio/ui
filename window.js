@@ -9,7 +9,7 @@ const createWindow = async () => {
   const { position, size } = getWindowPosition();
 
   const window = new BrowserWindow({
-    title: 'Joern Client',
+    title: 'CPG UI Client',
     // titleBarStyle: 'hiddenInset',
     // icon: path.resolve(__dirname, './src/assets/image/icon.svg'),
     frame: true,

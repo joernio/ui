@@ -1,4 +1,4 @@
-import { joernManagementCommands as manCommands } from '../assets/js/utils/defaultVariables';
+import { cpgManagementCommands as manCommands } from '../assets/js/utils/defaultVariables';
 import { parseProject, parseProjects } from '../assets/js/utils/scripts';
 
 export const modifyWorkSpaceNameAndActiveProject = (obj, workspace) => {

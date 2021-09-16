@@ -5,13 +5,14 @@ import {
   deleteFile,
   generateScriptImportQuery,
   handleSetToast,
+  getUIIgnoreArr,
 } from '../../assets/js/utils/scripts';
 import { selectDirApi } from '../../assets/js/utils/ipcRenderer';
 
 export const chokidarVars = {
   chokidarWatcher: null,
-  chokidarConfig: src => ({
-    ignored: [src + '/**/node_modules/**', src + '/**/vendor/**'],
+  chokidarConfig: (src, ignore) => ({
+    ignored: [...getUIIgnoreArr(src, ignore)],
     awaitWriteFinish: {
       stabilityThreshold: 2000,
       pollInterval: 100,
@@ -30,7 +31,7 @@ export const addToScriptsQueue = (query, props) => {
   props.enQueueScriptsQuery(query);
 };
 
-export const getJoernScripts = async props => {
+export const getCpgScripts = async props => {
   let path = props.settings.scriptsDir;
 
   if (path) {

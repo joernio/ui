@@ -38,6 +38,7 @@ export const getSettingsInitialValues = settings => {
   initialSettings['prefers_terminal_view'] = settings?.prefersTerminalView;
   initialSettings['font_size'] = Number(settings?.fontSize.split('px')[0]);
   initialSettings['scripts_dir'] = settings?.scriptsDir;
+  initialSettings['ui_ignore'] = settings?.uiIgnore;
 
   return initialSettings;
 };
@@ -56,6 +57,7 @@ export const collectSettingsValues = values => {
     prefersTerminalView: values['prefers_terminal_view'],
     fontSize: `${values['font_size']}px`,
     scriptsDir: values['scripts_dir'],
+    uiIgnore: values['ui_ignore'],
   };
 
   return settings;

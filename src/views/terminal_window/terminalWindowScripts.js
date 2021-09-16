@@ -32,12 +32,12 @@ export const updateCursorPosition = value => {
 
 export const constructInputToWrite = () =>
   TV.clearLine +
-  TV.joernDefaultPrompt +
+  TV.cpgDefaultPrompt +
   TWS.data_obj.data +
   TV.carriageReturn +
   TV.cursorPositionFromStart
     .split('<n>')
-    .join(TV.joernDefaultPrompt.length + TWS.data_obj.cursorPosition);
+    .join(TV.cpgDefaultPrompt.length + TWS.data_obj.cursorPosition);
 
 export const constructOutputToWrite = (prompt, value, isCircuitUI) => {
   if (isCircuitUI) {
@@ -307,7 +307,7 @@ export const handleWriteScriptQuery = async (term, refs, latest) => {
 
   await TWS.termWriteLn(
     term,
-    TWS.constructOutputToWrite(TV.joernDefaultPrompt, latest.query),
+    TWS.constructOutputToWrite(TV.cpgDefaultPrompt, latest.query),
   );
   TWS.handleWriteToCircuitUIResponse(
     refs,
@@ -316,7 +316,6 @@ export const handleWriteScriptQuery = async (term, refs, latest) => {
   );
 
   !busy && (await term.prompt());
-  // store.dispatch(setTerminalBusy(true));
 };
 
 export const handleWriteQuery = async (term, refs, latest) => {
@@ -329,7 +328,7 @@ export const handleWriteQuery = async (term, refs, latest) => {
     if (i < 1) {
       await TWS.termWriteLn(
         term,
-        TWS.constructOutputToWrite(TV.joernDefaultPrompt, lines[i]),
+        TWS.constructOutputToWrite(TV.cpgDefaultPrompt, lines[i]),
       );
     } else {
       await TWS.termWriteLn(term, TWS.constructOutputToWrite(null, lines[i]));
@@ -356,13 +355,13 @@ export const initXterm = async prefersDarkMode => {
     },
   });
 
-  let shellprompt = TV.carriageReturn + TV.newLine + TV.joernDefaultPrompt;
+  let shellprompt = TV.carriageReturn + TV.newLine + TV.cpgDefaultPrompt;
 
   term.prompt = async () => {
     await TWS.termWrite(term, shellprompt);
   };
 
-  await TWS.termWrite(term, TV.joernWelcomeScreen);
+  await TWS.termWrite(term, TV.cpgWelcomeScreen);
   await term.prompt();
 
   return term;

@@ -94,7 +94,7 @@ const initIpcMain = () => {
 
   ipcMain.on('set-open-file-name', (event, filename) => {
     const window = getWindow(event);
-    window.setTitle(filename ? `${filename} - Joern Client` : 'Joern Client');
+    window.setTitle(filename ? `${filename} - CPG UI Client` : 'CPG UI Client');
   });
 
   ipcMain.on('copy', (event, str) => {

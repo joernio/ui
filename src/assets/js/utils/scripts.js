@@ -4,7 +4,7 @@ import fs from 'fs';
 import Mousetrap from 'mousetrap';
 import { Tree } from '@blueprintjs/core';
 import {
-  joernManagementCommands as manCommands,
+  cpgManagementCommands as manCommands,
   apiErrorStrings,
 } from './defaultVariables';
 import {
@@ -745,12 +745,23 @@ export const isFilePathInQueryResult = results => {
   }
 };
 
-export const getDirectories = src =>
-  new Promise((resolve, reject) => {
+export const getUIIgnoreArr = (src, uiIgnore) => {
+  if (uiIgnore && typeof uiIgnore === 'string') {
+    return uiIgnore
+      .split(',')
+      .filter(str => (str && str !== ' ' ? true : false))
+      .map(str => `${src}/**/${str.trim()}/**`);
+  } else {
+    return [];
+  }
+};
+
+export const getDirectories = src => {
+  return new Promise((resolve, reject) => {
     glob(
       src + '/**/*',
       {
-        ignore: [src + '/**/node_modules/**', src + '/**/vendor/**'],
+        ignore: [...getUIIgnoreArr(src, store.getState()?.settings?.uiIgnore)],
       },
       (err, path) => {
         if (!err) {
@@ -761,19 +772,27 @@ export const getDirectories = src =>
       },
     );
   });
+};
 
 export const watchFolderPath = (path, vars, callback) => {
+  const ignore = store.getState()?.settings?.uiIgnore;
   if (vars.chokidarWatcher) {
     vars.chokidarWatcher.close().then(() => {
       if (path) {
-        vars.chokidarWatcher = chokidar.watch(path, vars.chokidarConfig(path));
+        vars.chokidarWatcher = chokidar.watch(
+          path,
+          vars.chokidarConfig(path, ignore),
+        );
 
         vars.chokidarWatcher.on('all', callback);
       }
     });
   } else {
     if (path) {
-      vars.chokidarWatcher = chokidar.watch(path, vars.chokidarConfig(path));
+      vars.chokidarWatcher = chokidar.watch(
+        path,
+        vars.chokidarConfig(path, ignore),
+      );
 
       vars.chokidarWatcher.on('all', callback);
     }

@@ -108,12 +108,12 @@ describe('function constructInputToWrite: ', () => {
   it('expect function to return expected value: ', () => {
     const expected =
       TV.clearLine +
-      TV.joernDefaultPrompt +
+      TV.cpgDefaultPrompt +
       TWS.data_obj.data +
       TV.carriageReturn +
       TV.cursorPositionFromStart
         .split('<n>')
-        .join(TV.joernDefaultPrompt.length + TWS.data_obj.cursorPosition);
+        .join(TV.cpgDefaultPrompt.length + TWS.data_obj.cursorPosition);
     expect(TWS.constructInputToWrite()).toBe(expected);
   });
 });
@@ -1180,13 +1180,13 @@ describe('function handleWriteQuery: ', () => {
       if (index < 1) {
         expect(constructOutputToWrite).toHaveBeenNthCalledWith(
           index + 1,
-          TV.joernDefaultPrompt,
+          TV.cpgDefaultPrompt,
           line,
         );
         expect(termWriteLn).toHaveBeenNthCalledWith(
           index + 1,
           term,
-          `${TV.joernDefaultPrompt}-${line}-undefined`,
+          `${TV.cpgDefaultPrompt}-${line}-undefined`,
         );
       } else {
         expect(constructOutputToWrite).toHaveBeenNthCalledWith(
@@ -1240,11 +1240,11 @@ describe('function initXTerm: ', () => {
   });
 
   it('expect function to initialize Terminal, call certain functions and return the Terminal object', async () => {
-    const shellprompt = TV.carriageReturn + TV.newLine + TV.joernDefaultPrompt;
+    const shellprompt = TV.carriageReturn + TV.newLine + TV.cpgDefaultPrompt;
     const prefersDarkMode = true;
     const term = await TWS.initXterm(prefersDarkMode);
     expect(term instanceof Terminal).toBe(true);
-    expect(termWrite).toHaveBeenNthCalledWith(1, term, TV.joernWelcomeScreen);
+    expect(termWrite).toHaveBeenNthCalledWith(1, term, TV.cpgWelcomeScreen);
     expect(termWrite).toHaveBeenNthCalledWith(2, term, shellprompt);
   });
 
