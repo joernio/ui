@@ -44,7 +44,6 @@ const styles = theme => ({
             props.settings.prefersDarkMode ? 'dark' : 'light'
           ],
       },
-
       '&::-webkit-scrollbar-thumb': {
         backgroundColor: props =>
           theme.palette.scrollbar.base[
@@ -67,10 +66,35 @@ const styles = theme => ({
     flexDirection: 'column',
     justifyContent: 'flex-end',
     overflow: 'hidden',
+    '& #circuit-ui-welcome-screen-container': {
+      flexGrow: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100%',
+      '& h1': {
+        color: props =>
+          theme.palette.explorer.background[
+            props.settings.prefersDarkMode ? 'light' : 'dark'
+          ],
+        fontWeight: 'bolder',
+        fontSize: '8em',
+        margin: 0,
+      },
+      '& p': {
+        color: props =>
+          theme.palette.explorer.background[
+            props.settings.prefersDarkMode ? 'light' : 'dark'
+          ],
+        fontSize: '1.3rem',
+      },
+    },
     '& #circuit-ui-results-container': {
       maxHeight: '95%',
       overflowY: 'scroll',
       paddingLeft: '1em',
+      flexGrow: 1,
       '& .query': {
         display: 'flex',
         padding: '0.4em',
@@ -117,6 +141,13 @@ const styles = theme => ({
         width: '12px',
       },
       '&::-webkit-scrollbar-track': {
+        backgroundColor: props =>
+          theme.palette.scrollbar.background[
+            props.settings.prefersDarkMode ? 'dark' : 'light'
+          ],
+      },
+
+      '&::-webkit-scrollbar-corner': {
         backgroundColor: props =>
           theme.palette.scrollbar.background[
             props.settings.prefersDarkMode ? 'dark' : 'light'

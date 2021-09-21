@@ -70,19 +70,31 @@ function WindowWrapper(props) {
               <Menu className={classes.menuStyle}>
                 <MenuItem
                   className={classes.menuItemStyle}
-                  text="New File"
+                  text="New Script"
                   icon="document"
-                  onClick={() => openEmptyFile()}
+                  onClick={() =>
+                    handleSetState(
+                      discardDialogHandler(openFiles, openFilePath, () => {
+                        openEmptyFile();
+                      }),
+                    )
+                  }
                 />
                 <MenuItem
                   className={classes.menuItemStyle}
                   text="Open File"
-                  onClick={() => hiddenInputEl.current.click()}
+                  onClick={() =>
+                    handleSetState(
+                      discardDialogHandler(openFiles, openFilePath, () => {
+                        hiddenInputEl.current.click();
+                      }),
+                    )
+                  }
                   icon="folder-shared"
                 />
                 <MenuItem
                   className={classes.menuItemStyle}
-                  text="Save File"
+                  text="Save Script"
                   icon="floppy-disk"
                   onClick={() =>
                     saveFile(
@@ -160,7 +172,7 @@ function WindowWrapper(props) {
           </Popover2>
 
           {/* <div className={classes.toolNameContainerStyle}>
-            <h1>{filename ? `${filename} - ` : null}Joern Client</h1>
+            <h1>{filename ? `${filename} - ` : null}CPG UI Client</h1>
           </div> */}
         </div>
 

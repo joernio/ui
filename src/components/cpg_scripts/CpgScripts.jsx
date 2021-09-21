@@ -14,16 +14,19 @@ import {
   MenuDivider,
 } from '@blueprintjs/core';
 import { Popover2 } from '@blueprintjs/popover2';
-import JoernScript from '../joern_script/JoernScript';
-import styles from '../../assets/js/styles/components/joern_scripts/joernScriptsStyles';
+import CpgScript from '../cpg_script/CpgScript';
+import DiscardDialog from '../discard_dialog/DiscardDialog';
+import styles from '../../assets/js/styles/components/cpg_scripts/cpgScriptsStyles';
 import {
   handleScrollTop,
   watchFolderPath,
   openProjectExists,
+  discardDialogHandler,
+  openEmptyFile,
 } from '../../assets/js/utils/scripts';
 import {
   chokidarVars,
-  getJoernScripts,
+  getCpgScripts,
   switchDefaultScriptsFolder,
   handleToggleScriptsVisible,
   organisedScriptsToScripts,
@@ -33,11 +36,12 @@ import {
   deleteSelected,
   collectArgsValues,
   toggleScriptsArgsDialog,
-} from './joernScriptsScripts';
+} from './cpgScriptsScripts';
+import { shouldGoToLine } from '../../views/editor_window/editorScripts';
 
 const useStyles = makeStyles(styles);
 
-function JoernScripts(props) {
+function CpgScripts(props) {
   const scriptsContainerEl = React.useRef(null);
   const classes = useStyles(props);
   const [state, setState] = React.useState({
@@ -48,17 +52,21 @@ function JoernScripts(props) {
     dialogFields: [],
     openDialog: false,
     scriptsMenuIsOpen: false,
+    openDiscardDialog: false,
+    discardDialogCallback: () => {},
   });
 
   const refs = {
     dialogEl: React.useRef(null),
   };
 
-  React.useEffect(async () => {
-    watchFolderPath(props.settings.scriptsDir, chokidarVars, async () => {
-      const scripts = await getJoernScripts(props);
-      handleSetState({ scripts: scripts ? scripts : {} });
-    });
+  React.useEffect(() => {
+    (async () => {
+      watchFolderPath(props.settings.scriptsDir, chokidarVars, async () => {
+        const scripts = await getCpgScripts(props);
+        handleSetState({ scripts: scripts ? scripts : {} });
+      });
+    })();
   }, [props.settings.scriptsDir]);
 
   React.useEffect(() => {
@@ -89,7 +97,11 @@ function JoernScripts(props) {
     openDialog,
     dialogFields,
     scriptsMenuIsOpen,
+    openDiscardDialog,
+    discardDialogCallback,
   } = state;
+
+  const { openFiles, openFilePath } = props.files;
 
   return Object.keys(props.workspace.projects).length > 0 ? (
     <ClickAwayListener
@@ -97,7 +109,7 @@ function JoernScripts(props) {
         handleSetState({ selected: {} });
       }}
     >
-      <div className={classes.rootStyle} tabIndex="0" data-test="joern-scripts">
+      <div className={classes.rootStyle} tabIndex="0" data-test="cpg-scripts">
         <div className={classes.titleSectionStyle}>
           {scriptsVisible ? (
             <Icon
@@ -128,7 +140,7 @@ function JoernScripts(props) {
           <Popover2
             content={
               <Menu className={classes.menuStyle}>
-                <MenuItem
+                {/* <MenuItem
                   className={classes.menuItemStyle}
                   onClick={() =>
                     handleSetState(
@@ -148,7 +160,18 @@ function JoernScripts(props) {
                   }
                   text="Run Selected"
                 />
-                <MenuDivider className={classes.menuDividerStyle} />
+                <MenuDivider className={classes.menuDividerStyle} /> */}
+                <MenuItem
+                  className={classes.menuItemStyle}
+                  onClick={() =>
+                    handleSetState(
+                      discardDialogHandler(openFiles, openFilePath, () => {
+                        openEmptyFile();
+                      }),
+                    )
+                  }
+                  text="New Script"
+                />
                 <MenuItem
                   className={classes.menuItemStyle}
                   onClick={() => deleteAll(scripts)}
@@ -198,7 +221,7 @@ function JoernScripts(props) {
                   let filename = value.split('/');
                   filename = filename[filename.length - 1];
                   return (
-                    <JoernScript
+                    <CpgScript
                       filename={filename}
                       path={value}
                       mainFunctionName={scripts[value].mainFunctionName}
@@ -220,7 +243,7 @@ function JoernScripts(props) {
                           let filename = path.split('/');
                           filename = filename[filename.length - 1];
                           return (
-                            <JoernScript
+                            <CpgScript
                               filename={filename}
                               path={path}
                               mainFunctionName={
@@ -311,6 +334,11 @@ function JoernScripts(props) {
               </h3>
             </div>
           </Dialog>
+          <DiscardDialog
+            handleSetState={handleSetState}
+            openDiscardDialog={openDiscardDialog}
+            callback={discardDialogCallback}
+          />
         </div>
       </div>
     </ClickAwayListener>
@@ -321,6 +349,7 @@ const mapStateToProps = state => {
   return {
     workspace: state.workspace,
     settings: state.settings,
+    files: state.files,
   };
 };
 
@@ -335,4 +364,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(JoernScripts);
+export default connect(mapStateToProps, mapDispatchToProps)(CpgScripts);

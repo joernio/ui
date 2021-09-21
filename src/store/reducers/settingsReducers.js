@@ -13,6 +13,7 @@ export const default_state = {
   prefersTerminalView: true,
   fontSize: '16px',
   scriptsDir: `${homedir()}/bin/joern/joern-cli/scripts`,
+  uiIgnore: 'node_modules, vendor, build, .git',
 };
 
 const settings = (state = default_state, action) => {

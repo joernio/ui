@@ -1,6 +1,6 @@
-# How To Setup Joern's Frontend Client On Your Local Machine
+# How To Setup CPG UI Client On Your Local Machine
 
-Note: When this project is packaged, It will be available for all the major os that supports joern, but to run the project in development mode, you need to be on Linux (preferably Ubuntu 20) or Mac. You will have installation issues if you try setting this up on windows. If you use Mac the setup method is still the same, but note that setting up this project in development mode hasn't been done on a Mac before so you may or may not face installation issues.
+Note: When this project is packaged, It will be available for all the major os that supports joern and joern-like programs like ocular, but to run the project in development mode, you need to be on Linux (preferably Ubuntu 20) or Mac. You will have installation issues if you try setting this up on windows. If you use Mac the setup method is still the same, but note that setting up this project in development mode hasn't been done on a Mac before so you may or may not face installation issues.
 
 Also, do not attempt to install this project with yarn, you will face many issues if you try. Follow the steps below exactly like they are here.
 

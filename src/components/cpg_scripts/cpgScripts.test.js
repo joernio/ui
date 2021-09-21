@@ -1,6 +1,6 @@
 import 'jsdom-global/register';
 import React from 'react';
-import JoernScripts from './JoernScripts';
+import CpgScripts from './CpgScripts';
 import { makeStyles } from '@material-ui/core/styles';
 import { default_state as settings } from '../../store/reducers/settingsReducers';
 import { default_state as files } from '../../store/reducers/filesReducers';
@@ -8,10 +8,7 @@ import { default_state as query } from '../../store/reducers/queryReducers';
 import { default_state as workspace } from '../../store/reducers/workSpaceReducers';
 import { mount } from 'enzyme';
 import { findByTestAttr, testStore } from '../../assets/js/utils/testUtils';
-import {
-  getJoernScripts,
-  getJoernScriptsFromRecent,
-} from './joernScriptsScripts';
+import { getCpgScripts, getCpgScriptsFromRecent } from './cpgScriptsScripts';
 
 const mock_workspace = {
   path: '/home/raymond/Desktop/workspace',
@@ -34,19 +31,19 @@ jest.mock('@material-ui/core/styles', () => ({
   makeStyles: jest.fn(() => () => ({})),
 }));
 
-jest.mock('./joernScriptsScripts', () => ({
+jest.mock('./cpgScriptsScripts', () => ({
   __esModule: true,
-  getJoernScripts: jest.fn(() => new Promise(r => r({}))),
-  getJoernScriptsFromRecent: jest.fn(() => ({})),
+  getCpgScripts: jest.fn(() => new Promise(r => r({}))),
+  getCpgScriptsFromRecent: jest.fn(() => ({})),
 }));
 
 const setUp = (initialState = {}) => {
   const store = testStore(initialState);
-  const wrapper = mount(<JoernScripts store={store} />);
+  const wrapper = mount(<CpgScripts store={store} />);
   return { wrapper, store };
 };
 
-describe('JoernScripts component when workspace is empty:', () => {
+describe('CpgScripts component when workspace is empty:', () => {
   let wrapper;
 
   beforeEach(() => {
@@ -54,8 +51,8 @@ describe('JoernScripts component when workspace is empty:', () => {
     wrapper = wrapper_and_store.wrapper;
   });
 
-  it('JoernScripts.jsx Should not render if workspace is empty', () => {
-    const component = findByTestAttr(wrapper, 'joern-scripts');
+  it('CpgScripts.jsx Should not render if workspace is empty', () => {
+    const component = findByTestAttr(wrapper, 'cpg-scripts');
     expect(component.length).toBe(0);
   });
 
@@ -63,12 +60,12 @@ describe('JoernScripts component when workspace is empty:', () => {
     expect(makeStyles).toHaveBeenCalled();
   });
 
-  it('expect getJoernScripts to have been called', () => {
-    expect(getJoernScripts).toHaveBeenCalled();
+  it('expect getCpgScripts to have been called', () => {
+    expect(getCpgScripts).toHaveBeenCalled();
   });
 
-  it('expect getJoernScriptsFromRecent to have been called', () => {
-    expect(getJoernScriptsFromRecent).toHaveBeenCalled();
+  it('expect getCpgScriptsFromRecent to have been called', () => {
+    expect(getCpgScriptsFromRecent).toHaveBeenCalled();
   });
 
   afterEach(() => {
@@ -76,7 +73,7 @@ describe('JoernScripts component when workspace is empty:', () => {
   });
 });
 
-describe('JoernScripts component when workspace is not empty:', () => {
+describe('CpgScripts component when workspace is not empty:', () => {
   let wrapper;
 
   beforeEach(() => {
@@ -89,8 +86,8 @@ describe('JoernScripts component when workspace is not empty:', () => {
     wrapper = wrapper_and_store.wrapper;
   });
 
-  it('joernScripts.jsx Should not render if workspace is not empty', () => {
-    const component = findByTestAttr(wrapper, 'joern-scripts');
+  it('CpgScripts.jsx Should not render if workspace is not empty', () => {
+    const component = findByTestAttr(wrapper, 'cpg-scripts');
     expect(component.length).toBe(1);
   });
 
@@ -98,12 +95,12 @@ describe('JoernScripts component when workspace is not empty:', () => {
     expect(makeStyles).toHaveBeenCalled();
   });
 
-  it('expect getJoernScripts to have been called', () => {
-    expect(getJoernScripts).toHaveBeenCalled();
+  it('expect getCpgScripts to have been called', () => {
+    expect(getCpgScripts).toHaveBeenCalled();
   });
 
-  it('expect getJoernScriptsFromRecent to have been called', () => {
-    expect(getJoernScriptsFromRecent).toHaveBeenCalled();
+  it('expect getCpgScriptsFromRecent to have been called', () => {
+    expect(getCpgScriptsFromRecent).toHaveBeenCalled();
   });
 
   afterEach(() => {

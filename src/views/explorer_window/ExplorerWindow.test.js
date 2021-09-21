@@ -45,9 +45,9 @@ jest.mock('../../components/workspace/Workspace', () => ({
   default: jest.fn(_ => <div data-test="workspace"></div>),
 }));
 
-jest.mock('../../components/joern_scripts/JoernScripts', () => ({
+jest.mock('../../components/cpg_scripts/CpgScripts', () => ({
   __esModule: true,
-  default: jest.fn(_ => <div data-test="joern-scripts"></div>),
+  default: jest.fn(_ => <div data-test="cpg-scripts"></div>),
 }));
 
 jest.mock('../../components/open_files/OpenFiles', () => ({
@@ -69,13 +69,13 @@ const setUp = (initialState = {}) => {
 };
 
 describe('ExplorerWindow component with query.results empty:', () => {
-  let wrapper, icon, joern_scripts, open_files, workspace, folders;
+  let wrapper, icon, cpg_scripts, open_files, workspace, folders;
 
   beforeEach(() => {
     let wrapper_and_store = setUp({ settings, query });
     wrapper = wrapper_and_store.wrapper;
     icon = findByTestAttr(wrapper, 'icon');
-    joern_scripts = findByTestAttr(wrapper, 'joern-scripts');
+    cpg_scripts = findByTestAttr(wrapper, 'cpg-scripts');
     open_files = findByTestAttr(wrapper, 'open-files');
     workspace = findByTestAttr(wrapper, 'workspace');
     folders = findByTestAttr(wrapper, 'folders');
@@ -106,8 +106,8 @@ describe('ExplorerWindow component with query.results empty:', () => {
     expect(icon.length).toBe(1);
   });
 
-  it('expect joern_scripts.length to be 0, when query.results is empty', () => {
-    expect(joern_scripts.length).toBe(0);
+  it('expect cpg_scripts.length to be 0, when query.results is empty', () => {
+    expect(cpg_scripts.length).toBe(0);
   });
 
   it('expect open_files.length to be 0, when query.results is empty', () => {
@@ -128,7 +128,7 @@ describe('ExplorerWindow component with query.results empty:', () => {
 });
 
 describe('ExplorerWindow component with query.results not empty:', () => {
-  let wrapper, icon, joern_scripts, open_files, workspace, folders;
+  let wrapper, icon, cpg_scripts, open_files, workspace, folders;
 
   beforeEach(() => {
     let wrapper_and_store = setUp({
@@ -137,7 +137,7 @@ describe('ExplorerWindow component with query.results not empty:', () => {
     });
     wrapper = wrapper_and_store.wrapper;
     icon = findByTestAttr(wrapper, 'icon');
-    joern_scripts = findByTestAttr(wrapper, 'joern-scripts');
+    cpg_scripts = findByTestAttr(wrapper, 'cpg-scripts');
     open_files = findByTestAttr(wrapper, 'open-files');
     workspace = findByTestAttr(wrapper, 'workspace');
     folders = findByTestAttr(wrapper, 'folders');
@@ -168,8 +168,8 @@ describe('ExplorerWindow component with query.results not empty:', () => {
     expect(icon.length).toBe(0);
   });
 
-  it('expect joern_scripts.length to be 1, when query.results is not empty', () => {
-    expect(joern_scripts.length).toBe(1);
+  it('expect cpg_scripts.length to be 1, when query.results is not empty', () => {
+    expect(cpg_scripts.length).toBe(1);
   });
 
   it('expect open_files.length to be 1, when query.results is not empty', () => {

@@ -1,13 +1,17 @@
 import fs from 'fs';
 
-import { getDirectories, handleSetToast } from '../../assets/js/utils/scripts';
-import { foldersToIgnore } from '../../assets/js/utils/defaultVariables';
+import {
+  getDirectories,
+  handleSetToast,
+  getUIIgnoreArr,
+} from '../../assets/js/utils/scripts';
 import { selectDirApi } from '../../assets/js/utils/ipcRenderer';
+import { store } from '../../store/configureStore';
 
 export const chokidarVars = {
   chokidarWatcher: null,
-  chokidarConfig: src => ({
-    ignored: [src + '/**/node_modules/**', src + '/**/vendor/**'],
+  chokidarConfig: (src, ignore) => ({
+    ignored: [...getUIIgnoreArr(src, ignore)],
     awaitWriteFinish: {
       stabilityThreshold: 2000,
       pollInterval: 100,
@@ -130,6 +134,11 @@ export const selectFolderStructureRootPath = async () => {
 
 export const createFolderJsonModel = async (obj, callback) => {
   let { path: root_path } = obj;
+  const uiIgnoreArr = getUIIgnoreArr(
+    '',
+    store.getState().settings.uiIgnore,
+  ).map(str => str.split('/')[2]);
+
   if (root_path) {
     const paths = await getDirectories(root_path).catch(err => {});
 
@@ -157,11 +166,8 @@ export const createFolderJsonModel = async (obj, callback) => {
         const arr = path.split('/').filter(value => (value ? true : false));
 
         if (
-          isFile ||
-          !(
-            foldersToIgnore.includes(arr[arr.length - 1]) &&
-            arr[arr.length - 1].startsWith('.')
-          )
+          uiIgnoreArr.filter(str => (arr.includes(str) ? true : false))
+            .length === 0
         ) {
           fsToJson(arr, folder_json_model, isFile);
         }

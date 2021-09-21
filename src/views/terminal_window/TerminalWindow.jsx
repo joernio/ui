@@ -42,8 +42,10 @@ function TerminalWindow(props) {
     handleResize(props.terminal.fitAddon);
   };
 
-  React.useEffect(async () => {
-    props.setTerm(await initXterm(props.settings.prefersDarkMode));
+  React.useEffect(() => {
+    (async () => {
+      props.setTerm(await initXterm(props.settings.prefersDarkMode));
+    })();
   }, []);
 
   React.useEffect(() => {
@@ -113,17 +115,19 @@ function TerminalWindow(props) {
     }
   }, [props.query.queue]);
 
-  React.useEffect(async () => {
-    if (props.query?.results) {
-      const bool = areResultsEqual(
-        props.terminal.prev_results,
-        props.query.results,
-      );
-      const wroteToTerminal =
-        !bool && (await sendQueryResultToXTerm(props.query.results, refs));
+  React.useEffect(() => {
+    (async () => {
+      if (props.query?.results) {
+        const bool = areResultsEqual(
+          props.terminal.prev_results,
+          props.query.results,
+        );
+        const wroteToTerminal =
+          !bool && (await sendQueryResultToXTerm(props.query.results, refs));
 
-      wroteToTerminal && props.setPrevResults(props.query.results);
-    }
+        wroteToTerminal && props.setPrevResults(props.query.results);
+      }
+    })();
   }, [props.query.results]);
 
   React.useEffect(() => {
@@ -201,7 +205,12 @@ function TerminalWindow(props) {
         )}
       </div>
       <div ref={refs.circuitUIRef} className={classes.circuitUIStyle}>
-        <div id="circuit-ui-results-container"></div>
+        <div id="circuit-ui-results-container">
+          <div id="circuit-ui-welcome-screen-container">
+            <h1>CPG</h1>
+            <p>Type "help" or "browse(help)" to begin</p>
+          </div>
+        </div>
         <div id="circuit-ui-input-container">
           <input type="text" placeholder="▰  query" />
           <button>Run Query ↵</button>

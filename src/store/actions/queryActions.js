@@ -1,4 +1,4 @@
-import JoernAPI from '../../api';
+import CpgAPI from '../../api';
 import {
   handleAPIQueryError,
   performDeQueueQuery,
@@ -8,7 +8,7 @@ import {
 } from '../../assets/js/utils/scripts';
 import { store } from '../configureStore';
 
-const API = new JoernAPI();
+const API = new CpgAPI();
 
 export const setResults = payload => {
   return dispatch => {

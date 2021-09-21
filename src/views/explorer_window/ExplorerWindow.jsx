@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Icon } from '@blueprintjs/core';
 import Folders from '../../components/folders/Folders';
 import Workspace from '../../components/workspace/Workspace';
-import JoernScripts from '../../components/joern_scripts/JoernScripts';
+import CpgScripts from '../../components/cpg_scripts/CpgScripts';
 import OpenFiles from '../../components/open_files/OpenFiles';
 import { initResize } from '../../assets/js/utils/scripts';
 import { resizeHandler } from './explorerWindowScripts';
@@ -53,7 +53,7 @@ function ExplorerWindow(props) {
         />
       ) : (
         <>
-          <JoernScripts />
+          <CpgScripts />
           <OpenFiles />
           <Workspace />
           <Folders />

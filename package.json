@@ -1,5 +1,5 @@
 {
-  "name": "joern_desktop_client",
+  "name": "ui-client",
   "version": "1.0.0-a.5",
   "description": "The Bug Hunter's Workbench",
   "main": "main.js",
@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
-    "@wojtekmaj/enzyme-adapter-react-17": "^0.4.1",
+    "@wojtekmaj/enzyme-adapter-react-17": "^0.6.3",
     "babel-jest": "^27.0.6",
     "electron": "^13.1.1",
     "electron-builder": "^22.11.7",

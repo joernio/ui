@@ -195,6 +195,16 @@ function SideNav(props) {
               onChange={e => handleSetState(handleOnChange(e, values))}
               onBlur={e => handleSetState(handleOnChange(e, values))}
             />
+
+            <h4>CPG UI Ignore</h4>
+            <input
+              type="text"
+              id="ui_ignore"
+              placeholder="node_modules, .git, build....."
+              value={values['ui_ignore']}
+              onChange={e => handleSetState(handleOnChange(e, values))}
+              onBlur={e => handleSetState(handleOnChange(e, values))}
+            />
           </div>
         </div>
         <Divider className={classes.menuDividerStyle} />

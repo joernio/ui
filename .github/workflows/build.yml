@@ -65,8 +65,8 @@ jobs:
         with:
           name: 'ubuntu_build'
           path: |
-            ./out/**/joern-desktop-client*.*
-            ./out/**/joern_desktop_client*.*
+            ./out/**/ui-client*.*
+            ./out/**/ui-client*.*
           retention-days: 1
 
       # - name: 'Upload Macos Artifacts'
@@ -75,7 +75,7 @@ jobs:
       #   with:
       #     name: 'macos_build'
       #     path: |
-      #       ./out/make/zip/darwin/x64/joern_desktop_client-darwin-x64*.zip
+      #       ./out/make/zip/darwin/x64/ui-client-darwin-x64*.zip
       #     retention-days: 1
 
   release:
@@ -100,6 +100,6 @@ jobs:
           automatic_release_tag: ${{ steps.cat_to_steps.outputs.release_tag }}
           prerelease: true
           files: |
-            ./ubuntu_build/**/joern-desktop-client*.*
-            ./ubuntu_build/**/joern_desktop_client*.*
-        # ./macos_build/joern_desktop_client*.*
+            ./ubuntu_build/**/ui-client*.*
+            ./ubuntu_build/**/ui-client*.*
+        # ./macos_build/ui-client*.*
