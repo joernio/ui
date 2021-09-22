@@ -784,7 +784,9 @@ export const watchFolderPath = (path, vars, callback) => {
           vars.chokidarConfig(path, ignore),
         );
 
-        vars.chokidarWatcher.on('all', callback);
+        vars.chokidarWatcher.on('ready', () => {
+          vars.chokidarWatcher.on('all', callback);
+        });
       }
     });
   } else {
@@ -794,7 +796,9 @@ export const watchFolderPath = (path, vars, callback) => {
         vars.chokidarConfig(path, ignore),
       );
 
-      vars.chokidarWatcher.on('all', callback);
+      vars.chokidarWatcher.on('ready', () => {
+        vars.chokidarWatcher.on('all', callback);
+      });
     }
   }
 };
