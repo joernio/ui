@@ -114,7 +114,7 @@ function SideNav(props) {
               id="server_url"
               type="text"
               placeholder="http://example.com"
-              value={values['server_url']}
+              defaultValue={values['server_url']}
               onChange={e => handleSetState(handleOnChange(e, values))}
               onBlur={e => handleSetState(handleOnChange(e, values))}
             />
@@ -124,7 +124,7 @@ function SideNav(props) {
               type="text"
               id="server_username"
               placeholder="auth username here.."
-              value={values['server_username']}
+              defaultValue={values['server_username']}
               onChange={e => handleSetState(handleOnChange(e, values))}
               onBlur={e => handleSetState(handleOnChange(e, values))}
             />
@@ -134,7 +134,7 @@ function SideNav(props) {
               type="text"
               id="server_password"
               placeholder="auth password here.."
-              value={values['server_password']}
+              defaultValue={values['server_password']}
               onChange={e => handleSetState(handleOnChange(e, values))}
               onBlur={e => handleSetState(handleOnChange(e, values))}
             />
@@ -147,7 +147,7 @@ function SideNav(props) {
               type="text"
               id="ws_url"
               placeholder="ws://example.com/connect"
-              value={values['ws_url']}
+              defaultValue={values['ws_url']}
               onChange={e => handleSetState(handleOnChange(e, values))}
               onBlur={e => handleSetState(handleOnChange(e, values))}
             />
@@ -181,7 +181,7 @@ function SideNav(props) {
             <input
               type="number"
               id="font_size"
-              value={values['font_size']}
+              defaultValue={values['font_size']}
               onChange={e => handleSetState(handleOnChange(e, values))}
               onBlur={e => handleSetState(handleOnChange(e, values))}
             />
@@ -191,7 +191,7 @@ function SideNav(props) {
               type="text"
               id="scripts_dir"
               placeholder="/home/........"
-              value={values['scripts_dir']}
+              defaultValue={values['scripts_dir']}
               onChange={e => handleSetState(handleOnChange(e, values))}
               onBlur={e => handleSetState(handleOnChange(e, values))}
             />
@@ -201,7 +201,7 @@ function SideNav(props) {
               type="text"
               id="ui_ignore"
               placeholder="node_modules, .git, build....."
-              value={values['ui_ignore']}
+              defaultValue={values['ui_ignore']}
               onChange={e => handleSetState(handleOnChange(e, values))}
               onBlur={e => handleSetState(handleOnChange(e, values))}
             />
