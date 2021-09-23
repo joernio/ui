@@ -61,12 +61,16 @@ function CpgScripts(props) {
   };
 
   React.useEffect(() => {
-    (async () => {
-      watchFolderPath(props.settings.scriptsDir, chokidarVars, async () => {
-        const scripts = await getCpgScripts(props);
-        handleSetState({ scripts: scripts ? scripts : {} });
-      });
-    })();
+    const handleGetCpgScripts = async () => {
+      const scripts = await getCpgScripts(props);
+      handleSetState({ scripts: scripts ? scripts : {} });
+    };
+    handleGetCpgScripts();
+    watchFolderPath(
+      props.settings.scriptsDir,
+      chokidarVars,
+      handleGetCpgScripts,
+    );
   }, [props.settings.scriptsDir]);
 
   React.useEffect(() => {
