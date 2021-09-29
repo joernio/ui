@@ -40,12 +40,12 @@ tools like importing code and switching workspace:
 
 
 2. Explorer section toggle control
-================
+=============================================================================
 
 This control button can be used to collapse and expand the whole explorer section.
 
 3. Scripts section
-================
+=======================================================================
 
 This section is where all the scripts under the current default scripts folder are displayed. 
 Scripts can be created, edited, and deleted through the editor but other files can only be viewed on the editor.
@@ -63,12 +63,12 @@ Scripts can be created, edited, and deleted through the editor but other files c
 * To delete a single script, right-click on the script to reveal the "delete" context menu
 
 4. Opened files section
-================
+======================================================
 
 Here you will see all the files that are currently open in the editor. Clicking on a file makes it the active file on the editor
 
 5. Workspace section
-================
+=======================================================
 
 This section contains all the projects open in a particular workspace.
 * If the workspace does not contain any project, you will be asked to import a project.
@@ -83,12 +83,12 @@ This section contains all the projects open in a particular workspace.
 
 
 6. Terminal section toggle control
-================
+==========================================================
 
 This control determines if the terminal section should be hidden or visible.
 
 7. Settings modal toggle control
-=============================
+===================================================================
 
 Clicking on this toggles the settings modal. In the settings, you can specify the URL (and WebSocket URL) to the backend you want the client to connect.
 You can also change things like server authentication, font size, theme, large folders to be ignored when rendering sections like the folder and scripts section. 
@@ -96,7 +96,7 @@ You can also change things like server authentication, font size, theme, large f
 .. image:: ./screenshot_settings_page.png
 
 8. Queries status section
-=======================
+=================================================================
 
 This indicates whether there is a currently running query or not, and how many queries have been run since the tool was opened. 
 Hovering on this section reveals additional details showing all previously ran queries, status (pending or completed), and total time it took to run the query.
@@ -105,12 +105,12 @@ Hovering on this section reveals additional details showing all previously ran q
 
 
 9. Explorer section
-==================
+========================================================
 
 This section houses other sections like folder section, workspace section, etc.
 
 10. Folders section
-===================
+===========================================================================
 
 This section is where the folder structure of the currently active project is displayed. 
 * You can inspect the folders and files of the currently active project. 
@@ -121,7 +121,7 @@ This section is where the folder structure of the currently active project is di
 
 
 11. Server connection status section
-===================================
+=================================================================
 
 This section indicates the UI client's connection status to the server. 
 * If the server with the server URL in the settings is not active, the connection status will be "failed" and queries won't work.
@@ -130,7 +130,7 @@ This section indicates the UI client's connection status to the server.
 .. image:: ./screenshot_connect_reconnect.png
 
 12. Query Input section
-=======================
+======================================================
 
 Just like you can perform certain actions (like opening, closing, and importing projects) 
 through the GUI alone without typing any queries, you can also choose to manually type your queries instead.
@@ -138,27 +138,27 @@ through the GUI alone without typing any queries, you can also choose to manuall
 * Queries and results will appear on top according to the order you ran them.
 
 13. Terminal view sectionScripts
-================
+===============================================
 
 This is the place where you can view queries and their results (in the terminal-like view, this looks like a traditional terminal view)
 
 14. Editor section
-================
+==========================================
 
 This is the section where scripts can be viewed and edited. Other files that are not scripts can only be viewed here, the editor only allows read-only mode for those files.
 
 15. Terminal hide control
-========================
+==============================================
 
 This controls whether the terminal section is visible or not.
 
 16. Terminal mode toggle control
-===============================
+=============================================================
 
 With this, you can control the view of the terminal section.
 * If you prefer a more command line-like interface or a rich GUI mode, you can select it by toggling this control
 
 17. Terminal minimize/maximize control
-=====================================
+=======================================================
 
 As the name suggests, this can be used to minimize or maximize the terminal.

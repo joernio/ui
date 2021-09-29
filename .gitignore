@@ -2,6 +2,7 @@
 
 node_modules/
 build/
+docs/_build/
 /.pnp
 
 package-lock.json
