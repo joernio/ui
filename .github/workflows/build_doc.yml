@@ -12,14 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Build Sphinx documenaton
+      - name: Build sphinx documenaton and commit documentation build
         run: |
-          cd docs
           sudo apt-get install python3-sphinx -y
           pip install sphinx_rtd_theme
+          cd docs
           make html
-      - name: Commit documentation build
-        run: |
+          cd ../
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add .
