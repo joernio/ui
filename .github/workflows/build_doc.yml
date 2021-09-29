@@ -17,7 +17,7 @@ jobs:
       - name: Build Sphinx documenaton
         run: |
           cd docs
-          apt-get install python3-sphinx
+          sudo apt-get install python3-sphinx -y
           pip install sphinx_rtd_theme
           make html
       - name: Commit documentation build
