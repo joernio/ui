@@ -10,7 +10,7 @@ export const default_state = {
     url: 'ws://localhost:8080/connect',
   },
   prefersDarkMode: true,
-  prefersTerminalView: true,
+  prefersTerminalView: false,
   fontSize: '16px',
   scriptsDir: `${homedir()}/bin/joern/joern-cli/scripts`,
   uiIgnore: 'node_modules, vendor, build, .git',
