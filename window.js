@@ -11,7 +11,7 @@ const createWindow = async () => {
   const window = new BrowserWindow({
     title: 'CPG UI Client',
     // titleBarStyle: 'hiddenInset',
-    // icon: path.resolve(__dirname, './src/assets/image/icon.svg'),
+    icon: path.resolve(__dirname, './src/assets/image/icon.png'),
     frame: true,
     // transparent: isMac,
     acceptFirstMouse: true,
