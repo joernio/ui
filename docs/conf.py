@@ -22,7 +22,7 @@ copyright = '2021, ShiftLeft Inc.'
 authors = 'Ndibe Raymond'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.0-b.1'
+release = '1.0.0-b.2'
 
 
 # -- General configuration ---------------------------------------------------
