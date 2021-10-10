@@ -46,6 +46,26 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v2
 
+      - name: Build Sphinx Documenaton
+        run: |
+          sudo apt update -y
+          sudo apt-get install python3-sphinx -y
+          pip install sphinx_rtd_theme
+          sudo apt-get install -y latexmk
+          sudo apt-get install -y texlive-latex-recommended
+          sudo apt-get install -y texlive-latex-extra
+          cd docs
+          make latexpdf
+          cd ../
+
+      - name: 'Upload PDF Artifact'
+        uses: actions/upload-artifact@v2
+        with:
+          name: 'docs_build'
+          path: |
+            ./docs/_build/latex/CpgUIClient.pdf
+          retention-days: 1
+
       - name: Install Node.js, NPM and Yarn
         uses: actions/setup-node@v1
         with:
@@ -102,4 +122,5 @@ jobs:
           files: |
             ./ubuntu_build/**/ui-client*.*
             ./ubuntu_build/**/ui-client*.*
+            ./docs_build/CpgUIClient.pdf
         # ./macos_build/ui-client*.*
