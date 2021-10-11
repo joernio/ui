@@ -125,7 +125,7 @@ const styles = theme => ({
     '& > div > div:nth-child(1)': {
       backgroundColor: 'rgba(0, 0, 0, 0)',
     },
-    '& > div > div:nth-child(2)': {
+    '& > div > div.bp3-dialog-container': {
       alignItems: 'normal',
       minHeight: 'fit-content',
       '&:focus': {

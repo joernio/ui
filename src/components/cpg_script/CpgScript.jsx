@@ -54,7 +54,7 @@ function CpgScript(props) {
       content={
         Object.keys(selected).length > 1 ? null : (
           <Menu className={classes.menuStyle}>
-            {/* <MenuItem
+            <MenuItem
               className={classes.menuItemStyle}
               onClick={e => {
                 handleSetState(
@@ -65,7 +65,7 @@ function CpgScript(props) {
               }}
               text="Run"
             />
-            <MenuDivider className={classes.menuDividerStyle} /> */}
+            <MenuDivider className={classes.menuDividerStyle} />
             <MenuItem
               className={classes.menuItemStyle}
               onClick={() => {
@@ -97,7 +97,7 @@ function CpgScript(props) {
         >
           {filename}
         </h3>
-        {/* {filename.endsWith('.sc') ? (
+        {filename.endsWith('.sc') ? (
           <Icon
             icon="play"
             className={classes.iconStyle}
@@ -109,7 +109,7 @@ function CpgScript(props) {
               )
             }
           />
-        ) : null} */}
+        ) : null}
       </div>
       <DiscardDialog
         handleSetState={handleSetState}

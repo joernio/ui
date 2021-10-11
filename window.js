@@ -31,9 +31,9 @@ const createWindow = async () => {
   window.setMenuBarVisibility(false);
 
   updateWindowInfo(window);
-  // openDevTools(window);
+  openDevTools(window);
 
-  window.loadFile('index.html');
+  // window.loadFile('index.html');
 
   return window;
 };
