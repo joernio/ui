@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import 'xterm/css/xterm.css';
 import { makeStyles } from '@material-ui/core';
 import { Icon } from '@blueprintjs/core';
+import { Popover2 } from '@blueprintjs/popover2';
 import * as terminalActions from '../../store/actions/terminalActions';
 import * as queryActions from '../../store/actions/queryActions';
 import * as settingsActions from '../../store/actions/settingsActions';
@@ -25,6 +26,7 @@ import {
   handleTerminalMaximizeToggle,
   handleAddQueryToHistory,
   handleEmptyWorkspace,
+  handleSuggestionClick,
 } from './terminalWindowScripts';
 
 const useStyles = makeStyles(styles);
@@ -148,7 +150,7 @@ function TerminalWindow(props) {
   }, [refs.resizeEl.current]);
 
   const { terminalHeight } = props;
-  const { isMaximized } = props.terminal;
+  const { isMaximized, query_suggestions } = props.terminal;
   const { prefersTerminalView } = props.settings;
 
   return (
@@ -214,6 +216,30 @@ function TerminalWindow(props) {
         <div id="circuit-ui-input-container">
           <input type="text" placeholder="▰  query" />
           <button>Run Query ↵</button>
+          <Popover2
+            className={classes.querySelectionTooltipStyle}
+            portalClassName={classes.querySelectionToolTipPortalStyle}
+            content={
+              <div className={classes.querySuggestionsStyle}>
+                {query_suggestions.map(query_suggestion => (
+                  <div
+                    className={classes.querySuggestionStyle}
+                    onClick={e =>
+                      handleSuggestionClick(e, refs, props.terminal.term)
+                    }
+                  >
+                    {query_suggestion}
+                  </div>
+                ))}
+              </div>
+            }
+            placement="right-end"
+            interactionKind="click"
+            minimal={true}
+            isOpen={query_suggestions.length > 0 && !prefersTerminalView}
+          >
+            <span id="suggestion-box-tracker"></span>
+          </Popover2>
         </div>
       </div>
     </div>

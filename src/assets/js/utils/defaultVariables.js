@@ -17,6 +17,7 @@ export const terminalVariables = {
   clearLineFromCursorToEnd: '[0J',
   clearLine: '\r[0J',
   cursorPositionFromStart: '[<n>C',
+  formatText: '[<n>m<o>[0m',
 };
 
 export const cpgManagementCommands = {

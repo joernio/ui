@@ -9,6 +9,7 @@ const default_state = {
   },
   isMaximized: true,
   busy: false,
+  query_suggestions: [],
 };
 
 const terminal = (state = default_state, action) => {
