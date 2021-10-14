@@ -2,7 +2,14 @@ import { cpgManagementCommands as manCommands } from '../assets/js/utils/default
 import { parseProject, parseProjects } from '../assets/js/utils/scripts';
 
 export const modifyWorkSpaceNameAndActiveProject = (obj, workspace) => {
-  const { pathToWorkSpace, pathToProject, activeProjectName, inputPath } = obj;
+  const {
+    pathToWorkSpace,
+    pathToProject,
+    activeProjectName,
+    inputPath,
+    cpg,
+    language,
+  } = obj;
   workspace.path = pathToWorkSpace;
 
   Object.keys(workspace.projects).map(projectName => {
@@ -12,7 +19,17 @@ export const modifyWorkSpaceNameAndActiveProject = (obj, workspace) => {
   });
 
   if (activeProjectName) {
-    const activeProject = { inputPath, pathToProject, open: true };
+    let activeProject = workspace.projects[activeProjectName];
+    activeProject = {
+      inputPath,
+      pathToProject,
+      open: true,
+      cpg: activeProject && activeProject.cpg ? activeProject.cpg : cpg,
+      language:
+        activeProject && activeProject.language
+          ? activeProject.language
+          : language,
+    };
     workspace.projects[activeProjectName] = activeProject;
   }
 
@@ -24,11 +41,29 @@ export const extractWorkSpaceNameAndActiveProject = parsedProject => {
     name: activeProjectName,
     inputPath,
     path: pathToProject,
+    cpg,
+    language,
   } = parsedProject;
   const pathToWorkSpace = pathToProject
     ? pathToProject.split('workspace')[0] + 'workspace'
     : null;
-  return { pathToWorkSpace, pathToProject, activeProjectName, inputPath };
+  return {
+    pathToWorkSpace,
+    pathToProject,
+    activeProjectName,
+    inputPath,
+    cpg,
+    language,
+  };
+};
+
+export const extractLanguageFromString = str => {
+  console.log('extractLanguageFromString: ', str);
+  try {
+    return str.split('"')[1];
+  } catch {
+    return null;
+  }
 };
 
 export const processQueryResult = (query_result, props) => {
@@ -39,6 +74,8 @@ export const processQueryResult = (query_result, props) => {
     result,
   } = query_result;
 
+  console.log('workspaceProcessor: query is', query, ' result is: ', result);
+
   if (query.startsWith(manCommands.delete) && result.stdout) {
     // if delete query
     const query = {
@@ -47,8 +84,24 @@ export const processQueryResult = (query_result, props) => {
       ignore: true,
     };
     props.enQueueQuery(query);
+  } else if (query === manCommands.cpgLanguage && result.stdout) {
+    // if language query
+    console.log('workspaceProcessor: query is cpg.language query');
+    const workspace_name_and_active_project =
+      extractWorkSpaceNameAndActiveProject(parsed_project);
+
+    workspace_name_and_active_project.language = extractLanguageFromString(
+      result.stdout,
+    );
+
+    let { workspace } = props;
+    workspace = modifyWorkSpaceNameAndActiveProject(
+      workspace_name_and_active_project,
+      workspace,
+    );
+    props.setWorkSpace(workspace);
   } else if (query === 'project' && (result.stdout || result.stderr)) {
-    //if project query
+    // if project query
     const parsed_project = parseProject(result);
 
     props.setProjects(parsed_workspace['projects']);
@@ -69,12 +122,19 @@ export const processQueryResult = (query_result, props) => {
 
     let { workspace } = props;
     workspace.projects = parsed_projects;
+    console.log('inside workspaceProcessor: query is workspace query');
+    console.log('workspace is: ', JSON.stringify(workspace));
 
     const workspace_name_and_active_project =
       extractWorkSpaceNameAndActiveProject(parsed_project);
     workspace = modifyWorkSpaceNameAndActiveProject(
       workspace_name_and_active_project,
       workspace,
+    );
+
+    console.log(
+      'after workspace_name _and_active_project, workspace is: ',
+      JSON.stringify(workspace),
     );
 
     props.setWorkSpace(workspace);

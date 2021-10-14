@@ -1,4 +1,20 @@
 const styles = theme => ({
+  projectInfoPopoverStyles: {
+    height: '100%',
+  },
+  projectInfoContainerStyle: {
+    backgroundColor: props =>
+      theme.palette.navBar.background[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
+    color: props =>
+      theme.palette.navBar.base[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
+    padding: '0.4em',
+    width: '300px',
+    maxHeight: '300px',
+  },
   projectSectionStyle: {
     cursor: 'context-menu',
     display: 'flex',

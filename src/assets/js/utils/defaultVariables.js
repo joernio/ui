@@ -27,6 +27,7 @@ export const cpgManagementCommands = {
   importCpg: 'importCpg',
   open: 'open',
   switchWorkspace: 'switchWorkspace',
+  cpgLanguage: 'cpg.metaData.language.l',
 };
 
 export const apiErrorStrings = {

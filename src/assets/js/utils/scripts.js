@@ -109,38 +109,67 @@ export const parseProjects = data => {
 
     parsed.forEach(arr => {
       projects[arr[1].trim()] = {
+        cpg: arr[2].trim(),
         inputPath: arr[3].trim(),
         pathToProject: null,
         open: null,
+        language: null,
       };
     });
+
+    console.log(
+      'inside parsedProjects: projects is ',
+      JSON.stringify(projects),
+    );
 
     return projects;
   }
 };
 
 export const parseProject = data => {
-  let inputPath, name, path;
+  let inputPath, name, path, cpg, language;
+  language = null;
 
   if (data.stdout) {
+    console.log('data.stdout: ', data.stdout);
     try {
       [inputPath, name, path] = data.stdout.split('(')[2].split(',');
-
       inputPath = inputPath.split('"')[1];
       name = name.split('"')[1];
       path = path.split('=')[1].trim();
+      cpg = data.stdout.split('(')[3].split('=')[1].split(')')[0].trim();
+      console.log(
+        'inputPath: ',
+        inputPath,
+        'name: ',
+        name,
+        'path: ',
+        path,
+        'cpg: ',
+        cpg,
+      );
     } catch {
       [inputPath, name, path] = data.stdout.split('(')[3].split(',');
-
       inputPath = inputPath.split('"')[1];
       name = name.split('"')[1];
       path = path.split('=')[1].trim();
+      cpg = data.stdout.split('(')[3].split('=')[1].split(')')[0].trim();
+      console.log(
+        'inputPath: ',
+        inputPath,
+        'name: ',
+        name,
+        'path: ',
+        path,
+        'cpg: ',
+        cpg,
+      );
     }
   } else {
-    inputPath = name = path = null;
+    inputPath = name = path = cpg = null;
   }
 
-  return { name, inputPath, path };
+  return { name, inputPath, path, cpg, language };
 };
 
 const performPostQuery = (store, results, key) => {

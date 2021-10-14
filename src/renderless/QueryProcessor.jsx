@@ -26,7 +26,24 @@ function QueryProcessor(props) {
       props.query.queue,
       query,
     );
-    run_query && props.mainQuery(query);
+
+    if (run_query) {
+      props.mainQuery(query);
+
+      if (
+        query.query.startsWith('open') ||
+        query.query.startsWith('import') ||
+        query.query.startsWith('workspace')
+      ) {
+        console.log('enQueuing cpg.metaData.language.l');
+        props.enQueueQuery({
+          query: 'cpg.metaData.language.l',
+          origin: 'workspace',
+          ignore: true,
+        });
+      }
+    }
+
     handleSetState({
       prev_queue: props.query.queue
         ? JSON.parse(JSON.stringify(props.query.queue))
