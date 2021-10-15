@@ -8,6 +8,14 @@ body {
   height: 100vh;
 }
 
+body:focus {
+  outline: 0;
+}
+
+a:focus {
+  outline: 0;
+}
+
 pre {
   display: inline;
   margin: 0;

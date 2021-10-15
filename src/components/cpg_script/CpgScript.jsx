@@ -51,7 +51,6 @@ function CpgScript(props) {
       onContextMenu={() => {
         shouldOpenScriptsContextMenu(selected, parentHandleSetState);
       }}
-      autoFocus={false}
       content={
         Object.keys(selected).length > 1 ? null : (
           <Menu className={classes.menuStyle}>
@@ -72,6 +71,7 @@ function CpgScript(props) {
               onClick={() => {
                 deleteFile(path);
               }}
+              tabindex="0"
               text="Delete"
             />
           </Menu>
