@@ -992,12 +992,12 @@ export const addWorkSpaceQueryToQueue = () => {
   return query;
 };
 
-export const contructQueryWithPath = async type => {
-  selectDirApi.selectDir(type === 'importCode' ? 'select-dir' : 'select-file');
+export const contructQueryWithPath = async (query_name, type) => {
+  selectDirApi.selectDir(type === 'select-dir' ? 'select-dir' : 'select-file');
 
   let path = await new Promise((resolve, reject) => {
     selectDirApi.registerListener(
-      type === 'importCode' ? 'selected-dir' : 'selected-file',
+      type === 'select-dir' ? 'selected-dir' : 'selected-file',
       value => {
         if (value) {
           resolve(value);
@@ -1029,7 +1029,7 @@ export const contructQueryWithPath = async type => {
 
   if (path && stats) {
     const query = {
-      query: `${type}(inputPath="${path}")`,
+      query: `${query_name}(inputPath="${path}")`,
       origin: 'workspace',
       ignore: false,
     };
