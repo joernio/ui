@@ -79,7 +79,7 @@ const styles = theme => ({
             props.settings.prefersDarkMode ? 'light' : 'dark'
           ],
         fontWeight: 'bolder',
-        fontSize: '8em',
+        fontSize: '5em',
         margin: 0,
       },
       '& p': {
@@ -176,13 +176,15 @@ const styles = theme => ({
       },
     },
     '& #circuit-ui-input-container': {
-      height: '3.5em',
-      minHeight: '3.5em',
+      height: '3em',
+      minHeight: '3em',
       width: '100%',
       display: 'flex',
+      fontFamily: 'monospace',
       '& input': {
         height: '100%',
         width: '88%',
+        paddingLeft: '1em',
         border: props =>
           `1px solid ${
             theme.palette.sideNav.base[
