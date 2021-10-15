@@ -153,7 +153,7 @@ function Workspace(props) {
               placement="top-start"
               interactionKind="click"
               minimal={true}
-              autoFocus={false}
+              openOnTargetFocus={false}
               isOpen={workspaceMenuIsOpen}
               onInteraction={bool =>
                 handleSetState({ workspaceMenuIsOpen: bool })

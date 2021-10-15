@@ -27,6 +27,7 @@ function Project(props) {
       content={
         <Menu className={classes.menuStyle}>
           <MenuItem
+            tabindex="0"
             className={classes.menuItemStyle}
             onClick={() => addToQueue(handleOpenProject(name), props)}
             text="open"
