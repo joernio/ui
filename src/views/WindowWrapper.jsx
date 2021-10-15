@@ -107,7 +107,10 @@ function WindowWrapper(props) {
                 <MenuItem
                   className={classes.menuItemStyle}
                   onClick={async () =>
-                    addToQueue(await contructQueryWithPath('select-dir'), props)
+                    addToQueue(
+                      await contructQueryWithPath('importCode', 'select-dir'),
+                      props,
+                    )
                   }
                   icon="import"
                   text="Import Directory"
@@ -115,7 +118,7 @@ function WindowWrapper(props) {
                 <MenuItem
                   className={classes.menuItemStyle}
                   onClick={async () =>
-                    addToQueue(await contructQueryWithPath(), props)
+                    addToQueue(await contructQueryWithPath('importCode'), props)
                   }
                   icon="import"
                   text="Import File"
@@ -123,7 +126,7 @@ function WindowWrapper(props) {
                 <MenuItem
                   className={classes.menuItemStyle}
                   onClick={async () =>
-                    addToQueue(await contructQueryWithPath(), props)
+                    addToQueue(await contructQueryWithPath('importCpg'), props)
                   }
                   icon="import"
                   text="Import Cpg"
