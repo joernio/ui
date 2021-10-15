@@ -166,7 +166,7 @@ function WindowWrapper(props) {
             }
             placement="bottom-end"
             minimal={true}
-            autoFocus={false}
+            openOnTargetFocus={false}
             interactionKind="click"
             isOpen={fileContextIsOpen}
             onInteraction={isOpen =>

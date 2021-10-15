@@ -101,7 +101,7 @@ function QueriesStats(props) {
       }
       placement="top-end"
       minimal={true}
-      autoFocus={false}
+      openOnTargetFocus={false}
       interactionKind="hover"
       isOpen={queriesStatsPopoverIsOpen}
       onInteraction={isOpen =>
