@@ -51,7 +51,9 @@ function EditorWindow(props) {
     >
       <EditorTabs />
       <div className={classes.editorModeStyle}>
-        {files.openFileIsReadOnly ? 'readonly mode' : 'scripts dev mode'}
+        {files.openFileIsReadOnly
+          ? 'Read-only Mode'
+          : 'Scripts Development Mode'}
       </div>
       <MonacoEditor
         ref={refs.editorEl}

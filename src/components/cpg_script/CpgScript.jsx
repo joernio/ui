@@ -51,6 +51,7 @@ function CpgScript(props) {
       onContextMenu={() => {
         shouldOpenScriptsContextMenu(selected, parentHandleSetState);
       }}
+      autoFocus={false}
       content={
         Object.keys(selected).length > 1 ? null : (
           <Menu className={classes.menuStyle}>
