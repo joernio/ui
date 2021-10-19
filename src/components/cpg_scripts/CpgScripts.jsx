@@ -197,6 +197,7 @@ function CpgScripts(props) {
             placement="top-start"
             interactionKind="click"
             minimal={true}
+            openOnTargetFocus={false}
             isOpen={scriptsMenuIsOpen}
             onInteraction={bool => handleSetState({ scriptsMenuIsOpen: bool })}
           >

@@ -71,6 +71,7 @@ function CpgScript(props) {
               onClick={() => {
                 deleteFile(path);
               }}
+              tabindex="0"
               text="Delete"
             />
           </Menu>

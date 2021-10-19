@@ -107,10 +107,21 @@ function WindowWrapper(props) {
                 <MenuItem
                   className={classes.menuItemStyle}
                   onClick={async () =>
+                    addToQueue(
+                      await contructQueryWithPath('importCode', 'select-dir'),
+                      props,
+                    )
+                  }
+                  icon="import"
+                  text="Import Directory"
+                ></MenuItem>
+                <MenuItem
+                  className={classes.menuItemStyle}
+                  onClick={async () =>
                     addToQueue(await contructQueryWithPath('importCode'), props)
                   }
                   icon="import"
-                  text="Import Code"
+                  text="Import File"
                 ></MenuItem>
                 <MenuItem
                   className={classes.menuItemStyle}
@@ -158,6 +169,7 @@ function WindowWrapper(props) {
             }
             placement="bottom-end"
             minimal={true}
+            openOnTargetFocus={false}
             interactionKind="click"
             isOpen={fileContextIsOpen}
             onInteraction={isOpen =>
@@ -213,6 +225,7 @@ function WindowWrapper(props) {
         </div>
 
         <ContextMenu2
+          autoFocus={false}
           content={
             <div>
               <div
