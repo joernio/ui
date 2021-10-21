@@ -239,6 +239,79 @@ const styles = theme => ({
             ],
         },
       },
+      '& #suggestion-box-tracker': {
+        position: 'absolute',
+        visibility: 'hidden',
+      },
+    },
+  },
+  querySelectionTooltipStyle: {
+    position: 'absolute',
+  },
+  querySelectionToolTipPortalStyle: {
+    '& > div > div:nth-child(1)': {
+      display: 'none',
+    },
+  },
+  querySuggestionsStyle: {
+    backgroundColor: props =>
+      theme.palette.navBar.background[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
+    color: props =>
+      theme.palette.navBar.base[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
+    padding: '0.4em',
+    maxHeight: '50vh',
+    overflowY: 'scroll',
+
+    '&::-webkit-scrollbar': {
+      width: '12px',
+    },
+    '&::-webkit-scrollbar-track': {
+      backgroundColor: props =>
+        theme.palette.scrollbar.background[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
+
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: props =>
+        theme.palette.scrollbar.background[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
+
+    '&:hover::-webkit-scrollbar-thumb': {
+      backgroundColor: props =>
+        theme.palette.scrollbar.base[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+      transition: theme.transitions.create('background-color', {
+        easing: theme.transitions.easing.linear,
+        duration: 1000,
+      }),
+    },
+
+    '&::-webkit-scrollbar-thumb:hover': {
+      backgroundColor: props =>
+        theme.palette.scrollbar.hover[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
+  },
+  querySuggestionStyle: {
+    display: 'flex',
+    width: '100%',
+    padding: '0.5em',
+    justifyContent: 'space-between',
+    cursor: 'pointer',
+    '&:hover': {
+      color: props =>
+        theme.palette.sideNav.hover[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
     },
   },
   terminalOpen: {

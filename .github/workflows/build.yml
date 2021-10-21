@@ -86,7 +86,6 @@ jobs:
           name: 'ubuntu_build'
           path: |
             ./out/**/ui-client*.*
-            ./out/**/ui-client*.*
           retention-days: 1
 
       # - name: 'Upload Macos Artifacts'
@@ -120,7 +119,6 @@ jobs:
           automatic_release_tag: ${{ steps.cat_to_steps.outputs.release_tag }}
           prerelease: true
           files: |
-            ./ubuntu_build/**/ui-client*.*
             ./ubuntu_build/**/ui-client*.*
             ./docs_build/CpgUIClient.pdf
         # ./macos_build/ui-client*.*
