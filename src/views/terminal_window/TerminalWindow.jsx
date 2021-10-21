@@ -209,8 +209,15 @@ function TerminalWindow(props) {
       <div ref={refs.circuitUIRef} className={classes.circuitUIStyle}>
         <div id="circuit-ui-results-container">
           <div id="circuit-ui-welcome-screen-container">
-            <h1>CPG</h1>
-            <p>Type "help" or "browse(help)" to begin</p>
+            <h1>CPG Explorer</h1>
+            <p>Let's Explore</p>
+            <p>
+              {!props.status.connected
+                ? 'Waiting for CPG server connection...'
+                : Object.keys(props.workspace.projects).length < 1
+                ? 'Click on File -> Import File / Import Directory to begin importing your code'
+                : 'Start writing some queries below. Type "help" for more instructions'}
+            </p>
           </div>
         </div>
         <div id="circuit-ui-input-container">
@@ -251,6 +258,7 @@ const mapStateToProps = state => {
     terminal: state.terminal,
     query: state.query,
     workspace: state.workspace,
+    status: state.status,
     settings: state.settings,
   };
 };

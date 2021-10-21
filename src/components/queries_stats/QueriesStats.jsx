@@ -70,6 +70,7 @@ function QueriesStats(props) {
                       </div>
                     }
                     placement="top"
+                    openOnTargetFocus={false}
                     usePortal={true}
                     inheritDarkTheme={false}
                   >
@@ -100,6 +101,7 @@ function QueriesStats(props) {
       }
       placement="top-end"
       minimal={true}
+      openOnTargetFocus={false}
       interactionKind="hover"
       isOpen={queriesStatsPopoverIsOpen}
       onInteraction={isOpen =>

@@ -114,11 +114,21 @@ function Workspace(props) {
                     className={classes.menuItemStyle}
                     onClick={async () =>
                       addToQueue(
+                        await contructQueryWithPath('importCode', 'select-dir'),
+                        props,
+                      )
+                    }
+                    text="Import Directory"
+                  ></MenuItem>
+                  <MenuItem
+                    className={classes.menuItemStyle}
+                    onClick={async () =>
+                      addToQueue(
                         await contructQueryWithPath('importCode'),
                         props,
                       )
                     }
-                    text="Import Code"
+                    text="Import File"
                   ></MenuItem>
                   <MenuItem
                     className={classes.menuItemStyle}
@@ -143,6 +153,7 @@ function Workspace(props) {
               placement="top-start"
               interactionKind="click"
               minimal={true}
+              openOnTargetFocus={false}
               isOpen={workspaceMenuIsOpen}
               onInteraction={bool =>
                 handleSetState({ workspaceMenuIsOpen: bool })
@@ -184,10 +195,22 @@ function Workspace(props) {
           <div
             className={classes.emptyWorkspaceElementStyle}
             onClick={async () =>
+              addToQueue(
+                await contructQueryWithPath('importCode', 'select-dir'),
+                props,
+              )
+            }
+          >
+            Import Directory
+          </div>
+
+          <div
+            className={classes.emptyWorkspaceElementStyle}
+            onClick={async () =>
               addToQueue(await contructQueryWithPath('importCode'), props)
             }
           >
-            Import Code
+            Import File
           </div>
 
           <div

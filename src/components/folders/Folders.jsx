@@ -174,6 +174,7 @@ function Folders(props) {
           placement="top-start"
           interactionKind="click"
           minimal={true}
+          openOnTargetFocus={false}
           isOpen={foldersMenuIsOpen}
           onInteraction={bool => handleSetState({ foldersMenuIsOpen: bool })}
         >

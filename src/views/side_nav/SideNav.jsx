@@ -51,6 +51,7 @@ function SideNav(props) {
             content={<span className={classes.toolTipTextStyle}>explorer</span>}
             placement="right"
             usePortal={false}
+            openOnTargetFocus={false}
           >
             <Icon
               icon="control"
@@ -66,6 +67,7 @@ function SideNav(props) {
           content={<span className={classes.toolTipTextStyle}>terminal</span>}
           placement="right"
           usePortal={false}
+          openOnTargetFocus={false}
         >
           <Icon
             icon="console"
@@ -80,6 +82,7 @@ function SideNav(props) {
           content={<span className={classes.toolTipTextStyle}>settings</span>}
           placement="right"
           usePortal={false}
+          openOnTargetFocus={false}
         >
           <Icon
             icon="cog"
