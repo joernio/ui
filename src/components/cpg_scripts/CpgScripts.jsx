@@ -37,7 +37,6 @@ import {
   collectArgsValues,
   toggleScriptsArgsDialog,
 } from './cpgScriptsScripts';
-import { shouldGoToLine } from '../../views/editor_window/editorScripts';
 
 const useStyles = makeStyles(styles);
 
@@ -144,7 +143,7 @@ function CpgScripts(props) {
           <Popover2
             content={
               <Menu className={classes.menuStyle}>
-                {/* <MenuItem
+                <MenuItem
                   className={classes.menuItemStyle}
                   onClick={() =>
                     handleSetState(
@@ -164,7 +163,7 @@ function CpgScripts(props) {
                   }
                   text="Run Selected"
                 />
-                <MenuDivider className={classes.menuDividerStyle} /> */}
+                <MenuDivider className={classes.menuDividerStyle} />
                 <MenuItem
                   className={classes.menuItemStyle}
                   onClick={() =>
