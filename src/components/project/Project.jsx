@@ -17,22 +17,8 @@ const useStyles = makeStyles(styles);
 
 function Project(props) {
   const classes = useStyles(props);
-  // const [state, setState] = React.useState({ projectInfoPopoverIsOpen: false });
-
-  // const handleSetState = obj => {
-  //   if (obj) {
-  //     Promise.resolve(obj).then(obj => {
-  //       setState(state => ({ ...state, ...obj }));
-  //     });
-  //   }
-  // };
 
   const { name, index } = props;
-  // const { projectInfoPopoverIsOpen } = state;
-  // console.log(
-  //   'inside project: project is -----------------',
-  //   props.workspace.projects[name],
-  // );
 
   return (
     <ContextMenu2
@@ -61,14 +47,12 @@ function Project(props) {
       }
     >
       <Tooltip2
-        className={classes.projectInfoPopoverStyles}
+        className={classes.projectInfoTooltipStyles}
         placement="right"
+        popoverClassName={classes.toolTipStyle}
         minimal={true}
-        // interactionKind="hover"
-        // isOpen={projectInfoPopoverIsOpen}
-        // onInteraction={isOpen =>
-        //   handleSetState({ projectInfoPopoverIsOpen: isOpen })
-        // }
+        usePortal={false}
+        openOnTargetFocus={false}
         content={
           <div className={classes.projectInfoContainerStyle}>
             <p>
@@ -83,13 +67,18 @@ function Project(props) {
                 ? 'Activated'
                 : 'Deactivated'}
             </p>
-            <p>
+            {/* <p>
               Status -{' '}
               {props.workspace.projects[name].cpg &&
-              props.workspace.projects[name].language
+              props.workspace.projects[name].language &&
+              props.workspace.projects[name].language !== 'Unknown'
                 ? 'Supported'
-                : 'Unsupported'}
-            </p>
+                : props.workspace.projects[name].open &&
+                  props.workspace.projects[name].language &&
+                  props.workspace.projects[name].language === 'Unknown'
+                ? 'Unsupported'
+                : 'Unknown'}
+            </p> */}
           </div>
         }
       >
@@ -98,11 +87,10 @@ function Project(props) {
             {name}
           </h3>
           {props.workspace.projects[name].open ? (
-            props.workspace.projects[name].cpg &&
-            props.workspace.projects[name].language ? (
-              <Icon icon="dot" className={classes.iconStyle} />
-            ) : (
+            props.workspace.projects[name].language === 'Unsupported' ? (
               <Icon icon="high-priority" className={classes.iconStyle} />
+            ) : (
+              <Icon icon="dot" className={classes.iconStyle} />
             )
           ) : null}
         </div>

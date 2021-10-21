@@ -7,7 +7,6 @@ export const modifyWorkSpaceNameAndActiveProject = (obj, workspace) => {
     pathToProject,
     activeProjectName,
     inputPath,
-    cpg,
     language,
   } = obj;
   workspace.path = pathToWorkSpace;
@@ -24,11 +23,8 @@ export const modifyWorkSpaceNameAndActiveProject = (obj, workspace) => {
       inputPath,
       pathToProject,
       open: true,
-      cpg: activeProject && activeProject.cpg ? activeProject.cpg : cpg,
-      language:
-        activeProject && activeProject.language
-          ? activeProject.language
-          : language,
+      cpg: activeProject.cpg,
+      language: language ? language : activeProject.language,
     };
     workspace.projects[activeProjectName] = activeProject;
   }
@@ -41,28 +37,26 @@ export const extractWorkSpaceNameAndActiveProject = parsedProject => {
     name: activeProjectName,
     inputPath,
     path: pathToProject,
-    cpg,
-    language,
   } = parsedProject;
+
   const pathToWorkSpace = pathToProject
     ? pathToProject.split('workspace')[0] + 'workspace'
     : null;
+
   return {
     pathToWorkSpace,
     pathToProject,
     activeProjectName,
     inputPath,
-    cpg,
-    language,
   };
 };
 
 export const extractLanguageFromString = str => {
-  // console.log('extractLanguageFromString: ', str);
   try {
-    return str.split('"')[1];
+    const language = str.split('"')[1];
+    return language ? language : 'Unsupported';
   } catch {
-    return null;
+    return 'Unsupported';
   }
 };
 
@@ -74,8 +68,6 @@ export const processQueryResult = (query_result, props) => {
     result,
   } = query_result;
 
-  // console.log('workspaceProcessor: query is', query, ' result is: ', result);
-
   if (query.startsWith(manCommands.delete) && result.stdout) {
     // if delete query
     const query = {
@@ -86,7 +78,6 @@ export const processQueryResult = (query_result, props) => {
     props.enQueueQuery(query);
   } else if (query === manCommands.cpgLanguage && result.stdout) {
     // if language query
-    // console.log('workspaceProcessor: query is cpg.language query');
     const workspace_name_and_active_project =
       extractWorkSpaceNameAndActiveProject(parsed_project);
 
@@ -122,8 +113,6 @@ export const processQueryResult = (query_result, props) => {
 
     let { workspace } = props;
     workspace.projects = parsed_projects;
-    // console.log('inside workspaceProcessor: query is workspace query');
-    // console.log('workspace is: ', JSON.stringify(workspace));
 
     const workspace_name_and_active_project =
       extractWorkSpaceNameAndActiveProject(parsed_project);
@@ -131,11 +120,6 @@ export const processQueryResult = (query_result, props) => {
       workspace_name_and_active_project,
       workspace,
     );
-
-    // console.log(
-    //   'after workspace_name _and_active_project, workspace is: ',
-    //   JSON.stringify(workspace),
-    // );
 
     props.setWorkSpace(workspace);
   } else if (parsed_project) {

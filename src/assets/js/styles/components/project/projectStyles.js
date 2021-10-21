@@ -1,6 +1,20 @@
 const styles = theme => ({
-  projectInfoPopoverStyles: {
-    height: '100%',
+  projectInfoTooltipStyles: {
+    width: '100%',
+  },
+  toolTipStyle: {
+    '& .bp3-popover2-content': {
+      backgroundColor: props =>
+        theme.palette.navBar.background[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
+    '& .bp3-popover2-arrow-fill': {
+      fill: props =>
+        theme.palette.navBar.background[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
   },
   projectInfoContainerStyle: {
     backgroundColor: props =>
