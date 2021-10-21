@@ -109,9 +109,11 @@ export const parseProjects = data => {
 
     parsed.forEach(arr => {
       projects[arr[1].trim()] = {
+        cpg: arr[2].trim(),
         inputPath: arr[3].trim(),
         pathToProject: null,
         open: null,
+        language: null,
       };
     });
 
@@ -120,18 +122,17 @@ export const parseProjects = data => {
 };
 
 export const parseProject = data => {
-  let inputPath, name, path;
+  let inputPath, name, path, cpg, language;
+  language = cpg = null;
 
   if (data.stdout) {
     try {
       [inputPath, name, path] = data.stdout.split('(')[2].split(',');
-
       inputPath = inputPath.split('"')[1];
       name = name.split('"')[1];
       path = path.split('=')[1].trim();
     } catch {
       [inputPath, name, path] = data.stdout.split('(')[3].split(',');
-
       inputPath = inputPath.split('"')[1];
       name = name.split('"')[1];
       path = path.split('=')[1].trim();
@@ -140,7 +141,7 @@ export const parseProject = data => {
     inputPath = name = path = null;
   }
 
-  return { name, inputPath, path };
+  return { name, inputPath, path, cpg, language };
 };
 
 const performPostQuery = (store, results, key) => {
@@ -1020,27 +1021,12 @@ export const contructQueryWithPath = async (query_name, type) => {
     });
   });
 
-  // const isJavaArtifact = path && (path.endsWith(".jar") || path.endsWith(".war") || path.endsWith(".ear"));
-
-  // if (path && stats && stats.isFile() && !isJavaArtifact) {
-  //   path = path.split('/');
-  //   path = path.slice(0, path.length - 1).join('/');
-  // }
-
   if (path && stats) {
     const query = {
       query: `${query_name}(inputPath="${path}")`,
       origin: 'workspace',
       ignore: false,
     };
-
-    // if(!isJavaArtifact){
-    //   handleSetToast({
-    //       icon: 'info-sign',
-    //       intent: 'primary',
-    //       message: "the whole directory was imported. file imports are only valid for java artifacts",
-    //     });
-    // }
 
     return query;
   }

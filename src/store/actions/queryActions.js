@@ -129,14 +129,6 @@ export const runQuery = query_string => {
 
 export const getQueryResult = uuid => {
   return () => {
-    // if(store.getState().query.results[uuid]){//if result already in query results, don't attempt to fetch result again;
-    //   const result = store.getState().query.results[uuid];
-    //   console.log("inside getQueryResult: result is: ", result);
-    //   if(result?.result?.stdout || result?.result?.stderr){
-    //     return new Promise((_, r)=>{r()});
-    //   }
-    // };
-
     return API.getQueryResult(uuid)
       .then(data => {
         if (data && data.uuid) {
@@ -157,7 +149,7 @@ export const getQueryResult = uuid => {
 };
 
 export const postQuery = (post_query, main_result_key) => {
-  return () => {
+  return dispatch => {
     return runQuery(post_query)()
       .then(data => {
         const { results } = store.getState().query;

@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-// import { usePrevious } from '../assets/js/utils/hooks';
 import * as queryActions from '../store/actions/queryActions';
 import {
   shouldRunQuery,
@@ -26,7 +25,23 @@ function QueryProcessor(props) {
       props.query.queue,
       query,
     );
-    run_query && props.mainQuery(query);
+
+    if (run_query) {
+      props.mainQuery(query);
+
+      if (
+        query.query.startsWith('open') ||
+        query.query.startsWith('import') ||
+        query.query.startsWith('workspace')
+      ) {
+        props.enQueueQuery({
+          query: 'cpg.metaData.language.l',
+          origin: 'workspace',
+          ignore: true,
+        });
+      }
+    }
+
     handleSetState({
       prev_queue: props.query.queue
         ? JSON.parse(JSON.stringify(props.query.queue))

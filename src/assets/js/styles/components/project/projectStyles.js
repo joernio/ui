@@ -1,4 +1,34 @@
 const styles = theme => ({
+  projectInfoTooltipStyles: {
+    width: '100%',
+  },
+  toolTipStyle: {
+    '& .bp3-popover2-content': {
+      backgroundColor: props =>
+        theme.palette.navBar.background[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
+    '& .bp3-popover2-arrow-fill': {
+      fill: props =>
+        theme.palette.navBar.background[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
+  },
+  projectInfoContainerStyle: {
+    backgroundColor: props =>
+      theme.palette.navBar.background[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
+    color: props =>
+      theme.palette.navBar.base[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
+    padding: '0.4em',
+    width: '300px',
+    maxHeight: '300px',
+  },
   projectSectionStyle: {
     cursor: 'context-menu',
     display: 'flex',
