@@ -34,6 +34,7 @@ export const performEnQueueQuery = (query, queue) => {
 };
 
 export const performDeQueueQuery = queue => {
+  // console.log("inside performDeQueueQuery: queue is", JSON.stringify(queue));
   const key = Object.keys(queue).shift();
   if (key) {
     const query = queue[key];
@@ -117,10 +118,10 @@ export const parseProjects = data => {
       };
     });
 
-    console.log(
-      'inside parsedProjects: projects is ',
-      JSON.stringify(projects),
-    );
+    // console.log(
+    //   'inside parsedProjects: projects is ',
+    //   JSON.stringify(projects),
+    // );
 
     return projects;
   }
@@ -131,39 +132,39 @@ export const parseProject = data => {
   language = null;
 
   if (data.stdout) {
-    console.log('data.stdout: ', data.stdout);
+    // console.log('data.stdout: ', data.stdout);
     try {
       [inputPath, name, path] = data.stdout.split('(')[2].split(',');
       inputPath = inputPath.split('"')[1];
       name = name.split('"')[1];
       path = path.split('=')[1].trim();
       cpg = data.stdout.split('(')[3].split('=')[1].split(')')[0].trim();
-      console.log(
-        'inputPath: ',
-        inputPath,
-        'name: ',
-        name,
-        'path: ',
-        path,
-        'cpg: ',
-        cpg,
-      );
+      // console.log(
+      //   'inputPath: ',
+      //   inputPath,
+      //   'name: ',
+      //   name,
+      //   'path: ',
+      //   path,
+      //   'cpg: ',
+      //   cpg,
+      // );
     } catch {
       [inputPath, name, path] = data.stdout.split('(')[3].split(',');
       inputPath = inputPath.split('"')[1];
       name = name.split('"')[1];
       path = path.split('=')[1].trim();
       cpg = data.stdout.split('(')[3].split('=')[1].split(')')[0].trim();
-      console.log(
-        'inputPath: ',
-        inputPath,
-        'name: ',
-        name,
-        'path: ',
-        path,
-        'cpg: ',
-        cpg,
-      );
+      // console.log(
+      //   'inputPath: ',
+      //   inputPath,
+      //   'name: ',
+      //   name,
+      //   'path: ',
+      //   path,
+      //   'cpg: ',
+      //   cpg,
+      // );
     }
   } else {
     inputPath = name = path = cpg = null;
@@ -235,6 +236,7 @@ const setQueryResult = (data, store, key, results) => {
 export const handleWebSocketResponse = data => {
   store.dispatch(getQueryResult(data.utf8Data)).then(data => {
     const { results } = store.getState().query;
+    // console.log("inside handleWebSocketResponse 1: queue is: ", JSON.stringify(store.getState().query.queue));
     let key = data.uuid;
     let result_obj = results[key];
 
@@ -243,18 +245,27 @@ export const handleWebSocketResponse = data => {
       result_obj = results[key];
     }
 
+    // console.log("inside handleWebSocketResponse 2: queue is: ", JSON.stringify(store.getState().query.queue));
+
     if (result_obj) {
+      // console.log("inside handleWebSocketResponse 3: queue is: ", JSON.stringify(store.getState().query.queue));
       if (!result_obj.result.stdout && !result_obj.result.stderr) {
         setQueryResult(data, store, key, results);
+        // console.log("inside handleWebSocketResponse 4: queue is: ", JSON.stringify(store.getState().query.queue));
         if (result_obj.origin === 'script') {
           store.dispatch(deQueueScriptsQuery());
+          // console.log("inside handleWebSocketResponse 5: queue is: ", JSON.stringify(store.getState().query.queue));
           store.dispatch(enQueueQuery(addWorkSpaceQueryToQueue()));
+          // console.log("inside handleWebSocketResponse 6: queue is: ", JSON.stringify(store.getState().query.queue));
         } else {
           performPostQuery(store, results, key);
+          // console.log("inside handleWebSocketResponse 7: queue is: ", JSON.stringify(store.getState().query.queue));
         }
       } else {
         setQueryResult(data, store, key, results);
+        // console.log("inside handleWebSocketResponse 8: queue is: ", JSON.stringify(store.getState().query.queue));
         store.dispatch(deQueueQuery());
+        // console.log("inside handleWebSocketResponse 9: queue is: ", JSON.stringify(store.getState().query.queue));
       }
     }
   });
@@ -957,6 +968,11 @@ export const areResultsEqual = (prev_results, results) => {
     let latest_uuid = Object.keys(results);
     latest_uuid = latest_uuid[latest_uuid.length - 1];
 
+    // console.log("areResultsEqual results: ", JSON.parse(JSON.stringify(results)));
+    // console.log("areResultsEqual prev_results: ", JSON.parse(JSON.stringify(prev_results)));
+    // console.log("areResultsEqual prev_latest_uuid: ", prev_latest_uuid);
+    // console.log("areResultsEqual latest_uuid: ", latest_uuid);
+
     return prev_latest_uuid === latest_uuid && latest_uuid !== undefined
       ? true
       : false;
@@ -1102,6 +1118,7 @@ export const handleSwitchWorkspace = async () => {
 };
 
 export const handleAPIQueryError = err => {
+  // console.log("inside handleapiqueryerror: error is ", err);
   if (err === apiErrorStrings.ws_not_connected) {
     const ws_url = store.getState().settings.websocket.url;
     handleSetToast({

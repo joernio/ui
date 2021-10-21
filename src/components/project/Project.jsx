@@ -29,10 +29,10 @@ function Project(props) {
 
   const { name, index } = props;
   // const { projectInfoPopoverIsOpen } = state;
-  console.log(
-    'inside project: project is -----------------',
-    props.workspace.projects[name],
-  );
+  // console.log(
+  //   'inside project: project is -----------------',
+  //   props.workspace.projects[name],
+  // );
 
   return (
     <ContextMenu2
@@ -85,7 +85,10 @@ function Project(props) {
             </p>
             <p>
               Status -{' '}
-              {props.workspace.projects[name].cpg ? 'Supported' : 'Unsupported'}
+              {props.workspace.projects[name].cpg &&
+              props.workspace.projects[name].language
+                ? 'Supported'
+                : 'Unsupported'}
             </p>
           </div>
         }
@@ -95,7 +98,8 @@ function Project(props) {
             {name}
           </h3>
           {props.workspace.projects[name].open ? (
-            props.workspace.projects[name].cpg ? (
+            props.workspace.projects[name].cpg &&
+            props.workspace.projects[name].language ? (
               <Icon icon="dot" className={classes.iconStyle} />
             ) : (
               <Icon icon="high-priority" className={classes.iconStyle} />

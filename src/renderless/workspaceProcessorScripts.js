@@ -58,7 +58,7 @@ export const extractWorkSpaceNameAndActiveProject = parsedProject => {
 };
 
 export const extractLanguageFromString = str => {
-  console.log('extractLanguageFromString: ', str);
+  // console.log('extractLanguageFromString: ', str);
   try {
     return str.split('"')[1];
   } catch {
@@ -74,7 +74,7 @@ export const processQueryResult = (query_result, props) => {
     result,
   } = query_result;
 
-  console.log('workspaceProcessor: query is', query, ' result is: ', result);
+  // console.log('workspaceProcessor: query is', query, ' result is: ', result);
 
   if (query.startsWith(manCommands.delete) && result.stdout) {
     // if delete query
@@ -86,7 +86,7 @@ export const processQueryResult = (query_result, props) => {
     props.enQueueQuery(query);
   } else if (query === manCommands.cpgLanguage && result.stdout) {
     // if language query
-    console.log('workspaceProcessor: query is cpg.language query');
+    // console.log('workspaceProcessor: query is cpg.language query');
     const workspace_name_and_active_project =
       extractWorkSpaceNameAndActiveProject(parsed_project);
 
@@ -122,8 +122,8 @@ export const processQueryResult = (query_result, props) => {
 
     let { workspace } = props;
     workspace.projects = parsed_projects;
-    console.log('inside workspaceProcessor: query is workspace query');
-    console.log('workspace is: ', JSON.stringify(workspace));
+    // console.log('inside workspaceProcessor: query is workspace query');
+    // console.log('workspace is: ', JSON.stringify(workspace));
 
     const workspace_name_and_active_project =
       extractWorkSpaceNameAndActiveProject(parsed_project);
@@ -132,10 +132,10 @@ export const processQueryResult = (query_result, props) => {
       workspace,
     );
 
-    console.log(
-      'after workspace_name _and_active_project, workspace is: ',
-      JSON.stringify(workspace),
-    );
+    // console.log(
+    //   'after workspace_name _and_active_project, workspace is: ',
+    //   JSON.stringify(workspace),
+    // );
 
     props.setWorkSpace(workspace);
   } else if (parsed_project) {

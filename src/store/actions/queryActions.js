@@ -11,6 +11,7 @@ import { store } from '../configureStore';
 const API = new CpgAPI();
 
 export const setResults = payload => {
+  // console.log("inside setResults: payload is: ", JSON.stringify(payload));
   return dispatch => {
     dispatch({
       type: 'SET_RESULTS',
@@ -20,6 +21,7 @@ export const setResults = payload => {
 };
 
 export const setQueue = payload => {
+  // console.log("inside setQueue: payload is: ", JSON.stringify(payload));
   return dispatch => {
     return dispatch({
       type: 'SET_QUEUE',
@@ -29,6 +31,7 @@ export const setQueue = payload => {
 };
 
 export const resetQueue = payload => {
+  // console.log("inside resetQueue: payload is: ", JSON.stringify(payload));
   return dispatch => {
     return dispatch({
       type: 'RESET_QUEUE',
@@ -38,6 +41,7 @@ export const resetQueue = payload => {
 };
 
 export const setScriptsQueue = payload => {
+  // console.log("inside setScriptsQueue: payload is: ", JSON.stringify(payload));
   return dispatch => {
     return dispatch({
       type: 'SET_SCRIPTS_QUEUE',
@@ -47,6 +51,7 @@ export const setScriptsQueue = payload => {
 };
 
 export const resetScriptsQueue = payload => {
+  // console.log("inside resetScriptsQueue: payload is: ", JSON.stringify(payload));
   return dispatch => {
     return dispatch({
       type: 'RESET_SCRIPTS_QUEUE',
@@ -59,6 +64,7 @@ export const enQueueQuery = query => {
   return dispatch => {
     const { queue } = store.getState().query;
     const updated_queue = performEnQueueQuery(query, queue);
+    // console.log("inside enqueuequery: queue is ", queue, "query is: ", query, "updated_queue is: ", updated_queue);
     dispatch(setQueue(updated_queue));
   };
 };
@@ -66,6 +72,7 @@ export const enQueueQuery = query => {
 export const deQueueQuery = () => {
   return dispatch => {
     const { queue } = store.getState().query;
+    // console.log("inside deQueueQuery: queue is", JSON.stringify(queue));
     const { queue: updated_queue, query } = performDeQueueQuery(queue);
     dispatch(setQueue(updated_queue));
     return query;
@@ -157,7 +164,7 @@ export const getQueryResult = uuid => {
 };
 
 export const postQuery = (post_query, main_result_key) => {
-  return () => {
+  return dispatch => {
     return runQuery(post_query)()
       .then(data => {
         const { results } = store.getState().query;
@@ -165,7 +172,9 @@ export const postQuery = (post_query, main_result_key) => {
 
         if (result) {
           result['post_query_uuid'] = data.uuid;
+          // console.log("inside postQuery 1, queue is ", JSON.stringify(store.getState().query.queue));
           dispatch(setResults(results));
+          // console.log("inside postQuery 2, queue is ", JSON.stringify(store.getState().query.queue));
         }
       })
       .catch(err => {
