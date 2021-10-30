@@ -31,6 +31,7 @@ const styles = theme => ({
     fontSize: '0.8rem',
     marginTop: '0.3em',
     marginBottom: '0.3em',
+    cursor: 'pointer',
     color: props =>
       theme.palette.explorer.base[
         props.settings.prefersDarkMode ? 'dark' : 'light'

@@ -30,6 +30,7 @@ import {
   switchDefaultScriptsFolder,
   handleToggleScriptsVisible,
   organisedScriptsToScripts,
+  handleCPGScriptTagClick,
   handleRun,
   runSelected,
   deleteAll,
@@ -241,7 +242,29 @@ function CpgScripts(props) {
                 } else if (scripts[value].tag) {
                   return (
                     <>
-                      <h3 className={classes.tagNameStyle}>{value}</h3>
+                      <h3
+                        className={classes.tagNameStyle}
+                        onClick={e =>
+                          handleSetState(
+                            discardDialogHandler(
+                              openFiles,
+                              openFilePath,
+                              () => {
+                                handleSetState(
+                                  handleCPGScriptTagClick(
+                                    e,
+                                    value,
+                                    scripts,
+                                    selected,
+                                  ),
+                                );
+                              },
+                            ),
+                          )
+                        }
+                      >
+                        {value}
+                      </h3>
                       {Object.keys(scripts[value]).map(path => {
                         if (scripts[value][path] !== true) {
                           let filename = path.split('/');
