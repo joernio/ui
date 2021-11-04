@@ -6,13 +6,16 @@ const styles = theme => ({
         props.settings.prefersDarkMode ? 'dark' : 'light'
       ],
   },
+
   drawerCloseStyle: {
     width: props => `calc(100vw - ${props.sideNavWidth})`,
   },
+
   drawerOpenStyle: {
     width: props =>
       `calc(100vw - ${props.sideNavWidth} - ${props.drawerWidth})`,
   },
+
   editorModeStyle: {
     backgroundColor: '#0090F1',
     color: 'white',
