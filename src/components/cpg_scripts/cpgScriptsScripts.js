@@ -165,6 +165,25 @@ export const runScript = async (path, args, mainFunctionName, props) => {
   }
 };
 
+export const handleCPGScriptTagClick = (e, value, scripts, selected) => {
+  const tag_scripts_paths = Object.keys(scripts[value]);
+  if (Array.isArray(tag_scripts_paths) && tag_scripts_paths.length > 1) {
+    openFile(tag_scripts_paths[1]);
+
+    if (!e.ctrlKey) {
+      selected = {};
+    }
+
+    tag_scripts_paths.forEach(path => {
+      if (scripts[value][path] !== true) {
+        selected[path] = true;
+      }
+    });
+
+    return { selected };
+  }
+};
+
 export const handleRun = (selected, scripts, props) => {
   if (mainScriptsFunctionsTakeArgs(Object.keys(selected), scripts)) {
     return {

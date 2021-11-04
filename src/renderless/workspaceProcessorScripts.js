@@ -1,5 +1,9 @@
 import { cpgManagementCommands as manCommands } from '../assets/js/utils/defaultVariables';
-import { parseProject, parseProjects } from '../assets/js/utils/scripts';
+import {
+  parseProject,
+  parseProjects,
+  handleSetToast,
+} from '../assets/js/utils/scripts';
 
 export const modifyWorkSpaceNameAndActiveProject = (obj, workspace) => {
   const {
@@ -54,8 +58,23 @@ export const extractWorkSpaceNameAndActiveProject = parsedProject => {
 export const extractLanguageFromString = str => {
   try {
     const language = str.split('"')[1];
-    return language ? language : 'Unsupported';
+    if (language) {
+      return language;
+    } else {
+      handleSetToast({
+        icon: 'warning-sign',
+        intent: 'danger',
+        message:
+          'This language is not yet supported. The backend was unable to generate a graph and no graph is loaded for this project',
+      });
+      return 'Unsupported';
+    }
   } catch {
+    handleSetToast({
+      icon: 'warning-sign',
+      intent: 'danger',
+      message: 'authentication error. Your server requires authentication',
+    });
     return 'Unsupported';
   }
 };
