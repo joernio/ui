@@ -1,6 +1,8 @@
 import React from 'react';
 import clsx from 'clsx';
 import MonacoEditor from 'react-monaco-editor';
+import DotGraphViewer from '../../components/dot_graph_viewer/DotGraphViewer';
+import ImageViewer from '../../components/image_viewer/ImageViewer';
 import EditorTabs from '../../components/editor_tabs/EditorTabs';
 import { connect } from 'react-redux';
 import * as filesActions from '../../store/actions/filesActions';
@@ -11,6 +13,11 @@ import {
   handleEditorOnChange,
 } from './editorScripts';
 import styles from '../../assets/js/styles/views/editor_window/editorWindowStyles';
+import {
+  imageFileExtensions,
+  syntheticFileExtensions,
+} from '../../assets/js/utils/defaultVariables';
+import { getExtension } from '../../assets/js/utils/scripts';
 
 const useStyles = makeStyles(styles);
 
@@ -55,17 +62,27 @@ function EditorWindow(props) {
           ? 'Read-only Mode'
           : 'Scripts Development Mode'}
       </div>
-      <MonacoEditor
-        ref={refs.editorEl}
-        width="100%"
-        height="90%"
-        theme={settings.prefersDarkMode ? 'vs-dark' : 'vs-light'}
-        language="typescript"
-        value={files?.openFileContent}
-        options={options}
-        onChange={(newValue, _) => handleEditorOnChange(newValue, props)}
-        editorDidMount={editorDidMount}
-      />
+
+      {imageFileExtensions.includes(getExtension(files.openFilePath)) ? (
+        <ImageViewer src={files.openFilePath} />
+      ) : syntheticFileExtensions.includes(getExtension(files.openFilePath)) ? (
+        <DotGraphViewer
+          path={files.openFilePath}
+          content={files.openFileContent}
+        />
+      ) : (
+        <MonacoEditor
+          ref={refs.editorEl}
+          width="100%"
+          height="90%"
+          theme={settings.prefersDarkMode ? 'vs-dark' : 'vs-light'}
+          language="typescript"
+          value={files?.openFileContent}
+          options={options}
+          onChange={(newValue, _) => handleEditorOnChange(newValue, props)}
+          editorDidMount={editorDidMount}
+        />
+      )}
     </div>
   );
 }
