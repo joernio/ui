@@ -17,10 +17,16 @@ import FilesProcessor from './renderless/FilesProcessor';
 import Toaster from './components/toaster/Toaster';
 
 function App(props) {
+  // React.useEffect(() => {
+  //   initShortcuts();
+  //   return () => removeShortcuts();
+  // }, []);
+
   React.useEffect(() => {
+    removeShortcuts();
     initShortcuts();
     return () => removeShortcuts();
-  }, []);
+  }, [props.query.queryShortcuts]);
 
   React.useEffect(() => {
     props.settings?.websocket?.url &&
@@ -52,6 +58,7 @@ function App(props) {
 const mapStateToProps = state => {
   return {
     settings: state.settings,
+    query: state.query,
   };
 };
 

@@ -13,6 +13,12 @@ export const setTerm = term => {
   };
 };
 
+export const setRefs = refs => {
+  return dispatch => {
+    dispatch(setTerminal({ refs }));
+  };
+};
+
 export const setFitAddon = fitAddon => {
   return dispatch => {
     dispatch(setTerminal({ fitAddon }));

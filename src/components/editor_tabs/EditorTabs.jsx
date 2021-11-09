@@ -9,10 +9,9 @@ import {
   openFile,
   closeFile,
   discardDialogHandler,
-  getExtension,
   openSyntheticFile,
 } from '../../assets/js/utils/scripts';
-import { syntheticFileExtensions } from '../../assets/js/utils/defaultVariables';
+import { syntheticFiles } from '../../assets/js/utils/defaultVariables';
 
 const useStyles = makeStyles(styles);
 
@@ -53,7 +52,7 @@ function EditorTabs(props) {
               onClick={() =>
                 handleSetState(
                   discardDialogHandler(openFiles, openFilePath, () => {
-                    syntheticFileExtensions.includes(getExtension(path))
+                    syntheticFiles.includes(path)
                       ? openSyntheticFile(path, openFiles[path])
                       : openFile(path);
                   }),

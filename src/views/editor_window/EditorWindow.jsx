@@ -1,8 +1,8 @@
 import React from 'react';
 import clsx from 'clsx';
 import MonacoEditor from 'react-monaco-editor';
-import DotGraphViewer from '../../components/dot_graph_viewer/DotGraphViewer';
 import ImageViewer from '../../components/image_viewer/ImageViewer';
+import SynthFileViewer from '../../components/synth_file_viewer/SynthFileViewer';
 import EditorTabs from '../../components/editor_tabs/EditorTabs';
 import { connect } from 'react-redux';
 import * as filesActions from '../../store/actions/filesActions';
@@ -15,7 +15,7 @@ import {
 import styles from '../../assets/js/styles/views/editor_window/editorWindowStyles';
 import {
   imageFileExtensions,
-  syntheticFileExtensions,
+  syntheticFiles,
 } from '../../assets/js/utils/defaultVariables';
 import { getExtension } from '../../assets/js/utils/scripts';
 
@@ -65,8 +65,8 @@ function EditorWindow(props) {
 
       {imageFileExtensions.includes(getExtension(files.openFilePath)) ? (
         <ImageViewer src={files.openFilePath} />
-      ) : syntheticFileExtensions.includes(getExtension(files.openFilePath)) ? (
-        <DotGraphViewer
+      ) : syntheticFiles.includes(files.openFilePath) ? (
+        <SynthFileViewer
           path={files.openFilePath}
           content={files.openFileContent}
         />

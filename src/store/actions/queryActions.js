@@ -1,3 +1,4 @@
+import { dispatch } from 'd3-dispatch';
 import CpgAPI from '../../api';
 import {
   handleAPIQueryError,
@@ -50,6 +51,16 @@ export const resetScriptsQueue = payload => {
   return dispatch => {
     return dispatch({
       type: 'RESET_SCRIPTS_QUEUE',
+      payload,
+    });
+  };
+};
+
+export const setQueryShortcut = payload => {
+  console.log('setQueryShortcut action: payload is ', payload);
+  return dispatch => {
+    return dispatch({
+      type: 'SET_QUERY_SHORTCUTS',
       payload,
     });
   };

@@ -7,8 +7,8 @@ import thunk from 'redux-thunk';
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['settings', 'files'],
-  blacklist: ['status', 'query', 'terminal', 'workspace'],
+  whitelist: ['settings', 'files', 'query'],
+  blacklist: ['status', 'terminal', 'workspace'],
 };
 
 const middlewares = [thunk];

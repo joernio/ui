@@ -202,6 +202,9 @@ const styles = theme => ({
     },
     margin: '1em 0',
   },
+  shortcutsIconStyle: {
+    transform: 'scaleX(-1) rotate(-45deg)',
+  },
 });
 
 export default styles;

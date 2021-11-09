@@ -15,6 +15,7 @@ import {
   getSettingsInitialValues,
   collectSettingsValues,
   handleOnChange,
+  openShortcutsPage,
 } from './sideNavScripts';
 
 const useStyles = makeStyles(styles);
@@ -58,6 +59,23 @@ function SideNav(props) {
               iconSize={25}
               className={classes.iconStyle}
               onClick={() => props.handleSetState(handleDrawerToggle(props))}
+            />
+          </Tooltip2>
+
+          <Tooltip2
+            popoverClassName={classes.toolTipStyle}
+            content={
+              <span className={classes.toolTipTextStyle}>query shortcuts</span>
+            }
+            placement="right"
+            usePortal={false}
+            openOnTargetFocus={false}
+          >
+            <Icon
+              icon="nest"
+              iconSize={25}
+              className={clsx(classes.iconStyle, classes.shortcutsIconStyle)}
+              onClick={openShortcutsPage}
             />
           </Tooltip2>
         </div>
