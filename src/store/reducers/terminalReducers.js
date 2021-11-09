@@ -1,5 +1,6 @@
 const default_state = {
   term: null,
+  refs: null,
   fitAddon: null,
   prev_results: null,
   prev_workspace: {},

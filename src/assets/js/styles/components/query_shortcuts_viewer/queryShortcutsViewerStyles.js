@@ -1,55 +1,71 @@
 const styles = theme => ({
   rootStyle: {
-    height: '100%',
+    width: '100%',
+    height: '90%',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
     backgroundColor: props =>
-      theme.palette.sideNav.background[
+      theme.palette.editor.background[
         props.settings.prefersDarkMode ? 'dark' : 'light'
       ],
-    width: props => props.sideNavWidth,
-    '& ul': {
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%',
-    },
-    '& .nav-upper-section': {
-      flexGrow: 1,
+  },
+  searchInputStyle: {
+    height: '2em',
+    width: '98%',
+    margin: '0.5em auto',
+    border: props =>
+      `1px solid rgba(206, 206, 206, ${
+        props.settings.prefersDarkMode ? '0' : '1'
+      })`,
+    backgroundColor: props =>
+      `rgba(60, 60, 60, ${props.settings.prefersDarkMode ? '1' : '0'})`,
+    color: props => (props.settings.prefersDarkMode ? '#C3CCCC' : '#616161'),
+    '&:focus': {
+      outline: '0',
+      border: props =>
+        `1px solid ${
+          theme.palette.menu.hover[
+            props.settings.prefersDarkMode ? 'dark' : 'light'
+          ]
+        }`,
     },
   },
-
-  topIconsContainerStyle: {
+  addShortcutStyle: {
+    padding: '0.25em 0',
+    fontSize: '1rem',
+    width: '98%',
+    margin: '0 auto 0.5em auto',
     display: 'flex',
-    flexDirection: 'column',
     alignItems: 'center',
-  },
-
-  toolTipStyle: {
-    '& .bp3-popover2-content': {
+    justifyContent: 'center',
+    backgroundColor: props =>
+      theme.palette.button.background[
+        props.settings.prefersDarkMode ? 'dark' : 'light'
+      ],
+    '&:hover': {
       backgroundColor: props =>
-        theme.palette.navBar.background[
+        theme.palette.button.hover[
           props.settings.prefersDarkMode ? 'dark' : 'light'
         ],
     },
-    '& .bp3-popover2-arrow-fill': {
-      fill: props =>
-        theme.palette.navBar.background[
-          props.settings.prefersDarkMode ? 'dark' : 'light'
-        ],
+    '& span': {
+      color: theme.palette.button.base.dark,
     },
+    cursor: 'pointer',
   },
-  toolTipTextStyle: {
-    backgroundColor: props =>
-      theme.palette.navBar.background[
-        props.settings.prefersDarkMode ? 'dark' : 'light'
-      ],
+  iconStyle: {
     color: props =>
-      theme.palette.navBar.base[
+      theme.palette.sideNav.base[
         props.settings.prefersDarkMode ? 'dark' : 'light'
       ],
+    '&:hover': {
+      color: props =>
+        props.settings.prefersDarkMode
+          ? theme.palette.sideNav.hover.dark
+          : theme.palette.sideNav.background.light,
+    },
   },
-  settingsDialogStyle: {
+  queryShortcutCreationDialogStyle: {
     '& > div > div:nth-child(1)': {
       backgroundColor: 'rgba(0, 0, 0, 0)',
     },
@@ -98,7 +114,7 @@ const styles = theme => ({
       },
     },
   },
-  settingsDialogContentStyle: {
+  queryShortcutCreationDialogContentStyle: {
     margin: ' 1em',
     backgroundColor: props =>
       theme.palette.menu.background[
@@ -148,7 +164,81 @@ const styles = theme => ({
       },
     },
   },
-  switchStyle: {
+  keybindingInputContainerStyle: {
+    width: '50%',
+    position: 'relative',
+    backgroundColor: props =>
+      `rgba(60, 60, 60, ${props.settings.prefersDarkMode ? '1' : '0'})`,
+    border: props =>
+      `1px solid rgba(206, 206, 206, ${
+        props.settings.prefersDarkMode ? '0' : '1'
+      })`,
+    '& input': {
+      width: '85%!important',
+      border: 'transparent!important',
+      '&:focus': {
+        outline: '0',
+        border: props =>
+          `1px solid ${
+            theme.palette.menu.hover[
+              props.settings.prefersDarkMode ? 'dark' : 'light'
+            ]
+          }`,
+      },
+    },
+    '& span': {
+      position: 'absolute',
+      right: '0.5em',
+      cursor: 'pointer',
+      color: props =>
+        theme.palette.sideNav.base[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+      '&:hover': {
+        color: props =>
+          theme.palette.editor.base[
+            props.settings.prefersDarkMode ? 'dark' : 'light'
+          ],
+      },
+    },
+  },
+  selectInputStyle: {
+    height: '2em',
+    width: '50%',
+    border: props =>
+      `1px solid rgba(206, 206, 206, ${
+        props.settings.prefersDarkMode ? '0' : '1'
+      })`,
+    backgroundColor: props =>
+      `rgba(60, 60, 60, ${props.settings.prefersDarkMode ? '1' : '0'})`,
+    '& select': {
+      backgroundColor: props =>
+        `rgba(60, 60, 60, ${props.settings.prefersDarkMode ? '1' : '0'})`,
+      color: props => (props.settings.prefersDarkMode ? '#C3CCCC' : '#616161'),
+      '&:focus': {
+        outline: '0',
+        border: props =>
+          `1px solid ${
+            theme.palette.menu.hover[
+              props.settings.prefersDarkMode ? 'dark' : 'light'
+            ]
+          }`,
+      },
+    },
+    '& span': {
+      color: props =>
+        theme.palette.sideNav.base[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+      '&:hover': {
+        color: props =>
+          theme.palette.sideNav.hover[
+            props.settings.prefersDarkMode ? 'dark' : 'light'
+          ],
+      },
+    },
+  },
+  switchInputStyle: {
     display: 'flex',
     alignItems: 'center',
     marginBottom: 0,
@@ -195,22 +285,6 @@ const styles = theme => ({
           props.settings.prefersDarkMode ? 'dark' : 'light'
         ]
       }50`,
-  },
-  iconStyle: {
-    color: props =>
-      theme.palette.sideNav.base[
-        props.settings.prefersDarkMode ? 'dark' : 'light'
-      ],
-    '&:hover': {
-      color: props =>
-        theme.palette.sideNav.hover[
-          props.settings.prefersDarkMode ? 'dark' : 'light'
-        ],
-    },
-    margin: '1em 0',
-  },
-  shortcutsIconStyle: {
-    transform: 'rotate(180deg)',
   },
 });
 
