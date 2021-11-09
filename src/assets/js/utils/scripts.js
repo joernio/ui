@@ -6,7 +6,7 @@ import { Tree } from '@blueprintjs/core';
 import {
   cpgManagementCommands as manCommands,
   apiErrorStrings,
-  syntheticFileExtensions,
+  syntheticFiles,
   imageFileExtensions,
   filesToIgnore,
 } from './defaultVariables';
@@ -26,6 +26,7 @@ import { store } from '../../../store/configureStore';
 import chokidar from 'chokidar';
 
 import { mouseTrapGlobalBindig } from './extensions';
+import { handlePrintable } from '../../../views/terminal_window/terminalWindowScripts';
 
 mouseTrapGlobalBindig(Mousetrap);
 
@@ -321,8 +322,11 @@ export const openFile = async path => {
 export const openSyntheticFile = async (path, content) => {
   if (path) {
     const files = { ...store.getState().files };
-    files.recent = { ...files.recent };
-    files.recent[path] = content;
+
+    if (path === 'AST Graph') {
+      files.recent = { ...files.recent };
+      files.recent[path] = content;
+    }
 
     if (!Object.keys(files.openFiles).includes(path)) {
       const entries = Object.entries({ ...files.openFiles });
@@ -390,9 +394,7 @@ export const closeFile = async path => {
               files.openFilePath.split('/').length - 1
             ]
         ) {
-          if (
-            syntheticFileExtensions.includes(getExtension(files.openFilePath))
-          ) {
+          if (syntheticFiles.includes(files.openFilePath)) {
             return {
               openFileContent: files.openFiles[files.openFilePath],
               openFileIsReadOnly: true,
@@ -688,7 +690,7 @@ export const readFile = path => {
       //avoid reading media files (images, etc) into memory. just return the file path instead;
       if (
         imageFileExtensions.includes(getExtension(path)) ||
-        syntheticFileExtensions.includes(getExtension(path)) ||
+        syntheticFiles.includes(path) ||
         filesToIgnore.includes(getExtension(path))
       ) {
         resolve(path);
@@ -722,7 +724,7 @@ export const refreshRecent = async () => {
           if (!err) {
             return r(entry);
           } else {
-            if (syntheticFileExtensions.includes(getExtension(entry[0]))) {
+            if (syntheticFiles.includes(entry[0])) {
               return r(entry);
             } else {
               return r(false);
@@ -758,7 +760,7 @@ export const refreshOpenFiles = async () => {
           if (!err && stats.isFile()) {
             return r(entry);
           } else {
-            if (syntheticFileExtensions.includes(getExtension(entry[0]))) {
+            if (syntheticFiles.includes(entry[0])) {
               return r(entry);
             } else {
               return r(false);
@@ -781,7 +783,7 @@ export const refreshOpenFiles = async () => {
         files.openFilePath.split('/')[
           files.openFilePath.split('/').length - 1
         ] &&
-        !syntheticFileExtensions.includes(getExtension(files.openFilePath)))
+        !syntheticFiles.includes(files.openFilePath))
     ) {
       const path = Object.keys(files.openFiles ? files.openFiles : {})[0];
       openFile(path);
@@ -828,7 +830,7 @@ export const isQueryResultToOpenSynthFile = results => {
     latest.query.search('dotAst.l') > -1
   ) {
     try {
-      synth_file_path = 'graph.dotast';
+      synth_file_path = 'AST Graph';
       content = latest.result.stdout.split('"""');
       content = `${content[1]}`;
       content = content.split('\\"').join("'");
@@ -1188,17 +1190,59 @@ export const handleAPIQueryError = err => {
   store.dispatch(resetQueue({}));
 };
 
+export const registerQueryShortcut = keybinding => {
+  Mousetrap.bindGlobal([keybinding], function () {
+    const shortcutObj = store.getState().settings.queryShortcuts[keybinding];
+
+    if (shortcutObj.behaviour === 'paste to terminal') {
+      const { term, refs } = store.getState().terminal;
+      const { busy } = store.getState().terminal;
+      !busy && handlePrintable(term, refs, { key: shortcutObj.query });
+      busy &&
+        handleSetToast({
+          icon: 'warning-sign',
+          intent: 'primary',
+          message:
+            "Can't paste to terminal because the terminal is busy. You can either wait for the terminal to be done with previous task or change the behaviour of the shortcut and try again later",
+        });
+    } else if (shortcutObj.behaviour === 'run as soon as possible') {
+      const query = {
+        query: shortcutObj.query,
+        origin: 'workspace',
+        ignore: shortcutObj.background,
+      };
+      store.dispatch(enQueueQuery(query));
+    }
+  });
+};
+
+export const unRegisterQueryShortcut = keybinding => {
+  Mousetrap.unbind([keybinding]);
+};
+
 export const initShortcuts = () => {
+  const { queryShortcuts } = store.getState().settings;
+
   Mousetrap.bindGlobal(['command+s', 'ctrl+s'], function () {
     saveFile(
       store.getState().files.openFilePath,
       store.getState().settings.scriptsDir,
     );
   });
+
+  Object.keys(queryShortcuts).map(keybinding => {
+    registerQueryShortcut(keybinding);
+  });
 };
 
 export const removeShortcuts = () => {
+  const { queryShortcuts } = store.getState().settings;
+
   Mousetrap.unbind(['command+s', 'ctrl+s']);
+
+  Object.keys(queryShortcuts).map(keybinding => {
+    unRegisterQueryShortcut(keybinding);
+  });
 };
 
 export const handleSetToast = toast => {

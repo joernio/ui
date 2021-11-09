@@ -1,3 +1,4 @@
+import { dispatch } from 'd3-dispatch';
 import CpgAPI from '../../api';
 import {
   handleAPIQueryError,

@@ -1,4 +1,8 @@
-export const default_state = { results: {}, queue: {}, scriptsQueue: {} };
+export const default_state = {
+  results: {},
+  queue: {},
+  scriptsQueue: {},
+};
 
 const query = (state = default_state, action) => {
   switch (action.type) {
@@ -35,6 +39,13 @@ const query = (state = default_state, action) => {
         results: state.results,
         queue: state.queue,
         scriptsQueue: action.payload,
+      };
+
+    case 'SET_QUERY_SHORTCUTS':
+      return {
+        results: state.results,
+        queue: state.queue,
+        scriptsQueue: state.scriptsQueue,
       };
 
     default:
