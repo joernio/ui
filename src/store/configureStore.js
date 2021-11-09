@@ -8,7 +8,7 @@ const persistConfig = {
   key: 'root',
   storage,
   whitelist: ['settings', 'files'],
-  blacklist: ['status', 'query', 'terminal', 'workspace'],
+  blacklist: ['status', 'terminal', 'query', 'workspace'],
 };
 
 const middlewares = [thunk];

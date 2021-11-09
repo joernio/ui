@@ -14,10 +14,17 @@ const styles = theme => ({
       flexDirection: 'column',
       height: '100%',
     },
-    '& :nth-child(1)': {
+    '& > div': {
       flexGrow: 1,
     },
   },
+
+  topIconsContainerStyle: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+
   toolTipStyle: {
     '& .bp3-popover2-content': {
       backgroundColor: props =>
@@ -201,6 +208,9 @@ const styles = theme => ({
         ],
     },
     margin: '1em 0',
+  },
+  shortcutsIconStyle: {
+    transform: 'rotate(180deg)',
   },
 });
 

@@ -18,9 +18,12 @@ import Toaster from './components/toaster/Toaster';
 
 function App(props) {
   React.useEffect(() => {
-    initShortcuts();
-    return () => removeShortcuts();
-  }, []);
+    if (props.settings.queryShortcuts) {
+      removeShortcuts();
+      initShortcuts();
+      return () => removeShortcuts();
+    }
+  }, [props.settings.queryShortcuts]);
 
   React.useEffect(() => {
     props.settings?.websocket?.url &&
@@ -41,10 +44,11 @@ function App(props) {
           <Window />
         </WindowWrapper>
       </ThemeProvider>
-      <Toaster />
       <QueryProcessor />
       <WorkspaceProcessor />
       <FilesProcessor />
+      <Toaster />
+      <QueryShortcutDialog />
     </div>
   );
 }
@@ -52,6 +56,7 @@ function App(props) {
 const mapStateToProps = state => {
   return {
     settings: state.settings,
+    query: state.query,
   };
 };
 

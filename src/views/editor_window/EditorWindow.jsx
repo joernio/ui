@@ -1,8 +1,8 @@
 import React from 'react';
 import clsx from 'clsx';
 import MonacoEditor from 'react-monaco-editor';
-import DotGraphViewer from '../../components/dot_graph_viewer/DotGraphViewer';
 import ImageViewer from '../../components/image_viewer/ImageViewer';
+import SynthFileViewer from '../../components/synth_file_viewer/SynthFileViewer';
 import EditorTabs from '../../components/editor_tabs/EditorTabs';
 import { connect } from 'react-redux';
 import * as filesActions from '../../store/actions/filesActions';
@@ -13,16 +13,19 @@ import {
   handleEditorOnChange,
 } from './editorScripts';
 import styles from '../../assets/js/styles/views/editor_window/editorWindowStyles';
+import commonStyles from '../../assets/js/styles';
 import {
   imageFileExtensions,
-  syntheticFileExtensions,
+  syntheticFiles,
 } from '../../assets/js/utils/defaultVariables';
 import { getExtension } from '../../assets/js/utils/scripts';
 
 const useStyles = makeStyles(styles);
+const useCommonStyles = makeStyles(commonStyles);
 
 function EditorWindow(props) {
   const classes = useStyles(props);
+  const commonClasses = useCommonStyles(props);
 
   const refs = {
     editorContainerEl: React.useRef(null),
@@ -48,6 +51,11 @@ function EditorWindow(props) {
       : 16,
   };
 
+  console.log(
+    'dksldkslkdlsdlksk: ',
+    syntheticFiles.includes(files.openFilePath),
+  );
+
   return (
     <div
       className={clsx(
@@ -57,7 +65,13 @@ function EditorWindow(props) {
       data-test="editor-window"
     >
       <EditorTabs />
-      <div className={classes.editorModeStyle}>
+      <div
+        className={clsx(classes.editorModeStyle, {
+          [commonClasses.displayNone]:
+            imageFileExtensions.includes(getExtension(files.openFilePath)) ||
+            syntheticFiles.includes(files.openFilePath),
+        })}
+      >
         {files.openFileIsReadOnly
           ? 'Read-only Mode'
           : 'Scripts Development Mode'}
@@ -65,8 +79,8 @@ function EditorWindow(props) {
 
       {imageFileExtensions.includes(getExtension(files.openFilePath)) ? (
         <ImageViewer src={files.openFilePath} />
-      ) : syntheticFileExtensions.includes(getExtension(files.openFilePath)) ? (
-        <DotGraphViewer
+      ) : syntheticFiles.includes(files.openFilePath) ? (
+        <SynthFileViewer
           path={files.openFilePath}
           content={files.openFileContent}
         />

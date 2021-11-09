@@ -242,10 +242,7 @@ export const handleCopyToClipBoard = str => {
 export const handlePasteFromClipBoard = (term, refs) => {
   windowActionApi.pasteFromClipBoard();
   windowActionApi.registerPasteFromClipBoardListener(async str => {
-    TWS.updateData(str);
-    TWS.updateCursorPosition(TWS.data_obj.cursorPosition + str.length);
-    await TWS.termWrite(term, TWS.constructInputToWrite());
-    TWS.handleWriteToCircuitUIInput(refs);
+    handlePrintable(term, refs, { key: str });
   });
 };
 

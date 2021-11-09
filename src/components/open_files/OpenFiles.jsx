@@ -8,10 +8,9 @@ import {
   closeFile,
   handleScrollTop,
   discardDialogHandler,
-  getExtension,
   openSyntheticFile,
 } from '../../assets/js/utils/scripts';
-import { syntheticFileExtensions } from '../../assets/js/utils/defaultVariables';
+import { syntheticFiles } from '../../assets/js/utils/defaultVariables';
 import styles from '../../assets/js/styles/components/open_files/openFilesStyles';
 import {
   getEditorFilesFromOpenFiles,
@@ -107,7 +106,7 @@ function OpenFiles(props) {
                     onClick={() =>
                       handleSetState(
                         discardDialogHandler(openFiles, openFilePath, () => {
-                          syntheticFileExtensions.includes(getExtension(path))
+                          syntheticFiles.includes(path)
                             ? openSyntheticFile(path, openFiles[path])
                             : openFile(path);
                         }),
