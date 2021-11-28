@@ -16,7 +16,8 @@ export const handleTerminalToggle = props => {
 export const handleOnChange = (e, values) => {
   if (
     e.target.id === 'prefers_dark_mode' ||
-    e.target.id === 'prefers_terminal_view'
+    e.target.id === 'prefers_terminal_view' ||
+    e.target.id === 'enable_http'
   ) {
     values[e.target.id] = e.target.checked;
   } else {
@@ -31,6 +32,9 @@ export const getSettingsInitialValues = settings => {
   initialSettings['server_url'] = settings?.server?.url;
   initialSettings['server_username'] = settings?.server?.auth_username;
   initialSettings['server_password'] = settings?.server?.auth_password;
+  initialSettings['cert_path'] = '';
+  initialSettings['cert_passphrase'] = '';
+  initialSettings['enable_http'] = settings?.server?.enable_http;
 
   initialSettings['ws_url'] = settings?.websocket?.url;
 
@@ -49,6 +53,9 @@ export const collectSettingsValues = values => {
       url: values['server_url'],
       auth_username: values['server_username'],
       auth_password: values['server_password'],
+      cert_path: values['cert_path'],
+      cert_passphrase: values['cert_passphrase'],
+      enable_http: values['enable_http'],
     },
     websocket: {
       url: values['ws_url'],

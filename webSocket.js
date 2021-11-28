@@ -1,5 +1,4 @@
 const WebSocketClient = require('websocket').client;
-// const { Notification } = require('electron');
 
 function initWebSocket(window, ws_url) {
   const { listenForConnectionClose } = require('./ipcMain');

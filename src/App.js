@@ -1,7 +1,9 @@
 import React from 'react';
 import { ThemeProvider } from '@material-ui/core/styles';
 import createTheme from './assets/js/theme';
-import initIPCRenderer from './assets/js/utils/ipcRenderer';
+import initIPCRenderer, {
+  windowActionApi,
+} from './assets/js/utils/ipcRenderer';
 import {
   initShortcuts,
   removeShortcuts,

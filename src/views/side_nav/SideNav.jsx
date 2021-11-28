@@ -209,6 +209,38 @@ function SideNav(props) {
               onBlur={e => handleSetState(handleOnChange(e, values))}
             />
           </div>
+          <Divider className={classes.menuDividerStyle} />
+          <div>
+            <h3>Network</h3>
+            <h4>Certificate Path</h4>
+            <input
+              type="text"
+              id="cert_path"
+              placeholder="path to pkcs12 file here..."
+              defaultValue={values['cert_path']}
+              onChange={e => handleSetState(handleOnChange(e, values))}
+              onBlur={e => handleSetState(handleOnChange(e, values))}
+            />
+            <h4>Certificate Passphrase</h4>
+            <input
+              type="password"
+              id="cert_passphrase"
+              placeholder="passphrase here..."
+              defaultValue={values['cert_passphrase']}
+              onChange={e => handleSetState(handleOnChange(e, values))}
+              onBlur={e => handleSetState(handleOnChange(e, values))}
+            />
+            <h4>Enable Http</h4>
+            <Switch
+              className={classes.switchStyle}
+              innerLabelChecked="on"
+              id="enable_http"
+              innerLabel="off"
+              defaultChecked={values['enable_http']}
+              onChange={e => handleSetState(handleOnChange(e, values))}
+              onBlur={e => handleSetState(handleOnChange(e, values))}
+            />
+          </div>
         </div>
         <Divider className={classes.menuDividerStyle} />
         <div className={classes.submitSectionStyle}>

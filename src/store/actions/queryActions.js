@@ -165,7 +165,7 @@ export const postQuery = (post_query, main_result_key) => {
 
         if (result) {
           result['post_query_uuid'] = data.uuid;
-          dispatch(setResults(results));
+          // dispatch(setResults(results));
         }
       })
       .catch(err => {
