@@ -5,20 +5,24 @@ const { initIpcMain } = require('./ipcMain');
 
 const isDev = !app.isPackaged;
 
-function initIpcAndWindow() {
-  initIpcMain();
+function initIpcAndWindow(app) {
+  initIpcMain(app);
   createWindow();
 }
 
 function init() {
   app.on('ready', () => {
-    initIpcAndWindow();
+    initIpcAndWindow(app);
   });
 
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) {
-      initIpcAndWindow();
+      initIpcAndWindow(app);
     }
+  });
+
+  app.on('certificate-error', (_, webContents) => {
+    webContents.send('certificate-error');
   });
 
   app.on('window-all-closed', () => {

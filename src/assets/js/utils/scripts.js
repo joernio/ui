@@ -5,7 +5,7 @@ import Mousetrap from 'mousetrap';
 import { Tree } from '@blueprintjs/core';
 import {
   cpgManagementCommands as manCommands,
-  apiErrorStrings,
+  errorStrings,
 } from './defaultVariables';
 import {
   deQueueQuery,
@@ -228,6 +228,30 @@ export const handleWebSocketResponse = data => {
         store.dispatch(deQueueQuery());
       }
     }
+  });
+};
+
+export const handleCertificateError = () => {
+  handleSetToast({
+    icon: 'warning-sign',
+    intent: 'danger',
+    message: errorStrings.certificate_invalid,
+  });
+};
+
+export const handleCertificateImportError = () => {
+  handleSetToast({
+    icon: 'warning-sign',
+    intent: 'danger',
+    message: errorStrings.certificate_import_failed,
+  });
+};
+
+export const handleCertificateSuccess = () => {
+  handleSetToast({
+    icon: 'info-sign',
+    intent: 'success',
+    message: errorStrings.certificate_import_successful,
   });
 };
 
@@ -1073,7 +1097,9 @@ export const handleSwitchWorkspace = async () => {
 };
 
 export const handleAPIQueryError = err => {
-  if (err === apiErrorStrings.ws_not_connected) {
+  err = typeof err === 'string' ? { message: err } : err;
+
+  if (err.message === errorStrings.ws_not_connected) {
     const ws_url = store.getState().settings.websocket.url;
     handleSetToast({
       action: {
@@ -1093,11 +1119,17 @@ export const handleAPIQueryError = err => {
       intent: 'danger',
       message: 'authentication error. Your server requires authentication',
     });
-  } else if (err.message === apiErrorStrings.no_result_for_uuid) {
+  } else if (err.message === errorStrings.no_result_for_uuid) {
     handleSetToast({
       icon: 'warning-sign',
       intent: 'danger',
       message: `${err.message}. Ensure that no other program is subscribed to the websocket`,
+    });
+  } else {
+    handleSetToast({
+      icon: 'warning-sign',
+      intent: 'danger',
+      message: err.message,
     });
   }
 
