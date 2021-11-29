@@ -177,7 +177,7 @@ Luckily we wrote a basic script template to help make the HTTPS reverse-proxy se
 
 To set up your basic HTTPS reverse-proxy server with a self-signed certificate on your local machine, follow the steps below:
 
-* Open the source code folder in the tar.za zip of the release you have installed (You can contact the Joern team to help you if you can't find this).
+* Open the source code folder in the tar.gz/ zip of the release you have installed (You can contact the Joern team to help you if you can't find this).
 
 * Inside the repository folder, copy the file named "httpslocalhost.sh" to any folder of your choice (Desktop for example).
 

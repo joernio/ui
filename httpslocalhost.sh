@@ -13,7 +13,7 @@ update-ca-certificates --fresh
 
 # Generate new Certificate Authority certificate and add it to trusted root certificates
 openssl genrsa -out /etc/nginx/ssl/JoernCA.key 2048
-openssl req -x509 -sha256 -new -nodes -days 1 \
+openssl req -x509 -sha256 -new -nodes -days 3650 \
 -key /etc/nginx/ssl/JoernCA.key \
 -subj "/C=US/ST=./L=./O=Joern/CN=Joern-CA-Test3" \
 -out /etc/nginx/ssl/JoernCA.crt
@@ -66,7 +66,7 @@ openssl req -new -config /etc/nginx/ssl/localhost.cnf \
 # Create signed server certificate file
 openssl x509 -req -in /etc/nginx/ssl/localhost.csr \
 -CA /etc/nginx/ssl/JoernCA.crt -CAkey /etc/nginx/ssl/JoernCA.key \
--CAcreateserial -days 1 -sha256 -extfile /etc/nginx/ssl/localhost.ext \
+-CAcreateserial -days 3650 -sha256 -extfile /etc/nginx/ssl/localhost.ext \
 -out /etc/nginx/ssl/localhost.crt
 
 # Create password for signed server certificate in pkcs12 format
