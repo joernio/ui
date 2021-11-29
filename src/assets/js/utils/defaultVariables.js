@@ -27,6 +27,7 @@ export const cpgManagementCommands = {
   importCpg: 'importCpg',
   open: 'open',
   switchWorkspace: 'switchWorkspace',
+  cpgLanguage: 'cpg.metaData.language.l',
 };
 
 export const errorStrings = {
@@ -142,6 +143,24 @@ export const printable = {
 };
 
 export const foldersToIgnore = ['.git', 'node_modules'];
+export const filesToIgnore = [];
+
+export const imageFileExtensions = [
+  '.apng',
+  '.avif',
+  '.gif',
+  '.jpg',
+  '.jpeg',
+  '.jfif',
+  '.pjpeg',
+  '.pjp',
+  '.png',
+  '.webp',
+  '.bmp',
+  '.ico',
+  '.cur',
+];
+export const syntheticFileExtensions = ['.dotast'];
 
 // \r      ██╗ ██████╗ ███████╗██████╗ ███╗   ██╗
 // \r      ██║██╔═══██╗██╔════╝██╔══██╗████╗  ██║

@@ -6,6 +6,9 @@ import { Tree } from '@blueprintjs/core';
 import {
   cpgManagementCommands as manCommands,
   errorStrings,
+  syntheticFileExtensions,
+  imageFileExtensions,
+  filesToIgnore,
 } from './defaultVariables';
 import {
   deQueueQuery,
@@ -109,9 +112,11 @@ export const parseProjects = data => {
 
     parsed.forEach(arr => {
       projects[arr[1].trim()] = {
+        cpg: arr[2].trim(),
         inputPath: arr[3].trim(),
         pathToProject: null,
         open: null,
+        language: null,
       };
     });
 
@@ -120,18 +125,17 @@ export const parseProjects = data => {
 };
 
 export const parseProject = data => {
-  let inputPath, name, path;
+  let inputPath, name, path, cpg, language;
+  language = cpg = null;
 
   if (data.stdout) {
     try {
       [inputPath, name, path] = data.stdout.split('(')[2].split(',');
-
       inputPath = inputPath.split('"')[1];
       name = name.split('"')[1];
       path = path.split('=')[1].trim();
     } catch {
       [inputPath, name, path] = data.stdout.split('(')[3].split(',');
-
       inputPath = inputPath.split('"')[1];
       name = name.split('"')[1];
       path = path.split('=')[1].trim();
@@ -140,7 +144,7 @@ export const parseProject = data => {
     inputPath = name = path = null;
   }
 
-  return { name, inputPath, path };
+  return { name, inputPath, path, cpg, language };
 };
 
 const performPostQuery = (store, results, key) => {
@@ -276,6 +280,11 @@ export const getOpenFileName = path => {
   }
 };
 
+export const getExtension = path => {
+  let ext = path.split('.')[path.split('.').length - 1];
+  return ext ? '.' + ext : '';
+};
+
 export const openFile = async path => {
   if (path) {
     const files = { ...store.getState().files };
@@ -333,6 +342,39 @@ export const openFile = async path => {
   }
 };
 
+export const openSyntheticFile = async (path, content) => {
+  if (path) {
+    const files = { ...store.getState().files };
+    files.recent = { ...files.recent };
+    files.recent[path] = content;
+
+    if (!Object.keys(files.openFiles).includes(path)) {
+      const entries = Object.entries({ ...files.openFiles });
+      const new_entries = [];
+
+      if (entries.length === 0) {
+        new_entries.push([path, content]);
+      }
+
+      entries.forEach((entry, index) => {
+        if (entry[0] === files.openFilePath) {
+          new_entries.push([...entry], [path, content]);
+        } else {
+          new_entries.push([...entry]);
+
+          if (index === entries.length - 1) new_entries.push([path, content]);
+        }
+      });
+      files.openFiles = Object.fromEntries(new_entries);
+    }
+
+    files.openFilePath = path;
+    files.openFileContent = content;
+    files.openFileIsReadOnly = true;
+    store.dispatch(setFiles(files));
+  }
+};
+
 export const closeFile = async path => {
   if (path) {
     const files = { ...store.getState().files };
@@ -372,6 +414,15 @@ export const closeFile = async path => {
               files.openFilePath.split('/').length - 1
             ]
         ) {
+          if (
+            syntheticFileExtensions.includes(getExtension(files.openFilePath))
+          ) {
+            return {
+              openFileContent: files.openFiles[files.openFilePath],
+              openFileIsReadOnly: true,
+            };
+          }
+
           handleSetToast({
             icon: 'warning-sign',
             intent: 'danger',
@@ -658,6 +709,15 @@ export const deleteFile = async path => {
 export const readFile = path => {
   return new Promise((resolve, reject) => {
     if (path) {
+      //avoid reading media files (images, etc) into memory. just return the file path instead;
+      if (
+        imageFileExtensions.includes(getExtension(path)) ||
+        syntheticFileExtensions.includes(getExtension(path)) ||
+        filesToIgnore.includes(getExtension(path))
+      ) {
+        resolve(path);
+      }
+
       fs.readFile(path, 'utf8', (err, data) => {
         if (!err) {
           resolve(data);
@@ -686,7 +746,11 @@ export const refreshRecent = async () => {
           if (!err) {
             return r(entry);
           } else {
-            return r(false);
+            if (syntheticFileExtensions.includes(getExtension(entry[0]))) {
+              return r(entry);
+            } else {
+              return r(false);
+            }
           }
         });
       });
@@ -718,10 +782,14 @@ export const refreshOpenFiles = async () => {
           if (!err && stats.isFile()) {
             return r(entry);
           } else {
-            return r(false);
+            if (syntheticFileExtensions.includes(getExtension(entry[0]))) {
+              return r(entry);
+            } else {
+              return r(false);
+            }
           }
         });
-      }).then(value => value);
+      });
     });
 
     open_files_entries = await Promise.all(open_files_entries);
@@ -733,10 +801,14 @@ export const refreshOpenFiles = async () => {
 
     if (
       !files.openFilePath ||
-      files.openFilePath ===
-        files.openFilePath.split('/')[files.openFilePath.split('/').length - 1]
+      (files.openFilePath ===
+        files.openFilePath.split('/')[
+          files.openFilePath.split('/').length - 1
+        ] &&
+        !syntheticFileExtensions.includes(getExtension(files.openFilePath)))
     ) {
-      openFile(Object.keys(files.openFiles ? files.openFiles : {})[0]);
+      const path = Object.keys(files.openFiles ? files.openFiles : {})[0];
+      openFile(path);
     }
   }
 };
@@ -767,6 +839,33 @@ export const isFilePathInQueryResult = results => {
   } else {
     return false;
   }
+};
+
+export const isQueryResultToOpenSynthFile = results => {
+  const latest = results[Object.keys(results)[Object.keys(results).length - 1]];
+  let synth_file_path, content;
+
+  if (
+    latest?.result.stdout &&
+    typeof latest.result.stdout === 'string' &&
+    latest.result.stdout.includes('"""') &&
+    latest.query.search('dotAst.l') > -1
+  ) {
+    try {
+      synth_file_path = 'graph.dotast';
+      content = latest.result.stdout.split('"""');
+      content = `${content[1]}`;
+      content = content.split('\\"').join("'");
+    } catch (e) {
+      synth_file_path = false;
+      content = false;
+    }
+  } else {
+    synth_file_path = false;
+    content = false;
+  }
+
+  return { synth_file_path, content };
 };
 
 export const getUIIgnoreArr = (src, uiIgnore) => {
@@ -1044,27 +1143,12 @@ export const contructQueryWithPath = async (query_name, type) => {
     });
   });
 
-  // const isJavaArtifact = path && (path.endsWith(".jar") || path.endsWith(".war") || path.endsWith(".ear"));
-
-  // if (path && stats && stats.isFile() && !isJavaArtifact) {
-  //   path = path.split('/');
-  //   path = path.slice(0, path.length - 1).join('/');
-  // }
-
   if (path && stats) {
     const query = {
       query: `${query_name}(inputPath="${path}")`,
       origin: 'workspace',
       ignore: false,
     };
-
-    // if(!isJavaArtifact){
-    //   handleSetToast({
-    //       icon: 'info-sign',
-    //       intent: 'primary',
-    //       message: "the whole directory was imported. file imports are only valid for java artifacts",
-    //     });
-    // }
 
     return query;
   }

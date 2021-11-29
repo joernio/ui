@@ -1,8 +1,18 @@
 import { cpgManagementCommands as manCommands } from '../assets/js/utils/defaultVariables';
-import { parseProject, parseProjects } from '../assets/js/utils/scripts';
+import {
+  parseProject,
+  parseProjects,
+  handleSetToast,
+} from '../assets/js/utils/scripts';
 
 export const modifyWorkSpaceNameAndActiveProject = (obj, workspace) => {
-  const { pathToWorkSpace, pathToProject, activeProjectName, inputPath } = obj;
+  const {
+    pathToWorkSpace,
+    pathToProject,
+    activeProjectName,
+    inputPath,
+    language,
+  } = obj;
   workspace.path = pathToWorkSpace;
 
   Object.keys(workspace.projects).map(projectName => {
@@ -12,7 +22,14 @@ export const modifyWorkSpaceNameAndActiveProject = (obj, workspace) => {
   });
 
   if (activeProjectName) {
-    const activeProject = { inputPath, pathToProject, open: true };
+    let activeProject = workspace.projects[activeProjectName];
+    activeProject = {
+      inputPath,
+      pathToProject,
+      open: true,
+      cpg: activeProject.cpg,
+      language: language ? language : activeProject.language,
+    };
     workspace.projects[activeProjectName] = activeProject;
   }
 
@@ -25,10 +42,41 @@ export const extractWorkSpaceNameAndActiveProject = parsedProject => {
     inputPath,
     path: pathToProject,
   } = parsedProject;
+
   const pathToWorkSpace = pathToProject
     ? pathToProject.split('workspace')[0] + 'workspace'
     : null;
-  return { pathToWorkSpace, pathToProject, activeProjectName, inputPath };
+
+  return {
+    pathToWorkSpace,
+    pathToProject,
+    activeProjectName,
+    inputPath,
+  };
+};
+
+export const extractLanguageFromString = str => {
+  try {
+    const language = str.split('"')[1];
+    if (language) {
+      return language;
+    } else {
+      handleSetToast({
+        icon: 'warning-sign',
+        intent: 'danger',
+        message:
+          'This language is not yet supported. The backend was unable to generate a graph and no graph is loaded for this project',
+      });
+      return 'Unsupported';
+    }
+  } catch {
+    handleSetToast({
+      icon: 'warning-sign',
+      intent: 'danger',
+      message: 'authentication error. Your server requires authentication',
+    });
+    return 'Unsupported';
+  }
 };
 
 export const processQueryResult = (query_result, props) => {
@@ -47,8 +95,23 @@ export const processQueryResult = (query_result, props) => {
       ignore: true,
     };
     props.enQueueQuery(query);
+  } else if (query === manCommands.cpgLanguage && result.stdout) {
+    // if language query
+    const workspace_name_and_active_project =
+      extractWorkSpaceNameAndActiveProject(parsed_project);
+
+    workspace_name_and_active_project.language = extractLanguageFromString(
+      result.stdout,
+    );
+
+    let { workspace } = props;
+    workspace = modifyWorkSpaceNameAndActiveProject(
+      workspace_name_and_active_project,
+      workspace,
+    );
+    props.setWorkSpace(workspace);
   } else if (query === 'project' && (result.stdout || result.stderr)) {
-    //if project query
+    // if project query
     const parsed_project = parseProject(result);
 
     props.setProjects(parsed_workspace['projects']);

@@ -1,13 +1,9 @@
 import * as editorScripts from './editorScripts';
-import {
-  isFilePathInQueryResult,
-  openFile,
-} from '../../assets/js/utils/scripts';
+import { isFilePathInQueryResult } from '../../assets/js/utils/scripts';
 import { Range } from 'monaco-editor';
 
 let delta_decorations = [];
 
-handleEditorGoToLineAndHighlight;
 export const handleEditorGoToLineAndHighlight = (refs, props) => {
   const { startLine, endLine } = editorScripts.shouldGoToLine(props);
 

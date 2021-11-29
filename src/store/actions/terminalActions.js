@@ -48,3 +48,9 @@ export const setTerminalBusy = busy => {
     dispatch(setTerminal({ busy }));
   };
 };
+
+export const setQuerySuggestions = query_suggestions => {
+  return dispatch => {
+    dispatch(setTerminal({ query_suggestions }));
+  };
+};

@@ -6,6 +6,7 @@ import { printable } from '../../assets/js/utils/defaultVariables';
 import {
   setHistory,
   setTerminalBusy,
+  setQuerySuggestions,
 } from '../../store/actions/terminalActions';
 import { store } from '../../store/configureStore';
 
@@ -74,13 +75,82 @@ export const handleEmptyWorkspace = (workspace, prev_workspace) => {
   return {};
 };
 
+export const setSuggestionBoxTrackerContent = el => {
+  el.innerText = data_obj.data;
+};
+
+export const suggestSimilarQueries = () => {
+  const { results } = store.getState().query;
+  let query_strings = Object.keys(results);
+  query_strings = query_strings.map(key => results[key].query);
+  query_strings = query_strings.filter(query_string =>
+    query_string && data_obj.data && query_string.startsWith(data_obj.data)
+      ? true
+      : false,
+  );
+  query_strings.reverse();
+  query_strings = [...new Set(query_strings)]; //remove duplicates
+  store.dispatch(setQuerySuggestions(query_strings));
+};
+
+export const handleSuggestionClick = async (e, refs, term) => {
+  const str = e.target.innerText;
+  TWS.updateData(null);
+  TWS.updateCursorPosition(0);
+  TWS.updateData(str);
+  TWS.updateCursorPosition(TWS.data_obj.cursorPosition + str.length);
+  await TWS.termWrite(term, TWS.constructInputToWrite());
+  TWS.handleWriteToCircuitUIInput(refs);
+  refs.circuitUIRef.current.children[1].children[0].focus();
+};
+
 export const openXTerm = (refs, term) => {
   if (term) {
     term.onKey(async e => {
       await TWS.handleXTermOnKey(term, refs, e);
+      suggestSimilarQueries();
+      await suggestQueryForXterm(term);
     });
 
     term.open(refs.terminalRef.current);
+  }
+};
+
+export const suggestQueryForXterm = async term => {
+  const { query_suggestions } = store.getState().terminal;
+  await TWS.termWrite(term, TWS.constructInputToWrite());
+  if (query_suggestions.length > 0) {
+    let str_to_write = query_suggestions[0].split(data_obj.data)[1];
+    str_to_write =
+      TV.clearLine +
+      TV.cpgDefaultPrompt +
+      TWS.data_obj.data +
+      TV.formatText
+        .split('<n>')
+        .join('38;2;169;169;169')
+        .split('<o>')
+        .join(str_to_write) +
+      TV.carriageReturn +
+      TV.cursorPositionFromStart
+        .split('<n>')
+        .join(TV.cpgDefaultPrompt.length + TWS.data_obj.cursorPosition);
+    await TWS.termWrite(term, str_to_write);
+  }
+};
+
+export const writeSuggestionToXterm = async (term, refs) => {
+  const { query_suggestions } = store.getState().terminal;
+  if (
+    !(TWS.data_obj.cursorPosition < TWS.data_obj.data.length) &&
+    query_suggestions.length > 0
+  ) {
+    const str = query_suggestions[0];
+    TWS.updateData(null);
+    TWS.updateCursorPosition(0);
+    TWS.updateData(str);
+    TWS.updateCursorPosition(TWS.data_obj.cursorPosition + str.length);
+    await TWS.termWrite(term, TWS.constructInputToWrite());
+    TWS.handleWriteToCircuitUIInput(refs);
   }
 };
 
@@ -187,6 +257,7 @@ export const handleEnter = async (term, refs) => {
   };
   store.dispatch(enQueueQuery(query));
   store.dispatch(setTerminalBusy(true));
+  await TWS.termWrite(term, TWS.constructInputToWrite());
   await TWS.termWriteLn(term, '');
   TWS.handleWriteToCircuitUIResponse(
     refs,
@@ -257,6 +328,7 @@ export const handleArrowLeft = async (term, refs) => {
 };
 
 export const handleArrowRight = async (term, refs) => {
+  await writeSuggestionToXterm(term, refs);
   TWS.updateCursorPosition(
     TWS.data_obj.cursorPosition < TWS.data_obj.data.length
       ? TWS.data_obj.cursorPosition + 1
@@ -375,6 +447,10 @@ export const initCircuitUI = refs => {
     async function handleInitCircuitUIInputKeyDown(e) {
       const { term } = store.getState().terminal;
       await handleXTermOnKey(term, refs, { domEvent: e });
+      setSuggestionBoxTrackerContent(
+        el.children[1].querySelector('#suggestion-box-tracker'),
+      );
+      suggestSimilarQueries();
     },
     false,
   );
@@ -385,6 +461,10 @@ export const initCircuitUI = refs => {
       const { term, busy } = store.getState().terminal;
       if (!busy) {
         await handleEnter(term, refs);
+        setSuggestionBoxTrackerContent(
+          el.children[1].querySelector('#suggestion-box-tracker'),
+        );
+        suggestSimilarQueries();
       }
     },
     false,
@@ -433,6 +513,7 @@ export const handleWriteToCircuitUIInput = refs => {
     TWS.data_obj.cursorPosition,
     TWS.data_obj.cursorPosition,
   );
+  suggestSimilarQueries();
 };
 
 export const handleMaximize = (window, props) => {
@@ -502,7 +583,7 @@ export const handleXTermOnKey = async (term, refs, e) => {
   }
 
   if (ev.code === 'KeyV' && ev.ctrlKey && !busy) {
-    handlePasteFromClipBoard(term);
+    handlePasteFromClipBoard(term, refs);
   }
 
   if (busy) return;
@@ -532,7 +613,9 @@ export const sendQueryResultToXTerm = async (results, refs) => {
   if (
     term &&
     (latest?.result.stdout || latest?.result.stderr) &&
-    !latest?.ignore
+    !latest?.ignore &&
+    latest.post_query_uuid &&
+    (latest.workspace || latest.project)
   ) {
     return await handleWriteQueryResult(term, refs, latest);
   } else if (

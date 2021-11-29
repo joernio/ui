@@ -30,6 +30,7 @@ import {
   switchDefaultScriptsFolder,
   handleToggleScriptsVisible,
   organisedScriptsToScripts,
+  handleCPGScriptTagClick,
   handleRun,
   runSelected,
   deleteAll,
@@ -37,7 +38,6 @@ import {
   collectArgsValues,
   toggleScriptsArgsDialog,
 } from './cpgScriptsScripts';
-import { shouldGoToLine } from '../../views/editor_window/editorScripts';
 
 const useStyles = makeStyles(styles);
 
@@ -144,7 +144,7 @@ function CpgScripts(props) {
           <Popover2
             content={
               <Menu className={classes.menuStyle}>
-                {/* <MenuItem
+                <MenuItem
                   className={classes.menuItemStyle}
                   onClick={() =>
                     handleSetState(
@@ -164,7 +164,7 @@ function CpgScripts(props) {
                   }
                   text="Run Selected"
                 />
-                <MenuDivider className={classes.menuDividerStyle} /> */}
+                <MenuDivider className={classes.menuDividerStyle} />
                 <MenuItem
                   className={classes.menuItemStyle}
                   onClick={() =>
@@ -242,7 +242,29 @@ function CpgScripts(props) {
                 } else if (scripts[value].tag) {
                   return (
                     <>
-                      <h3 className={classes.tagNameStyle}>{value}</h3>
+                      <h3
+                        className={classes.tagNameStyle}
+                        onClick={e =>
+                          handleSetState(
+                            discardDialogHandler(
+                              openFiles,
+                              openFilePath,
+                              () => {
+                                handleSetState(
+                                  handleCPGScriptTagClick(
+                                    e,
+                                    value,
+                                    scripts,
+                                    selected,
+                                  ),
+                                );
+                              },
+                            ),
+                          )
+                        }
+                      >
+                        {value}
+                      </h3>
                       {Object.keys(scripts[value]).map(path => {
                         if (scripts[value][path] !== true) {
                           let filename = path.split('/');

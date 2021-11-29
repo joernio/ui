@@ -31,6 +31,7 @@ const styles = theme => ({
     fontSize: '0.8rem',
     marginTop: '0.3em',
     marginBottom: '0.3em',
+    cursor: 'pointer',
     color: props =>
       theme.palette.explorer.base[
         props.settings.prefersDarkMode ? 'dark' : 'light'
@@ -125,7 +126,7 @@ const styles = theme => ({
     '& > div > div:nth-child(1)': {
       backgroundColor: 'rgba(0, 0, 0, 0)',
     },
-    '& > div > div:nth-child(2)': {
+    '& > div > div.bp3-dialog-container': {
       alignItems: 'normal',
       minHeight: 'fit-content',
       '&:focus': {
