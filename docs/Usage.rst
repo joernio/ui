@@ -170,24 +170,26 @@ Secure and Non-Secure Connections
 
 The first time you run this UI, without setting up an HTTPS server and uploading an SSL certificate or enabling HTTP connection in the settings, 
 you will get an error saying that HTTP connections are disabled. If you just want to quickly test queries and wouldn't want the additional trouble 
-of setting up an HTTPS reverse-proxy for your Joern installation, you can click the settings icon and enable HTTP connections.
+of setting up an HTTPS reverse-proxy for your CPG installation, you can click the settings icon and enable HTTP connections.
 If you plan on using the UI for more serious work however, it is advisable to go through the additional trouble of setting up the HTTPS reverse-proxy and getting it to work with the UI.
-This is to ensure that all the traffic between the UI client and the Joern server is encrypted and secure.
+This is to ensure that all the traffic between the UI client and the CPG server is encrypted and secure.
 Luckily we wrote a basic script template to help make the HTTPS reverse-proxy server setup and certificate generation on your local machine painless.
 
 To set up your basic HTTPS reverse-proxy server with a self-signed certificate on your local machine, follow the steps below:
 
-* Open the source code folder in the tar.za zip of the release you have installed (You can contact the Joern team to help you if you can't find this).
+* Open the source code folder in the tar.gz/ zip of the release you have installed (You can contact the team to help you if you can't find this).
 
 * Inside the repository folder, copy the file named "httpslocalhost.sh" to any folder of your choice (Desktop for example).
 
 * Run the copied file with the command ``sudo bash ./httpslocalhost.sh``
 
-* Open the UI settings and add "/etc/nginx/ssl/localhost.p12" to the "Certificate Path" field.
+* Open the UI settings dialog and change the URL field to `https://localhost:443`
+
+* Still on the UI settings dialog, add "/etc/nginx/ssl/localhost.p12" to the "Certificate Path" field.
 
 * On the "Certificate Passphrase" field, add the following passphrase "4346d3D2fgefr43542w4w5trdfd3454fsFR3trYFDBrtERT4653wedfgtrfdgsREWWE345w3" then click on save.
 
-If you get a toast saying "Certificate Import Successful" then congratulations, the connection between your Joern server and the UI is encrypted and secured with HTTPS.
+If you get a toast saying "Certificate Import Successful" then congratulations, the connection between your CPG server and the UI is encrypted and secured with HTTPS.
 
 .. note:: that the httpslocalhost.sh script Is for demonstration use only. you probably need to use a custom passphrase for the pkcs12 file 
           that will be imported into the UI. To change this passphrase, you need to edit the httpslocalhost.sh script to replace the above passphrase with your custom passphrase. 
@@ -207,3 +209,20 @@ Self-Signed:
   If your certificate is self-signed, make sure that you are using the generic certificate signing method where you generate the root certificate and use it to sign a second certificate (server certificate). \
   Also, don't forget to add your local root CA to trusted roots on your local machine. You can check out how we do this by reading the httpsloalhost.sh file. 
   To get the certificate to upload to the UI, you need to convert your server certificate to pkcs12 format. Also, avoid using special characters for the pkcs12 file passphrase or you might not be able to decrypt the file after creation.
+
+
+Also, the nginx reverse-proxy can serve the query database website over https too. To enable this however, you need to edit the /etc/hosts file.
+If you wish to serve the query database website over https too, follow the steps below:
+
+* Open the /etc/hosts file with your favorite editor
+
+* Change the line `127.0.0.1 localhost` to `127.0.0.1 localhost querydb.localhost`
+
+* Save the file, close your editor and open the url https://querydb.localhost:443 on your browser.
+
+* To stop the browser from complaining about your self-signed certificate, import the root certificate into your browser's trusted root store.
+
+
+.. note:: that the httpslocalhost.sh script was created with the assumption that your CPG server is running on port 8080 and that your query database website is running on port 8081. If any of this is not true, \
+          edit the nginx server block section in the httpslocalhost.sh script and the change the ports nginx is routing to, to match the ports your CPG and query database website servers are running on.
+

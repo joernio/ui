@@ -5,8 +5,8 @@ export const setSettings = setting => {
   cert_path &&
     windowActionApi.importCertificate({ cert_path, cert_passphrase });
 
-  delete setting.server.cert_path;
-  delete setting.server.cert_passphrase;
+  setting.server.cert_path = 'up to date';
+  setting.server.cert_passphrase = 'up to date';
 
   return dispatch => {
     dispatch({

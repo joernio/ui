@@ -111,6 +111,8 @@ const styles = theme => ({
         width: '50%',
         margin: '0.6em 0',
         color: theme.palette.sideNav.base.light,
+        display: 'flex',
+        alignItems: 'center',
       },
       '& input': {
         height: '2em',

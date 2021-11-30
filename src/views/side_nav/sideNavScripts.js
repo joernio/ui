@@ -32,9 +32,9 @@ export const getSettingsInitialValues = settings => {
   initialSettings['server_url'] = settings?.server?.url;
   initialSettings['server_username'] = settings?.server?.auth_username;
   initialSettings['server_password'] = settings?.server?.auth_password;
-  initialSettings['cert_path'] = '';
+  initialSettings['cert_path'] = settings?.server?.cert_path;
   initialSettings['cert_passphrase'] = '';
-  initialSettings['enable_http'] = settings?.server?.enable_http;
+  initialSettings['enable_http'] = '';
 
   initialSettings['ws_url'] = settings?.websocket?.url;
 
@@ -43,6 +43,14 @@ export const getSettingsInitialValues = settings => {
   initialSettings['font_size'] = Number(settings?.fontSize.split('px')[0]);
   initialSettings['scripts_dir'] = settings?.scriptsDir;
   initialSettings['ui_ignore'] = settings?.uiIgnore;
+
+  initialSettings['cert_path_up_to_date'] = settings.server?.cert_path
+    ? true
+    : false;
+  initialSettings['cert_passphrase_up_to_date'] = settings.server
+    ?.cert_passphrase
+    ? true
+    : false;
 
   return initialSettings;
 };

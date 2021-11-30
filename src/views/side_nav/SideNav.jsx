@@ -7,6 +7,7 @@ import { Icon, Divider, Switch } from '@blueprintjs/core';
 import { Dialog } from '@blueprintjs/core';
 import { Tooltip2 } from '@blueprintjs/popover2';
 import styles from '../../assets/js/styles/views/side_nav/sideNavStyles';
+import commonStyles from '../../assets/js/styles';
 
 import {
   toggleSettingsDialog,
@@ -18,9 +19,11 @@ import {
 } from './sideNavScripts';
 
 const useStyles = makeStyles(styles);
+const useCommonStyles = makeStyles(commonStyles);
 
 function SideNav(props) {
   const classes = useStyles(props);
+  const commonClasses = useCommonStyles(props);
 
   const [state, setState] = React.useState({
     anchorEl: null,
@@ -212,21 +215,66 @@ function SideNav(props) {
           <Divider className={classes.menuDividerStyle} />
           <div>
             <h3>Network</h3>
-            <h4>Certificate Path</h4>
+            <h4>
+              Certificate Path &nbsp;
+              <Tooltip2
+                popoverClassName={clsx(
+                  classes.toolTipStyle,
+                  commonClasses.displayInlineBlock,
+                )}
+                content={
+                  <span className={classes.toolTipTextStyle}>
+                    Add path to pkcs12 file here e.g.
+                    /etc/nginx/ssl/localhost.p12
+                  </span>
+                }
+                placement="right"
+                usePortal={false}
+                openOnTargetFocus={false}
+              >
+                <Icon icon="help" iconSize={20} className={classes.iconStyle} />
+              </Tooltip2>
+            </h4>
             <input
               type="text"
               id="cert_path"
-              placeholder="path to pkcs12 file here..."
-              defaultValue={values['cert_path']}
+              placeholder={
+                values['cert_path_up_to_date']
+                  ? 'field is up to date'
+                  : 'path to pkcs12 file here...'
+              }
+              defaultValue=""
               onChange={e => handleSetState(handleOnChange(e, values))}
               onBlur={e => handleSetState(handleOnChange(e, values))}
             />
-            <h4>Certificate Passphrase</h4>
+            <h4>
+              Certificate Passphrase &nbsp;
+              <Tooltip2
+                popoverClassName={clsx(
+                  classes.toolTipStyle,
+                  commonClasses.displayInlineBlock,
+                )}
+                content={
+                  <span className={classes.toolTipTextStyle}>
+                    Provide the passphrase for the submitted pkcs12 file
+                  </span>
+                }
+                placement="right"
+                usePortal={false}
+                openOnTargetFocus={false}
+              >
+                <Icon icon="help" iconSize={20} className={classes.iconStyle} />
+              </Tooltip2>
+            </h4>
             <input
               type="password"
               id="cert_passphrase"
-              placeholder="passphrase here..."
-              defaultValue={values['cert_passphrase']}
+              placeholder={
+                values['cert_passphrase_up_to_date']
+                  ? 'field is up to date'
+                  : 'passphrase here...'
+              }
+              defaultValue=""
               onChange={e => handleSetState(handleOnChange(e, values))}
               onBlur={e => handleSetState(handleOnChange(e, values))}
             />
