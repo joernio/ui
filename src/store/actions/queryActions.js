@@ -56,6 +56,15 @@ export const resetScriptsQueue = payload => {
   };
 };
 
+export const setQueryShortcut = payload => {
+  return dispatch => {
+    return dispatch({
+      type: 'SET_QUERY_SHORTCUT',
+      payload,
+    });
+  };
+};
+
 export const enQueueQuery = query => {
   return dispatch => {
     const { queue } = store.getState().query;

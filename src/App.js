@@ -49,10 +49,11 @@ function App(props) {
           <Window />
         </WindowWrapper>
       </ThemeProvider>
-      <Toaster />
       <QueryProcessor />
       <WorkspaceProcessor />
       <FilesProcessor />
+      <Toaster />
+      <QueryShortcutDialog />
     </div>
   );
 }
