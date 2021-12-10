@@ -46,7 +46,7 @@ function SideNav(props) {
   return (
     <div data-test="side-nav">
       <div className={clsx(classes.rootStyle, 'side-nav')}>
-        <div>
+        <div className={classes.topIconsContainerStyle}>
           <Tooltip2
             popoverClassName={classes.toolTipStyle}
             content={<span className={classes.toolTipTextStyle}>explorer</span>}
@@ -72,7 +72,7 @@ function SideNav(props) {
             openOnTargetFocus={false}
           >
             <Icon
-              icon="nest"
+              icon="key-enter"
               iconSize={25}
               className={clsx(classes.iconStyle, classes.shortcutsIconStyle)}
               onClick={openShortcutsPage}

@@ -2,7 +2,7 @@ export const default_state = {
   results: {},
   queue: {},
   scriptsQueue: {},
-  queryShortcuts: {},
+  queryShortcut: {},
 };
 
 const query = (state = default_state, action) => {
@@ -12,7 +12,7 @@ const query = (state = default_state, action) => {
         queue: state.queue,
         results: { ...state.results, ...action.payload },
         scriptsQueue: state.scriptsQueue,
-        queryShortcuts: state.queryShortcuts,
+        queryShortcut: state.queryShortcut,
       };
 
     case 'SET_QUEUE':
@@ -20,7 +20,7 @@ const query = (state = default_state, action) => {
         results: state.results,
         queue: { ...state.queue, ...action.payload },
         scriptsQueue: state.scriptsQueue,
-        queryShortcuts: state.queryShortcuts,
+        queryShortcut: state.queryShortcut,
       };
 
     case 'RESET_QUEUE':
@@ -28,7 +28,7 @@ const query = (state = default_state, action) => {
         results: state.results,
         queue: action.payload,
         scriptsQueue: state.scriptsQueue,
-        queryShortcuts: state.queryShortcuts,
+        queryShortcut: state.queryShortcut,
       };
 
     case 'SET_SCRIPTS_QUEUE':
@@ -36,7 +36,7 @@ const query = (state = default_state, action) => {
         results: state.results,
         queue: state.queue,
         scriptsQueue: { ...state.scriptsQueue, ...action.payload },
-        queryShortcuts: state.queryShortcuts,
+        queryShortcut: state.queryShortcut,
       };
 
     case 'RESET_SCRIPTS_QUEUE':
@@ -44,15 +44,15 @@ const query = (state = default_state, action) => {
         results: state.results,
         queue: state.queue,
         scriptsQueue: action.payload,
-        queryShortcuts: state.queryShortcuts,
+        queryShortcut: state.queryShortcut,
       };
 
-    case 'SET_QUERY_SHORTCUTS':
+    case 'SET_QUERY_SHORTCUT':
       return {
         results: state.results,
         queue: state.queue,
         scriptsQueue: state.scriptsQueue,
-        queryShortcuts: { ...state.queryShortcuts, ...action.payload },
+        queryShortcut: { ...action.payload },
       };
 
     default:

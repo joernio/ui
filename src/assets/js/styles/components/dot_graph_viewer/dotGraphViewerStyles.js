@@ -22,9 +22,6 @@ const styles = theme => ({
         props.settings.prefersDarkMode ? 'dark' : 'light'
       ],
     '& > div': {
-      // fill: props => theme.palette.editor.background[
-      //         props.settings.prefersDarkMode ? 'light' : 'dark'
-      //       ],
       stroke: props =>
         theme.palette.editor.background[
           props.settings.prefersDarkMode ? 'light' : 'dark'
