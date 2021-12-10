@@ -8,6 +8,7 @@ import { ContextMenu2, Popover2 } from '@blueprintjs/popover2';
 import { Menu, MenuDivider, MenuItem } from '@blueprintjs/core';
 import QueriesStats from '../components/queries_stats/QueriesStats';
 import DiscardDialog from '../components/discard_dialog/DiscardDialog';
+import QueryShortcutWithArgsDialog from '../components/query_shortcut_with_args_dialog/QueryShortcutWithArgsDialog';
 import { windowInfoApi, windowActionApi } from '../assets/js/utils/ipcRenderer';
 import styles from '../assets/js/styles/views/windowWrapperStyles';
 import {
@@ -281,6 +282,7 @@ function WindowWrapper(props) {
         openDiscardDialog={openDiscardDialog}
         callback={discardDialogCallback}
       />
+      <QueryShortcutWithArgsDialog />
     </div>
   );
 }

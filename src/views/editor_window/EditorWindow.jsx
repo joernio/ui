@@ -51,11 +51,6 @@ function EditorWindow(props) {
       : 16,
   };
 
-  console.log(
-    'dksldkslkdlsdlksk: ',
-    syntheticFiles.includes(files.openFilePath),
-  );
-
   return (
     <div
       className={clsx(

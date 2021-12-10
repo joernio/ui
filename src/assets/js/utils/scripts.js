@@ -18,6 +18,7 @@ import {
   resetQueue,
   enQueueQuery,
   deQueueScriptsQuery,
+  setQueryShortcut,
 } from '../../../store/actions/queryActions';
 import { setToast } from '../../../store/actions/statusActions';
 import { setFiles, setOpenFiles } from '../../../store/actions/filesActions';
@@ -977,6 +978,20 @@ export const debounce = (callback, args, delay) => {
   };
 };
 
+export const debounceLeading = (callback, timeout = 300) => {
+  let timer;
+  return function (...args) {
+    const context = this;
+    if (!timer) {
+      callback.apply(context, args);
+    }
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      timer = undefined;
+    }, timeout);
+  };
+};
+
 export const throttle = (callback, limit) => {
   let inThrottle;
   return function (args) {
@@ -1005,7 +1020,7 @@ export const initResize = (resizeHandle, type, resizeHandler) => {
   }
 
   function resize(e) {
-    throttle(doResize, 25)([e]);
+    debounceLeading(doResize, 100)(e);
   }
 
   function doResize(e) {
@@ -1190,30 +1205,34 @@ export const handleAPIQueryError = err => {
   store.dispatch(resetQueue({}));
 };
 
-export const registerQueryShortcut = keybinding => {
-  Mousetrap.bindGlobal([keybinding], function () {
-    const shortcutObj = store.getState().settings.queryShortcuts[keybinding];
+export const handleShortcut = shortcutObj => {
+  if (shortcutObj.query.includes('\\0')) {
+    store.dispatch(setQueryShortcut(shortcutObj));
+  } else if (shortcutObj.behaviour === 'paste to terminal') {
+    const { term, refs } = store.getState().terminal;
+    const { busy } = store.getState().terminal;
+    !busy && handlePrintable(term, refs, { key: shortcutObj.query });
+    busy &&
+      handleSetToast({
+        icon: 'warning-sign',
+        intent: 'primary',
+        message:
+          "Can't paste to terminal because the terminal is busy. You can either wait for the terminal to be done with previous task or change the behaviour of the shortcut and try again later",
+      });
+  } else if (shortcutObj.behaviour === 'run as soon as possible') {
+    const query = {
+      query: shortcutObj.query,
+      origin: 'workspace',
+      ignore: shortcutObj.background,
+    };
+    store.dispatch(enQueueQuery(query));
+  }
+};
 
-    if (shortcutObj.behaviour === 'paste to terminal') {
-      const { term, refs } = store.getState().terminal;
-      const { busy } = store.getState().terminal;
-      !busy && handlePrintable(term, refs, { key: shortcutObj.query });
-      busy &&
-        handleSetToast({
-          icon: 'warning-sign',
-          intent: 'primary',
-          message:
-            "Can't paste to terminal because the terminal is busy. You can either wait for the terminal to be done with previous task or change the behaviour of the shortcut and try again later",
-        });
-    } else if (shortcutObj.behaviour === 'run as soon as possible') {
-      const query = {
-        query: shortcutObj.query,
-        origin: 'workspace',
-        ignore: shortcutObj.background,
-      };
-      store.dispatch(enQueueQuery(query));
-    }
-  });
+export const registerQueryShortcut = keybinding => {
+  const shortcutObj = store.getState().settings.queryShortcuts[keybinding];
+  const callback = debounceLeading(handleShortcut, 1000);
+  Mousetrap.bindGlobal([keybinding], () => callback(shortcutObj));
 };
 
 export const unRegisterQueryShortcut = keybinding => {
@@ -1223,12 +1242,16 @@ export const unRegisterQueryShortcut = keybinding => {
 export const initShortcuts = () => {
   const { queryShortcuts } = store.getState().settings;
 
-  Mousetrap.bindGlobal(['command+s', 'ctrl+s'], function () {
+  const handleSaveFileShortcut = () => {
     saveFile(
       store.getState().files.openFilePath,
       store.getState().settings.scriptsDir,
     );
-  });
+  };
+
+  const callback = debounceLeading(handleSaveFileShortcut, 1000);
+
+  Mousetrap.bindGlobal(['command+s', 'ctrl+s'], callback);
 
   Object.keys(queryShortcuts).map(keybinding => {
     registerQueryShortcut(keybinding);

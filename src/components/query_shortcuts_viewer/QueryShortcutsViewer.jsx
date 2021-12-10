@@ -15,8 +15,8 @@ import {
   buildPropertyColumns,
   deleteQueryShorcut,
   handleOnKeyDown,
-  openQueryShortcutDialog,
-  closeQueryShortcutDialog,
+  openDialog,
+  closeDialog,
   resizeHandler,
   parseKeyBinding,
   clearKeybindingInput,
@@ -37,52 +37,12 @@ function QueryShortcutsViewer(props) {
     backgroundColumnResizerEl: React.useRef(null),
   };
   const [state, setState] = React.useState({
-    isQueryShortcutDialogOpen: false,
+    dialogOpen: false,
     values: {},
-    queries: [
-      // 'Queries',
-      // 'workspace',
-      // 'project',
-      // 'project',
-      // 'project',
-      // 'project',
-      // 'project',
-      // 'project',
-      // 'project',
-    ],
-    keybindings: [
-      // 'Keybindings',
-      // 'ctr+i',
-      // 'ctrl+l+z',
-      // 'ctrl+l+z',
-      // 'ctrl+l+z',
-      // 'ctrl+l+z',
-      // 'ctrl+l+z',
-      // 'ctrl+l+z',
-      // 'ctrl+l+z',
-    ],
-    behaviours: [
-      // 'Behaviours',
-      // 'run as soon as possible',
-      // 'paste to terminal',
-      // 'paste to terminal',
-      // 'paste to terminal',
-      // 'paste to terminal',
-      // 'paste to terminal',
-      // 'paste to terminal',
-      // 'paste to terminal',
-    ],
-    backgrounds: [
-      // 'Backgrounds',
-      // false,
-      // false,
-      // false,
-      // false,
-      // false,
-      // false,
-      // false,
-      // false,
-    ],
+    queries: [],
+    keybindings: [],
+    behaviours: [],
+    backgrounds: [],
     queryColumnWidth: 40,
     keybindingColumnWidth: 25,
     behaviourColumnWidth: 20,
@@ -132,77 +92,76 @@ function QueryShortcutsViewer(props) {
     }
   }, [props.settings.queryShortcuts, refs.searchQueryShortcutsEl.current]);
 
-  React.useEffect(() => {
-    if (refs.backgroundColumnResizerEl.current) {
-      const keybindingColumnResizeCallback = initResize(
-        refs.keybindingColumnResizerEl.current,
-        'col',
-        (_, diff) => {
-          handleSetState(
-            resizeHandler(
-              diff,
-              'keybindingColumnWidth',
-              refs.keybindingColumnResizerEl.current,
-              state,
-            ),
-          );
-        },
-      );
+  // React.useEffect(() => {
+  //   if (refs.backgroundColumnResizerEl.current) {
+  //     const keybindingColumnResizeCallback = initResize(
+  //       refs.keybindingColumnResizerEl.current,
+  //       'col',
+  //       (_, diff) => {
+  //         handleSetState(
+  //           resizeHandler(
+  //             diff,
+  //             'keybindingColumnWidth',
+  //             refs.keybindingColumnResizerEl.current,
+  //             state,
+  //           ),
+  //         );
+  //       },
+  //     );
 
-      const behaviourColumnResizeCallback = initResize(
-        refs.behaviourColumnResizerEl.current,
-        'col',
-        (_, diff) => {
-          handleSetState(
-            resizeHandler(
-              diff,
-              'behaviourColumnWidth',
-              refs.behaviourColumnResizerEl.current,
-              state,
-            ),
-          );
-        },
-      );
+  //     const behaviourColumnResizeCallback = initResize(
+  //       refs.behaviourColumnResizerEl.current,
+  //       'col',
+  //       (_, diff) => {
+  //         handleSetState(
+  //           resizeHandler(
+  //             diff,
+  //             'behaviourColumnWidth',
+  //             refs.behaviourColumnResizerEl.current,
+  //             state,
+  //           ),
+  //         );
+  //       },
+  //     );
 
-      const backgroundColumnResizeCallback = initResize(
-        refs.backgroundColumnResizerEl.current,
-        'col',
-        (_, diff) => {
-          handleSetState(
-            resizeHandler(
-              diff,
-              'backgroundColumnWidth',
-              refs.backgroundColumnResizerEl.current,
-              state,
-            ),
-          );
-        },
-      );
+  //     const backgroundColumnResizeCallback = initResize(
+  //       refs.backgroundColumnResizerEl.current,
+  //       'col',
+  //       (_, diff) => {
+  //         handleSetState(
+  //           resizeHandler(
+  //             diff,
+  //             'backgroundColumnWidth',
+  //             refs.backgroundColumnResizerEl.current,
+  //             state,
+  //           ),
+  //         );
+  //       },
+  //     );
 
-      return () => {
-        refs.keybindingColumnResizerEl.current &&
-          refs.keybindingColumnResizerEl.current.removeEventListener(
-            'mousedown',
-            keybindingColumnResizeCallback,
-          );
-        refs.behaviourColumnResizerEl.current &&
-          refs.behaviourColumnResizerEl.current.removeEventListener(
-            'mousedown',
-            behaviourColumnResizeCallback,
-          );
-        refs.backgroundColumnResizerEl.current &&
-          refs.backgroundColumnResizerEl.current.removeEventListener(
-            'mousedown',
-            backgroundColumnResizeCallback,
-          );
-      };
-    }
-  }, [refs.backgroundColumnResizerEl.current, state]);
+  //     return () => {
+  //       refs.keybindingColumnResizerEl.current &&
+  //         refs.keybindingColumnResizerEl.current.removeEventListener(
+  //           'mousedown',
+  //           keybindingColumnResizeCallback,
+  //         );
+  //       refs.behaviourColumnResizerEl.current &&
+  //         refs.behaviourColumnResizerEl.current.removeEventListener(
+  //           'mousedown',
+  //           behaviourColumnResizeCallback,
+  //         );
+  //       refs.backgroundColumnResizerEl.current &&
+  //         refs.backgroundColumnResizerEl.current.removeEventListener(
+  //           'mousedown',
+  //           backgroundColumnResizeCallback,
+  //         );
+  //     };
+  //   }
+  // }, [refs.backgroundColumnResizerEl.current, state]);
 
   const handleSetState = obj => {
     if (obj) {
       Promise.resolve(obj).then(obj => {
-        console.log('inside handleSetState obj is: ', obj);
         setState(state => ({ ...state, ...obj }));
       });
     }
@@ -217,7 +176,7 @@ function QueryShortcutsViewer(props) {
     keybindingColumnWidth,
     behaviourColumnWidth,
     backgroundColumnWidth,
-    isQueryShortcutDialogOpen,
+    dialogOpen,
     values,
   } = state;
 
@@ -234,9 +193,7 @@ function QueryShortcutsViewer(props) {
       />
       <div
         className={classes.addShortcutStyle}
-        onClick={() =>
-          handleSetState(openQueryShortcutDialog(null, queryShortcuts))
-        }
+        onClick={() => handleSetState(openDialog(null, queryShortcuts))}
       >
         <Icon icon="plus" className={classes.iconStyle} />
       </div>
@@ -281,7 +238,7 @@ function QueryShortcutsViewer(props) {
                       icon="trash"
                       className={classes.iconStyle}
                       onClick={() =>
-                        props.setQueryShortcut(
+                        props.setQueryShortcuts(
                           deleteQueryShorcut(
                             keybindings[index],
                             queryShortcuts,
@@ -297,10 +254,7 @@ function QueryShortcutsViewer(props) {
                       )}
                       onClick={() =>
                         handleSetState(
-                          openQueryShortcutDialog(
-                            keybindings[index],
-                            queryShortcuts,
-                          ),
+                          openDialog(keybindings[index], queryShortcuts),
                         )
                       }
                     />
@@ -320,7 +274,7 @@ function QueryShortcutsViewer(props) {
                       icon="trash"
                       className={classes.iconStyle}
                       onClick={() =>
-                        props.setQueryShortcut(
+                        props.setQueryShortcuts(
                           deleteQueryShorcut(
                             keybindings[index],
                             queryShortcuts,
@@ -336,10 +290,7 @@ function QueryShortcutsViewer(props) {
                       )}
                       onClick={() =>
                         handleSetState(
-                          openQueryShortcutDialog(
-                            keybindings[index],
-                            queryShortcuts,
-                          ),
+                          openDialog(keybindings[index], queryShortcuts),
                         )
                       }
                     />
@@ -520,18 +471,18 @@ function QueryShortcutsViewer(props) {
       </div>
 
       <Dialog
-        portalClassName={classes.queryShortcutDialogStyle}
+        portalClassName={classes.queryShortcutCreationDialogStyle}
         autoFocus={true}
         canEscapeKeyClose={false}
         canOutsideClickClose={true}
         enforceFocus={true}
-        isOpen={isQueryShortcutDialogOpen}
+        isOpen={dialogOpen}
         title="New Query Shortcut"
         isCloseButtonShown={false}
-        onClose={() => handleSetState(closeQueryShortcutDialog())}
+        onClose={() => handleSetState(closeDialog())}
         usePortal={true}
       >
-        <div className={classes.queryShortcutDialogContentStyle}>
+        <div className={classes.queryShortcutCreationDialogContentStyle}>
           <div id="shortcut-dialog-content">
             <h4>Query</h4>
             <input
@@ -555,7 +506,7 @@ function QueryShortcutsViewer(props) {
               />
               <Icon
                 icon="cross"
-                // onClick={e => handleSetState(clearKeybindingInput(e, values))}
+                onClick={e => handleSetState(clearKeybindingInput(e, values))}
               />
             </div>
             {/* /> */}
@@ -583,69 +534,11 @@ function QueryShortcutsViewer(props) {
               defaultChecked={values['background']}
               onChange={e => handleSetState(handleOnKeyDown(e, values))}
             />
-            {/* <input
-              type="text"
-              id="server_password"
-              placeholder="auth password here.."
-              defaultValue={values['server_password']}
-              onKeyDown={e => handleSetState(handleOnKeyDown(e, values))}
-            /> */}
           </div>
-
-          {/* <div>
-            <h3>GUI</h3>
-            <h4>Dark Theme</h4>
-            <Switch
-              className={classes.switchStyle}
-              innerLabelChecked="on"
-              id="prefers_dark_mode"
-              innerLabel="off"
-              defaultChecked={values['prefers_dark_mode']}
-              onKeyDown={e => handleSetState(handleOnKeyDown(e, values))}
-            />
-
-            <h4>Prefers Terminal View</h4>
-            <Switch
-              className={classes.switchStyle}
-              innerLabelChecked="on"
-              id="prefers_terminal_view"
-              innerLabel="off"
-              defaultChecked={values['prefers_terminal_view']}
-              onKeyDown={e => handleSetState(handleOnKeyDown(e, values))}
-            />
-
-            <h4>Font Size</h4>
-            <input
-              type="number"
-              id="font_size"
-              defaultValue={values['font_size']}
-              onKeyDown={e => handleSetState(handleOnKeyDown(e, values))}
-            />
-
-            <h4>Default Scripts Directory</h4>
-            <input
-              type="text"
-              id="scripts_dir"
-              placeholder="/home/........"
-              defaultValue={values['scripts_dir']}
-              onKeyDown={e => handleSetState(handleOnKeyDown(e, values))}
-            />
-
-            <h4>CPG UI Ignore</h4>
-            <input
-              type="text"
-              id="ui_ignore"
-              placeholder="node_modules, .git, build....."
-              defaultValue={values['ui_ignore']}
-              onKeyDown={e => handleSetState(handleOnKeyDown(e, values))}
-            />
-          </div> */}
         </div>
         <Divider className={classes.menuDividerStyle} />
         <div className={classes.submitSectionStyle}>
-          <h3 onClick={() => handleSetState(closeQueryShortcutDialog())}>
-            Cancel
-          </h3>
+          <h3 onClick={() => handleSetState(closeDialog())}>Cancel</h3>
           <h3
             className="save"
             onClick={() =>
@@ -658,40 +551,6 @@ function QueryShortcutsViewer(props) {
           </h3>
         </div>
       </Dialog>
-
-      {/* <Dialog
-        // portalClassName={classes.settingsDialogStyle}
-        autoFocus={true}
-        canEscapeKeyClose={true}
-        canOutsideClickClose={true}
-        enforceFocus={true}
-        isOpen={state.isShortcutDialogOpen}
-        title="New Shortcut"
-        isCloseButtonShown={false}
-        onClose={() => handleSetState({ isShortcutDialogOpen: false })}
-        usePortal={true}
-      >
-        <div ref={refs.shortcutDialogEl}>
-          <input type="text" placeholder="query" />
-          <input type="text" placeholder="keybinding" />
-          <input type="select" placeholder="behaviour" />
-          <input type="select" placeholder="background" />
-        </div>
-        <h3 onClick={() => handleSetState({ isShortcutDialogOpen: false })}>
-          Cancel
-        </h3>
-        <h3
-          className="save"
-          onClick={() => {
-            props.setQueryShortcut(
-              collectShortcutDialogValues(refs.shortcutDialogEl.current),
-            );
-            handleSetState({ isShortcutDialogOpen: false });
-          }}
-        >
-          Save
-        </h3>
-      </Dialog> */}
     </div>
   );
 }
@@ -705,8 +564,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    setQueryShortcut: shortcut => {
-      return dispatch(settingsActions.setQueryShortcut(shortcut));
+    setQueryShortcuts: shortcut => {
+      return dispatch(settingsActions.setQueryShortcuts(shortcut));
     },
   };
 };

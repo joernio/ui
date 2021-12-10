@@ -41,15 +41,14 @@ export const collectQueryShortcutValues = values => {
       background: values.background,
     },
   };
-  console.log('shortcutobj collected: ', shortcut);
   return shortcut;
 };
 
 export const handleSaveQueryShortcut = (values, queryShortcuts, props) => {
   if (collectQueryShortcutValues(values)) {
-    props.setQueryShortcut(deleteQueryShorcut(null, queryShortcuts));
-    props.setQueryShortcut(collectQueryShortcutValues(values));
-    return closeQueryShortcutDialog();
+    props.setQueryShortcuts(deleteQueryShorcut(null, queryShortcuts));
+    props.setQueryShortcuts(collectQueryShortcutValues(values));
+    return closeDialog();
   }
 };
 
@@ -68,7 +67,6 @@ export const handleOnKeyDown = (e, values) => {
   if (e.target.id === 'background') {
     values[e.target.id] = e.target.checked;
   } else if (e.target.id === 'keybinding') {
-    console.log('e: ', e);
     e.preventDefault();
     if (
       e.key.toLowerCase() === 'control' ||
@@ -76,7 +74,6 @@ export const handleOnKeyDown = (e, values) => {
       e.key.toLowerCase() === 'alt'
     )
       return;
-    console.log('e again: ', e);
     let str = '';
     if (e.ctrlKey) str += 'ctrl+';
     if (e.shiftKey) str += 'shift+';
@@ -101,17 +98,7 @@ export const handleOnKeyDown = (e, values) => {
     }
   }
 
-  console.log('container.children: ', container.children);
-
   for (let child of container.children) {
-    console.log(
-      'first for loop, child is: ',
-      child,
-      'nodename: ',
-      child.nodeName,
-      'children: ',
-      child.children,
-    );
     if (child.id === 'background') {
       background = child;
     } else if (
@@ -122,10 +109,7 @@ export const handleOnKeyDown = (e, values) => {
     }
   }
 
-  console.log('background: ', background);
-
   for (let child of container.children) {
-    console.log('second for loop, child is: ', child);
     if (child.id === 'behaviour' && child.value === 'paste to terminal') {
       background.checked = false;
       background.disabled = true;
@@ -136,6 +120,7 @@ export const handleOnKeyDown = (e, values) => {
       child.children[0].value === 'paste to terminal'
     ) {
       background.checked = false;
+      values.background = false;
       background.disabled = true;
       pasteToTerminal = true;
     }
@@ -146,10 +131,8 @@ export const handleOnKeyDown = (e, values) => {
   return { values };
 };
 
-export const openQueryShortcutDialog = (key, queryShortcuts) => {
+export const openDialog = (key, queryShortcuts) => {
   const queryShortcut = queryShortcuts[key];
-
-  console.log('queryShortcut: ', queryShortcut, ' key: ', key);
 
   const values = {
     query: queryShortcut?.query ? queryShortcut?.query : '',
@@ -162,13 +145,13 @@ export const openQueryShortcutDialog = (key, queryShortcuts) => {
 
   vars.currentDialogKeyBinding = key;
 
-  return { values, isQueryShortcutDialogOpen: true };
+  return { values, dialogOpen: true };
 };
 
-export const closeQueryShortcutDialog = () => {
+export const closeDialog = () => {
   const values = {};
   vars.currentDialogKeyBinding = '';
-  return { values, isQueryShortcutDialogOpen: false };
+  return { values, dialogOpen: false };
 };
 
 export const buildPropertyColumns = (searchString, queryShortcuts) => {
@@ -202,102 +185,101 @@ export const buildPropertyColumns = (searchString, queryShortcuts) => {
       behaviours,
       backgrounds,
     };
-    console.log('buildPropertyColumns: ', result);
     return result;
   } else {
     return {};
   }
 };
 
-export const resizeHandler = (
-  diff,
-  key,
-  el,
-  {
-    queryColumnWidth,
-    keybindingColumnWidth,
-    behaviourColumnWidth,
-    backgroundColumnWidth,
-  },
-) => {
-  const total = {
-    queryColumnWidth,
-    keybindingColumnWidth,
-    behaviourColumnWidth,
-    backgroundColumnWidth,
-  };
-  const { width: columnWidth } = el.parentElement.getBoundingClientRect();
-  const { width: containerWidth } =
-    el.parentElement.parentElement.getBoundingClientRect();
-  const percentageValue = ((columnWidth - diff) / containerWidth) * 100;
-  const percentageDiff = (diff / containerWidth) * 100;
-  const otherColumnsOfInterest = [];
-  const entries = Object.entries(total);
+// export const resizeHandler = (
+//   diff,
+//   key,
+//   el,
+//   {
+//     queryColumnWidth,
+//     keybindingColumnWidth,
+//     behaviourColumnWidth,
+//     backgroundColumnWidth,
+//   },
+// ) => {
+//   const total = {
+//     queryColumnWidth,
+//     keybindingColumnWidth,
+//     behaviourColumnWidth,
+//     backgroundColumnWidth,
+//   };
+//   const { width: columnWidth } = el.parentElement.getBoundingClientRect();
+//   const { width: containerWidth } =
+//     el.parentElement.parentElement.getBoundingClientRect();
+//   const percentageValue = ((columnWidth - diff) / containerWidth) * 100;
+//   const percentageDiff = (diff / containerWidth) * 100;
+//   const otherColumnsOfInterest = [];
+//   const entries = Object.entries(total);
 
-  console.log(
-    ' diff: ',
-    diff,
-    ' key: ',
-    key,
-    ' containerWidth: ',
-    containerWidth,
-    ' columnWidth: ',
-    columnWidth,
-    '  percentageValue: ',
-    percentageValue,
-    '  percentageDiff: ',
-    percentageDiff,
-    ' entries: ',
-    entries,
-  );
+//   console.log(
+//     ' diff: ',
+//     diff,
+//     ' key: ',
+//     key,
+//     ' containerWidth: ',
+//     containerWidth,
+//     ' columnWidth: ',
+//     columnWidth,
+//     '  percentageValue: ',
+//     percentageValue,
+//     '  percentageDiff: ',
+//     percentageDiff,
+//     ' entries: ',
+//     entries,
+//   );
 
-  if (diff < 0) {
-    for (let entry of entries) {
-      if (entry[0] === key) break;
-      otherColumnsOfInterest.unshift(entry);
-    }
-  } else if (diff > 0) {
-    const key_entry = entries.filter(entry => entry[0] === key);
-    for (let entry of entries) {
-      if (entries.indexOf(entry) > entries.indexOf(key_entry)) {
-        otherColumnsOfInterest.push(entry);
-      }
-    }
-  } else if (diff === 0) return {};
+//   if (diff < 0) {
+//     for (let entry of entries) {
+//       if (entry[0] === key) break;
+//       otherColumnsOfInterest.unshift(entry);
+//     }
+//   } else if (diff > 0) {
+//     const key_entry = entries.filter(entry => entry[0] === key);
+//     for (let entry of entries) {
+//       if (entries.indexOf(entry) > entries.indexOf(key_entry)) {
+//         otherColumnsOfInterest.push(entry);
+//       }
+//     }
+//   } else if (diff === 0) return {};
 
-  console.log('otherColumns: ', JSON.stringify(otherColumnsOfInterest));
+//   console.log('otherColumns: ', JSON.stringify(otherColumnsOfInterest));
 
-  const copy = [...otherColumnsOfInterest];
+//   const copy = [...otherColumnsOfInterest];
 
-  for (let index = 0; index < otherColumnsOfInterest.length; index++) {
-    console.log(
-      'inside the for loop: ',
-      otherColumnsOfInterest[index],
-      ' percentage caculation: ',
-      (otherColumnsOfInterest[index][1] * containerWidth) / 100,
-    );
-    if ((otherColumnsOfInterest[index][1] * containerWidth) / 100 > 100) {
-      const entry_key = otherColumnsOfInterest[index][0];
-      const entry_value = otherColumnsOfInterest[index][1] + percentageDiff;
-      otherColumnsOfInterest[index] = [entry_key, entry_value];
-      break;
-    }
-  }
+//   for (let index = 0; index < otherColumnsOfInterest.length; index++) {
+//     console.log(
+//       'inside the for loop: ',
+//       otherColumnsOfInterest[index],
+//       ' percentage caculation: ',
+//       (otherColumnsOfInterest[index][1] * containerWidth) / 100,
+//     );
+//     if ((otherColumnsOfInterest[index][1] * containerWidth) / 100 > 100) {
+//       const entry_key = otherColumnsOfInterest[index][0];
+//       const entry_value = otherColumnsOfInterest[index][1] + percentageDiff;
+//       otherColumnsOfInterest[index] = [entry_key, entry_value];
+//       break;
+//     }
+//   }
 
-  if (JSON.stringify(otherColumnsOfInterest) === JSON.stringify(copy))
-    return {};
+//   if (JSON.stringify(otherColumnsOfInterest) === JSON.stringify(copy))
+//     return {};
 
-  otherColumnsOfInterest.push([key, percentageValue]);
+//   otherColumnsOfInterest.push([key, percentageValue]);
 
-  const temp = { ...total, ...Object.fromEntries(otherColumnsOfInterest) };
-  console.log('result is ', JSON.stringify(temp));
-  console.log(
-    'total width: ',
-    Object.values(temp).reduce((a, b) => a + b),
-    '%',
-  );
-  return temp;
-};
+//   const temp = { ...total, ...Object.fromEntries(otherColumnsOfInterest) };
+//   console.log('result is ', JSON.stringify(temp));
+//   console.log(
+//     'total width: ',
+//     Object.values(temp).reduce((a, b) => a + b),
+//     '%',
+//   );
+//   return temp;
+// };
 
 export const moveCursorToEnd = (el, len) => {
   el.focus();
@@ -335,9 +317,8 @@ export const parseKeyBinding = keybinding => {
 };
 
 export const clearKeybindingInput = (e, values) => {
-  console.log('clearKeybindingInput e: ', e);
   e.target.parentElement.parentElement.children[0].value = '';
-  //  e.target.parentElement.parentElement.parentElement.children[0].value = "";//hack to make sure the input field is cleared
+  e.target.parentElement.parentElement.parentElement.children[0].value = ''; //hack to make sure the input field is cleared
   values['keybinding'] = '';
   return values;
 };

@@ -7,8 +7,7 @@ export const setSettings = setting => {
   };
 };
 
-export const setQueryShortcut = payload => {
-  console.log('setQueryShortcut action: payload is ', payload);
+export const setQueryShortcuts = payload => {
   return dispatch => {
     return dispatch({
       type: 'SET_QUERY_SHORTCUTS',

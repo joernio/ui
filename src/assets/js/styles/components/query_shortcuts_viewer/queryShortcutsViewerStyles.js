@@ -52,8 +52,6 @@ const styles = theme => ({
       color: theme.palette.button.base.dark,
     },
     cursor: 'pointer',
-    // margin: '0.3em 0.3em 0.3em 0.3em',
-    // padding: '0.5em 0.5em 0.5em 0.7em',
   },
 
   shortcutQueriesListStyle: {
@@ -119,7 +117,6 @@ const styles = theme => ({
     height: '95%',
     width: '5px',
     cursor: 'col-resize',
-    // right: '-5px',
     left: 0,
     borderLeftWidth: '2px',
     '&:hover': {
@@ -149,12 +146,6 @@ const styles = theme => ({
         props.settings.prefersDarkMode ? 'dark' : 'light'
       ],
   },
-  // iconStyle: {
-  //     color: props =>
-  //       props.settings.prefersDarkMode
-  //         ? theme.palette.sideNav.hover.dark
-  //         : theme.palette.sideNav.background.light
-  // },
   iconStyle: {
     color: props =>
       theme.palette.sideNav.base[
@@ -180,7 +171,7 @@ const styles = theme => ({
     display: 'flex',
     alignItems: 'center',
   },
-  queryShortcutDialogStyle: {
+  queryShortcutCreationDialogStyle: {
     '& > div > div:nth-child(1)': {
       backgroundColor: 'rgba(0, 0, 0, 0)',
     },
@@ -229,7 +220,7 @@ const styles = theme => ({
       },
     },
   },
-  queryShortcutDialogContentStyle: {
+  queryShortcutCreationDialogContentStyle: {
     margin: ' 1em',
     backgroundColor: props =>
       theme.palette.menu.background[
@@ -341,8 +332,6 @@ const styles = theme => ({
       },
     },
     '& span': {
-      // color: props =>
-      // props.settings.prefersDarkMode ? '#C3CCCC' : '#616161',
       color: props =>
         theme.palette.sideNav.base[
           props.settings.prefersDarkMode ? 'dark' : 'light'

@@ -1,52 +1,33 @@
 import React from 'react';
-import clsx from 'clsx';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import * as queryActions from '../../store/actions/queryActions';
-import { Icon } from '@blueprintjs/core';
-import { Dialog, Divider, MenuDivider } from '@blueprintjs/core';
-import { Popover2 } from '@blueprintjs/popover2';
+import { Dialog } from '@blueprintjs/core';
 import styles from '../../assets/js/styles/components/cpg_scripts/cpgScriptsStyles';
 import {
-  handleScrollTop,
-  watchFolderPath,
-  openProjectExists,
-  discardDialogHandler,
-  openEmptyFile,
-} from '../../assets/js/utils/scripts';
-import {
-  //   chokidarVars,
-  //   getCpgScripts,
-  //   switchDefaultScriptsFolder,
-  //   handleToggleScriptsVisible,
-  //   organisedScriptsToScripts,
-  //   handleCPGScriptTagClick,
-  //   handleRun,
-  //   runSelected,
-  //   collectArgsValues,
-  toggleQueryShortcutDialog,
+  closeDialog,
   runQueryWithArgs,
-} from './queryShortcutDialogScripts';
+} from './queryShortcutWithArgsDialogScripts';
 
 const useStyles = makeStyles(styles);
 
-function QueryShortcutDialog(props) {
+function QueryShortcutWithArgsDialog(props) {
   const queryShortcutArgsContainerEl = React.useRef(null);
   const classes = useStyles(props);
   const [state, setState] = React.useState({
-    openDialog: false,
+    dialogOpen: false,
   });
 
   React.useEffect(() => {
     if (
-      props.query.QueryShortcutDialog &&
-      Object.keys(props.query.QueryShortcutDialog).length > 0
+      props.query.queryShortcut &&
+      Object.keys(props.query.queryShortcut).length > 0
     ) {
-      handleSetState({ openDialog: true });
+      handleSetState({ dialogOpen: true });
     } else {
-      handleSetState({ openDialog: false });
+      handleSetState({ dialogOpen: false });
     }
-  }, [props.query.QueryShortcutDialog]);
+  }, [props.query.queryShortcut]);
 
   const handleSetState = obj => {
     if (obj) {
@@ -55,64 +36,55 @@ function QueryShortcutDialog(props) {
       });
     }
   };
-  const { openDialog } = state;
-  return (
+  const { dialogOpen } = state;
+  const { queryShortcut } = props.query;
+  return Object.keys(queryShortcut).length > 0 ? (
     <Dialog
       portalClassName={classes.scriptsArgsDialogStyle}
       autoFocus={true}
       canEscapeKeyClose={true}
       canOutsideClickClose={true}
       enforceFocus={true}
-      isOpen={openDialog}
-      onClose={() => handleSetState(toggleQueryShortcutDialog(openDialog))}
+      isOpen={dialogOpen}
+      onClose={() => handleSetState(closeDialog())}
       usePortal={true}
     >
       <div
         className={classes.scriptsArgsDialogContentStyle}
         ref={queryShortcutArgsContainerEl}
       >
-        {dialogFields.map(script =>
-          script.mainFunctionArgs.length > 0 ? (
+        {queryShortcut.query.split('\\0').map((str, index) =>
+          index === 0 ? (
+            <div key={`${str}-${index}`}>
+              <h4>{str}</h4>
+            </div>
+          ) : (
             <>
-              <div>
-                <h3>{`${script.filename} > ${script.mainFunctionName} (`}</h3>
-                {script.mainFunctionArgs.map(arg => (
-                  <>
-                    <h4>{arg}</h4>
-                    <input
-                      type="text"
-                      id={`${script.filename.replaceAll('.', '-')}-${
-                        script.mainFunctionName
-                      }-${arg}`}
-                      placeholder={`......`}
-                    />
-                  </>
-                ))}
-                <h3>{`)`}</h3>
+              <div key={`${str}-${index}`}>
+                <input type="text" id={`arg-${index}`} placeholder={`......`} />
               </div>
-              <Divider className={classes.menuDividerStyle} />
+              <div>
+                <h4>{str}</h4>
+              </div>
             </>
-          ) : null,
+          ),
         )}
       </div>
       <div className={classes.runSectionStyle}>
-        <h3
-          onClick={() => handleSetState(toggleQueryShortcutDialog(openDialog))}
-        >
-          Cancel
-        </h3>
+        <h3 onClick={() => handleSetState(closeDialog())}>Cancel</h3>
         <h3
           className="run"
           onClick={() => {
-            runQueryWithArgs(refs.queryShortcutArgsContainerEl, props);
-            handleSetState(toggleQueryShortcutDialog(openDialog));
+            runQueryWithArgs(queryShortcutArgsContainerEl, props);
+            handleSetState(closeDialog());
+            props.setQueryShortcut({});
           }}
         >
           Run
         </h3>
       </div>
     </Dialog>
-  );
+  ) : null;
 }
 
 const mapStateToProps = state => {
@@ -124,16 +96,13 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    //   setSettings: values => {
-    //     return dispatch(settingsActions.setSettings(values));
-    //   },
-    //   enQueueScriptsQuery: query => {
-    //     return dispatch(queryActions.enQueueScriptsQuery(query));
-    //   },
+    setQueryShortcut: queryShortcut => {
+      return dispatch(queryActions.setQueryShortcut(queryShortcut));
+    },
   };
 };
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(QueryShortcutDialog);
+)(QueryShortcutWithArgsDialog);

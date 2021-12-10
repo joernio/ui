@@ -1,19 +1,22 @@
-import { stratify } from 'd3-hierarchy';
+import { debounceLeading, handleShortcut } from '../../assets/js/utils/scripts';
 
-export const toggleDialog = openDialog => ({ openDialog: !openDialog });
+const debouncedHandleShortcut = debounceLeading(handleShortcut, 1000);
+
+export const closeDialog = () => ({ dialogOpen: false });
 
 export const runQueryWithArgs = (el, props) => {
-  let query = props.QueryShortcut.query.split('\0');
+  let query = props.query.queryShortcut.query.split('\\0');
 
   query = query
     .map((str, index) => {
-      if (index !== query.length - 1) {
-        return str + el.current.querySelector(`#arg-${index}`).value;
-      } else {
+      if (index === 0) {
         return str;
+      } else {
+        return el.current.querySelector(`#arg-${index}`).value + str;
       }
     })
-    .joint('');
+    .join('');
 
-  const queryShortcut = { ...props.QueryShortcut, query };
+  const queryShortcut = { ...props.query.queryShortcut, query };
+  debouncedHandleShortcut(queryShortcut);
 };

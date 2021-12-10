@@ -55,13 +55,6 @@ const query = (state = default_state, action) => {
         queryShortcut: { ...action.payload },
       };
 
-    case 'SET_QUERY_SHORTCUTS':
-      return {
-        results: state.results,
-        queue: state.queue,
-        scriptsQueue: state.scriptsQueue,
-      };
-
     default:
       return state;
   }

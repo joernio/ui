@@ -17,11 +17,6 @@ import FilesProcessor from './renderless/FilesProcessor';
 import Toaster from './components/toaster/Toaster';
 
 function App(props) {
-  // React.useEffect(() => {
-  //   initShortcuts();
-  //   return () => removeShortcuts();
-  // }, []);
-
   React.useEffect(() => {
     if (props.settings.queryShortcuts) {
       removeShortcuts();
@@ -53,7 +48,6 @@ function App(props) {
       <WorkspaceProcessor />
       <FilesProcessor />
       <Toaster />
-      <QueryShortcutDialog />
     </div>
   );
 }
