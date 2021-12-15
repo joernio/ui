@@ -56,6 +56,7 @@ function QueryProcessor(props) {
       props.query.scriptsQueue,
       query,
     );
+    console.log('QueryProcessor scripts useEffect: ', run_query, query);
     run_query && props.mainQuery(query);
     handleSetState({
       prev_scripts_queue: props.query.scriptsQueue

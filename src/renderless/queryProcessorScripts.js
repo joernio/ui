@@ -28,6 +28,13 @@ export const shouldAlertScriptRunSuccessful = (prev_results, results) => {
     }
   }
 
+  console.log(
+    'prev_last_script_result: ',
+    JSON.stringify(prev_last_script_result),
+    ' last_script_result: ',
+    JSON.stringify(last_script_result),
+  );
+
   if (
     JSON.stringify(prev_last_script_result) !==
       JSON.stringify(last_script_result) &&
