@@ -32,6 +32,7 @@ export const shouldAlertScriptRunSuccessful = (prev_results, results) => {
     JSON.stringify(prev_last_script_result) !==
       JSON.stringify(last_script_result) &&
     (last_script_result.result.stdout || last_script_result.result.stderr) &&
+    !last_script_result.query.includes('import') &&
     last_script_result.t_0 &&
     last_script_result.t_1
   ) {

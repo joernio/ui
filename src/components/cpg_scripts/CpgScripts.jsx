@@ -301,6 +301,8 @@ function CpgScripts(props) {
 
           <Dialog
             portalClassName={classes.scriptsArgsDialogStyle}
+            title="Specify Arguments"
+            isCloseButtonShown={false}
             autoFocus={true}
             canEscapeKeyClose={true}
             canOutsideClickClose={true}
@@ -313,11 +315,19 @@ function CpgScripts(props) {
               className={classes.scriptsArgsDialogContentStyle}
               ref={refs.dialogEl}
             >
+              <p>
+                please specify the arguments to be passed into the function(s)
+                to be executed
+              </p>
               {dialogFields.map(script =>
                 script.mainFunctionArgs.length > 0 ? (
                   <>
                     <div>
-                      <h3>{`${script.filename} > ${script.mainFunctionName} (`}</h3>
+                      <h3>
+                        {`${script.filename} `}
+                        <Icon icon="chevron-right" />
+                        {` ${script.mainFunctionName} (`}
+                      </h3>
                       {script.mainFunctionArgs.map(arg => (
                         <>
                           <h4>{arg}</h4>
