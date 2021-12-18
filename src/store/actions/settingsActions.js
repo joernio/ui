@@ -6,3 +6,12 @@ export const setSettings = setting => {
     });
   };
 };
+
+export const setQueryShortcuts = payload => {
+  return dispatch => {
+    return dispatch({
+      type: 'SET_QUERY_SHORTCUTS',
+      payload,
+    });
+  };
+};

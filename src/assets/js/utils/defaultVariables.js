@@ -152,7 +152,7 @@ export const imageFileExtensions = [
   '.ico',
   '.cur',
 ];
-export const syntheticFileExtensions = ['.dotast'];
+export const syntheticFiles = ['AST Graph', 'Query Shortcuts'];
 
 // \r      ██╗ ██████╗ ███████╗██████╗ ███╗   ██╗
 // \r      ██║██╔═══██╗██╔════╝██╔══██╗████╗  ██║
