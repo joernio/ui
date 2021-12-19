@@ -47,6 +47,7 @@ function TerminalWindow(props) {
   React.useEffect(() => {
     (async () => {
       props.setTerm(await initXterm(props.settings.prefersDarkMode));
+      props.setRefs(refs);
     })();
   }, []);
 
@@ -267,6 +268,9 @@ const mapDispatchToProps = dispatch => {
   return {
     setTerm: term => {
       return dispatch(terminalActions.setTerm(term));
+    },
+    setRefs: refs => {
+      return dispatch(terminalActions.setRefs(refs));
     },
     setFitAddon: fit_addon => {
       return dispatch(terminalActions.setFitAddon(fit_addon));

@@ -45,9 +45,7 @@ export const getCpgScripts = async props => {
     await Promise.all(
       scriptsArr.map(path => {
         return readFile(path).then(data => {
-          let tag;
-          let mainFunctionName;
-          let mainFunctionArgs;
+          let tag, mainFunctionName, mainFunctionArgs;
 
           if (data.search(/\/\/<tag>(.*?)<\/tag>/g) > -1) {
             tag = extractScriptTagName(data);
@@ -134,16 +132,20 @@ export const runScript = async (path, args, mainFunctionName, props) => {
       let filename = query_string.split('.');
       filename = filename[filename.length - 1];
 
-      const query = {
-        query:
-          query_string +
-          '\n' +
-          `${filename}.${mainFunctionName}(${formatArgs(args)})`,
+      const importScriptQuery = {
+        query: query_string,
         origin: 'script',
         ignore: true,
       };
 
-      addToScriptsQueue(query, props);
+      const runScriptQuery = {
+        query: `${filename}.${mainFunctionName}(${formatArgs(args)})`,
+        origin: 'script',
+        ignore: true,
+      };
+
+      addToScriptsQueue(importScriptQuery, props);
+      addToScriptsQueue(runScriptQuery, props);
       handleSetToast({
         icon: 'info-sign',
         intent: 'success',

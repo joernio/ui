@@ -1,3 +1,5 @@
+import { openSyntheticFile } from '../../assets/js/utils/scripts';
+
 export const toggleSettingsDialog = isSettingsDialogOpen => {
   return {
     isSettingsDialogOpen: !isSettingsDialogOpen,
@@ -61,4 +63,8 @@ export const collectSettingsValues = values => {
   };
 
   return settings;
+};
+
+export const openShortcutsPage = () => {
+  openSyntheticFile('Query Shortcuts', 'Query Shortcuts');
 };

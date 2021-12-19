@@ -9,10 +9,13 @@ import {
   openFile,
   closeFile,
   discardDialogHandler,
-  getExtension,
   openSyntheticFile,
+  getExtension,
 } from '../../assets/js/utils/scripts';
-import { syntheticFileExtensions } from '../../assets/js/utils/defaultVariables';
+import {
+  syntheticFiles,
+  imageFileExtensions,
+} from '../../assets/js/utils/defaultVariables';
 
 const useStyles = makeStyles(styles);
 
@@ -44,7 +47,7 @@ function EditorTabs(props) {
           <div
             className={clsx(classes.editorTabStyle, {
               [classes.editorTabActiveStyle]:
-                path === props.files.openFilePath ? true : false,
+                path === openFilePath ? true : false,
             })}
             key={path}
           >
@@ -53,14 +56,20 @@ function EditorTabs(props) {
               onClick={() =>
                 handleSetState(
                   discardDialogHandler(openFiles, openFilePath, () => {
-                    syntheticFileExtensions.includes(getExtension(path))
+                    syntheticFiles.includes(path)
                       ? openSyntheticFile(path, openFiles[path])
                       : openFile(path);
                   }),
                 )
               }
             >
-              <Icon icon="document" className={classes.iconStyle} />
+              {imageFileExtensions.includes(getExtension(path)) ||
+              syntheticFiles.includes(path) ? (
+                <Icon icon="align-left" className={classes.iconStyle} />
+              ) : (
+                <Icon icon="document" className={classes.iconStyle} />
+              )}
+
               {filename}
             </div>
             {openFiles[path] === false ? (

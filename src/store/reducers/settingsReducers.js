@@ -14,6 +14,7 @@ export const default_state = {
   fontSize: '16px',
   scriptsDir: `${homedir()}/bin/joern/joern-cli/scripts`,
   uiIgnore: 'node_modules, vendor, build, .git',
+  queryShortcuts: {},
 };
 
 const settings = (state = default_state, action) => {
@@ -22,6 +23,11 @@ const settings = (state = default_state, action) => {
       return {
         ...state,
         ...action.payload,
+      };
+    case 'SET_QUERY_SHORTCUTS':
+      return {
+        ...state,
+        queryShortcuts: { ...state.queryShortcuts, ...action.payload },
       };
     default:
       return state;

@@ -31,7 +31,8 @@ function QueryProcessor(props) {
 
       if (
         query.query.startsWith('open') ||
-        query.query.startsWith('import') ||
+        query.query.startsWith('importCode') ||
+        query.query.startsWith('importCpg') ||
         query.query.startsWith('workspace')
       ) {
         props.enQueueQuery({
