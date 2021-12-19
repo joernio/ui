@@ -172,11 +172,15 @@ const styles = theme => ({
     },
   },
   scriptsArgsDialogContentStyle: {
-    margin: ' 1em',
+    margin: '0 1em 1em 1em',
     backgroundColor: props =>
       theme.palette.menu.background[
         props.settings.prefersDarkMode ? 'dark' : 'light'
       ],
+    '& p': {
+      width: '100%',
+      color: theme.palette.sideNav.base.light,
+    },
     '& div': {
       display: 'flex',
       justifyContent: 'space-between',
