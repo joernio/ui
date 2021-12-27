@@ -56,7 +56,8 @@ function EditorTabs(props) {
               onClick={() =>
                 handleSetState(
                   discardDialogHandler(openFiles, openFilePath, () => {
-                    syntheticFiles.includes(path)
+                    syntheticFiles.filter(type => path.endsWith(type)).length >
+                    0
                       ? openSyntheticFile(path, openFiles[path])
                       : openFile(path);
                   }),
@@ -64,7 +65,7 @@ function EditorTabs(props) {
               }
             >
               {imageFileExtensions.includes(getExtension(path)) ||
-              syntheticFiles.includes(path) ? (
+              syntheticFiles.filter(type => path.endsWith(type)).length > 0 ? (
                 <Icon icon="align-left" className={classes.iconStyle} />
               ) : (
                 <Icon icon="document" className={classes.iconStyle} />

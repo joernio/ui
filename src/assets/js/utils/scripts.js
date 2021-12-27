@@ -395,7 +395,10 @@ export const closeFile = async path => {
               files.openFilePath.split('/').length - 1
             ]
         ) {
-          if (syntheticFiles.includes(files.openFilePath)) {
+          if (
+            syntheticFiles.filter(type => files.openFilePath.endsWith(type))
+              .length > 0
+          ) {
             return {
               openFileContent: files.openFiles[files.openFilePath],
               openFileIsReadOnly: true,
@@ -691,7 +694,7 @@ export const readFile = path => {
       //avoid reading media files (images, etc) into memory. just return the file path instead;
       if (
         imageFileExtensions.includes(getExtension(path)) ||
-        syntheticFiles.includes(path) ||
+        syntheticFiles.filter(type => path.endsWith(type)).length > 0 ||
         filesToIgnore.includes(getExtension(path))
       ) {
         resolve(path);
@@ -725,7 +728,9 @@ export const refreshRecent = async () => {
           if (!err) {
             return r(entry);
           } else {
-            if (syntheticFiles.includes(entry[0])) {
+            if (
+              syntheticFiles.filter(type => entry[0].endsWith(type)).length > 0
+            ) {
               return r(entry);
             } else {
               return r(false);
@@ -761,7 +766,9 @@ export const refreshOpenFiles = async () => {
           if (!err && stats.isFile()) {
             return r(entry);
           } else {
-            if (syntheticFiles.includes(entry[0])) {
+            if (
+              syntheticFiles.filter(type => entry[0].endsWith(type)).length > 0
+            ) {
               return r(entry);
             } else {
               return r(false);
@@ -784,7 +791,8 @@ export const refreshOpenFiles = async () => {
         files.openFilePath.split('/')[
           files.openFilePath.split('/').length - 1
         ] &&
-        !syntheticFiles.includes(files.openFilePath))
+        syntheticFiles.filter(type => files.openFilePath.endsWith(type))
+          .length === 0)
     ) {
       const path = Object.keys(files.openFiles ? files.openFiles : {})[0];
       openFile(path);
@@ -822,10 +830,11 @@ export const isFilePathInQueryResult = results => {
 
 export const isQueryResultToOpenSynthFile = results => {
   const latest = results[Object.keys(results)[Object.keys(results).length - 1]];
-  let synth_file_path, content;
+  let synth_file_path = false,
+    content = false;
 
   if (
-    latest?.result.stdout &&
+    latest?.result?.stdout &&
     typeof latest.result.stdout === 'string' &&
     latest.result.stdout.includes('"""') &&
     latest.query.search('dotAst.l') > -1
@@ -835,13 +844,45 @@ export const isQueryResultToOpenSynthFile = results => {
       content = latest.result.stdout.split('"""');
       content = `${content[1]}`;
       content = content.split('\\"').join("'");
+    } catch {
+      synth_file_path = false;
+      content = false;
+    }
+  }
+
+  return { synth_file_path, content };
+};
+
+export const isScriptQueryResultToOpenSynthFile = async result => {
+  let synth_file_path = false,
+    content = false;
+
+  if (
+    result?.result?.stdout &&
+    typeof result.result.stdout === 'string' &&
+    !result.query.startsWith('import') &&
+    result.result.stdout.includes('.json')
+  ) {
+    try {
+      synth_file_path = `${
+        result.query.split('`').join('').split('.')[0]
+      }.sc - Script Report`;
+      content = result.result.stdout.split('=')[1].split('"')[1];
+      content = await readFile(content).catch(() => {
+        synth_file_path = false;
+        handleSetToast({
+          icon: 'warning-sign',
+          intent: 'danger',
+          message:
+            "script report file path returned by script run doesn't exist",
+        });
+
+        return false;
+      });
     } catch (e) {
       synth_file_path = false;
       content = false;
     }
-  } else {
-    synth_file_path = false;
-    content = false;
   }
 
   return { synth_file_path, content };
@@ -1288,6 +1329,19 @@ export const nFormatter = num => {
 export const handleFontSizeChange = (doc, fontSize) => {
   doc.children[0].style.fontSize = fontSize;
   doc.children[0].children[1].style.fontSize = fontSize;
+};
+
+export const getScriptResult = (uuids, results) => {
+  let result;
+
+  for (let i = uuids.length - 1; i >= 0; i--) {
+    if (results[uuids[i]].origin === 'script') {
+      result = results[uuids[i]];
+      break;
+    }
+  }
+
+  return result;
 };
 
 export const generateScriptImportQuery = async (

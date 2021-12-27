@@ -152,7 +152,7 @@ export const imageFileExtensions = [
   '.ico',
   '.cur',
 ];
-export const syntheticFiles = ['AST Graph', 'Query Shortcuts'];
+export const syntheticFiles = ['AST Graph', 'Query Shortcuts', 'Script Report'];
 
 // \r      ██╗ ██████╗ ███████╗██████╗ ███╗   ██╗
 // \r      ██║██╔═══██╗██╔════╝██╔══██╗████╗  ██║
