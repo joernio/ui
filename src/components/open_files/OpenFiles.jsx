@@ -106,7 +106,8 @@ function OpenFiles(props) {
                     onClick={() =>
                       handleSetState(
                         discardDialogHandler(openFiles, openFilePath, () => {
-                          syntheticFiles.includes(path)
+                          syntheticFiles.filter(type => path.endsWith(type))
+                            .length > 0
                             ? openSyntheticFile(path, openFiles[path])
                             : openFile(path);
                         }),

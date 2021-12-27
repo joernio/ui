@@ -1,13 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import {
-  openFile,
-  openSyntheticFile,
-  isFilePathInQueryResult,
-  isQueryResultToOpenSynthFile,
-  refreshRecent,
-  refreshOpenFiles,
-} from '../assets/js/utils/scripts';
+import { refreshRecent, refreshOpenFiles } from '../assets/js/utils/scripts';
+
+import { processFiles } from './filesProcessorScripts';
 
 function FilesProcessor(props) {
   React.useEffect(() => {
@@ -16,14 +11,7 @@ function FilesProcessor(props) {
   }, []);
 
   React.useEffect(() => {
-    const file_path = isFilePathInQueryResult(props.query.results);
-    file_path && openFile(file_path);
-
-    const { synth_file_path, content } = isQueryResultToOpenSynthFile(
-      props.query.results,
-    );
-
-    synth_file_path && content && openSyntheticFile(synth_file_path, content);
+    processFiles(props);
   }, [props.query.results]);
 
   return null;

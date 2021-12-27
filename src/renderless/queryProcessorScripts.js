@@ -1,3 +1,10 @@
+import {
+  getScriptResult,
+  handleSetToast,
+  isScriptQueryResultToOpenSynthFile,
+  openSyntheticFile,
+} from '../assets/js/utils/scripts';
+
 export const shouldRunQuery = (prev_queue, queue, query) => {
   const prev_queue_count = prev_queue ? Object.keys(prev_queue).length : 0;
   const queue_count = Object.keys(queue).length;
@@ -14,26 +21,9 @@ export const shouldAlertScriptRunSuccessful = (prev_results, results) => {
   let prev_uuids = Object.keys(prev_results);
   let uuids = Object.keys(results);
 
-  for (let i = prev_uuids.length - 1; i >= 0; i--) {
-    if (prev_results[prev_uuids[i]].origin === 'script') {
-      prev_last_script_result = prev_results[prev_uuids[i]];
-      break;
-    }
-  }
+  prev_last_script_result = getScriptResult(prev_uuids, prev_results);
 
-  for (let i = uuids.length - 1; i >= 0; i--) {
-    if (results[uuids[i]].origin === 'script') {
-      last_script_result = results[uuids[i]];
-      break;
-    }
-  }
-
-  console.log(
-    'prev_last_script_result: ',
-    JSON.stringify(prev_last_script_result),
-    ' last_script_result: ',
-    JSON.stringify(last_script_result),
-  );
+  last_script_result = getScriptResult(uuids, results);
 
   if (
     JSON.stringify(prev_last_script_result) !==
@@ -47,4 +37,28 @@ export const shouldAlertScriptRunSuccessful = (prev_results, results) => {
   } else {
     return false;
   }
+};
+
+export const processScriptResult = async (
+  prev_results,
+  results,
+  handleSetState,
+) => {
+  const script_result = shouldAlertScriptRunSuccessful(prev_results, results);
+
+  if (script_result) {
+    handleSetToast({
+      icon: 'info-sign',
+      intent: 'success',
+      message: 'script ran successfully',
+    });
+
+    const { synth_file_path, content } =
+      await isScriptQueryResultToOpenSynthFile(script_result);
+    synth_file_path && content && openSyntheticFile(synth_file_path, content);
+  }
+
+  handleSetState({
+    prev_results: results ? JSON.parse(JSON.stringify(results)) : {},
+  });
 };

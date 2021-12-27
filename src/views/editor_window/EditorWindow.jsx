@@ -4,6 +4,7 @@ import MonacoEditor from 'react-monaco-editor';
 import ImageViewer from '../../components/image_viewer/ImageViewer';
 import SynthFileViewer from '../../components/synth_file_viewer/SynthFileViewer';
 import EditorTabs from '../../components/editor_tabs/EditorTabs';
+import EditorWindowBanner from '../../components/editor_window_banner/EditorWindowBanner';
 import { connect } from 'react-redux';
 import * as filesActions from '../../store/actions/filesActions';
 import { makeStyles } from '@material-ui/core';
@@ -13,7 +14,6 @@ import {
   handleEditorOnChange,
 } from './editorScripts';
 import styles from '../../assets/js/styles/views/editor_window/editorWindowStyles';
-import commonStyles from '../../assets/js/styles';
 import {
   imageFileExtensions,
   syntheticFiles,
@@ -21,11 +21,9 @@ import {
 import { getExtension } from '../../assets/js/utils/scripts';
 
 const useStyles = makeStyles(styles);
-const useCommonStyles = makeStyles(commonStyles);
 
 function EditorWindow(props) {
   const classes = useStyles(props);
-  const commonClasses = useCommonStyles(props);
 
   const refs = {
     editorContainerEl: React.useRef(null),
@@ -60,38 +58,36 @@ function EditorWindow(props) {
       data-test="editor-window"
     >
       <EditorTabs />
-      <div
-        className={clsx(classes.editorModeStyle, {
-          [commonClasses.displayNone]:
-            imageFileExtensions.includes(getExtension(files.openFilePath)) ||
-            syntheticFiles.includes(files.openFilePath),
-        })}
-      >
-        {files.openFileIsReadOnly
-          ? 'Read-only Mode'
-          : 'Scripts Development Mode'}
-      </div>
-
       {imageFileExtensions.includes(getExtension(files.openFilePath)) ? (
         <ImageViewer src={files.openFilePath} />
-      ) : syntheticFiles.includes(files.openFilePath) ? (
+      ) : syntheticFiles.filter(type => files.openFilePath.endsWith(type))
+          .length > 0 ? (
         <SynthFileViewer
           path={files.openFilePath}
           content={files.openFileContent}
           drawerWidth={props.drawerWidth}
         />
       ) : (
-        <MonacoEditor
-          ref={refs.editorEl}
-          width="100%"
-          height="90%"
-          theme={settings.prefersDarkMode ? 'vs-dark' : 'vs-light'}
-          language="typescript"
-          value={files?.openFileContent}
-          options={options}
-          onChange={(newValue, _) => handleEditorOnChange(newValue, props)}
-          editorDidMount={editorDidMount}
-        />
+        <>
+          <EditorWindowBanner
+            message={
+              files.openFileIsReadOnly
+                ? 'Read-only Mode'
+                : 'Scripts Development Mode'
+            }
+          />
+          <MonacoEditor
+            ref={refs.editorEl}
+            width="100%"
+            height="90%"
+            theme={settings.prefersDarkMode ? 'vs-dark' : 'vs-light'}
+            language="typescript"
+            value={files?.openFileContent}
+            options={options}
+            onChange={(newValue, _) => handleEditorOnChange(newValue, props)}
+            editorDidMount={editorDidMount}
+          />
+        </>
       )}
     </div>
   );

@@ -1,14 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import * as queryActions from '../store/actions/queryActions';
-import {
-  shouldRunQuery,
-  shouldAlertScriptRunSuccessful,
-} from './queryProcessorScripts';
+import { shouldRunQuery, processScriptResult } from './queryProcessorScripts';
 import {
   addToQueue,
   addWorkSpaceQueryToQueue,
-  handleSetToast,
 } from '../assets/js/utils/scripts';
 
 function QueryProcessor(props) {
@@ -57,7 +53,6 @@ function QueryProcessor(props) {
       props.query.scriptsQueue,
       query,
     );
-    console.log('QueryProcessor scripts useEffect: ', run_query, query);
     run_query && props.mainQuery(query);
     handleSetState({
       prev_scripts_queue: props.query.scriptsQueue
@@ -71,23 +66,11 @@ function QueryProcessor(props) {
   }, [props.status.connected, props.settings.server, props.settings.websocket]);
 
   React.useEffect(() => {
-    const script_result = shouldAlertScriptRunSuccessful(
+    processScriptResult(
       state.prev_results,
       props.query.results,
+      handleSetState,
     );
-
-    script_result &&
-      handleSetToast({
-        icon: 'info-sign',
-        intent: 'success',
-        message: 'script ran successfully',
-      });
-
-    handleSetState({
-      prev_results: props.query.results
-        ? JSON.parse(JSON.stringify(props.query.results))
-        : {},
-    });
   }, [props.query.results]);
 
   const handleSetState = obj => {
