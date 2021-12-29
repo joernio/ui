@@ -1,3 +1,5 @@
+import { dispatch } from 'd3-dispatch';
+
 export const setTerminal = payload => {
   return dispatch => {
     dispatch({
@@ -58,5 +60,11 @@ export const setTerminalBusy = busy => {
 export const setQuerySuggestions = query_suggestions => {
   return dispatch => {
     dispatch(setTerminal({ query_suggestions }));
+  };
+};
+
+export const setSuggestionDialogOpen = suggestion_dialog_open => {
+  return dispatch => {
+    dispatch(setTerminal({ suggestion_dialog_open }));
   };
 };

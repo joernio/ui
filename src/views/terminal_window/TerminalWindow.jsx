@@ -27,6 +27,8 @@ import {
   handleAddQueryToHistory,
   handleEmptyWorkspace,
   handleSuggestionClick,
+  calculateSuggestionsPopoverMarginLeft,
+  data_obj,
 } from './terminalWindowScripts';
 
 const useStyles = makeStyles(styles);
@@ -37,6 +39,8 @@ function TerminalWindow(props) {
   const refs = {
     terminalRef: React.useRef(null),
     circuitUIRef: React.useRef(null),
+    suggestionsPopoverMarginLeftTrackerEl: React.useRef(null),
+    suggestionsContainerEl: React.useRef(null),
     resizeEl: React.useRef(null),
   };
 
@@ -77,6 +81,30 @@ function TerminalWindow(props) {
       return initCircuitUI(refs);
     }
   }, [refs.circuitUIRef]);
+
+  React.useEffect(() => {
+    const observer = new MutationObserver(() =>
+      calculateSuggestionsPopoverMarginLeft(refs),
+    );
+    refs.suggestionsPopoverMarginLeftTrackerEl.current &&
+      observer.observe(refs.suggestionsPopoverMarginLeftTrackerEl.current, {
+        childList: true,
+      });
+    return () =>
+      refs.suggestionsPopoverMarginLeftTrackerEl.current &&
+      observer.disconnect(refs.suggestionsPopoverMarginLeftTrackerEl.current);
+  }, [refs.suggestionsPopoverMarginLeftTrackerEl]);
+
+  React.useEffect(() => {
+    if (
+      props.terminal.query_suggestions.length > 0 &&
+      !props.settings.prefersTerminalView
+    ) {
+      props.setSuggestionDialogOpen(true);
+    } else {
+      props.setSuggestionDialogOpen(false);
+    }
+  }, [props.terminal.query_suggestions]);
 
   React.useEffect(() => {
     const observer = new ResizeObserver(throttle(resize, 50));
@@ -151,7 +179,8 @@ function TerminalWindow(props) {
   }, [refs.resizeEl.current]);
 
   const { terminalHeight } = props;
-  const { isMaximized, query_suggestions } = props.terminal;
+  const { isMaximized, query_suggestions, suggestion_dialog_open } =
+    props.terminal;
   const { prefersTerminalView } = props.settings;
 
   return (
@@ -225,28 +254,64 @@ function TerminalWindow(props) {
           <input type="text" placeholder="▰  query" />
           <button>Run Query ↵</button>
           <Popover2
-            className={classes.querySelectionTooltipStyle}
-            portalClassName={classes.querySelectionToolTipPortalStyle}
+            shouldReturnFocusOnClose={true}
+            placement="auto-end"
+            interactionKind="click"
+            minimal={true}
+            isOpen={suggestion_dialog_open}
+            onClose={() => props.setSuggestionDialogOpen(false)}
+            className={classes.querySuggestionPopoverStyle}
+            portalClassName={clsx(
+              classes.querySuggestionPopoverPortalStyle,
+              'query-suggestion-popover-portal',
+            )}
+            shouldReturnFocusOnClose={true}
             content={
-              <div className={classes.querySuggestionsStyle}>
-                {query_suggestions.map(query_suggestion => (
+              <div
+                ref={refs.suggestionsContainerEl}
+                className={classes.querySuggestionsStyle}
+              >
+                {query_suggestions.map((query_suggestion, index) => (
                   <div
-                    className={classes.querySuggestionStyle}
+                    tabIndex="0"
+                    autofocus={index === 0 ? true : false}
+                    key={query_suggestion.suggestion}
+                    className={clsx(classes.querySuggestionStyle, {
+                      'query-suggestion-selected': index === 0 ? true : false,
+                    })}
                     onClick={e =>
                       handleSuggestionClick(e, refs, props.terminal.term)
                     }
                   >
-                    {query_suggestion}
+                    <Icon
+                      icon={query_suggestion.origin}
+                      className={classes.querySuggestionOriginIconStyle}
+                    />
+
+                    {!data_obj.data
+                      ? query_suggestion.suggestion
+                      : query_suggestion.suggestion
+                          .split(data_obj.data)
+                          .map((str, index) => {
+                            return index === 0 ? (
+                              <span
+                                className={classes.querySuggestionMatchStyle}
+                              >
+                                {data_obj.data}
+                              </span>
+                            ) : (
+                              <span>{str}</span>
+                            );
+                          })}
                   </div>
                 ))}
               </div>
             }
-            placement="right-end"
-            interactionKind="click"
-            minimal={true}
-            isOpen={query_suggestions.length > 0 && !prefersTerminalView}
           >
-            <span id="suggestion-box-tracker"></span>
+            <span
+              id="suggestion-box-tracker"
+              ref={refs.suggestionsPopoverMarginLeftTrackerEl}
+            ></span>
           </Popover2>
         </div>
       </div>
@@ -283,6 +348,9 @@ const mapDispatchToProps = dispatch => {
     },
     setIsMaximized: obj => {
       return dispatch(terminalActions.setIsMaximized(obj));
+    },
+    setSuggestionDialogOpen: bool => {
+      return dispatch(terminalActions.setSuggestionDialogOpen(bool));
     },
     setSettings: values => {
       return dispatch(settingsActions.setSettings(values));

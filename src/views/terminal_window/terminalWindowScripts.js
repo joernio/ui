@@ -7,12 +7,14 @@ import {
   setHistory,
   setTerminalBusy,
   setQuerySuggestions,
+  setSuggestionDialogOpen,
 } from '../../store/actions/terminalActions';
 import { store } from '../../store/configureStore';
 
 import { terminalVariables as TV } from '../../assets/js/utils/defaultVariables';
 
 import * as TWS from './terminalWindowScripts';
+import querydb from '../../assets/js/utils/queries';
 
 export const data_obj = { data: '', cursorPosition: 0 };
 
@@ -75,26 +77,80 @@ export const handleEmptyWorkspace = (workspace, prev_workspace) => {
   return {};
 };
 
-export const setSuggestionBoxTrackerContent = el => {
+export const setSuggestionsPopoverMarginLeftTrackerContent = el => {
   el.innerText = data_obj.data;
 };
 
 export const suggestSimilarQueries = () => {
+  let suggestions = getQuerySuggestionFromHistory();
+  suggestions = [...suggestions, ...getQuerySuggestionFromQueryDatabase()];
+  store.dispatch(setQuerySuggestions(suggestions));
+};
+
+export const getQuerySuggestionFromHistory = () => {
   const { results } = store.getState().query;
-  let query_strings = Object.keys(results);
-  query_strings = query_strings.map(key => results[key].query);
-  query_strings = query_strings.filter(query_string =>
-    query_string && data_obj.data && query_string.startsWith(data_obj.data)
-      ? true
-      : false,
+  let suggestions = Object.keys(results);
+  suggestions = suggestions.map(key => results[key].query);
+  suggestions = suggestions.filter(query =>
+    query && data_obj.data && query.startsWith(data_obj.data) ? true : false,
   );
-  query_strings.reverse();
-  query_strings = [...new Set(query_strings)]; //remove duplicates
-  store.dispatch(setQuerySuggestions(query_strings));
+  suggestions.reverse();
+  suggestions = [...new Set(suggestions)]; //remove duplicates
+  suggestions = suggestions.map(suggestion => ({
+    suggestion,
+    origin: 'history',
+  }));
+  return suggestions;
+};
+
+export const getQuerySuggestionFromQueryDatabase = () => {
+  let query = data_obj.data.replace(/\((.+?)\)/g, '("")');
+  query = query.split('.');
+  let suggestions = querydb;
+
+  for (let str of query) {
+    let child = suggestions[str];
+    if (!child) {
+      child = Object.keys(suggestions);
+      suggestions = child.filter(query => query.startsWith(str));
+      suggestions = suggestions.map(each => each.replace(str, ''));
+      break;
+    } else {
+      suggestions = child;
+    }
+  }
+
+  if (suggestions === true) return [];
+
+  if (
+    typeof suggestions === 'object' &&
+    !Array.isArray(suggestions) &&
+    suggestions !== null
+  ) {
+    suggestions = Object.keys(suggestions).map(suggestion => `.${suggestion}`);
+  }
+
+  suggestions = suggestions.map(suggestion => `${data_obj.data}${suggestion}`);
+
+  suggestions = suggestions.map(suggestion => ({
+    suggestion,
+    origin: 'database',
+  }));
+  return suggestions;
 };
 
 export const handleSuggestionClick = async (e, refs, term) => {
-  const str = e.target.innerText;
+  let str;
+  if (e.target.nodeName.toLowerCase() === 'div') {
+    str = e.target.innerText;
+  } else if (e.target.nodeName.toLowerCase() === 'span') {
+    str = e.target.parentElement.innerText;
+  } else if (e.target.nodeName.toLowerCase() === 'svg') {
+    str = e.target.parentElement.parentElement.innerText;
+  } else if (e.target.nodeName.toLowerCase() === 'path') {
+    str = e.target.parentElement.parentElement.parentElement.innerText;
+  }
+
   TWS.updateData(null);
   TWS.updateCursorPosition(0);
   TWS.updateData(str);
@@ -116,11 +172,95 @@ export const openXTerm = (refs, term) => {
   }
 };
 
+export const calculateSuggestionsPopoverMarginLeft = ({
+  suggestionsPopoverMarginLeftTrackerEl,
+}) => {
+  if (suggestionsPopoverMarginLeftTrackerEl.current) {
+    const document =
+      suggestionsPopoverMarginLeftTrackerEl.current.ownerDocument;
+    let offset_width =
+      suggestionsPopoverMarginLeftTrackerEl.current.offsetWidth;
+    const container_width = document
+      .getElementById('circuit-ui-input-container')
+      .getBoundingClientRect().width;
+    const target_element = document.querySelector(
+      '.query-suggestion-popover-portal .bp3-popover2-transition-container',
+    );
+
+    if (target_element) {
+      const target_element_dimensions = target_element.getBoundingClientRect();
+      if (target_element_dimensions.width + offset_width < container_width) {
+        target_element.style.marginLeft = `${offset_width}px`;
+      } else if (
+        target_element_dimensions.width + offset_width >=
+        container_width
+      ) {
+        offset_width = container_width - target_element_dimensions.width;
+        target_element.style.marginLeft = `${offset_width}px`;
+      } else if (
+        target_element.style.marginLeft &&
+        offset_width < Number(target_element.style.marginLeft.split('px')[0])
+      ) {
+        target_element.style.marginLeft = `${offset_width}px`;
+      }
+    }
+  }
+};
+
+export const focusPrevOrNextSuggestion = (e, refs) => {
+  const children = refs.suggestionsContainerEl.current.children;
+  const activeElement =
+    refs.suggestionsContainerEl.current.ownerDocument.activeElement;
+
+  for (let i = 0; i < children.length; i++) {
+    if (children[i].classList.contains('query-suggestion-selected')) {
+      children[i].classList.remove('query-suggestion-selected');
+
+      if (e.code === 'ArrowUp' && i === 0) {
+        children[children.length - 1].classList.add(
+          'query-suggestion-selected',
+        );
+        children[children.length - 1].focus();
+      } else if (e.code === 'ArrowUp' && i !== 0) {
+        children[i - 1].classList.add('query-suggestion-selected');
+        children[i - 1].focus();
+      } else if (e.code === 'ArrowDown' && i === children.length - 1) {
+        children[0].classList.add('query-suggestion-selected');
+        children[0].focus();
+      } else if (e.code === 'ArrowDown' && i !== children.length - 1) {
+        children[i + 1].classList.add('query-suggestion-selected');
+        children[i + 1].focus();
+      }
+
+      break;
+    } else if (i === children.length - 1) {
+      children[0].classList.add('query-suggestion-selected');
+      children[0].focus();
+    }
+  }
+
+  activeElement.focus();
+};
+
+export const selectSuggestionInFocus = refs => {
+  const { term } = store.getState().terminal;
+  const children = refs.suggestionsContainerEl.current.children;
+
+  for (let i = 0; i < children.length; i++) {
+    if (children[i].classList.contains('query-suggestion-selected')) {
+      handleSuggestionClick({ target: children[i] }, refs, term);
+      break;
+    } else if (i === children.length - 1) {
+      handleSuggestionClick({ target: children[0] }, refs, term);
+    }
+  }
+};
+
 export const suggestQueryForXterm = async term => {
   const { query_suggestions } = store.getState().terminal;
   await TWS.termWrite(term, TWS.constructInputToWrite());
   if (query_suggestions.length > 0) {
-    let str_to_write = query_suggestions[0].split(data_obj.data)[1];
+    let str_to_write = query_suggestions[0].suggestion.split(data_obj.data)[1];
     str_to_write =
       TV.clearLine +
       TV.cpgDefaultPrompt +
@@ -144,7 +284,7 @@ export const writeSuggestionToXterm = async (term, refs) => {
     !(TWS.data_obj.cursorPosition < TWS.data_obj.data.length) &&
     query_suggestions.length > 0
   ) {
-    const str = query_suggestions[0];
+    const str = query_suggestions[0].suggestion;
     TWS.updateData(null);
     TWS.updateCursorPosition(0);
     TWS.updateData(str);
@@ -292,9 +432,8 @@ export const handleArrowUp = async (term, refs, history, ev) => {
       ? TWS.data_obj.cursorPosition + prev_query.query.length
       : 0,
   );
-  refs.circuitUIRef.current.children[1].children[0].value = TWS.data_obj.data;
   await TWS.termWrite(term, TWS.constructInputToWrite());
-  TWS.handleWriteToCircuitUIInput(refs);
+  TWS.handleWriteToCircuitUIInput(refs, ev);
   store.dispatch(setHistory(new_history));
 };
 
@@ -310,9 +449,8 @@ export const handleArrowDown = async (term, refs, history, ev) => {
       ? TWS.data_obj.cursorPosition + next_query.query.length
       : 0,
   );
-  refs.circuitUIRef.current.children[1].children[0].value = TWS.data_obj.data;
   await TWS.termWrite(term, TWS.constructInputToWrite());
-  TWS.handleWriteToCircuitUIInput(refs);
+  TWS.handleWriteToCircuitUIInput(refs, ev);
   store.dispatch(setHistory(new_history));
 };
 
@@ -442,12 +580,20 @@ export const initCircuitUI = refs => {
   el.children[1].children[0].addEventListener(
     'keydown',
     async function handleInitCircuitUIInputKeyDown(e) {
+      const { suggestion_dialog_open } = store.getState().terminal;
+      if (suggestion_dialog_open) {
+        if (e.key === 'Escape')
+          return store.dispatch(setSuggestionDialogOpen(false));
+        if (['ArrowUp', 'ArrowDown'].includes(e.code))
+          return focusPrevOrNextSuggestion(e, refs);
+        if (['Enter', 'ArrowRight'].includes(e.code))
+          return selectSuggestionInFocus(refs);
+      }
       const { term } = store.getState().terminal;
       await handleXTermOnKey(term, refs, { domEvent: e });
-      setSuggestionBoxTrackerContent(
-        el.children[1].querySelector('#suggestion-box-tracker'),
+      setSuggestionsPopoverMarginLeftTrackerContent(
+        refs.suggestionsPopoverMarginLeftTrackerEl.current,
       );
-      suggestSimilarQueries();
     },
     false,
   );
@@ -458,10 +604,9 @@ export const initCircuitUI = refs => {
       const { term, busy } = store.getState().terminal;
       if (!busy) {
         await handleEnter(term, refs);
-        setSuggestionBoxTrackerContent(
-          el.children[1].querySelector('#suggestion-box-tracker'),
+        setSuggestionsPopoverMarginLeftTrackerContent(
+          refs.suggestionsPopoverMarginLeftTrackerEl.current,
         );
-        suggestSimilarQueries();
       }
     },
     false,
@@ -503,14 +648,15 @@ export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
   circuitUIResEl.scrollTop = circuitUIResEl.scrollHeight;
 };
 
-export const handleWriteToCircuitUIInput = refs => {
+export const handleWriteToCircuitUIInput = (refs, ev) => {
   const input = refs.circuitUIRef.current.children[1].children[0];
   input.value = TWS.data_obj.data;
   input.setSelectionRange(
     TWS.data_obj.cursorPosition,
     TWS.data_obj.cursorPosition,
   );
-  suggestSimilarQueries();
+  if (!ev || !['ArrowUp', 'ArrowDown'].includes(ev.code))
+    suggestSimilarQueries();
 };
 
 export const handleMaximize = (window, props) => {
@@ -574,7 +720,6 @@ export const handleXTermOnKey = async (term, refs, e) => {
   const ev = e.domEvent;
   const not_combination_keys = !ev.altKey && !ev.ctrlKey && !ev.metaKey;
   const { history, busy } = store.getState().terminal;
-
   if (ev.code === 'KeyC' && ev.ctrlKey) {
     handleCopyToClipBoard(term.getSelection());
   }

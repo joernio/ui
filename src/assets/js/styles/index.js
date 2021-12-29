@@ -101,6 +101,9 @@ const styles = theme => ({
   left15PX: {
     left: '15px',
   },
+  right15PX: {
+    right: '15px',
+  },
   width100Percent: {
     width: '100%',
   },

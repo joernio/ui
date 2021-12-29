@@ -11,6 +11,7 @@ const default_state = {
   isMaximized: true,
   busy: false,
   query_suggestions: [],
+  suggestion_dialog_open: false,
 };
 
 const terminal = (state = default_state, action) => {

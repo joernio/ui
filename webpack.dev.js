@@ -13,7 +13,7 @@ module.exports = {
     rules: [
       {
         test: [/\.js$/, /\.jsx?/],
-        exclude: /node_modules/,
+        exclude: [/node_modules/, /\.json/],
         use: {
           loader: 'babel-loader',
           options: {
@@ -191,7 +191,7 @@ module.exports = {
     }),
   ],
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: ['.js', '.json', '.jsx'],
   },
   output: {
     filename: 'app.js',

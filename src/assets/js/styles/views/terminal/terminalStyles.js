@@ -240,15 +240,16 @@ const styles = theme => ({
         },
       },
       '& #suggestion-box-tracker': {
+        paddingLeft: '1em',
         position: 'absolute',
         visibility: 'hidden',
       },
     },
   },
-  querySelectionTooltipStyle: {
+  querySuggestionPopoverStyle: {
     position: 'absolute',
   },
-  querySelectionToolTipPortalStyle: {
+  querySuggestionPopoverPortalStyle: {
     '& > div > div:nth-child(1)': {
       display: 'none',
     },
@@ -262,8 +263,9 @@ const styles = theme => ({
       theme.palette.navBar.base[
         props.settings.prefersDarkMode ? 'dark' : 'light'
       ],
-    padding: '0.4em',
-    maxHeight: '50vh',
+    padding: '0.2em 0',
+    paddingLeft: '12px',
+    maxHeight: '20em',
     overflowY: 'scroll',
 
     '&::-webkit-scrollbar': {
@@ -293,26 +295,42 @@ const styles = theme => ({
         duration: 1000,
       }),
     },
-
     '&::-webkit-scrollbar-thumb:hover': {
       backgroundColor: props =>
         theme.palette.scrollbar.hover[
           props.settings.prefersDarkMode ? 'dark' : 'light'
         ],
     },
-  },
-  querySuggestionStyle: {
-    display: 'flex',
-    width: '100%',
-    padding: '0.5em',
-    justifyContent: 'space-between',
-    cursor: 'pointer',
-    '&:hover': {
+    '& .query-suggestion-selected': {
       color: props =>
         theme.palette.sideNav.hover[
           props.settings.prefersDarkMode ? 'dark' : 'light'
         ],
+      backgroundColor: '#0090F150',
+      border: '1px solid #0090F1',
+      outline: 'none',
+      '&:hover': {
+        backgroundColor: '#0090f16b !important',
+      },
     },
+  },
+  querySuggestionStyle: {
+    width: '100%',
+    minWidth: '20em',
+    padding: '0.5em',
+    cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: props =>
+        theme.palette.explorer.hover[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
+  },
+  querySuggestionMatchStyle: {
+    color: '#0090F1',
+  },
+  querySuggestionOriginIconStyle: {
+    marginRight: '0.5em',
   },
   terminalOpen: {
     transition: theme.transitions.create('height', {
