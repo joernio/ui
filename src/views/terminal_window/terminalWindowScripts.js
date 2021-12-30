@@ -445,7 +445,7 @@ export const initCircuitUI = refs => {
       const { term } = store.getState().terminal;
       await handleXTermOnKey(term, refs, { domEvent: e });
       setSuggestionBoxTrackerContent(
-        el.children[1].querySelector('#suggestion-box-tracker'),
+        el.children[1].getElementById('suggestion-box-tracker'),
       );
       suggestSimilarQueries();
     },
@@ -459,7 +459,7 @@ export const initCircuitUI = refs => {
       if (!busy) {
         await handleEnter(term, refs);
         setSuggestionBoxTrackerContent(
-          el.children[1].querySelector('#suggestion-box-tracker'),
+          el.children[1].getElementById('suggestion-box-tracker'),
         );
         suggestSimilarQueries();
       }

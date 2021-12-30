@@ -14,7 +14,7 @@ export const isCtrlKeyUnpressed = e => {
 
 export const zoomIn = ({ node, dotGraphViewerScale }) => {
   dotGraphViewerScale = dotGraphViewerScale + 5;
-  let gNode = node.node().querySelector('g');
+  let gNode = node.node().getElementsByTagName('g')[0];
   let bbox = gNode.parentElement.getBBox();
   let translate_x = (1 - dotGraphViewerScale / 100) * (bbox.x + bbox.width / 2);
   let translate_y =
@@ -30,7 +30,7 @@ export const zoomIn = ({ node, dotGraphViewerScale }) => {
 
 export const zoomOut = ({ node, dotGraphViewerScale }) => {
   dotGraphViewerScale = dotGraphViewerScale - 5;
-  let gNode = node.node().querySelector('g');
+  let gNode = node.node().getElementsByTagName('g')[0];
   let bbox = gNode.parentElement.getBBox();
   let translate_x = (1 - dotGraphViewerScale / 100) * (bbox.x + bbox.width / 2);
   let translate_y =

@@ -38,12 +38,16 @@ import {
   collectArgsValues,
   toggleScriptsArgsDialog,
 } from './cpgScriptsScripts';
+import commonStyles from '../../assets/js/styles';
 
 const useStyles = makeStyles(styles);
+const useCommonStyles = makeStyles(commonStyles);
 
 function CpgScripts(props) {
   const scriptsContainerEl = React.useRef(null);
   const classes = useStyles(props);
+  const commonClasses = useCommonStyles(props);
+
   const [state, setState] = React.useState({
     scripts: {},
     scriptsVisible: true,
@@ -210,6 +214,8 @@ function CpgScripts(props) {
         <div
           ref={scriptsContainerEl}
           className={clsx(
+            commonClasses.scrollBarStyle,
+            commonClasses.scrollBarDarkStyle,
             classes.scriptsSectionStyle,
             {
               [classes.scrolledStyle]: scrolled,

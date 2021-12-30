@@ -23,9 +23,9 @@ function Window(props) {
     const observer = new ResizeObserver(() =>
       handleSetState({ clientHeight: document.documentElement.clientHeight }),
     );
-    observer.observe(document.querySelector('body'));
+    observer.observe(document.getElementsByTagName('body')[0]);
     return () => {
-      observer.unobserve(document.querySelector('body'));
+      observer.unobserve(document.getElementsByTagName('body')[0]);
     };
   }, []);
 

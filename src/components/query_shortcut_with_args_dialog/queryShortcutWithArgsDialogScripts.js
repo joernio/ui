@@ -12,7 +12,7 @@ export const runQueryWithArgs = (el, props) => {
       if (index === 0) {
         return str;
       } else {
-        return el.current.querySelector(`#arg-${index}`).value + str;
+        return el.current.getElementById(`arg-${index}`).value + str;
       }
     })
     .join('');

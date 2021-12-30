@@ -16,11 +16,14 @@ import {
   syntheticFiles,
   imageFileExtensions,
 } from '../../assets/js/utils/defaultVariables';
+import commonStyles from '../../assets/js/styles';
 
+const useCommonStyles = makeStyles(commonStyles);
 const useStyles = makeStyles(styles);
 
 function EditorTabs(props) {
   const classes = useStyles(props);
+  const commonClasses = useCommonStyles(props);
 
   const [state, setState] = React.useState({
     openDiscardDialog: false,
@@ -39,7 +42,15 @@ function EditorTabs(props) {
   const { openDiscardDialog, discardDialogCallback } = state;
 
   return (
-    <div className={classes.editorTabsContainerStyle} data-test="editor-tabs">
+    <div
+      className={clsx(
+        classes.editorTabsContainerStyle,
+        commonClasses.scrollBarStyle,
+        commonClasses.scrollBarLightStyle,
+        commonClasses.scrollBarHorizontalStyle,
+      )}
+      data-test="editor-tabs"
+    >
       {Object.keys(openFiles ? openFiles : {}).map(path => {
         let filename = path.split('/');
         filename = filename[filename.length - 1];

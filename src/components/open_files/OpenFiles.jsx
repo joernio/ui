@@ -17,12 +17,15 @@ import {
   handleToggleFilesVisible,
 } from './openFilesScripts';
 import DiscardDialog from '../discard_dialog/DiscardDialog';
+import commonStyles from '../../assets/js/styles';
 
 const useStyles = makeStyles(styles);
+const useCommonStyles = makeStyles(commonStyles);
 
 function OpenFiles(props) {
   const filesContainerEl = React.useRef(null);
   const classes = useStyles(props);
+  const commonClasses = useCommonStyles(props);
   const [state, setState] = React.useState({
     files: {},
     filesVisible: true,
@@ -85,6 +88,9 @@ function OpenFiles(props) {
         ref={filesContainerEl}
         className={clsx(
           classes.filesSectionStyle,
+          commonClasses.scrollBarStyle,
+          commonClasses.scrollBarDarkStyle,
+
           {
             [classes.scrolledStyle]: scrolled,
           },

@@ -10,11 +10,14 @@ import {
 
 import { makeStyles } from '@material-ui/core';
 import styles from '../../assets/js/styles/components/image_viewer/imageViewerStyles';
+import commonStyles from '../../assets/js/styles';
 
+const useCommonStyles = makeStyles(commonStyles);
 const useStyles = makeStyles(styles);
 
 function ImageViewer(props) {
   const classes = useStyles(props);
+  const commonClasses = useCommonStyles(props);
 
   const refs = {
     imageViewerEl: React.useRef(null),
@@ -74,10 +77,15 @@ function ImageViewer(props) {
   return (
     <div
       ref={refs.imageViewerEl}
-      className={clsx(classes.imageViewerStyle, {
-        [classes.zoomInStyle]: !ctrlKeyPressed,
-        [classes.zoomOutStyle]: ctrlKeyPressed,
-      })}
+      className={clsx(
+        classes.imageViewerStyle,
+        commonClasses.scrollBarStyle,
+        commonClasses.scrollBarLightStyle,
+        {
+          [classes.zoomInStyle]: !ctrlKeyPressed,
+          [classes.zoomOutStyle]: ctrlKeyPressed,
+        },
+      )}
     >
       <img
         style={{

@@ -35,28 +35,6 @@ const styles = theme => ({
     },
     '& .xterm .xterm-viewport': {
       overflowY: 'scroll',
-      '&::-webkit-scrollbar': {
-        width: '12px',
-      },
-      '&::-webkit-scrollbar-track': {
-        backgroundColor: props =>
-          theme.palette.scrollbar.background[
-            props.settings.prefersDarkMode ? 'dark' : 'light'
-          ],
-      },
-      '&::-webkit-scrollbar-thumb': {
-        backgroundColor: props =>
-          theme.palette.scrollbar.base[
-            props.settings.prefersDarkMode ? 'dark' : 'light'
-          ],
-      },
-
-      '&::-webkit-scrollbar-thumb:hover': {
-        backgroundColor: props =>
-          theme.palette.scrollbar.hover[
-            props.settings.prefersDarkMode ? 'dark' : 'light'
-          ],
-      },
     },
   },
   circuitUIStyle: {
@@ -136,43 +114,6 @@ const styles = theme => ({
           borderRadius: '3px',
           margin: 0,
         },
-      },
-      '&::-webkit-scrollbar': {
-        width: '12px',
-      },
-      '&::-webkit-scrollbar-track': {
-        backgroundColor: props =>
-          theme.palette.scrollbar.background[
-            props.settings.prefersDarkMode ? 'dark' : 'light'
-          ],
-      },
-
-      '&::-webkit-scrollbar-corner': {
-        backgroundColor: props =>
-          theme.palette.scrollbar.background[
-            props.settings.prefersDarkMode ? 'dark' : 'light'
-          ],
-      },
-
-      '&::-webkit-scrollbar-thumb': {
-        backgroundColor: props =>
-          theme.palette.scrollbar.background[
-            props.settings.prefersDarkMode ? 'dark' : 'light'
-          ],
-      },
-
-      '&:hover::-webkit-scrollbar-thumb': {
-        backgroundColor: props =>
-          theme.palette.scrollbar.base[
-            props.settings.prefersDarkMode ? 'dark' : 'light'
-          ],
-      },
-
-      '&::-webkit-scrollbar-thumb:hover': {
-        backgroundColor: props =>
-          theme.palette.scrollbar.hover[
-            props.settings.prefersDarkMode ? 'dark' : 'light'
-          ],
       },
     },
     '& #circuit-ui-input-container': {
@@ -265,40 +206,11 @@ const styles = theme => ({
     padding: '0.4em',
     maxHeight: '50vh',
     overflowY: 'scroll',
-
-    '&::-webkit-scrollbar': {
-      width: '12px',
-    },
-    '&::-webkit-scrollbar-track': {
-      backgroundColor: props =>
-        theme.palette.scrollbar.background[
-          props.settings.prefersDarkMode ? 'dark' : 'light'
-        ],
-    },
-
-    '&::-webkit-scrollbar-thumb': {
-      backgroundColor: props =>
-        theme.palette.scrollbar.background[
-          props.settings.prefersDarkMode ? 'dark' : 'light'
-        ],
-    },
-
     '&:hover::-webkit-scrollbar-thumb': {
-      backgroundColor: props =>
-        theme.palette.scrollbar.base[
-          props.settings.prefersDarkMode ? 'dark' : 'light'
-        ],
       transition: theme.transitions.create('background-color', {
         easing: theme.transitions.easing.linear,
         duration: 1000,
       }),
-    },
-
-    '&::-webkit-scrollbar-thumb:hover': {
-      backgroundColor: props =>
-        theme.palette.scrollbar.hover[
-          props.settings.prefersDarkMode ? 'dark' : 'light'
-        ],
     },
   },
   querySuggestionStyle: {

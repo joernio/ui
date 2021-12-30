@@ -110,8 +110,8 @@ export const collectArgsValues = (dialogEl, dialogFields) => {
     filename: script.filename,
     mainFunctionName: script.mainFunctionName,
     mainFunctionArgs: script.mainFunctionArgs.map(arg => {
-      const value = dialogEl.current.querySelector(
-        `#${script.filename.replaceAll('.', '-')}-${
+      const value = dialogEl.current.getElementById(
+        `${script.filename.replaceAll('.', '-')}-${
           script.mainFunctionName
         }-${arg}`,
       ).value;
