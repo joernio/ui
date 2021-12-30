@@ -69,36 +69,6 @@ const styles = theme => ({
   },
   foldersSectionStyle: {
     overflowY: 'scroll',
-    '&::-webkit-scrollbar': {
-      width: '12px',
-    },
-    '&::-webkit-scrollbar-track': {
-      backgroundColor: props =>
-        theme.palette.scrollbar.background[
-          props.settings.prefersDarkMode ? 'dark' : 'light'
-        ],
-    },
-
-    '&::-webkit-scrollbar-thumb': {
-      backgroundColor: props =>
-        theme.palette.scrollbar.background[
-          props.settings.prefersDarkMode ? 'dark' : 'light'
-        ],
-    },
-
-    '&:hover::-webkit-scrollbar-thumb': {
-      backgroundColor: props =>
-        theme.palette.scrollbar.base[
-          props.settings.prefersDarkMode ? 'dark' : 'light'
-        ],
-    },
-
-    '&::-webkit-scrollbar-thumb:hover': {
-      backgroundColor: props =>
-        theme.palette.scrollbar.hover[
-          props.settings.prefersDarkMode ? 'dark' : 'light'
-        ],
-    },
   },
   scrolledStyle: {
     boxShadow: props =>

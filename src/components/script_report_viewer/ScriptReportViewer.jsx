@@ -40,6 +40,7 @@ function ScriptReportViewer(props) {
           className={clsx(
             classes.rawJSONContainerStyle,
             commonClasses.scrollBarStyle,
+            commonClasses.scrollBarLightStyle,
           )}
         >
           {props.content.split('\n').map(str => (
@@ -51,6 +52,7 @@ function ScriptReportViewer(props) {
           className={clsx(
             classes.parsedReportStyle,
             commonClasses.scrollBarStyle,
+            commonClasses.scrollBarLightStyle,
           )}
         >
           <div className={classes.propertiesContainerStyle}>

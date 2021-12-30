@@ -9,13 +9,15 @@ import {
   zoomOut,
   zoomIn,
 } from './dotGraphViewerScripts';
-
 import { makeStyles } from '@material-ui/core';
 import styles from '../../assets/js/styles/components/dot_graph_viewer/dotGraphViewerStyles';
+import commonStyles from '../../assets/js/styles';
 
+const useCommonStyles = makeStyles(commonStyles);
 const useStyles = makeStyles(styles);
 
 function DotGraphViewer(props) {
+  const commonClasses = useCommonStyles(props);
   const classes = useStyles(props);
 
   const refs = {
@@ -96,10 +98,15 @@ function DotGraphViewer(props) {
   return (
     <div
       ref={refs.dotGraphViewerEl}
-      className={clsx(classes.synthFileViewerStyle, {
-        [classes.zoomInStyle]: !ctrlKeyPressed,
-        [classes.zoomOutStyle]: ctrlKeyPressed,
-      })}
+      className={clsx(
+        commonClasses.scrollBarStyle,
+        commonClasses.scrollBarLightStyle,
+        classes.synthFileViewerStyle,
+        {
+          [classes.zoomInStyle]: !ctrlKeyPressed,
+          [classes.zoomOutStyle]: ctrlKeyPressed,
+        },
+      )}
     >
       <div></div>
     </div>
