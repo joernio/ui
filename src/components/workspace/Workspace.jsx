@@ -18,8 +18,10 @@ import {
   handleScrollTop,
 } from '../../assets/js/utils/scripts';
 import { handleToggleProjectsVisible } from './workspaceScripts';
+import commonStyles from '../../assets/js/styles';
 
 const useStyles = makeStyles(styles);
+const useCommonStyles = makeStyles(commonStyles);
 
 function Workspace(props) {
   const refs = {
@@ -29,6 +31,7 @@ function Workspace(props) {
     importCpgInputEl: React.useRef(null),
   };
   const classes = useStyles(props);
+  const commonClasses = useCommonStyles(props);
 
   const [state, setState] = React.useState({
     projectsVisible: true,
@@ -169,6 +172,8 @@ function Workspace(props) {
           <div
             ref={refs.projectsContainerEl}
             className={clsx(
+              commonClasses.scrollBarStyle,
+              commonClasses.scrollBarDarkStyle,
               classes.projectsSectionStyle,
               {
                 [classes.scrolledStyle]: scrolled,

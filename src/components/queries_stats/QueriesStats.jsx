@@ -8,11 +8,15 @@ import styles from '../../assets/js/styles/components/queries_stats/queriesStats
 
 import { queueEmpty, nFormatter } from '../../assets/js/utils/scripts';
 import { countQueries, updateQueriesStats } from './queriesStatsScripts';
+import commonStyles from '../../assets/js/styles';
 
 const useStyles = makeStyles(styles);
+const useCommonStyles = makeStyles(commonStyles);
 
 function QueriesStats(props) {
   const classes = useStyles(props);
+  const commonClasses = useCommonStyles(props);
+
   let updateQueryIntervalID = null;
 
   const [state, setState] = React.useState({
@@ -57,7 +61,13 @@ function QueriesStats(props) {
     <Popover2
       className={classes.queriesStatsPopoverStyles}
       content={
-        <div className={classes.queriesStatsPopoverContentContainerStyle}>
+        <div
+          className={clsx(
+            commonClasses.scrollBarStyle,
+            commonClasses.scrollBarDarkStyle,
+            classes.queriesStatsPopoverContentContainerStyle,
+          )}
+        >
           {queriesStats &&
             queriesStats.map(query_stat => (
               <div className={classes.queriesStatsQueryContainerStyle}>
