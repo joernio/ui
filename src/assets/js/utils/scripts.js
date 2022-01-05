@@ -324,7 +324,7 @@ export const openSyntheticFile = async (path, content) => {
   if (path) {
     const files = { ...store.getState().files };
 
-    if (path === 'AST Graph') {
+    if (path.endsWith('AST Graph')) {
       files.recent = { ...files.recent };
       files.recent[path] = content;
     }
@@ -840,7 +840,8 @@ export const isQueryResultToOpenSynthFile = results => {
     latest.query.search('dotAst.l') > -1
   ) {
     try {
-      synth_file_path = 'AST Graph';
+      let methodName = latest.query.split('("')[1].split('")')[0];
+      synth_file_path = `${methodName} - AST Graph`;
       content = latest.result.stdout.split('"""');
       content = `${content[1]}`;
       content = content.split('\\"').join("'");

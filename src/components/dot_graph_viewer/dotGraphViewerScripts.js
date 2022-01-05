@@ -12,6 +12,11 @@ export const isCtrlKeyUnpressed = e => {
   }
 };
 
+export const addRemoveKeyDownKeyUpEvent = (type, document, handleSetState) => {
+  document[type]('keydown', e => handleSetState(isCtrlKeyPressed(e)));
+  document[type]('keyup', e => handleSetState(isCtrlKeyUnpressed(e)));
+};
+
 export const zoomIn = ({ node, dotGraphViewerScale }) => {
   dotGraphViewerScale = dotGraphViewerScale + 5;
   let gNode = node.node().querySelector('g');
