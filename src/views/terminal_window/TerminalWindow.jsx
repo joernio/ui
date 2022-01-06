@@ -30,11 +30,14 @@ import {
   calculateSuggestionsPopoverMarginLeft,
   data_obj,
 } from './terminalWindowScripts';
+import commonStyles from '../../assets/js/styles';
 
 const useStyles = makeStyles(styles);
+const useCommonStyles = makeStyles(commonStyles);
 
 function TerminalWindow(props) {
   const classes = useStyles(props);
+  const commonClasses = useCommonStyles(props);
 
   const refs = {
     terminalRef: React.useRef(null),
@@ -186,7 +189,7 @@ function TerminalWindow(props) {
   return (
     <div
       ref={refs.terminalRef}
-      className={clsx(classes.terminalStyle, {
+      className={clsx(classes.terminalStyle, commonClasses.scrollBarStyle, {
         [classes.terminalOpen]: terminalHeight,
         [classes.terminalClose]: !terminalHeight,
       })}
@@ -237,7 +240,10 @@ function TerminalWindow(props) {
         )}
       </div>
       <div ref={refs.circuitUIRef} className={classes.circuitUIStyle}>
-        <div id="circuit-ui-results-container">
+        <div
+          className={clsx(commonClasses.scrollBarStyle)}
+          id="circuit-ui-results-container"
+        >
           <div id="circuit-ui-welcome-screen-container">
             <h1>CPG Explorer</h1>
             <p>Let's Explore</p>
@@ -269,7 +275,11 @@ function TerminalWindow(props) {
             content={
               <div
                 ref={refs.suggestionsContainerEl}
-                className={classes.querySuggestionsStyle}
+                className={clsx(
+                  classes.querySuggestionsStyle,
+                  commonClasses.scrollBarStyle,
+                  commonClasses.scrollBarDarkStyle,
+                )}
               >
                 {query_suggestions.map((query_suggestion, index) => (
                   <div

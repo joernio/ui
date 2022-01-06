@@ -24,12 +24,15 @@ import {
   selectFolderStructureRootPath,
   shouldSwitchFolder,
 } from './foldersScripts';
+import commonStyles from '../../assets/js/styles';
 
+const useCommonStyles = makeStyles(commonStyles);
 const useStyles = makeStyles(styles);
 
 function Folders(props) {
   const foldersContainerEl = React.useRef(null);
   const classes = useStyles(props);
+  const commonClasses = useCommonStyles(props);
   const [state, setState] = React.useState({
     scrolled: false,
     foldersVisible: true,
@@ -189,6 +192,8 @@ function Folders(props) {
         ref={foldersContainerEl}
         className={clsx(
           classes.foldersSectionStyle,
+          commonClasses.scrollBarStyle,
+          commonClasses.scrollBarDarkStyle,
           {
             [classes.scrolledStyle]: scrolled,
           },

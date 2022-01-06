@@ -7,36 +7,6 @@ const styles = theme => ({
         props.settings.prefersDarkMode ? 'dark' : 'light'
       ],
     overflowX: 'scroll',
-    '&::-webkit-scrollbar': {
-      height: '4px',
-    },
-    '&::-webkit-scrollbar-track': {
-      backgroundColor: props =>
-        theme.palette.editor.background[
-          props.settings.prefersDarkMode ? 'dark' : 'light'
-        ],
-    },
-
-    '&::-webkit-scrollbar-thumb': {
-      backgroundColor: props =>
-        theme.palette.scrollbar.background[
-          props.settings.prefersDarkMode ? 'dark' : 'light'
-        ],
-    },
-
-    '&:hover::-webkit-scrollbar-thumb': {
-      backgroundColor: props =>
-        theme.palette.scrollbar.base[
-          props.settings.prefersDarkMode ? 'dark' : 'light'
-        ],
-    },
-
-    '&::-webkit-scrollbar-thumb:hover': {
-      backgroundColor: props =>
-        theme.palette.scrollbar.hover[
-          props.settings.prefersDarkMode ? 'dark' : 'light'
-        ],
-    },
   },
   editorTabStyle: {
     display: 'flex',

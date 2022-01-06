@@ -6,12 +6,6 @@ const styles = theme => ({
     '&::-webkit-scrollbar': {
       width: '12px',
     },
-    '&::-webkit-scrollbar-track': {
-      backgroundColor: props =>
-        theme.palette.editor.background[
-          props.settings.prefersDarkMode ? 'dark' : 'light'
-        ],
-    },
 
     '&::-webkit-scrollbar-corner': {
       backgroundColor: props =>
@@ -39,6 +33,28 @@ const styles = theme => ({
         theme.palette.scrollbar.hover[
           props.settings.prefersDarkMode ? 'dark' : 'light'
         ],
+    },
+  },
+  scrollBarLightStyle: {
+    '&::-webkit-scrollbar-track': {
+      backgroundColor: props =>
+        theme.palette.editor.background[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
+  },
+  scrollBarDarkStyle: {
+    '&::-webkit-scrollbar-track': {
+      backgroundColor: props =>
+        theme.palette.scrollbar.background[
+          props.settings.prefersDarkMode ? 'dark' : 'light'
+        ],
+    },
+  },
+  scrollBarHorizontalStyle: {
+    '&::-webkit-scrollbar': {
+      width: 'unset',
+      height: '4px',
     },
   },
   floatRight: { float: 'right' },

@@ -4,18 +4,19 @@ import { connect } from 'react-redux';
 import * as d3 from 'd3';
 import 'd3-graphviz';
 import {
-  isCtrlKeyPressed,
-  isCtrlKeyUnpressed,
   zoomOut,
   zoomIn,
+  addRemoveKeyDownKeyUpEvent,
 } from './dotGraphViewerScripts';
-
 import { makeStyles } from '@material-ui/core';
 import styles from '../../assets/js/styles/components/dot_graph_viewer/dotGraphViewerStyles';
+import commonStyles from '../../assets/js/styles';
 
+const useCommonStyles = makeStyles(commonStyles);
 const useStyles = makeStyles(styles);
 
 function DotGraphViewer(props) {
+  const commonClasses = useCommonStyles(props);
   const classes = useStyles(props);
 
   const refs = {
@@ -26,6 +27,7 @@ function DotGraphViewer(props) {
     node: null,
     ctrlKeyPressed: false,
     dotGraphViewerScale: 100,
+    prevContent: null,
   });
 
   const handleSetState = obj => {
@@ -37,30 +39,38 @@ function DotGraphViewer(props) {
   };
 
   React.useEffect(() => {
-    const ctrlKeyPressedCallback = e => {
-      handleSetState(isCtrlKeyPressed(e));
-    };
-
-    const ctrlKeyUnpressedCallback = e => {
-      handleSetState(isCtrlKeyUnpressed(e));
-    };
-
     if (refs.dotGraphViewerEl.current) {
-      document.addEventListener('keydown', ctrlKeyPressedCallback);
-      document.addEventListener('keyup', ctrlKeyUnpressedCallback);
+      if (props.content && state.prevContent !== props.content) {
+        addRemoveKeyDownKeyUpEvent(
+          'removeEventListener',
+          document,
+          handleSetState,
+        );
+        addRemoveKeyDownKeyUpEvent(
+          'addEventListener',
+          document,
+          handleSetState,
+        );
 
-      const node = d3.select(refs.dotGraphViewerEl.current.children[0]);
-      handleSetState({ node });
+        const node = d3.select(refs.dotGraphViewerEl.current.children[0]);
+        handleSetState({ node, prevContent: props.content });
+      }
     } else {
-      document.removeEventListener('keydown', ctrlKeyPressedCallback);
-      document.removeEventListener('keyup', ctrlKeyUnpressedCallback);
+      addRemoveKeyDownKeyUpEvent(
+        'removeEventListener',
+        document,
+        handleSetState,
+      );
     }
 
     return () => {
-      document.removeEventListener('keydown', ctrlKeyPressedCallback);
-      document.removeEventListener('keyup', ctrlKeyUnpressedCallback);
+      addRemoveKeyDownKeyUpEvent(
+        'removeEventListener',
+        document,
+        handleSetState,
+      );
     };
-  }, [refs.dotGraphViewerEl.current]);
+  }, [refs.dotGraphViewerEl.current, props.content]);
 
   React.useEffect(() => {
     if (state.node) {
@@ -96,10 +106,15 @@ function DotGraphViewer(props) {
   return (
     <div
       ref={refs.dotGraphViewerEl}
-      className={clsx(classes.synthFileViewerStyle, {
-        [classes.zoomInStyle]: !ctrlKeyPressed,
-        [classes.zoomOutStyle]: ctrlKeyPressed,
-      })}
+      className={clsx(
+        commonClasses.scrollBarStyle,
+        commonClasses.scrollBarLightStyle,
+        classes.synthFileViewerStyle,
+        {
+          [classes.zoomInStyle]: !ctrlKeyPressed,
+          [classes.zoomOutStyle]: ctrlKeyPressed,
+        },
+      )}
     >
       <div></div>
     </div>

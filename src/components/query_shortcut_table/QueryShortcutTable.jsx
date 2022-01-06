@@ -102,7 +102,7 @@ function QueryShortcutTable(props) {
                       onMouseOver={() => handleSetState(handleMouseOver(idx))}
                       onMouseOut={() => handleSetState(handleMouseOut())}
                       className={clsx(classes.itemStyle, {
-                        [classes.overStyle]: hover === idx,
+                        [classes.hoverStyle]: hover === idx,
                         [classes.evenStyle]: idx % 2 === 0,
                         [classes.oddStyle]: idx % 2 !== 0,
                       })}
@@ -151,7 +151,7 @@ function QueryShortcutTable(props) {
                       onMouseOver={() => handleSetState(handleMouseOver(idx))}
                       onMouseOut={() => handleSetState(handleMouseOut())}
                       className={clsx(classes.itemStyle, {
-                        [classes.overStyle]: hover === idx,
+                        [classes.hoverStyle]: hover === idx,
                         [classes.evenStyle]: idx % 2 === 0,
                         [classes.oddStyle]: idx % 2 !== 0,
                       })}
@@ -179,7 +179,7 @@ function QueryShortcutTable(props) {
                       onMouseOver={() => handleSetState(handleMouseOver(idx))}
                       onMouseOut={() => handleSetState(handleMouseOut())}
                       className={clsx(classes.itemStyle, {
-                        [classes.overStyle]: hover === idx,
+                        [classes.hoverStyle]: hover === idx,
                         [classes.evenStyle]: idx % 2 === 0,
                         [classes.oddStyle]: idx % 2 !== 0,
                       })}
@@ -220,7 +220,7 @@ function QueryShortcutTable(props) {
                       onMouseOver={() => handleSetState(handleMouseOver(idx))}
                       onMouseOut={() => handleSetState(handleMouseOut())}
                       className={clsx(classes.itemStyle, {
-                        [classes.overStyle]: hover === idx,
+                        [classes.hoverStyle]: hover === idx,
                         [classes.evenStyle]: idx % 2 === 0,
                         [classes.oddStyle]: idx % 2 !== 0,
                       })}
@@ -248,7 +248,7 @@ function QueryShortcutTable(props) {
                       onMouseOver={() => handleSetState(handleMouseOver(idx))}
                       onMouseOut={() => handleSetState(handleMouseOut())}
                       className={clsx(classes.itemStyle, {
-                        [classes.overStyle]: hover === idx,
+                        [classes.hoverStyle]: hover === idx,
                         [classes.evenStyle]: idx % 2 === 0,
                         [classes.oddStyle]: idx % 2 !== 0,
                       })}

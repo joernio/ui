@@ -3,7 +3,8 @@ const styles = theme => ({
     width: '100%',
     height: '100%',
     position: 'relative',
-    overflow: 'hidden',
+    overflowX: 'hidden',
+    overflowY: 'auto',
     backgroundColor: props =>
       theme.palette.editor.background[
         props.settings.prefersDarkMode ? 'dark' : 'light'
@@ -129,6 +130,9 @@ const styles = theme => ({
   },
   headingStyle: {
     width: '100%',
+    position: 'sticky',
+    zIndex: 10,
+    top: 0,
     backgroundColor: props =>
       theme.palette.explorer.background[
         props.settings.prefersDarkMode ? 'dark' : 'light'
@@ -149,7 +153,7 @@ const styles = theme => ({
   oddStyle: {
     backgroundColor: 'transparent',
   },
-  overStyle: {
+  hoverStyle: {
     backgroundColor: props =>
       theme.palette.explorer.hover[
         props.settings.prefersDarkMode ? 'dark' : 'light'
