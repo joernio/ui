@@ -26,6 +26,10 @@ const styles = theme => ({
         theme.palette.scrollbar.base[
           props.settings.prefersDarkMode ? 'dark' : 'light'
         ],
+      transition: theme.transitions.create('background-color', {
+        easing: theme.transitions.easing.linear,
+        duration: 1000,
+      }),
     },
 
     '&::-webkit-scrollbar-thumb:hover': {
