@@ -27,8 +27,8 @@ export const modifyWorkSpaceNameAndActiveProject = (obj, workspace) => {
       inputPath,
       pathToProject,
       open: true,
-      cpg: activeProject.cpg,
-      language: language ? language : activeProject.language,
+      cpg: activeProject?.cpg,
+      language: language ? language : activeProject?.language,
     };
     workspace.projects[activeProjectName] = activeProject;
   }
