@@ -480,6 +480,114 @@ export const initCircuitUI = refs => {
 };
 
 export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
+  //parse value
+  const response = [
+    {
+      id: '3074457345618258805L',
+      astParentFullName: 'remove',
+      astParentType: 'TYPE_DECL',
+      code: 'int remove (const char *__filename)',
+      columnNumber: 'Some(value = 11),',
+      columnNumberEnd: 'Some(value = 42)',
+      filename: '/usr/include/stdio.h',
+      fullName: 'remove',
+      hash: 'None',
+      isExternal: true,
+      lineNumber: 'Some(value = 146)',
+      lineNumberEnd: 'Some(value = 146)',
+      name: 'remove',
+      order: 1,
+      signature: 'int remove (const char*)',
+    },
+    {
+      id: '3074457345618258805L',
+      astParentFullName: 'remove',
+      astParentType: 'TYPE_DECL',
+      code: 'int remove (const char *__filename)',
+      columnNumber: 'Some(value = 11),',
+      columnNumberEnd: 'Some(value = 42)',
+      filename: '/usr/include/stdio.h',
+      fullName: 'remove',
+      hash: 'None',
+      isExternal: true,
+      lineNumber: 'Some(value = 146)',
+      lineNumberEnd: 'Some(value = 146)',
+      name: 'remove',
+      order: 1,
+      signature: 'int remove (const char*)',
+    },
+    {
+      id: '3074457345618258805L',
+      astParentFullName: 'remove',
+      astParentType: 'TYPE_DECL',
+      code: 'int remove (const char *__filename)',
+      columnNumber: 'Some(value = 11),',
+      columnNumberEnd: 'Some(value = 42)',
+      filename: '/usr/include/stdio.h',
+      fullName: 'remove',
+      hash: 'None',
+      isExternal: true,
+      lineNumber: 'Some(value = 146)',
+      lineNumberEnd: 'Some(value = 146)',
+      name: 'remove',
+      order: 1,
+      signature: 'int remove (const char*)',
+    },
+    {
+      id: '3074457345618258805L',
+      astParentFullName: 'remove',
+      astParentType: 'TYPE_DECL',
+      code: 'int remove (const char *__filename)',
+      columnNumber: 'Some(value = 11),',
+      columnNumberEnd: 'Some(value = 42)',
+      filename: '/usr/include/stdio.h',
+      fullName: 'remove',
+      hash: 'None',
+      isExternal: true,
+      lineNumber: 'Some(value = 146)',
+      lineNumberEnd: 'Some(value = 146)',
+      name: 'remove',
+      order: 1,
+      signature: 'int remove (const char*)',
+    },
+    {
+      id: '3074457345618258805L',
+      astParentFullName: 'remove',
+      astParentType: 'TYPE_DECL',
+      code: 'int remove (const char *__filename)',
+      columnNumber: 'Some(value = 11),',
+      columnNumberEnd: 'Some(value = 42)',
+      filename: '/usr/include/stdio.h',
+      fullName: 'remove',
+      hash: 'None',
+      isExternal: true,
+      lineNumber: 'Some(value = 146)',
+      lineNumberEnd: 'Some(value = 146)',
+      name: 'remove',
+      order: 1,
+      signature: 'int remove (const char*)',
+    },
+    {
+      id: '3074457345618258805L',
+      astParentFullName: 'remove',
+      astParentType: 'TYPE_DECL',
+      code: 'int remove (const char *__filename)',
+      columnNumber: 'Some(value = 11),',
+      columnNumberEnd: 'Some(value = 42)',
+      filename: '/usr/include/stdio.h',
+      fullName: 'remove',
+      hash: 'None',
+      isExternal: true,
+      lineNumber: 'Some(value = 146)',
+      lineNumberEnd: 'Some(value = 146)',
+      name: 'remove',
+      order: 1,
+      signature: 'int remove (const char*)',
+    },
+  ];
+
+  value = response;
+
   const circuitUIResEl = refs.circuitUIRef.current.children[0];
   const containerDiv = circuitUIResEl.ownerDocument.createElement('div');
   if (res_type === 'query') {
@@ -488,8 +596,40 @@ export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
     containerDiv.classList.add('response');
   }
 
-  const p = circuitUIResEl.ownerDocument.createElement('p');
-  p.innerHTML = value;
+  let p, responseWrapper;
+
+  if (typeof value === 'string') {
+    p = circuitUIResEl.ownerDocument.createElement('p');
+    p.classList.add('content');
+    p.innerHTML = value;
+    containerDiv.append(p);
+  } else {
+    responseWrapper = circuitUIResEl.ownerDocument.createElement('div');
+    responseWrapper.classList.add('response-wrapper');
+    response.forEach(u => {
+      let responseListWrapper = document.createElement('div');
+      responseListWrapper.classList.add('response-list-wrapper');
+      let responseLink = document.createElement('div');
+      responseLink.innerHTML = `${u.fullName}()`;
+      responseLink.classList.add('response-link');
+      responseLink.onclick = () => {};
+      responseListWrapper.appendChild(responseLink);
+      Object.keys(u).forEach(l => {
+        let responseItem = document.createElement('div');
+        responseItem.classList.add('response-item');
+        let responseKey = document.createElement('span');
+        responseKey.classList.add('response-key');
+        let responseValue = document.createElement('span');
+        responseValue.classList.add('response-value');
+        responseKey.innerHTML = l;
+        responseValue.innerHTML = u[l];
+        responseItem.append(responseKey, responseValue);
+        responseListWrapper.append(responseItem);
+      });
+      responseWrapper.appendChild(responseListWrapper);
+    });
+    containerDiv.append(responseWrapper);
+  }
 
   if (res_type === 'stderr') {
     const errEl = circuitUIResEl.ownerDocument.createElement('span');
@@ -498,7 +638,6 @@ export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
     p.prepend(errEl);
   }
 
-  containerDiv.append(p);
   circuitUIResEl.append(containerDiv);
   circuitUIResEl.scrollTop = circuitUIResEl.scrollHeight;
 };

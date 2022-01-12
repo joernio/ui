@@ -19,21 +19,23 @@ describe('function handleOpenFile: ', () => {
   });
 });
 
-describe('function getOpenFileName: ', () => {
-  it('expect function to return undefined when arg is falsy: ', () => {
-    [undefined, null, '', false, 0, {}].map(arg => {
-      expect(windowWrapperScripts.getOpenFileName(arg)).toBe(undefined);
-    });
-  });
+// property getOpenFileName doesn't exist in windowWrapperScripts
 
-  it('expect function to return undefined: ', () => {
-    const props = { files: { openFilePath: '' } };
-    expect(windowWrapperScripts.getOpenFileName(props)).toBe(undefined);
-  });
+// describe('function getOpenFileName: ', () => {
+//   it('expect function to return undefined when arg is falsy: ', () => {
+//     [undefined, null, '', false, 0, {}].map(arg => {
+//       expect(windowWrapperScripts.getOpenFileName(arg)).toBe(undefined);
+//     });
+//   });
 
-  it('expect function return value to be equal to pre-calculated value: ', () => {
-    const filename = 'f';
-    const props = { files: { openFilePath: `/a/b/c/d/e/d/${filename}` } };
-    expect(windowWrapperScripts.getOpenFileName(props)).toBe(filename);
-  });
-});
+//   it('expect function to return undefined: ', () => {
+//     const props = { files: { openFilePath: '' } };
+//     expect(windowWrapperScripts.getOpenFileName(props)).toBe(undefined);
+//   });
+
+//   it('expect function return value to be equal to pre-calculated value: ', () => {
+//     const filename = 'f';
+//     const props = { files: { openFilePath: `/a/b/c/d/e/d/${filename}` } };
+//     expect(windowWrapperScripts.getOpenFileName(props)).toBe(filename);
+//   });
+// });

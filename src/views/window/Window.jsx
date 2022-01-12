@@ -9,7 +9,7 @@ import { getWindowHeight } from './windowScripts';
 
 const useStyle = makeStyles(styles);
 
-function Window(props) {
+function Window() {
   const [state, setState] = React.useState({
     topNavHeight: '35px',
     statusBarHeight: '28px',
