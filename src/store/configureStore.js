@@ -12,7 +12,7 @@ const persistConfig = {
   storage,
   version: 0,
   whitelist: ['settings', 'files'],
-  blacklist: ['status', 'terminal', 'query', 'workspace'],
+  blacklist: ['status', 'terminal', 'query', 'workspace', 'editor'],
   stateReconciler: autoMergeLevel2,
   migrate: createMigrate(migrations, { debug: true }),
 };

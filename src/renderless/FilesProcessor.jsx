@@ -12,7 +12,7 @@ function FilesProcessor(props) {
 
   React.useEffect(() => {
     processFiles(props);
-  }, [props.query.results]);
+  }, [props.query.results, props.workspace.projects]);
 
   return null;
 }
@@ -21,6 +21,7 @@ const mapStateToProps = state => {
   return {
     files: state.files,
     workspace: state.workspace,
+    editor: state.editor,
     query: state.query,
   };
 };
