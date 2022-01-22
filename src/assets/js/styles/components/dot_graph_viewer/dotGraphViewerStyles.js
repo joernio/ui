@@ -1,4 +1,11 @@
 const styles = theme => ({
+  rawStringContainerStyle: {
+    height: '90%',
+    overflow: 'auto',
+    marginLeft: '1em',
+    paddingTop: '1em',
+    color: props => (props.settings.prefersDarkMode ? '#C3CCCC' : '#616161'),
+  },
   synthFileViewerStyle: {
     width: '100%',
     height: '90%',
