@@ -9,6 +9,7 @@ import {
   addRemoveKeyDownKeyUpEvent,
 } from './dotGraphViewerScripts';
 import { makeStyles } from '@material-ui/core';
+import EditorWindowBanner from '../editor_window_banner/EditorWindowBanner';
 import styles from '../../assets/js/styles/components/dot_graph_viewer/dotGraphViewerStyles';
 import commonStyles from '../../assets/js/styles';
 
@@ -28,6 +29,7 @@ function DotGraphViewer(props) {
     ctrlKeyPressed: false,
     dotGraphViewerScale: 100,
     prevContent: null,
+    errorMessage: '',
   });
 
   const handleSetState = obj => {
@@ -74,7 +76,14 @@ function DotGraphViewer(props) {
 
   React.useEffect(() => {
     if (state.node) {
-      state.node.graphviz({ fit: true }).renderDot(props.content);
+      try {
+        state.node.graphviz({ fit: true }).renderDot(props.content);
+        handleSetState({ errorMessage: '' });
+      } catch {
+        const errorMessage =
+          'There was an error parsing AST Graph. Displaying raw string instead';
+        handleSetState({ errorMessage });
+      }
     }
   }, [state.node]);
 
@@ -101,23 +110,40 @@ function DotGraphViewer(props) {
     };
   }, [state.node, state.dotGraphViewerScale]);
 
-  const { ctrlKeyPressed } = state;
+  const { ctrlKeyPressed, errorMessage } = state;
 
   return (
-    <div
-      ref={refs.dotGraphViewerEl}
-      className={clsx(
-        commonClasses.scrollBarStyle,
-        commonClasses.scrollBarLightStyle,
-        classes.synthFileViewerStyle,
-        {
-          [classes.zoomInStyle]: !ctrlKeyPressed,
-          [classes.zoomOutStyle]: ctrlKeyPressed,
-        },
+    <>
+      <EditorWindowBanner message={errorMessage} />
+      {errorMessage ? (
+        <div
+          className={clsx(
+            classes.rawStringContainerStyle,
+            commonClasses.scrollBarStyle,
+            commonClasses.scrollBarLightStyle,
+          )}
+        >
+          {props.content.split('\n').map(str => (
+            <p>{str}</p>
+          ))}
+        </div>
+      ) : (
+        <div
+          ref={refs.dotGraphViewerEl}
+          className={clsx(
+            commonClasses.scrollBarStyle,
+            commonClasses.scrollBarLightStyle,
+            classes.synthFileViewerStyle,
+            {
+              [classes.zoomInStyle]: !ctrlKeyPressed,
+              [classes.zoomOutStyle]: ctrlKeyPressed,
+            },
+          )}
+        >
+          <div></div>
+        </div>
       )}
-    >
-      <div></div>
-    </div>
+    </>
   );
 }
 
