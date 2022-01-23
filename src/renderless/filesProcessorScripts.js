@@ -4,10 +4,12 @@ import {
   isFilePathInQueryResult,
   isQueryResultToOpenSynthFile,
 } from '../assets/js/utils/scripts';
+import { editorShouldGoToLine } from '../views/editor_window/editorScripts';
 
 export const processFiles = async props => {
   const file_path = isFilePathInQueryResult(props.query.results);
-  file_path && openFile(file_path);
+  file_path && (await openFile(file_path));
+  file_path && editorShouldGoToLine();
 
   const { synth_file_path, content } = await isQueryResultToOpenSynthFile(
     props.query.results,

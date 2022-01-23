@@ -22,6 +22,7 @@ import {
 } from '../../../store/actions/queryActions';
 import { setToast } from '../../../store/actions/statusActions';
 import { setFiles, setOpenFiles } from '../../../store/actions/filesActions';
+import { setHighlightRange } from '../../../store/actions/editorActions';
 import { windowActionApi, selectDirApi } from './ipcRenderer';
 import { store } from '../../../store/configureStore';
 import chokidar from 'chokidar';
@@ -317,6 +318,7 @@ export const openFile = async path => {
     files.openFileContent = openFileContent;
     files.openFileIsReadOnly = openFileIsReadOnly;
     store.dispatch(setFiles(files));
+    store.dispatch(setHighlightRange({ startLine: null, endLine: null }));
   }
 };
 
@@ -433,6 +435,7 @@ export const closeFile = async path => {
     files.openFileIsReadOnly = openFileIsReadOnly;
 
     store.dispatch(setFiles(files));
+    store.dispatch(setHighlightRange({ startLine: null, endLine: null }));
   }
 };
 
@@ -473,6 +476,7 @@ export const openEmptyFile = () => {
   files.openFileIsReadOnly = false;
 
   store.dispatch(setFiles(files));
+  store.dispatch(setHighlightRange({ startLine: null, endLine: null }));
 };
 
 export const saveFile = async (path, base_dir) => {

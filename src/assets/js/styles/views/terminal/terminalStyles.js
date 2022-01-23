@@ -82,7 +82,7 @@ const styles = theme => ({
           ],
         display: 'flex',
         alignItems: 'center',
-        '& p': {
+        '& .content': {
           width: 'fit-content',
           backgroundColor: props =>
             theme.palette.sideNav.background[
@@ -113,6 +113,48 @@ const styles = theme => ({
           padding: '0.1em 0.3em',
           borderRadius: '3px',
           margin: 0,
+        },
+        '& .value-container': {
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          justifyContent: 'center',
+          gap: '1em',
+        },
+        '& .object-title': {
+          cursor: 'pointer',
+          width: 'fit-content',
+          backgroundColor: props =>
+            theme.palette.sideNav.background[
+              props.settings.prefersDarkMode ? 'dark' : 'light'
+            ],
+          color: props =>
+            theme.palette.sideNav.hover[
+              props.settings.prefersDarkMode ? 'dark' : 'light'
+            ],
+          padding: '0.1em 0.3em',
+          borderRadius: '3px',
+          marginBottom: '8px',
+        },
+        '& .object-container': {
+          width: '100%',
+          padding: '0.5em',
+          border: props =>
+            `1px solid ${
+              theme.palette.sideNav.base[
+                props.settings.prefersDarkMode ? 'dark' : 'light'
+              ]
+            }`,
+        },
+        '& .object-entry-container': {
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          gap: '1em',
+        },
+        '& .object-key': {
+          minWidth: '10em',
         },
       },
     },

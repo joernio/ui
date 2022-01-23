@@ -7,11 +7,12 @@ import EditorTabs from '../../components/editor_tabs/EditorTabs';
 import EditorWindowBanner from '../../components/editor_window_banner/EditorWindowBanner';
 import { connect } from 'react-redux';
 import * as filesActions from '../../store/actions/filesActions';
+import * as editorActions from '../../store/actions/editorActions';
 import { makeStyles } from '@material-ui/core';
 import {
   editorDidMount,
-  handleEditorGoToLineAndHighlight,
   handleEditorOnChange,
+  handleEditorGoToLineAndHighlight,
 } from './editorScripts';
 import styles from '../../assets/js/styles/views/editor_window/editorWindowStyles';
 import {
@@ -26,15 +27,21 @@ function EditorWindow(props) {
   const classes = useStyles(props);
 
   const refs = {
-    editorContainerEl: React.useRef(null),
     editorEl: React.useRef(null),
   };
 
   React.useEffect(() => {
-    if (refs.editorEl.current) {
-      handleEditorGoToLineAndHighlight(refs, props);
-    }
-  }, [props.files.recent, props.workspace.projects]);
+    props.setRefs(refs);
+  }, []);
+
+  React.useEffect(() => {
+    refs.editorEl.current &&
+      setTimeout(
+        () =>
+          handleEditorGoToLineAndHighlight(refs, props.editor.highlightRange),
+        1000,
+      );
+  }, [props.editor.highlightRange]);
 
   const { settings, files } = props;
 
@@ -95,6 +102,7 @@ function EditorWindow(props) {
 
 const mapStateToProps = state => {
   return {
+    editor: state.editor,
     files: state.files,
     query: state.query,
     workspace: state.workspace,
@@ -112,6 +120,9 @@ const mapDispatchToProps = dispatch => {
     },
     setOpenFiles: openFiles => {
       return dispatch(filesActions.setOpenFiles(openFiles));
+    },
+    setRefs: refs => {
+      return dispatch(editorActions.setRefs(refs));
     },
   };
 };
