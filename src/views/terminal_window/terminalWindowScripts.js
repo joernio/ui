@@ -262,11 +262,7 @@ export const handleEnter = async (term, refs) => {
   store.dispatch(setTerminalBusy(true));
   await TWS.termWrite(term, TWS.constructInputToWrite());
   await TWS.termWriteLn(term, '');
-  TWS.handleWriteToCircuitUIResponse(
-    refs,
-    TWS.constructOutputToWrite(null, TWS.data_obj.data, true),
-    'query',
-  );
+  TWS.handleWriteToCircuitUIResponse(refs, TWS.data_obj.data, 'query');
   TWS.updateData(null);
   TWS.updateCursorPosition(0);
   TWS.handleWriteToCircuitUIInput(refs);
@@ -363,11 +359,7 @@ export const handleWriteQueryResult = async (term, refs, latest) => {
     await TWS.termWriteLn(term, TWS.constructOutputToWrite(null, lines[i]));
   }
 
-  TWS.handleWriteToCircuitUIResponse(
-    refs,
-    TWS.constructOutputToWrite(null, lines.join('\n'), true),
-    res_type,
-  );
+  TWS.handleWriteToCircuitUIResponse(refs, lines.join('\n'), res_type);
 
   await term.prompt();
   store.dispatch(setTerminalBusy(false));
@@ -384,11 +376,7 @@ export const handleWriteScriptQuery = async (term, refs, latest) => {
     term,
     TWS.constructOutputToWrite(TV.cpgDefaultPrompt, latest.query),
   );
-  TWS.handleWriteToCircuitUIResponse(
-    refs,
-    TWS.constructOutputToWrite(null, latest.query, true),
-    'query',
-  );
+  TWS.handleWriteToCircuitUIResponse(refs, latest.query, 'query');
 
   !busy && (await term.prompt());
 };
@@ -410,11 +398,7 @@ export const handleWriteQuery = async (term, refs, latest) => {
     }
   }
 
-  TWS.handleWriteToCircuitUIResponse(
-    refs,
-    TWS.constructOutputToWrite(null, lines.join('\n'), true),
-    'query',
-  );
+  TWS.handleWriteToCircuitUIResponse(refs, lines.join('\n'), 'query');
 
   store.dispatch(setTerminalBusy(true));
 };
@@ -561,11 +545,14 @@ export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
 
   if (res_type === 'query') {
     containerDiv.classList.add('query');
+    value = TWS.constructOutputToWrite(null, value, true);
   } else {
     containerDiv.classList.add('response');
-    value = parseCircuitUIResponseValue(
-      value.replace('<pre>', '').replace('</pre>', ''),
-    );
+    let parsedResponse = parseCircuitUIResponseValue(value);
+    if (parsedResponse === value) {
+      parsedResponse = TWS.constructOutputToWrite(null, parsedResponse, true);
+    }
+    value = parsedResponse;
   }
 
   let p, valueContainer;
