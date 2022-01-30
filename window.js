@@ -16,6 +16,7 @@ const createWindow = async () => {
     // transparent: isMac,
     acceptFirstMouse: true,
     webPreferences: {
+      nodeIntegrationInWorker: true,
       nodeIntegration: true,
       worldSafeExecuteJavaScript: true,
       contextIsolation: false,

@@ -32,8 +32,12 @@ import { handlePrintable } from '../../../views/terminal_window/terminalWindowSc
 
 mouseTrapGlobalBindig(Mousetrap);
 
+export const generateRandomID = () => {
+  return nanoid();
+};
+
 export const performEnQueueQuery = (query, queue) => {
-  const key = `${Object.keys(queue).length}-${nanoid()}`;
+  const key = `${Object.keys(queue).length}-${generateRandomID()}`;
   queue[key] = query;
 
   return queue;

@@ -1,9 +1,8 @@
 import { createHash } from 'crypto';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
-
 import { windowActionApi } from '../../assets/js/utils/ipcRenderer';
-import { openFile } from '../../assets/js/utils/scripts';
+import { openFile, generateRandomID } from '../../assets/js/utils/scripts';
 import {
   terminalVariables as TV,
   printable,
@@ -469,57 +468,6 @@ export const initCircuitUI = refs => {
   };
 };
 
-export const parseCircuitUIResponseValue = value => {
-  try {
-    const listContentSeperator = createHash('sha256')
-      .update(String(Date.now() + Math.random() * 1000))
-      .digest('hex');
-    const objValueSeperator = createHash('sha256')
-      .update(String(Date.now() + Math.random() * 1000))
-      .digest('hex');
-
-    const keysArr = [
-      'id',
-      'astParentFullName',
-      'astParentType',
-      'code',
-      'columnNumber',
-      'columnNumberEnd',
-      'filename',
-      'fullName',
-      'hash',
-      'isExternal',
-      'lineNumber',
-      'lineNumberEnd',
-      'name',
-      'order',
-      'signature',
-    ];
-
-    let res = value.split('List[Method] = List(')[1];
-    res = res.replaceAll(/"?\)\)/gi, ''); // replace '"))' or '))'
-    res = res.replaceAll(/"?\)?,? ?Method\( = /gi, listContentSeperator); // replace '"), Method( = '  or '), Method( = '  or 'Method( = '
-    res = res.replaceAll(/"?,  = "?/gi, objValueSeperator); // replace '",  = "' or ',  = "' or '",  = ' or ',  = '
-
-    res = res.split(listContentSeperator).filter(str => !!str && str !== '\n ');
-
-    res = res.map(str => {
-      //this creates a nested loop. Any better way to do this?
-      str = str.split(objValueSeperator);
-      if (str.length !== 15) throw 'error';
-      const methodObj = {};
-      str.forEach((value, index) => {
-        methodObj[keysArr[index]] = value;
-      });
-      return methodObj;
-    });
-
-    return res;
-  } catch (e) {
-    return value;
-  }
-};
-
 export const openFileAndGoToLineFromCircuitUI = async ({
   filename,
   lineNumber: startLine,
@@ -539,67 +487,119 @@ export const openFileAndGoToLineFromCircuitUI = async ({
   }
 };
 
-export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
-  const circuitUIResEl = refs.circuitUIRef.current.children[0];
-  const containerDiv = circuitUIResEl.ownerDocument.createElement('div');
+export const handleInsertELementToCircuitUIResponseNode = obj => {
+  let { e, value, circuitUIResEl, valueContainer, callerID, worker, callback } =
+    obj;
 
-  if (res_type === 'query') {
-    containerDiv.classList.add('query');
-    value = TWS.constructOutputToWrite(null, value, true);
-  } else {
-    containerDiv.classList.add('response');
-    let parsedResponse = parseCircuitUIResponseValue(value);
+  if (e.data.parseCircuitUIResponseValue && e.data.callerID === callerID) {
+    //check if message belongs to the right function
+
+    let parsedResponse = e.data.parseCircuitUIResponseValue;
     if (parsedResponse === value) {
       parsedResponse = TWS.constructOutputToWrite(null, parsedResponse, true);
     }
     value = parsedResponse;
+
+    if (typeof value === 'string') {
+      let p = circuitUIResEl.ownerDocument.createElement('p');
+      p.classList.add('content');
+      p.innerHTML = value;
+      valueContainer.appendChild(p);
+    } else {
+      let objContainer = circuitUIResEl.ownerDocument.createElement('div');
+      objContainer.classList.add('object-container');
+      let objTitle = circuitUIResEl.ownerDocument.createElement('div');
+      objTitle.innerHTML = `${value.fullName}()`;
+      objTitle.classList.add('object-title');
+
+      objTitle.onclick = () => openFileAndGoToLineFromCircuitUI(value);
+
+      objContainer.appendChild(objTitle);
+      Object.keys(value).forEach(prop => {
+        let objEntryContainer =
+          circuitUIResEl.ownerDocument.createElement('div');
+        objEntryContainer.classList.add('object-entry-container');
+        let objKey = circuitUIResEl.ownerDocument.createElement('span');
+        objKey.classList.add('object-key');
+        let objValue = circuitUIResEl.ownerDocument.createElement('span');
+        objKey.innerText = prop;
+        objValue.innerText = value[prop];
+        objEntryContainer.append(objKey, objValue);
+        objContainer.append(objEntryContainer);
+      });
+
+      valueContainer.appendChild(objContainer);
+    }
+
+    circuitUIResEl.scrollTop = circuitUIResEl.scrollHeight;
+
+    if (e.data.end) {
+      //remove listener is message is the end of stream;
+      worker.removeEventListener('message', callback);
+    }
   }
+};
 
+export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
   let p, valueContainer;
+  const circuitUIResEl = refs.circuitUIRef.current.children[0];
+  const containerDiv = circuitUIResEl.ownerDocument.createElement('div');
+  circuitUIResEl.append(containerDiv);
 
-  if (typeof value === 'string') {
+  if (res_type === 'query') {
+    containerDiv.classList.add('query');
+    value = TWS.constructOutputToWrite(null, value, true);
     p = circuitUIResEl.ownerDocument.createElement('p');
     p.classList.add('content');
     p.innerHTML = value;
     containerDiv.append(p);
+
+    if (res_type === 'stderr') {
+      const errEl = circuitUIResEl.ownerDocument.createElement('span');
+      errEl.classList.add('error');
+      errEl.innerText = 'ERROR';
+      p.prepend(errEl);
+    }
+
+    circuitUIResEl.scrollTop = circuitUIResEl.scrollHeight;
   } else {
+    containerDiv.classList.add('response');
+
+    const listContentSeperator = generateRandomID();
+    const objValueSeperator = generateRandomID();
+    const callerID = generateRandomID();
+
     valueContainer = circuitUIResEl.ownerDocument.createElement('div');
     valueContainer.classList.add('value-container');
-    value.forEach(obj => {
-      let objContainer = document.createElement('div');
-      objContainer.classList.add('object-container');
-      let objTitle = document.createElement('div');
-      objTitle.innerHTML = `${obj.fullName}()`;
-      objTitle.classList.add('object-title');
-
-      objTitle.onclick = () => openFileAndGoToLineFromCircuitUI(obj);
-
-      objContainer.appendChild(objTitle);
-      Object.keys(obj).forEach(prop => {
-        let objEntryContainer = document.createElement('div');
-        objEntryContainer.classList.add('object-entry-container');
-        let objKey = document.createElement('span');
-        objKey.classList.add('object-key');
-        let objValue = document.createElement('span');
-        objKey.innerText = prop;
-        objValue.innerText = obj[prop];
-        objEntryContainer.append(objKey, objValue);
-        objContainer.append(objEntryContainer);
-      });
-      valueContainer.appendChild(objContainer);
-    });
     containerDiv.append(valueContainer);
-  }
 
-  if (res_type === 'stderr') {
-    const errEl = circuitUIResEl.ownerDocument.createElement('span');
-    errEl.classList.add('error');
-    errEl.innerText = 'ERROR';
-    p.prepend(errEl);
-  }
+    const worker = store.getState().query.workers[0];
 
-  circuitUIResEl.append(containerDiv);
-  circuitUIResEl.scrollTop = circuitUIResEl.scrollHeight;
+    const callback = e => {
+      window.requestIdleCallback(() =>
+        handleInsertELementToCircuitUIResponseNode({
+          e,
+          value,
+          circuitUIResEl,
+          valueContainer,
+          callerID,
+          worker,
+          callback,
+        }),
+      );
+    };
+
+    worker.addEventListener('message', callback);
+
+    worker.postMessage({
+      parseCircuitUIResponseValue: [
+        value,
+        listContentSeperator,
+        objValueSeperator,
+      ],
+      callerID,
+    });
+  }
 };
 
 export const handleWriteToCircuitUIInput = refs => {
