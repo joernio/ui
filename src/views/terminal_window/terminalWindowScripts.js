@@ -21,6 +21,10 @@ import { store } from '../../store/configureStore';
 import * as TWS from './terminalWindowScripts';
 
 export const data_obj = { data: '', cursorPosition: 0 };
+export const response_toggler_obj = {
+  responseId: {},
+  toggleState: true,
+};
 
 export const updateData = str => {
   if (str) {
@@ -539,15 +543,155 @@ export const openFileAndGoToLineFromCircuitUI = async ({
   }
 };
 
+export const handleToggleAllResponse = refs => {
+  let isAllOpen = Object.keys(TWS.response_toggler_obj.responseId).every(
+    key => TWS.response_toggler_obj.responseId[key],
+  );
+  let isAllClose = Object.keys(TWS.response_toggler_obj.responseId).every(
+    key => !TWS.response_toggler_obj.responseId[key],
+  );
+  const newResponseId = {};
+  for (let key in TWS.response_toggler_obj.responseId) {
+    newResponseId[key] = isAllClose
+      ? true
+      : isAllOpen
+      ? false
+      : !TWS.response_toggler_obj.toggleState;
+  }
+  TWS.response_toggler_obj.toggleState = !TWS.response_toggler_obj.toggleState;
+  TWS.response_toggler_obj.responseId = newResponseId;
+  let query =
+    refs.circuitUIRef.current.children[0].ownerDocument.getElementsByClassName(
+      'query',
+    );
+  let response =
+    refs.circuitUIRef.current.children[0].ownerDocument.getElementsByClassName(
+      'response',
+    );
+  for (let i = 0; i < query.length; i++) {
+    let id = query[i].getAttribute('key');
+    if (TWS.response_toggler_obj.responseId[id]) {
+      query[i].classList.add('dropdown');
+      response[i].classList.add('dropdown');
+    } else {
+      query[i].classList.remove('dropdown');
+      response[i].classList.remove('dropdown');
+    }
+  }
+};
+
+export const handleToggleOneResponse = (key, refs) => {
+  TWS.response_toggler_obj.responseId = {
+    ...TWS.response_toggler_obj.responseId,
+    [String(key)]: !TWS.response_toggler_obj.responseId[key],
+  };
+  let query =
+    refs.circuitUIRef.current.children[0].ownerDocument.getElementsByClassName(
+      'query',
+    );
+  let response =
+    refs.circuitUIRef.current.children[0].ownerDocument.getElementsByClassName(
+      'response',
+    );
+  for (let i = 0; i < query.length; i++) {
+    let id = query[i].getAttribute('key');
+    if (String(id) === String(key)) {
+      if (TWS.response_toggler_obj.responseId[key]) {
+        query[i].classList.add('dropdown');
+        response[i].classList.add('dropdown');
+      } else {
+        query[i].classList.remove('dropdown');
+        response[i].classList.remove('dropdown');
+      }
+    }
+  }
+};
+
+export const handleToggleAllSubResponse = (sub_response_toggler_obj, refs) => {
+  let isAllOpen = Object.keys(sub_response_toggler_obj.responseId).every(
+    key => sub_response_toggler_obj.responseId[key],
+  );
+  let isAllClose = Object.keys(sub_response_toggler_obj.responseId).every(
+    key => !sub_response_toggler_obj.responseId[key],
+  );
+  const newResponseId = {};
+  for (let key in sub_response_toggler_obj.responseId) {
+    newResponseId[key] = isAllClose
+      ? true
+      : isAllOpen
+      ? false
+      : !sub_response_toggler_obj.toggleState;
+  }
+  sub_response_toggler_obj.toggleState = !sub_response_toggler_obj.toggleState;
+  sub_response_toggler_obj.responseId = newResponseId;
+  let ObjectContainer =
+    refs.circuitUIRef.current.children[0].ownerDocument.getElementsByClassName(
+      'object-container',
+    );
+
+  for (let el of ObjectContainer) {
+    let id = el.getAttribute('key');
+    if (sub_response_toggler_obj.responseId[id]) {
+      el.classList.add('dropdown');
+    } else {
+      el.classList.remove('dropdown');
+    }
+  }
+};
+
+export const handleToggleOneSubResponse = (
+  key,
+  sub_response_toggler_obj,
+  refs,
+) => {
+  sub_response_toggler_obj.responseId = {
+    ...sub_response_toggler_obj.responseId,
+    [String(key)]: !sub_response_toggler_obj.responseId[key],
+  };
+  let ObjectContainer =
+    refs.circuitUIRef.current.children[0].ownerDocument.getElementsByClassName(
+      'object-container',
+    );
+  for (let el of ObjectContainer) {
+    let id = el.getAttribute('key');
+    if (id === key) {
+      if (sub_response_toggler_obj.responseId[key]) {
+        el.classList.add('dropdown');
+      } else {
+        el.classList.remove('dropdown');
+      }
+    }
+  }
+};
+
 export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
-  const circuitUIResEl = refs.circuitUIRef.current.children[0];
+  let key = Date.now();
+  const circuitUIResEl =
+    refs.circuitUIRef.current.children[0].ownerDocument.getElementById(
+      'circuit-ui-results',
+    );
   const containerDiv = circuitUIResEl.ownerDocument.createElement('div');
+  let responseTogglerIcon = circuitUIResEl.ownerDocument.createElement('img');
+  responseTogglerIcon.classList.add('toggle-icon-hide');
+  responseTogglerIcon.setAttribute(
+    'src',
+    'src/assets/image/icon-chevron-down.svg',
+  );
 
   if (res_type === 'query') {
+    TWS.response_toggler_obj.responseId[key] = false;
+    containerDiv.setAttribute('key', key);
     containerDiv.classList.add('query');
     value = TWS.constructOutputToWrite(null, value, true);
+    containerDiv.append(responseTogglerIcon);
   } else {
+    let toggleIcons =
+      circuitUIResEl.ownerDocument.getElementsByClassName('toggle-icon-hide');
+    for (let el of toggleIcons) {
+      el.classList.replace('toggle-icon-hide', 'toggle-icon-show');
+    }
     containerDiv.classList.add('response');
+
     let parsedResponse = parseCircuitUIResponseValue(value);
     if (parsedResponse === value) {
       parsedResponse = TWS.constructOutputToWrite(null, parsedResponse, true);
@@ -555,7 +699,9 @@ export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
     value = parsedResponse;
   }
 
-  let p, valueContainer;
+  responseTogglerIcon.onclick = () =>
+    TWS.handleToggleOneResponse(containerDiv.getAttribute('key'), refs);
+  let p, valueContainer, valueWrapper;
 
   if (typeof value === 'string') {
     p = circuitUIResEl.ownerDocument.createElement('p');
@@ -563,18 +709,37 @@ export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
     p.innerHTML = value;
     containerDiv.append(p);
   } else {
+    const sub_response_toggler_obj = {
+      responseId: {},
+      toggleState: true,
+    };
+    for (let v of value) {
+      sub_response_toggler_obj.responseId[v.id] = false;
+    }
+    valueWrapper = circuitUIResEl.ownerDocument.createElement('div');
+    valueWrapper.classList.add('value-wrapper');
     valueContainer = circuitUIResEl.ownerDocument.createElement('div');
     valueContainer.classList.add('value-container');
     value.forEach(obj => {
       let objContainer = document.createElement('div');
       objContainer.classList.add('object-container');
-      let objTitle = document.createElement('div');
+      objContainer.setAttribute('key', obj.id);
+      let objTitle = document.createElement('span');
       objTitle.innerHTML = `${obj.fullName}()`;
       objTitle.classList.add('object-title');
-
       objTitle.onclick = () => openFileAndGoToLineFromCircuitUI(obj);
 
-      objContainer.appendChild(objTitle);
+      let subResponseTogglerIcon =
+        circuitUIResEl.ownerDocument.createElement('img');
+      subResponseTogglerIcon.classList.add('toggle-icon');
+      subResponseTogglerIcon.setAttribute(
+        'src',
+        'src/assets/image/icon-chevron-down.svg',
+      );
+      subResponseTogglerIcon.onclick = () =>
+        TWS.handleToggleOneSubResponse(obj.id, sub_response_toggler_obj, refs);
+      objContainer.append(objTitle, subResponseTogglerIcon);
+
       Object.keys(obj).forEach(prop => {
         let objEntryContainer = document.createElement('div');
         objEntryContainer.classList.add('object-entry-container');
@@ -588,7 +753,14 @@ export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
       });
       valueContainer.appendChild(objContainer);
     });
-    containerDiv.append(valueContainer);
+
+    let sideToggleBar = circuitUIResEl.ownerDocument.createElement('div');
+    sideToggleBar.classList.add('toggle-bar');
+    sideToggleBar.onclick = () =>
+      TWS.handleToggleAllSubResponse(sub_response_toggler_obj, refs);
+
+    valueWrapper.append(sideToggleBar, valueContainer);
+    containerDiv.append(valueWrapper);
   }
 
   if (res_type === 'stderr') {
