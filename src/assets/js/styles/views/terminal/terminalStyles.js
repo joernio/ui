@@ -87,10 +87,6 @@ const styles = theme => ({
         },
         '& #circuit-ui-results': {
           width: '100%',
-          '& .toggle-icon': {
-            marginLeft: '8px',
-            cursor: 'pointer',
-          },
         },
       },
       '& .query': {
@@ -104,12 +100,17 @@ const styles = theme => ({
         justifyContent: 'flex-end',
         flexDirection: 'row-reverse',
         gap: '1em',
-        '& .toggle-icon-hide': {
-          visibility: 'hidden',
-        },
-        '& .toggle-icon-show': {
-          visibility: 'visible',
+        '& img': {
           cursor: 'pointer',
+          transform: 'rotate(-90deg)',
+          '&.hide-icon': {
+            display: 'none',
+          },
+        },
+        '&.dropdown': {
+          '& img': {
+            transform: 'rotate(0)',
+          },
         },
         '& .content': {
           width: 'fit-content',
@@ -124,11 +125,6 @@ const styles = theme => ({
           padding: '0.1em 0.3em',
           borderRadius: '3px',
           margin: 0,
-        },
-        '&.dropdown': {
-          '& .toggle-icon-show': {
-            transform: 'rotate(180deg)',
-          },
         },
       },
       '& .response': {
@@ -197,10 +193,15 @@ const styles = theme => ({
                 props.settings.prefersDarkMode ? 'dark' : 'light'
               ]
             }`,
+          '& img': {
+            marginLeft: '8px',
+            cursor: 'pointer',
+            transform: 'rotate(-90deg)',
+          },
           '&.dropdown': {
             maxHeight: '100vh',
-            '& .toggle-icon': {
-              transform: 'rotate(180deg)',
+            '& img': {
+              transform: 'rotate(0)',
             },
           },
         },

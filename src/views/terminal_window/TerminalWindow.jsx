@@ -27,7 +27,7 @@ import {
   handleAddQueryToHistory,
   handleEmptyWorkspace,
   handleSuggestionClick,
-  handleToggleAllResponse,
+  handleToggleAllBlocks,
 } from './terminalWindowScripts';
 import commonStyles from '../../assets/js/styles';
 
@@ -229,8 +229,9 @@ function TerminalWindow(props) {
           </div>
           <div id="circuit-ui-results-and-toggler">
             <div
+              data-blocks-collapsed
               className="toggle-bar"
-              onClick={() => handleToggleAllResponse(refs)}
+              onClick={handleToggleAllBlocks}
             ></div>
             <div id="circuit-ui-results"></div>
           </div>
