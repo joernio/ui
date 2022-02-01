@@ -1,9 +1,8 @@
-import { createHash } from 'crypto';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 
 import { windowActionApi } from '../../assets/js/utils/ipcRenderer';
-import { openFile } from '../../assets/js/utils/scripts';
+import { openFile, generateRandomID } from '../../assets/js/utils/scripts';
 import {
   terminalVariables as TV,
   printable,
@@ -542,16 +541,18 @@ export const openFileAndGoToLineFromCircuitUI = async ({
 export const handleToggleAllBlocks = e => {
   const collapsed = e.target.getAttribute('data-blocks-collapsed');
 
-  if (collapsed) {
-    e.target.removeAttribute('data-blocks-collapsed');
-  } else {
-    e.target.setAttribute('data-blocks-collapsed', true);
-  }
-
   const queryContainers =
     e.target.parentElement.getElementsByClassName('query');
   const responseContainers =
     e.target.parentElement.getElementsByClassName('response');
+
+  if (responseContainers.length) {
+    if (collapsed) {
+      e.target.removeAttribute('data-blocks-collapsed');
+    } else {
+      e.target.setAttribute('data-blocks-collapsed', true);
+    }
+  }
 
   for (const el of queryContainers) {
     if (collapsed) {
@@ -586,14 +587,16 @@ export const handleToggleBlock = e => {
 export const handleToggleAllSubBlocks = e => {
   const collapsed = e.target.getAttribute('data-sub-blocks-collapsed');
 
-  if (collapsed) {
-    e.target.removeAttribute('data-sub-blocks-collapsed');
-  } else {
-    e.target.setAttribute('data-sub-blocks-collapsed', true);
-  }
-
   const objectContainers =
     e.target.parentElement.getElementsByClassName('object-container');
+
+  if (objectContainers.length) {
+    if (collapsed) {
+      e.target.removeAttribute('data-sub-blocks-collapsed');
+    } else {
+      e.target.setAttribute('data-sub-blocks-collapsed', true);
+    }
+  }
 
   for (const el of objectContainers) {
     if (collapsed) {
@@ -608,17 +611,99 @@ export const handleToggleSubBlock = e => {
   e.target.parentElement.classList.toggle('dropdown');
 };
 
-export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
-  let key = Date.now();
+export const handleInsertELementToCircuitUIResponseNode = obj => {
+  let {
+    e,
+    value,
+    res_type,
+    resultsContainer,
+    valueContainer,
+    callerID,
+    worker,
+    callback,
+  } = obj;
 
+  if (e.data.parseCircuitUIResponseValue && e.data.callerID === callerID) {
+    //check if message belongs to the right function
+
+    let parsedResponse = e.data.parseCircuitUIResponseValue;
+    if (parsedResponse === value) {
+      parsedResponse = TWS.constructOutputToWrite(null, parsedResponse, true);
+    }
+    value = parsedResponse;
+
+    if (typeof value === 'string') {
+      valueContainer.parentElement.removeChild(
+        valueContainer.parentElement.children[0],
+      );
+      let p = resultsContainer.ownerDocument.createElement('p');
+      p.classList.add('content');
+      p.innerHTML = value;
+      valueContainer.appendChild(p);
+
+      if (res_type === 'stderr') {
+        const errEl = resultsContainer.ownerDocument.createElement('span');
+        errEl.classList.add('error');
+        errEl.innerText = 'ERROR';
+        p.prepend(errEl);
+      }
+    } else {
+      let objContainer = resultsContainer.ownerDocument.createElement('div');
+      objContainer.classList.add('object-container');
+      let objTitle = resultsContainer.ownerDocument.createElement('span');
+      objTitle.innerHTML = `${value.fullName}()`;
+      objTitle.classList.add('object-title');
+
+      objTitle.onclick = () => openFileAndGoToLineFromCircuitUI(value);
+
+      let objToggleIcon = resultsContainer.ownerDocument.createElement('img');
+      objToggleIcon.setAttribute(
+        'src',
+        'src/assets/image/icon-chevron-down.svg',
+      );
+      objToggleIcon.onclick = handleToggleSubBlock;
+      objContainer.append(objTitle, objToggleIcon);
+
+      Object.keys(value).forEach(prop => {
+        let objEntryContainer =
+          resultsContainer.ownerDocument.createElement('div');
+        objEntryContainer.classList.add('object-entry-container');
+        let objKey = resultsContainer.ownerDocument.createElement('span');
+        objKey.classList.add('object-key');
+        let objValue = resultsContainer.ownerDocument.createElement('span');
+        objKey.innerText = prop;
+        objValue.innerText = value[prop];
+        objEntryContainer.append(objKey, objValue);
+        objContainer.append(objEntryContainer);
+      });
+
+      valueContainer.appendChild(objContainer);
+    }
+
+    resultsContainer.scrollTop = resultsContainer.scrollHeight;
+
+    if (e.data.end) {
+      //remove listener is message is the end of stream;
+      worker.removeEventListener('message', callback);
+    }
+  }
+};
+
+export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
+  const key = generateRandomID();
+
+  let p, valueWrapper, valueContainer;
+  const resultsContainer = refs.circuitUIRef.current.children[0];
   const circuitUIResEl =
-    refs.circuitUIRef.current.children[0].ownerDocument.getElementById(
-      'circuit-ui-results',
-    );
+    resultsContainer.ownerDocument.getElementById('circuit-ui-results');
+
   const containerDiv = circuitUIResEl.ownerDocument.createElement('div');
+  circuitUIResEl.append(containerDiv);
+
   let blockToggleIcon = circuitUIResEl.ownerDocument.createElement('img');
   blockToggleIcon.classList.toggle('hide-icon');
   blockToggleIcon.setAttribute('src', 'src/assets/image/icon-chevron-down.svg');
+  blockToggleIcon.onclick = TWS.handleToggleBlock;
 
   if (res_type === 'query') {
     TWS.data_obj.currentBlockID = key;
@@ -626,8 +711,14 @@ export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
 
     containerDiv.classList.add('query', 'dropdown');
     value = TWS.constructOutputToWrite(null, value, true);
-
     containerDiv.append(blockToggleIcon);
+
+    p = circuitUIResEl.ownerDocument.createElement('p');
+    p.classList.add('content');
+    p.innerHTML = value;
+    containerDiv.append(p);
+
+    resultsContainer.scrollTop = resultsContainer.scrollHeight;
   } else {
     const queryContainer = circuitUIResEl.querySelector(
       `.query[data-block-id='${TWS.data_obj.currentBlockID}']`,
@@ -637,59 +728,14 @@ export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
     containerDiv.setAttribute('data-block-id', TWS.data_obj.currentBlockID);
     containerDiv.classList.add('response', 'dropdown');
 
-    let parsedResponse = TWS.parseCircuitUIResponseValue(value);
-    if (parsedResponse === value) {
-      parsedResponse = TWS.constructOutputToWrite(null, parsedResponse, true);
-    }
-    value = parsedResponse;
-  }
+    const listContentSeperator = generateRandomID();
+    const objValueSeperator = generateRandomID();
+    const callerID = generateRandomID();
 
-  blockToggleIcon.onclick = TWS.handleToggleBlock;
-
-  let p, valueContainer, valueWrapper;
-
-  if (typeof value === 'string') {
-    p = circuitUIResEl.ownerDocument.createElement('p');
-    p.classList.add('content');
-    p.innerHTML = value;
-    containerDiv.append(p);
-  } else {
     valueWrapper = circuitUIResEl.ownerDocument.createElement('div');
     valueWrapper.classList.add('value-wrapper');
     valueContainer = circuitUIResEl.ownerDocument.createElement('div');
     valueContainer.classList.add('value-container');
-
-    value.forEach(obj => {
-      let objContainer = circuitUIResEl.ownerDocument.createElement('div');
-      objContainer.classList.add('object-container');
-
-      let objTitle = circuitUIResEl.ownerDocument.createElement('span');
-      objTitle.innerHTML = `${obj.fullName}()`;
-      objTitle.classList.add('object-title');
-      objTitle.onclick = () => openFileAndGoToLineFromCircuitUI(obj);
-
-      let objToggleIcon = circuitUIResEl.ownerDocument.createElement('img');
-      objToggleIcon.setAttribute(
-        'src',
-        'src/assets/image/icon-chevron-down.svg',
-      );
-      objToggleIcon.onclick = handleToggleSubBlock;
-      objContainer.append(objTitle, objToggleIcon);
-
-      Object.keys(obj).forEach(prop => {
-        let objEntryContainer = document.createElement('div');
-        objEntryContainer.classList.add('object-entry-container');
-        let objKey = document.createElement('span');
-        objKey.classList.add('object-key');
-        let objValue = document.createElement('span');
-        objKey.innerText = prop;
-        objValue.innerText = obj[prop];
-        objEntryContainer.append(objKey, objValue);
-        objContainer.append(objEntryContainer);
-      });
-
-      valueContainer.appendChild(objContainer);
-    });
 
     let sideToggleBar = circuitUIResEl.ownerDocument.createElement('div');
     sideToggleBar.classList.add('toggle-bar');
@@ -697,18 +743,35 @@ export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
 
     valueWrapper.append(sideToggleBar, valueContainer);
     containerDiv.append(valueWrapper);
-  }
 
-  if (res_type === 'stderr') {
-    const errEl = circuitUIResEl.ownerDocument.createElement('span');
-    errEl.classList.add('error');
-    errEl.innerText = 'ERROR';
-    p.prepend(errEl);
-  }
+    const worker = store.getState().query.workers[0];
 
-  circuitUIResEl.append(containerDiv);
-  const resultsContainer = refs.circuitUIRef.current.children[0];
-  resultsContainer.scrollTop = resultsContainer.scrollHeight;
+    const callback = e => {
+      window.requestIdleCallback(() =>
+        handleInsertELementToCircuitUIResponseNode({
+          e,
+          value,
+          res_type,
+          resultsContainer,
+          valueContainer,
+          callerID,
+          worker,
+          callback,
+        }),
+      );
+    };
+
+    worker.addEventListener('message', callback);
+
+    worker.postMessage({
+      parseCircuitUIResponseValue: [
+        value,
+        listContentSeperator,
+        objValueSeperator,
+      ],
+      callerID,
+    });
+  }
 };
 
 export const handleWriteToCircuitUIInput = refs => {

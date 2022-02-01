@@ -16,6 +16,7 @@ const createWindow = async () => {
     // transparent: isMac,
     acceptFirstMouse: true,
     webPreferences: {
+      nodeIntegrationInWorker: true,
       nodeIntegration: true,
       worldSafeExecuteJavaScript: true,
       contextIsolation: false,
@@ -31,7 +32,7 @@ const createWindow = async () => {
   window.setMenuBarVisibility(false);
 
   updateWindowInfo(window);
-  openDevTools(window);
+  // openDevTools(window);
 
   window.loadFile('index.html');
 
