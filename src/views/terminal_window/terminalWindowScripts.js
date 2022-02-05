@@ -1,6 +1,6 @@
-import { createHash } from 'crypto';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
+
 import { windowActionApi } from '../../assets/js/utils/ipcRenderer';
 import { openFile, generateRandomID } from '../../assets/js/utils/scripts';
 import {
@@ -19,7 +19,7 @@ import { store } from '../../store/configureStore';
 
 import * as TWS from './terminalWindowScripts';
 
-export const data_obj = { data: '', cursorPosition: 0 };
+export const data_obj = { data: '', cursorPosition: 0, currentBlockID: null };
 
 export const updateData = str => {
   if (str) {
@@ -468,6 +468,57 @@ export const initCircuitUI = refs => {
   };
 };
 
+export const parseCircuitUIResponseValue = value => {
+  try {
+    const listContentSeperator = createHash('sha256')
+      .update(String(Date.now() + Math.random() * 1000))
+      .digest('hex');
+    const objValueSeperator = createHash('sha256')
+      .update(String(Date.now() + Math.random() * 1000))
+      .digest('hex');
+
+    const keysArr = [
+      'id',
+      'astParentFullName',
+      'astParentType',
+      'code',
+      'columnNumber',
+      'columnNumberEnd',
+      'filename',
+      'fullName',
+      'hash',
+      'isExternal',
+      'lineNumber',
+      'lineNumberEnd',
+      'name',
+      'order',
+      'signature',
+    ];
+
+    let res = value.split('List[Method] = List(')[1];
+    res = res.replaceAll(/"?\)\)/gi, ''); // replace '"))' or '))'
+    res = res.replaceAll(/"?\)?,? ?Method\( = /gi, listContentSeperator); // replace '"), Method( = '  or '), Method( = '  or 'Method( = '
+    res = res.replaceAll(/"?,  = "?/gi, objValueSeperator); // replace '",  = "' or ',  = "' or '",  = ' or ',  = '
+
+    res = res.split(listContentSeperator).filter(str => !!str && str !== '\n ');
+
+    res = res.map(str => {
+      //this creates a nested loop. Any better way to do this?
+      str = str.split(objValueSeperator);
+      if (str.length !== 15) throw 'error';
+      const methodObj = {};
+      str.forEach((value, index) => {
+        methodObj[keysArr[index]] = value;
+      });
+      return methodObj;
+    });
+
+    return res;
+  } catch (e) {
+    return value;
+  }
+};
+
 export const openFileAndGoToLineFromCircuitUI = async ({
   filename,
   lineNumber: startLine,
@@ -487,9 +538,90 @@ export const openFileAndGoToLineFromCircuitUI = async ({
   }
 };
 
+export const handleToggleAllBlocks = e => {
+  const collapsed = e.target.getAttribute('data-blocks-collapsed');
+
+  const queryContainers =
+    e.target.parentElement.getElementsByClassName('query');
+  const responseContainers =
+    e.target.parentElement.getElementsByClassName('response');
+
+  if (responseContainers.length) {
+    if (collapsed) {
+      e.target.removeAttribute('data-blocks-collapsed');
+    } else {
+      e.target.setAttribute('data-blocks-collapsed', true);
+    }
+  }
+
+  for (const el of queryContainers) {
+    if (collapsed) {
+      el.classList.remove('dropdown');
+    } else {
+      el.classList.add('dropdown');
+    }
+  }
+
+  for (const el of responseContainers) {
+    if (collapsed) {
+      el.classList.remove('dropdown');
+    } else {
+      el.classList.add('dropdown');
+    }
+  }
+};
+
+export const handleToggleBlock = e => {
+  const queryContainer = e.target.parentElement;
+
+  const blockID = queryContainer.getAttribute('data-block-id');
+
+  const responseContainer = queryContainer.parentElement.querySelector(
+    `.response[data-block-id='${blockID}']`,
+  );
+
+  queryContainer.classList.toggle('dropdown');
+  responseContainer.classList.toggle('dropdown');
+};
+
+export const handleToggleAllSubBlocks = e => {
+  const collapsed = e.target.getAttribute('data-sub-blocks-collapsed');
+
+  const objectContainers =
+    e.target.parentElement.getElementsByClassName('object-container');
+
+  if (objectContainers.length) {
+    if (collapsed) {
+      e.target.removeAttribute('data-sub-blocks-collapsed');
+    } else {
+      e.target.setAttribute('data-sub-blocks-collapsed', true);
+    }
+  }
+
+  for (const el of objectContainers) {
+    if (collapsed) {
+      el.classList.remove('dropdown');
+    } else {
+      el.classList.add('dropdown');
+    }
+  }
+};
+
+export const handleToggleSubBlock = e => {
+  e.target.parentElement.classList.toggle('dropdown');
+};
+
 export const handleInsertELementToCircuitUIResponseNode = obj => {
-  let { e, value, circuitUIResEl, valueContainer, callerID, worker, callback } =
-    obj;
+  let {
+    e,
+    value,
+    res_type,
+    resultsContainer,
+    valueContainer,
+    callerID,
+    worker,
+    callback,
+  } = obj;
 
   if (e.data.parseCircuitUIResponseValue && e.data.callerID === callerID) {
     //check if message belongs to the right function
@@ -501,27 +633,44 @@ export const handleInsertELementToCircuitUIResponseNode = obj => {
     value = parsedResponse;
 
     if (typeof value === 'string') {
-      let p = circuitUIResEl.ownerDocument.createElement('p');
+      valueContainer.parentElement.removeChild(
+        valueContainer.parentElement.children[0],
+      );
+      let p = resultsContainer.ownerDocument.createElement('p');
       p.classList.add('content');
       p.innerHTML = value;
       valueContainer.appendChild(p);
+
+      if (res_type === 'stderr') {
+        const errEl = resultsContainer.ownerDocument.createElement('span');
+        errEl.classList.add('error');
+        errEl.innerText = 'ERROR';
+        p.prepend(errEl);
+      }
     } else {
-      let objContainer = circuitUIResEl.ownerDocument.createElement('div');
+      let objContainer = resultsContainer.ownerDocument.createElement('div');
       objContainer.classList.add('object-container');
-      let objTitle = circuitUIResEl.ownerDocument.createElement('div');
+      let objTitle = resultsContainer.ownerDocument.createElement('span');
       objTitle.innerHTML = `${value.fullName}()`;
       objTitle.classList.add('object-title');
 
       objTitle.onclick = () => openFileAndGoToLineFromCircuitUI(value);
 
-      objContainer.appendChild(objTitle);
+      let objToggleIcon = resultsContainer.ownerDocument.createElement('img');
+      objToggleIcon.setAttribute(
+        'src',
+        'src/assets/image/icon-chevron-down.svg',
+      );
+      objToggleIcon.onclick = handleToggleSubBlock;
+      objContainer.append(objTitle, objToggleIcon);
+
       Object.keys(value).forEach(prop => {
         let objEntryContainer =
-          circuitUIResEl.ownerDocument.createElement('div');
+          resultsContainer.ownerDocument.createElement('div');
         objEntryContainer.classList.add('object-entry-container');
-        let objKey = circuitUIResEl.ownerDocument.createElement('span');
+        let objKey = resultsContainer.ownerDocument.createElement('span');
         objKey.classList.add('object-key');
-        let objValue = circuitUIResEl.ownerDocument.createElement('span');
+        let objValue = resultsContainer.ownerDocument.createElement('span');
         objKey.innerText = prop;
         objValue.innerText = value[prop];
         objEntryContainer.append(objKey, objValue);
@@ -531,7 +680,7 @@ export const handleInsertELementToCircuitUIResponseNode = obj => {
       valueContainer.appendChild(objContainer);
     }
 
-    circuitUIResEl.scrollTop = circuitUIResEl.scrollHeight;
+    resultsContainer.scrollTop = resultsContainer.scrollHeight;
 
     if (e.data.end) {
       //remove listener is message is the end of stream;
@@ -541,37 +690,59 @@ export const handleInsertELementToCircuitUIResponseNode = obj => {
 };
 
 export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
-  let p, valueContainer;
-  const circuitUIResEl = refs.circuitUIRef.current.children[0];
+  const key = generateRandomID();
+
+  let p, valueWrapper, valueContainer;
+  const resultsContainer = refs.circuitUIRef.current.children[0];
+  const circuitUIResEl =
+    resultsContainer.ownerDocument.getElementById('circuit-ui-results');
+
   const containerDiv = circuitUIResEl.ownerDocument.createElement('div');
   circuitUIResEl.append(containerDiv);
 
+  let blockToggleIcon = circuitUIResEl.ownerDocument.createElement('img');
+  blockToggleIcon.classList.toggle('hide-icon');
+  blockToggleIcon.setAttribute('src', 'src/assets/image/icon-chevron-down.svg');
+  blockToggleIcon.onclick = TWS.handleToggleBlock;
+
   if (res_type === 'query') {
-    containerDiv.classList.add('query');
+    TWS.data_obj.currentBlockID = key;
+    containerDiv.setAttribute('data-block-id', key);
+
+    containerDiv.classList.add('query', 'dropdown');
     value = TWS.constructOutputToWrite(null, value, true);
+    containerDiv.append(blockToggleIcon);
+
     p = circuitUIResEl.ownerDocument.createElement('p');
     p.classList.add('content');
     p.innerHTML = value;
     containerDiv.append(p);
 
-    if (res_type === 'stderr') {
-      const errEl = circuitUIResEl.ownerDocument.createElement('span');
-      errEl.classList.add('error');
-      errEl.innerText = 'ERROR';
-      p.prepend(errEl);
-    }
-
-    circuitUIResEl.scrollTop = circuitUIResEl.scrollHeight;
+    resultsContainer.scrollTop = resultsContainer.scrollHeight;
   } else {
-    containerDiv.classList.add('response');
+    const queryContainer = circuitUIResEl.querySelector(
+      `.query[data-block-id='${TWS.data_obj.currentBlockID}']`,
+    );
+    queryContainer.querySelector('img').classList.toggle('hide-icon');
+
+    containerDiv.setAttribute('data-block-id', TWS.data_obj.currentBlockID);
+    containerDiv.classList.add('response', 'dropdown');
 
     const listContentSeperator = generateRandomID();
     const objValueSeperator = generateRandomID();
     const callerID = generateRandomID();
 
+    valueWrapper = circuitUIResEl.ownerDocument.createElement('div');
+    valueWrapper.classList.add('value-wrapper');
     valueContainer = circuitUIResEl.ownerDocument.createElement('div');
     valueContainer.classList.add('value-container');
-    containerDiv.append(valueContainer);
+
+    let sideToggleBar = circuitUIResEl.ownerDocument.createElement('div');
+    sideToggleBar.classList.add('toggle-bar');
+    sideToggleBar.onclick = TWS.handleToggleAllSubBlocks;
+
+    valueWrapper.append(sideToggleBar, valueContainer);
+    containerDiv.append(valueWrapper);
 
     const worker = store.getState().query.workers[0];
 
@@ -580,7 +751,8 @@ export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
         handleInsertELementToCircuitUIResponseNode({
           e,
           value,
-          circuitUIResEl,
+          res_type,
+          resultsContainer,
           valueContainer,
           callerID,
           worker,

@@ -45,12 +45,13 @@ const styles = theme => ({
     justifyContent: 'flex-end',
     overflow: 'hidden',
     '& #circuit-ui-welcome-screen-container': {
+      width: '100%',
+      height: '100%',
       flexGrow: 1,
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
-      height: '100%',
       '& h1': {
         color: props =>
           theme.palette.explorer.background[
@@ -73,8 +74,22 @@ const styles = theme => ({
       overflowY: 'scroll',
       paddingLeft: '1em',
       flexGrow: 1,
-      '& .query': {
+      '& #circuit-ui-results-and-toggler': {
+        width: '100%',
         display: 'flex',
+        justifyContent: 'flex-start',
+        alignItems: 'stretch',
+        gap: '0.25em',
+        '& .toggle-bar': {
+          width: '4px',
+          background: 'gray',
+          cursor: 'pointer',
+        },
+        '& #circuit-ui-results': {
+          width: '100%',
+        },
+      },
+      '& .query': {
         padding: '0.4em',
         backgroundColor: props =>
           theme.palette.navBar.background[
@@ -82,6 +97,21 @@ const styles = theme => ({
           ],
         display: 'flex',
         alignItems: 'center',
+        justifyContent: 'flex-end',
+        flexDirection: 'row-reverse',
+        gap: '1em',
+        '& img': {
+          cursor: 'pointer',
+          transform: 'rotate(-90deg)',
+          '&.hide-icon': {
+            display: 'none',
+          },
+        },
+        '&.dropdown': {
+          '& img': {
+            transform: 'rotate(0)',
+          },
+        },
         '& .content': {
           width: 'fit-content',
           backgroundColor: props =>
@@ -98,12 +128,17 @@ const styles = theme => ({
         },
       },
       '& .response': {
+        maxHeight: '0px',
+        overflow: 'hidden',
         display: 'flex',
         margin: '0.5em 0',
         color: props =>
           theme.palette.explorer.base[
             props.settings.prefersDarkMode ? 'dark' : 'light'
           ],
+        '&.dropdown': {
+          maxHeight: '1000000vh',
+        },
         '& .error': {
           backgroundColor: '#c23030',
           color: props =>
@@ -113,6 +148,14 @@ const styles = theme => ({
           padding: '0.1em 0.3em',
           borderRadius: '3px',
           margin: 0,
+        },
+        '& .value-wrapper': {
+          display: 'flex',
+          justifyContent: 'flex-start',
+          alignItems: 'stretch',
+          width: '100%',
+          height: 'auto',
+          gap: '0.25em',
         },
         '& .value-container': {
           width: '100%',
@@ -133,11 +176,15 @@ const styles = theme => ({
             theme.palette.sideNav.hover[
               props.settings.prefersDarkMode ? 'dark' : 'light'
             ],
+          display: 'inline-block',
           padding: '0.1em 0.3em',
           borderRadius: '3px',
-          marginBottom: '8px',
+          marginBottom: '12px',
         },
         '& .object-container': {
+          maxHeight: '40px',
+          overflowX: 'auto',
+          overflowY: 'hidden',
           width: '100%',
           padding: '0.5em',
           border: props =>
@@ -146,6 +193,17 @@ const styles = theme => ({
                 props.settings.prefersDarkMode ? 'dark' : 'light'
               ]
             }`,
+          '& img': {
+            marginLeft: '8px',
+            cursor: 'pointer',
+            transform: 'rotate(-90deg)',
+          },
+          '&.dropdown': {
+            maxHeight: '100vh',
+            '& img': {
+              transform: 'rotate(0)',
+            },
+          },
         },
         '& .object-entry-container': {
           display: 'flex',

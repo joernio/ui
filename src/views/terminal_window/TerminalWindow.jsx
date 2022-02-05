@@ -27,6 +27,7 @@ import {
   handleAddQueryToHistory,
   handleEmptyWorkspace,
   handleSuggestionClick,
+  handleToggleAllBlocks,
 } from './terminalWindowScripts';
 import commonStyles from '../../assets/js/styles';
 
@@ -225,6 +226,14 @@ function TerminalWindow(props) {
                 ? 'Click on File -> Import File / Import Directory to begin importing your code'
                 : 'Start writing some queries below. Type "help" for more instructions'}
             </p>
+          </div>
+          <div id="circuit-ui-results-and-toggler">
+            <div
+              data-blocks-collapsed
+              className="toggle-bar"
+              onClick={handleToggleAllBlocks}
+            ></div>
+            <div id="circuit-ui-results"></div>
           </div>
         </div>
         <div id="circuit-ui-input-container">
