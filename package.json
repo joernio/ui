@@ -2,64 +2,139 @@
   "name": "ui-client",
   "version": "1.0.0",
   "description": "The Bug Hunter's Workbench",
-  "main": "main.js",
-  "author": "NdibeRaymond",
-  "license": "ISC",
-  "scripts": {
-    "start": "electron .",
-    "build": "webpack --config webpack.dev.js",
-    "prod-build": "webpack --config webpack.prod.js",
-    "watch": "webpack --config webpack.dev.js --watch",
-    "test": "jest",
-    "rebuild": "electron-rebuild",
-    "prettify": "prettier --config ./.prettierrc.yaml --write \"./**/*.{js,jsx}\""
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joernio/ui.git"
   },
-  "config": {
-    "forge": "forge.config.js"
+  "author": {
+    "name": "ShiftLeft, Inc.",
+    "url": "https://www.shiftleft.io/"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "prettier --config ./.prettierrc.yaml --write  \"./**/*.{js,jsx}\" && git add -A"
+  "contributors": [
+    {
+      "name": "Ndibe Raymond",
+      "email": "ndiberaymond1@gmail.com",
+      "url": "https://github.com/NdibeRaymond"
     }
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/joernio/ui/issues"
+  },
+  "keywords": [
+    "Security Analysis",
+    "Bug Tracking",
+    "CPG UI Client"
+  ],
+  "homepage": "https://github.com/joernio/ui#readme",
+  "scripts": {
+    "build-and-analyze-size": "ANALYZE=true npm run build",
+    "build": "concurrently \" npm run build:renderer\" \"npm run build:main\"",
+    "build:main": "NODE_ENV=production webpack --config ./.erb/configs/webpack.config.main.prod.js",
+    "build:renderer": "NODE_ENV=production webpack --config ./.erb/configs/webpack.config.renderer.prod.js",
+    "rebuild": "electron-rebuild --module-dir release/app",
+    "lint": "NODE_ENV=development DEBUG=eslint:cli-engine eslint . --cache --ext .js,.jsx,.json",
+    "prettify": "prettier --ignore-path .eslintignore --config ./.prettierrc.yaml --write \"./**/*.{js,jsx}\"",
+    "package": "node ./.erb/scripts/clean.js dist && npm run build",
+    "postinstall": "node .erb/scripts/check-native-dep.js",
+    "start": "concurrently \"npm run build:renderer:dev\" \"npm run build:main:dev\" \"npm run electron\"",
+    "start:no-watch": "NODE_ENV=development npm run build:renderer:dev:no-watch && npm run build:main:dev:no-watch && npm run electron",
+    "build:main:dev": "NODE_ENV=development webpack --watch --progress --config ./.erb/configs/webpack.config.main.dev.js",
+    "build:main:dev:no-watch": "NODE_ENV=development webpack --config ./.erb/configs/webpack.config.main.dev.js",
+    "build:renderer:dev": "NODE_ENV=development webpack --watch --progress --config ./.erb/configs/webpack.config.renderer.dev.js",
+    "build:renderer:dev:no-watch": "NODE_ENV=development webpack --config ./.erb/configs/webpack.config.renderer.dev.js",
+    "electron": "NODE_ENV=development electronmon ./release/app/dist/main/main.dev.js",
+    "test": "jest"
+  },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "NODE_ENV=development eslint --cache"
+    ],
+    "*.json,.{eslintrc,prettierrc}": [
+      "prettier --ignore-path .eslintignore --config .prettierrc.yaml --parser json --write"
+    ],
+    "*.{css,scss}": [
+      "prettier --ignore-path .eslintignore --config .prettierrc.yaml --write"
+    ],
+    "*.{html,md,yml}": [
+      "prettier --ignore-path .eslintignore --config .prettierrc.yaml --write"
+    ]
+  },
+  "electronmon": {
+    "patterns": [
+      "!**/*",
+      "release/app/dist/**/*"
+    ]
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
-    "@wojtekmaj/enzyme-adapter-react-17": "^0.6.3",
-    "babel-jest": "^27.0.6",
-    "electron": "^13.1.1",
-    "electron-builder": "^22.11.7",
-    "electron-rebuild": "^2.3.5",
-    "electron-reload": "^1.5.0",
-    "enzyme": "^3.11.0",
-    "file-loader": "^6.2.0",
-    "husky": "^4.3.6",
-    "jest": "^27.0.6",
-    "jest-enzyme": "^7.1.2",
-    "jsdom": "11.12.0",
-    "jsdom-global": "3.0.2",
-    "moxios": "^0.4.0",
-    "prettier": "^2.3.2",
-    "react-test-renderer": "^17.0.2",
-    "url-loader": "^4.1.1"
-  },
-  "dependencies": {
+    "@babel/eslint-parser": "^7.17.0",
     "@babel/preset-env": "^7.14.1",
     "@babel/preset-react": "^7.13.13",
     "@blueprintjs/core": "^3.46.0",
     "@blueprintjs/popover2": "^0.11.0",
     "@material-ui/core": "^4.11.4",
+    "@teamsupercell/typings-for-css-modules-loader": "^2.5.1",
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^12.6.0",
-    "axios": "^0.21.1",
+    "@wojtekmaj/enzyme-adapter-react-17": "^0.6.3",
+    "babel-jest": "^27.0.6",
     "babel-loader": "^8.2.2",
-    "chokidar": "^3.5.2",
+    "browserslist-config-erb": "^0.0.3",
+    "concurrently": "^6.5.1",
+    "core-js": "^3.20.1",
     "css-loader": "^5.2.4",
+    "css-minimizer-webpack-plugin": "^3.3.1",
+    "detect-port": "^1.3.0",
+    "electron": "^13.1.1",
+    "electron-builder": "^22.11.7",
+    "electron-devtools-installer": "^3.2.0",
+    "electron-rebuild": "^2.3.5",
+    "electron-reload": "^1.5.0",
+    "enzyme": "^3.11.0",
+    "eslint": "^8.13.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-import-resolver-webpack": "^0.13.2",
+    "eslint-plugin-compat": "^4.0.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jest": "^25.3.2",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "html-webpack-plugin": "^5.5.0",
+    "jest": "^27.0.6",
+    "jest-enzyme": "^7.1.2",
+    "jsdom": "11.12.0",
+    "jsdom-global": "3.0.2",
+    "mini-css-extract-plugin": "^2.4.5",
+    "monaco-editor-webpack-plugin": "^3.0.1",
+    "moxios": "^0.4.0",
+    "prettier": "^2.3.2",
+    "react-test-renderer": "^17.0.2",
+    "rimraf": "^3.0.2",
+    "sass": "^1.32.12",
+    "sass-loader": "^11.0.1",
+    "style-loader": "^2.0.0",
+    "terser-webpack-plugin": "^5.3.0",
+    "webpack": "^5.36.2",
+    "webpack-bundle-analyzer": "^4.5.0",
+    "webpack-cli": "^4.7.0",
+    "webpack-merge": "^5.8.0"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "chokidar": "^3.5.2",
     "d3": "5.14.2",
     "d3-graphviz": "2.6.1",
+    "electron-debug": "^3.2.0",
+    "electron-log": "^4.4.4",
+    "electron-updater": "^4.6.5",
+    "electronmon": "^2.0.2",
     "glob": "^7.1.7",
+    "history": "^5.2.0",
     "monaco-editor": "^0.24.0",
-    "monaco-editor-webpack-plugin": "^3.0.1",
     "mousetrap": "^1.6.5",
     "nanoid": "^3.2.0",
     "react": "^17.0.2",
@@ -71,14 +146,12 @@
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.3.0",
     "resize-observer-polyfill": "^1.5.1",
-    "sass": "^1.32.12",
-    "sass-loader": "^11.0.1",
-    "style-loader": "^2.0.0",
     "threads": "^1.7.0",
-    "webpack": "^5.36.2",
-    "webpack-cli": "^4.7.0",
-    "websocket": "^1.0.34",
     "xterm": "^4.11.0",
     "xterm-addon-fit": "^0.5.0"
+  },
+  "devEngines": {
+    "node": ">=14.x",
+    "npm": ">=7.x"
   }
 }

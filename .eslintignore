@@ -1,17 +1,3 @@
-# misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-debug.log
-.env
-.yarn/
-out/
-
 # Logs
 logs
 *.log
@@ -29,14 +15,12 @@ coverage
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
 node_modules
 
+# OSX
+.DS_Store
+
 release/app/dist
 release/build
-
-node_modules/
-build/
-/.pnp
-.pnp.js
-/build
+build
 
 .idea
 npm-debug.log.*
