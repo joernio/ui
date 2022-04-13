@@ -594,7 +594,9 @@ export const saveFile = async (path, base_dir) => {
                   files.recent[file.filePath.toString()] = true;
                   files.openFilePath = file.filePath.toString();
 
-                  const entries = Object.entries({ ...files.openFiles });
+                  const entries = Object.entries({
+                    ...files.openFiles,
+                  });
                   const new_entries = [];
                   entries.forEach(entry => {
                     if (entry[0] === path) {

@@ -174,7 +174,9 @@ function TerminalWindow(props) {
             icon="application"
             className={classes.terminalControlItemsStyle}
             onClick={() =>
-              props.setSettings({ prefersTerminalView: !prefersTerminalView })
+              props.setSettings({
+                prefersTerminalView: !prefersTerminalView,
+              })
             }
           />
         ) : (
@@ -182,7 +184,9 @@ function TerminalWindow(props) {
             icon="console"
             className={classes.terminalControlItemsStyle}
             onClick={() =>
-              props.setSettings({ prefersTerminalView: !prefersTerminalView })
+              props.setSettings({
+                prefersTerminalView: !prefersTerminalView,
+              })
             }
           />
         )}

@@ -1,15 +1,9 @@
 module.exports = {
-  plugins: [
-    'prettier',
-    'react',
-    'react-hooks',
-    'compat',
-    'jest'
-  ],
+  plugins: ['prettier', 'react', 'react-hooks', 'compat', 'jest'],
   extends: [
     // 'airbnb',
     'airbnb-base',
-    'prettier'
+    'prettier',
   ],
   rules: {
     // A temporary hack related to IDE not resolving correct package.json
