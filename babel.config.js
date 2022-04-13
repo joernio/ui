@@ -3,5 +3,5 @@ module.exports = {
   targets: {
     node: 'current',
   },
-  exclude: ["test", "release/build", "release/app/dist", ".erb/dll"]
+  exclude: ['test', 'release/build', 'release/app/dist', '.erb/dll'],
 };

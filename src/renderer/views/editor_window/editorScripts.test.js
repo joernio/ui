@@ -154,9 +154,17 @@ describe('function highlightRange: ', () => {
     editor = {
       deltaDecorations: (arr1, arr2) => {
         delta_decorations = [
-          { ...(arr1[0] ? arr1[0] : {}), ...(arr2[0] ? arr2[0] : {}) },
+          {
+            ...(arr1[0] ? arr1[0] : {}),
+            ...(arr2[0] ? arr2[0] : {}),
+          },
         ];
-        return [{ ...(arr1[0] ? arr1[0] : {}), ...(arr2[0] ? arr2[0] : {}) }];
+        return [
+          {
+            ...(arr1[0] ? arr1[0] : {}),
+            ...(arr2[0] ? arr2[0] : {}),
+          },
+        ];
       },
     };
 

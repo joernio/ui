@@ -21,7 +21,9 @@ function Window(props) {
 
   React.useEffect(() => {
     const observer = new ResizeObserver(() =>
-      handleSetState({ clientHeight: document.documentElement.clientHeight }),
+      handleSetState({
+        clientHeight: document.documentElement.clientHeight,
+      }),
     );
     observer.observe(document.getElementsByTagName('body')[0]);
     return () => {

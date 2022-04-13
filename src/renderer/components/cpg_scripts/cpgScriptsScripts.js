@@ -54,7 +54,11 @@ export const getCpgScripts = async props => {
           if (data.search(/^(?:\s*)@main|(?:\n\s*)@main/) > -1) {
             [mainFunctionName, mainFunctionArgs] =
               extractScriptMainFunctionNameAndArgs(data);
-            scripts[path] = { tag, mainFunctionName, mainFunctionArgs };
+            scripts[path] = {
+              tag,
+              mainFunctionName,
+              mainFunctionArgs,
+            };
           }
         });
       }),
@@ -71,7 +75,10 @@ export const getCpgScripts = async props => {
                 ...organised_scripts[tag],
                 [path]: { mainFunctionName, mainFunctionArgs },
               }
-            : { tag: true, [path]: { mainFunctionName, mainFunctionArgs } };
+            : {
+                tag: true,
+                [path]: { mainFunctionName, mainFunctionArgs },
+              };
       }
     });
 
@@ -79,7 +86,10 @@ export const getCpgScripts = async props => {
       if (!scripts[path].tag || scripts[path].tag === ' ') {
         let mainFunctionName = scripts[path].mainFunctionName;
         let mainFunctionArgs = scripts[path].mainFunctionArgs;
-        organised_scripts[path] = { mainFunctionName, mainFunctionArgs };
+        organised_scripts[path] = {
+          mainFunctionName,
+          mainFunctionArgs,
+        };
       }
     });
 

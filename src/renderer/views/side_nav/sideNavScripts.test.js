@@ -72,7 +72,9 @@ describe('function handleOnChange: ', () => {
   });
 
   it('expect function to assign e.target.value to value[e.target.id] when e.target.id is anything else : ', () => {
-    const e = { target: { id: 'web_socket_url', value: 'http://test.com' } };
+    const e = {
+      target: { id: 'web_socket_url', value: 'http://test.com' },
+    };
     expect(sideNavScripts.handleOnChange(e, {}).values[e.target.id]).toBe(
       e.target.value,
     );
