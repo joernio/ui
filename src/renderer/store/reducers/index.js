@@ -9,11 +9,11 @@ import terminal from './terminalReducers';
 import editor from './editorReducers';
 
 export default combineReducers({
-  files,
-  query,
-  settings,
-  status,
-  workspace,
-  terminal,
-  editor,
+	files,
+	query,
+	settings,
+	status,
+	workspace,
+	terminal,
+	editor,
 });

@@ -1,4 +1,4 @@
-/* eslint global-require: off, no-console: off, promise/always-return: off */
+/* eslint global-require: off, no-console: off */
 
 /**
  * This module executes inside of electron's main process. You can start
@@ -14,24 +14,24 @@ import { createWindow } from './window';
 import { initIpcMain } from './ipcMain';
 
 function initIpcAndWindow() {
-  initIpcMain();
-  createWindow();
+	initIpcMain();
+	createWindow();
 }
 
 function init() {
-  app.on('ready', () => {
-    initIpcAndWindow();
-  });
+	app.on('ready', () => {
+		initIpcAndWindow();
+	});
 
-  app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      initIpcAndWindow();
-    }
-  });
+	app.on('activate', () => {
+		if (BrowserWindow.getAllWindows().length === 0) {
+			initIpcAndWindow();
+		}
+	});
 
-  app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') app.quit();
-  });
+	app.on('window-all-closed', () => {
+		if (process.platform !== 'darwin') app.quit();
+	});
 }
 
 init();

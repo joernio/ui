@@ -1,28 +1,28 @@
 const default_state = {
-  term: null,
-  refs: null,
-  fitAddon: null,
-  prev_results: null,
-  prev_workspace: {},
-  history: {
-    prev_queries: {},
-    next_queries: {},
-  },
-  isMaximized: true,
-  busy: false,
-  query_suggestions: [],
+	term: null,
+	refs: null,
+	fitAddon: null,
+	prev_results: null,
+	prev_workspace: {},
+	history: {
+		prev_queries: {},
+		next_queries: {},
+	},
+	isMaximized: true,
+	busy: false,
+	query_suggestions: [],
 };
 
 const terminal = (state = default_state, action) => {
-  switch (action.type) {
-    case 'SET_TERMINAL':
-      return {
-        ...state,
-        ...action.payload,
-      };
-    default:
-      return state;
-  }
+	switch (action.type) {
+		case 'SET_TERMINAL':
+			return {
+				...state,
+				...action.payload,
+			};
+		default:
+			return state;
+	}
 };
 
 export default terminal;

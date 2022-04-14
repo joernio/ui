@@ -9,14 +9,14 @@ import './assets/css/index.css';
 import { store, persistor } from './store/configureStore';
 
 ReactDOM.render(
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <React.StrictMode>
-        <Suspense fallback={null}>
-          <App />
-        </Suspense>
-      </React.StrictMode>
-    </PersistGate>
-  </Provider>,
-  document.getElementById('electron'),
+	<Provider store={store}>
+		<PersistGate loading={null} persistor={persistor}>
+			<React.StrictMode>
+				<Suspense fallback={null}>
+					<App />
+				</Suspense>
+			</React.StrictMode>
+		</PersistGate>
+	</Provider>,
+	document.getElementById('electron'),
 );

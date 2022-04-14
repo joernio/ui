@@ -14,60 +14,61 @@ import styles from '../../assets/js/styles/views/explorer_window/explorerWindowS
 const useStyles = makeStyles(styles);
 
 function ExplorerWindow(props) {
-  const resizeEl = React.useRef(null);
-  const classes = useStyles(props);
+	const resizeEl = React.useRef(null);
+	const classes = useStyles(props);
 
-  React.useEffect(() => {
-    if (resizeEl.current) {
-      const callback = initResize(
-        resizeEl.current,
-        'col',
-        (drawerWidth, diff) => {
-          props.handleSetState(resizeHandler(drawerWidth, diff));
-        },
-      );
-      return () => {
-        resizeEl.current &&
-          resizeEl.current.removeEventListener('mousedown', callback);
-      };
-    }
-  }, [resizeEl.current]);
+	React.useEffect(() => {
+		if (resizeEl.current) {
+			const callback = initResize(
+				resizeEl.current,
+				'col',
+				(drawerWidth, diff) => {
+					props.handleSetState(resizeHandler(drawerWidth, diff));
+				},
+			);
+			return () => {
+				resizeEl.current &&
+					resizeEl.current.removeEventListener('mousedown', callback);
+			};
+		}
+	}, [resizeEl.current]);
 
-  const { drawerWidth } = props;
+	const { drawerWidth } = props;
 
-  return (
-    <div
-      className={clsx(classes.root, {
-        [classes.drawerOpen]: drawerWidth,
-        [classes.drawerClose]: !drawerWidth,
-      })}
-      data-test="explorer-window"
-    >
-      <div ref={resizeEl} className={classes.resizeHandleStyle}></div>
-      <h1 className={classes.titleStyle}>explorer</h1>
-      {Object.keys(props.query.results).length < 1 ? (
-        <Icon
-          icon="refresh"
-          iconSize={40}
-          className={clsx(classes.refreshIconStyle, 'refresh-icon-animation')}
-        />
-      ) : (
-        <>
-          <CpgScripts />
-          <OpenFiles />
-          <Workspace />
-          <Folders />
-        </>
-      )}
-    </div>
-  );
+	return (
+		<div
+			className={clsx(classes.root, {
+				[classes.drawerOpen]: drawerWidth,
+				[classes.drawerClose]: !drawerWidth,
+			})}
+			data-test="explorer-window"
+		>
+			<div ref={resizeEl} className={classes.resizeHandleStyle}></div>
+			<h1 className={classes.titleStyle}>explorer</h1>
+			{Object.keys(props.query.results).length < 1 ? (
+				<Icon
+					icon="refresh"
+					iconSize={40}
+					className={clsx(
+						classes.refreshIconStyle,
+						'refresh-icon-animation',
+					)}
+				/>
+			) : (
+				<>
+					<CpgScripts />
+					<OpenFiles />
+					<Workspace />
+					<Folders />
+				</>
+			)}
+		</div>
+	);
 }
 
-const mapStateToProps = state => {
-  return {
-    query: state.query,
-    settings: state.settings,
-  };
-};
+const mapStateToProps = state => ({
+	query: state.query,
+	settings: state.settings,
+});
 
 export default connect(mapStateToProps, null)(ExplorerWindow);
