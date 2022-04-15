@@ -1,3 +1,9 @@
+/**
+ * Fucntion that handles listening to Mouse events.
+ * It is binded gloablly across the app.
+ * @param {*} mousetrap
+ *
+ */
 export const mouseTrapGlobalBindig = mousetrap => {
   (function (a) {
     var c = {},

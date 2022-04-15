@@ -32,10 +32,23 @@ import { handlePrintable } from '../../../views/terminal_window/terminalWindowSc
 
 mouseTrapGlobalBindig(Mousetrap);
 
+/**
+ * Function to generates a unique id. The id is used
+ * in keeping track of query made in the app
+ * @returns a unique id
+ */
 export const generateRandomID = () => {
   return nanoid();
 };
 
+/**
+ * Function to adds query to queue. A query is the CPG
+ * command run in the terminal. A queue is a collection of
+ * all the queries to run.
+ * @param {Object} query The new query
+ * @param {Object} queue The query collection
+ * @returns The updated queue
+ */
 export const performEnQueueQuery = (query, queue) => {
   const key = `${Object.keys(queue).length}-${generateRandomID()}`;
   queue[key] = query;
@@ -43,6 +56,11 @@ export const performEnQueueQuery = (query, queue) => {
   return queue;
 };
 
+/**
+ * Function to removes the last query from queue
+ * @param {Object} queue The query collection
+ * @returns The updated queue
+ */
 export const performDeQueueQuery = queue => {
   const key = Object.keys(queue).shift();
   if (key) {
@@ -54,24 +72,48 @@ export const performDeQueueQuery = queue => {
   }
 };
 
+/**
+ * Function to gets the first query in a queue
+ * @param {Object} queue The query collection
+ * @returns the first query in the queue
+ */
 export const performPeekQueue = queue => {
   const key = Object.keys(queue)[0];
   const query = queue[key];
   return query ? query : null;
 };
 
+/**
+ * Function to send message to perform an action on the window
+ * It could be to close the window or to reload
+ * @param {string} action to be performed by the window
+ */
 export const sendWindowsMessage = action => {
   windowActionApi.sendWindowAction(action);
 };
 
+/**
+ * Function to reconnectes web socket to server
+ * @param {string} ws_url websocket url
+ */
 export const wsReconnectToServer = ws_url => {
   windowActionApi.connectToWebSocketAction(ws_url);
 };
 
+/**
+ * Function to disconnects web socket from server
+ */
 export const wsDisconnectFromServer = () => {
   windowActionApi.disconnectFromWebSocketAction();
 };
 
+/**
+ * Function to appends a classname to a node. This can return
+ * null if no node exist
+ * @param {Object} nodes uploaded folders
+ * @param {Function} callback
+ * @returns
+ */
 export const forEachNode = (nodes, callback) => {
   if (nodes === undefined) {
     return;
@@ -83,10 +125,22 @@ export const forEachNode = (nodes, callback) => {
   }
 };
 
+/**
+ * Function to lood through nodes
+ * @param {Object} nodes uploaded folders
+ * @param {string} path
+ * @param {Function} callback
+ */
 export const forNodeAtPath = (nodes, path, callback) => {
   callback(Tree.nodeFromPath(path, nodes));
 };
 
+/**
+ * Function to add the result of a query to results collection
+ * @param {Object} result A query response
+ * @param {Object} results A collection of all query response
+ * @returns results. This cannot be more than 500 in a collection
+ */
 export const performPushResult = (result, results) => {
   results = { ...results };
   const key = Object.keys(result)[0];
@@ -98,6 +152,13 @@ export const performPushResult = (result, results) => {
   return results;
 };
 
+/**
+ * Function to searches for result with post-query-key.
+ * Post-query is a ...
+ * @param {Object} results The result collection from running a query
+ * @param {Object} post_query_key The post query key
+ * @returns key
+ */
 export const getResultObjWithPostQueryKey = (results, post_query_key) => {
   for (let key in results) {
     if (key && results[key]['post_query_uuid'] === post_query_key) {
@@ -106,6 +167,11 @@ export const getResultObjWithPostQueryKey = (results, post_query_key) => {
   }
 };
 
+/**
+ * Function to parse projects
+ * @param {*} data
+ * @returns projects
+ */
 export const parseProjects = data => {
   if (data.stdout.split('=')[1].trim().startsWith('empty')) {
     return {};
@@ -131,6 +197,11 @@ export const parseProjects = data => {
   }
 };
 
+/**
+ * Function to parse a single project
+ * @param {*} data
+ * @returns a project
+ */
 export const parseProject = data => {
   let inputPath, name, path, cpg, language;
   language = cpg = null;
@@ -154,6 +225,13 @@ export const parseProject = data => {
   return { name, inputPath, path, cpg, language };
 };
 
+/**
+ * Function to perform a postQuery.
+ * PostQuery is a ...
+ * @param {Object} store
+ * @param {Object} results
+ * @param {number} key
+ */
 const performPostQuery = (store, results, key) => {
   let post_query;
   let result = results[key];
@@ -170,6 +248,13 @@ const performPostQuery = (store, results, key) => {
   store.dispatch(postQuery(post_query, key));
 };
 
+/**
+ * Function to print a query result to the terminal
+ * @param {Object} data
+ * @param {Object} store
+ * @param {number} key
+ * @param {Object} results
+ */
 const setQueryResult = (data, store, key, results) => {
   if (results[key].t_0 && !results[key].t_1) {
     results[key].t_1 = performance.now();
@@ -214,6 +299,10 @@ const setQueryResult = (data, store, key, results) => {
   }
 };
 
+/**
+ * Function to handles websocket response
+ * @param {Object} data
+ */
 export const handleWebSocketResponse = data => {
   store.dispatch(getQueryResult(data.utf8Data)).then(data => {
     const { results } = store.getState().query;
@@ -242,9 +331,22 @@ export const handleWebSocketResponse = data => {
   });
 };
 
+/**
+ * Function to enable or disable scroll to top
+ * @param {Object} e
+ * @returns true if scrolled to the top of the window, and false otherwise.
+ */
 export const handleScrollTop = e => {
   return e.target.scrollTop > 0 ? { scrolled: true } : { scrolled: false };
 };
+
+/**
+ * discard dialog handler
+ * @param {Object} openFiles
+ * @param {Object} openFilePath
+ * @param {Function} callback
+ * @returns
+ */
 
 export const discardDialogHandler = (openFiles, openFilePath, callback) => {
   if (openFiles[openFilePath] === false) {
@@ -254,6 +356,11 @@ export const discardDialogHandler = (openFiles, openFilePath, callback) => {
   callback();
 };
 
+/**
+ * Function to get the name of the open file
+ * @param {string} path
+ * @returns the file path
+ */
 export const getOpenFileName = path => {
   if (path) {
     path = path ? path.split('/') : null;
@@ -263,11 +370,20 @@ export const getOpenFileName = path => {
   }
 };
 
+/**
+ * Function to get extension of a file
+ * @param {string} path
+ * @returns . if ext is true, otherwise empty space
+ */
 export const getExtension = path => {
   let ext = path.split('.')[path.split('.').length - 1];
   return ext ? '.' + ext : '';
 };
 
+/**
+ * Function to open a file
+ * @param {string} path
+ */
 export const openFile = async path => {
   if (path) {
     const files = { ...store.getState().files };
@@ -326,6 +442,12 @@ export const openFile = async path => {
   }
 };
 
+/**
+ * function to open sythentic files
+ * synthetic files are interface that can be opened as file in the editor
+ * @param {string} path
+ * @param {Object} content
+ */
 export const openSyntheticFile = async (path, content) => {
   if (path) {
     const files = { ...store.getState().files };
@@ -362,6 +484,10 @@ export const openSyntheticFile = async (path, content) => {
   }
 };
 
+/**
+ * Function to close a file
+ * @param {string} path
+ */
 export const closeFile = async path => {
   if (path) {
     const files = { ...store.getState().files };
@@ -443,6 +569,9 @@ export const closeFile = async path => {
   }
 };
 
+/**
+ * Function to open a new File
+ */
 export const openEmptyFile = () => {
   const files = { ...store.getState().files };
   let last_untitled = Object.keys(files.openFiles).filter(file =>
@@ -483,6 +612,11 @@ export const openEmptyFile = () => {
   store.dispatch(setHighlightRange({ startLine: null, endLine: null }));
 };
 
+/**
+ * Function to save a file
+ * @param {string} path
+ * @param {*} base_dir
+ */
 export const saveFile = async (path, base_dir) => {
   const file_content = store.getState().files.openFileContent;
   const files = { ...store.getState().files };
@@ -636,6 +770,10 @@ export const saveFile = async (path, base_dir) => {
   }
 };
 
+/**
+ * Function to delete a file
+ * @param {string} path
+ */
 export const deleteFile = async path => {
   if (path) {
     const readOnly =
@@ -695,6 +833,13 @@ export const deleteFile = async path => {
     }
   }
 };
+
+/**
+ * Function to read the content of a file
+ * just return the file path instead;
+ * @param {string} path the path to the file to read
+ * @returns path a media file is found instead
+ */
 
 export const readFile = path => {
   return new Promise((resolve, reject) => {
@@ -759,6 +904,9 @@ export const refreshRecent = async () => {
   }
 };
 
+/**
+ * Function to refresh open files
+ */
 export const refreshOpenFiles = async () => {
   const files = { ...store.getState().files };
   if (
@@ -808,6 +956,11 @@ export const refreshOpenFiles = async () => {
   }
 };
 
+/**
+ * Function to check if a file path is contained in a query result
+ * @param {Object} results
+ * @returns
+ */
 export const isFilePathInQueryResult = results => {
   const latest = results[Object.keys(results)[Object.keys(results).length - 1]];
 
@@ -836,6 +989,11 @@ export const isFilePathInQueryResult = results => {
   }
 };
 
+/**
+ * Function to check if a query result can open a synthetic file
+ * @param {Object} results
+ * @returns
+ */
 export const isQueryResultToOpenSynthFile = results => {
   const latest = results[Object.keys(results)[Object.keys(results).length - 1]];
   let synth_file_path = false,
@@ -861,6 +1019,12 @@ export const isQueryResultToOpenSynthFile = results => {
 
   return { synth_file_path, content };
 };
+
+/**
+ * Function to check if a script query result can open a synthetic file
+ * @param {*} result
+ * @returns
+ */
 
 export const isScriptQueryResultToOpenSynthFile = async result => {
   let synth_file_path = false,
@@ -897,6 +1061,12 @@ export const isScriptQueryResultToOpenSynthFile = async result => {
   return { synth_file_path, content };
 };
 
+/**
+ * Function to get ingnore array
+ * @param {string} src
+ * @param {string} uiIgnore
+ * @returns
+ */
 export const getUIIgnoreArr = (src, uiIgnore) => {
   if (uiIgnore && typeof uiIgnore === 'string') {
     return uiIgnore
@@ -908,6 +1078,11 @@ export const getUIIgnoreArr = (src, uiIgnore) => {
   }
 };
 
+/**
+ * Function to get directories
+ * @param {string} src
+ * @returns a promise
+ */
 export const getDirectories = src => {
   return new Promise((resolve, reject) => {
     glob(
@@ -955,6 +1130,11 @@ export const watchFolderPath = (path, vars, callback) => {
   }
 };
 
+/**
+ * Function to get folder structure root-path from workspace
+ * @param {Object} workspace
+ * @returns path and root
+ */
 export const getFolderStructureRootPathFromWorkspace = workspace => {
   const { projects } = workspace;
   let path = null;
@@ -1086,6 +1266,12 @@ export const initResize = (resizeHandle, type, resizeHandler) => {
   return initDrag;
 };
 
+/**
+ * Function to compare if results are equal
+ * @param {Object} prev_results
+ * @param {Object} results
+ * @returns true if equal otherwise false
+ */
 export const areResultsEqual = (prev_results, results) => {
   if (results) {
     let prev_latest_uuid = Object.keys(prev_results ? prev_results : {});
@@ -1102,6 +1288,11 @@ export const areResultsEqual = (prev_results, results) => {
   }
 };
 
+/**
+ * Function to check if there are open projects
+ * @param {Object} workspace
+ * @returns open projects length, otherwise null
+ */
 export const openProjectExists = workspace => {
   let is_open_project =
     workspace?.projects &&
@@ -1132,6 +1323,11 @@ export const latestIsManCommand = results => {
   return isManCommand;
 };
 
+/**
+ * Function to check if queue is empty
+ * @param {Object} queue
+ * @returns true if queue is empty otherwise false
+ */
 export const queueEmpty = queue => {
   if (queue && Object.keys(queue).length === 0) {
     return true;
@@ -1142,12 +1338,21 @@ export const queueEmpty = queue => {
   }
 };
 
+/**
+ * Function to add query to the queue
+ * @param {Object} query
+ * @param {Object} props
+ */
 export const addToQueue = (query, props) => {
   if (query) {
     props.enQueueQuery(query);
   }
 };
 
+/**
+ * Function to add workspace query to queue
+ * @returns
+ */
 export const addWorkSpaceQueryToQueue = () => {
   const query = {
     query: 'workspace',
@@ -1158,6 +1363,12 @@ export const addWorkSpaceQueryToQueue = () => {
   return query;
 };
 
+/**
+ * Function to contruct query with path
+ * @param {string} query_name
+ * @param {string} type
+ * @returns
+ */
 export const contructQueryWithPath = async (query_name, type) => {
   selectDirApi.selectDir(type === 'select-dir' ? 'select-dir' : 'select-file');
 
@@ -1197,6 +1408,11 @@ export const contructQueryWithPath = async (query_name, type) => {
   }
 };
 
+/**
+ * Function to switch workspace
+ * @returns
+ */
+
 export const handleSwitchWorkspace = async () => {
   selectDirApi.selectDir('select-dir');
 
@@ -1223,6 +1439,10 @@ export const handleSwitchWorkspace = async () => {
   }
 };
 
+/**
+ * Function to handle api query error
+ * @param {Object} err
+ */
 export const handleAPIQueryError = err => {
   if (err === apiErrorStrings.ws_not_connected) {
     const ws_url = store.getState().settings.websocket.url;
@@ -1255,6 +1475,10 @@ export const handleAPIQueryError = err => {
   store.dispatch(resetQueue({}));
 };
 
+/**
+ * Function to handle shortcut
+ * @param {Object} shortcutObj
+ */
 export const handleShortcut = shortcutObj => {
   if (shortcutObj.query.includes('\\0')) {
     store.dispatch(setQueryShortcut(shortcutObj));
@@ -1279,16 +1503,27 @@ export const handleShortcut = shortcutObj => {
   }
 };
 
+/**
+ * Function to register query shortcut
+ * @param {*} keybinding
+ */
 export const registerQueryShortcut = keybinding => {
   const shortcutObj = store.getState().settings.queryShortcuts[keybinding];
   const callback = debounceLeading(handleShortcut, 1000);
   Mousetrap.bindGlobal([keybinding], () => callback(shortcutObj));
 };
 
+/**
+ * Function to unRegister query shortcut
+ * @param {*} keybinding
+ */
 export const unRegisterQueryShortcut = keybinding => {
   Mousetrap.unbind([keybinding]);
 };
 
+/**
+ * Function to initialize shortcuts
+ */
 export const initShortcuts = () => {
   const { queryShortcuts } = store.getState().settings;
 
@@ -1308,6 +1543,9 @@ export const initShortcuts = () => {
   });
 };
 
+/**
+ * Function to remove shortcuts
+ */
 export const removeShortcuts = () => {
   const { queryShortcuts } = store.getState().settings;
 
@@ -1318,10 +1556,19 @@ export const removeShortcuts = () => {
   });
 };
 
+/**
+ * Funtion to set a toast
+ * @param {Object} toast
+ */
 export const handleSetToast = toast => {
   store.dispatch(setToast(toast));
 };
 
+/**
+ * Function to format number to a given unit
+ * @param {number} num
+ * @returns formatted number
+ */
 export const nFormatter = num => {
   if (num >= 1000000000) {
     return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'G';
@@ -1335,11 +1582,22 @@ export const nFormatter = num => {
   return num;
 };
 
+/**
+ * Function to handle fontsize change
+ * @param {HTMLCollection} doc
+ * @param {string} fontSize
+ */
 export const handleFontSizeChange = (doc, fontSize) => {
   doc.children[0].style.fontSize = fontSize;
   doc.children[0].children[1].style.fontSize = fontSize;
 };
 
+/**
+ * Function to get script result
+ * @param {number} uuids
+ * @param {Object} results
+ * @returns result
+ */
 export const getScriptResult = (uuids, results) => {
   let result;
 
@@ -1352,6 +1610,13 @@ export const getScriptResult = (uuids, results) => {
 
   return result;
 };
+
+/**
+ * Function to generate script-import query
+ * @param {string} path_to_script
+ * @param {string} path_to_workspace
+ * @returns true if error, otherwise undefined
+ */
 
 export const generateScriptImportQuery = async (
   path_to_script,

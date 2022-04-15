@@ -12,6 +12,7 @@ import { store } from '../configureStore';
 const API = new CpgAPI();
 
 export const setResults = payload => {
+  console.log('setResults: ', payload);
   return dispatch => {
     dispatch({
       type: 'SET_RESULTS',
@@ -21,6 +22,7 @@ export const setResults = payload => {
 };
 
 export const setQueue = payload => {
+  console.log('setQueue: ', payload);
   return dispatch => {
     return dispatch({
       type: 'SET_QUEUE',
@@ -30,6 +32,7 @@ export const setQueue = payload => {
 };
 
 export const resetQueue = payload => {
+  console.log('resetQueue: ', payload);
   return dispatch => {
     return dispatch({
       type: 'RESET_QUEUE',
@@ -39,6 +42,7 @@ export const resetQueue = payload => {
 };
 
 export const setScriptsQueue = payload => {
+  console.log('setScriptsQueue: ', payload);
   return dispatch => {
     return dispatch({
       type: 'SET_SCRIPTS_QUEUE',
@@ -48,6 +52,7 @@ export const setScriptsQueue = payload => {
 };
 
 export const resetScriptsQueue = payload => {
+  console.log('resetScriptsQueue: ', payload);
   return dispatch => {
     return dispatch({
       type: 'RESET_SCRIPTS_QUEUE',
@@ -57,6 +62,7 @@ export const resetScriptsQueue = payload => {
 };
 
 export const setQueryShortcut = payload => {
+  console.log('setQueryShortcut: ', payload);
   return dispatch => {
     return dispatch({
       type: 'SET_QUERY_SHORTCUT',
@@ -66,6 +72,7 @@ export const setQueryShortcut = payload => {
 };
 
 export const enQueueQuery = query => {
+  console.log('enQueueQuery: ', query);
   return dispatch => {
     const { queue } = store.getState().query;
     const updated_queue = performEnQueueQuery(query, queue);
@@ -74,6 +81,7 @@ export const enQueueQuery = query => {
 };
 
 export const deQueueQuery = () => {
+  console.log('deQueueQuery: =>');
   return dispatch => {
     const { queue } = store.getState().query;
     const { queue: updated_queue, query } = performDeQueueQuery(queue);
@@ -83,6 +91,7 @@ export const deQueueQuery = () => {
 };
 
 export const peekQueue = () => {
+  console.log('peekQueue: =>');
   return () => {
     const { queue } = store.getState().query;
     return performPeekQueue(queue);
@@ -90,6 +99,7 @@ export const peekQueue = () => {
 };
 
 export const enQueueScriptsQuery = query => {
+  console.log('enQueueScriptsQuery: ', query);
   return dispatch => {
     const { scriptsQueue } = store.getState().query;
     const updated_scripts_queue = performEnQueueQuery(query, scriptsQueue);
@@ -98,6 +108,7 @@ export const enQueueScriptsQuery = query => {
 };
 
 export const deQueueScriptsQuery = () => {
+  console.log('deQueueScriptsQuery: =>');
   return dispatch => {
     const { scriptsQueue } = store.getState().query;
     const { queue: updated_scripts_queue, query } =
@@ -108,6 +119,7 @@ export const deQueueScriptsQuery = () => {
 };
 
 export const peekScriptsQueue = () => {
+  console.log('peekScriptsQueue: =>');
   return () => {
     const { scriptsQueue } = store.getState().query;
     return performPeekQueue(scriptsQueue);
@@ -115,6 +127,7 @@ export const peekScriptsQueue = () => {
 };
 
 export const pushResult = result => {
+  console.log('pushResult: ', result);
   return dispatch => {
     const { results } = store.getState().query;
     const updated_results = performPushResult(result, results);
@@ -123,6 +136,7 @@ export const pushResult = result => {
 };
 
 export const runQuery = query_string => {
+  console.log('runQuery: ', query_string);
   return () => {
     return API.query(query_string).then(data => {
       if (data && data.uuid) {
@@ -138,6 +152,7 @@ export const runQuery = query_string => {
 };
 
 export const getQueryResult = uuid => {
+  console.log('getQueryResult: ', uuid);
   return () => {
     return API.getQueryResult(uuid)
       .then(data => {
@@ -159,6 +174,7 @@ export const getQueryResult = uuid => {
 };
 
 export const postQuery = (post_query, main_result_key) => {
+  console.log('postQuery: ', { post_query, main_result_key });
   return dispatch => {
     return runQuery(post_query)()
       .then(data => {
@@ -177,6 +193,7 @@ export const postQuery = (post_query, main_result_key) => {
 };
 
 export const mainQuery = query => {
+  console.log('mainQuery: ', query);
   return dispatch => {
     return runQuery(query.query)()
       .then(data => {

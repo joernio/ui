@@ -21,7 +21,12 @@ import * as TWS from './terminalWindowScripts';
 
 export const data_obj = { data: '', cursorPosition: 0, currentBlockID: null };
 
+/**
+ * udate data
+ * @param {*} str
+ */
 export const updateData = str => {
+  console.log('updateData: ', str);
   if (str) {
     TWS.data_obj.data = `${TWS.data_obj.data.slice(
       0,
@@ -32,10 +37,20 @@ export const updateData = str => {
   }
 };
 
+/**
+ * Function to update the cursor position when
+ * typing query in the query input
+ * @param {number} value
+ */
 export const updateCursorPosition = value => {
+  console.log('updateCursorPosition: ', value);
   TWS.data_obj.cursorPosition = value;
 };
 
+/**
+ * Function to construct input to write
+ * @returns
+ */
 export const constructInputToWrite = () =>
   TV.clearLine +
   TV.cpgDefaultPrompt +
@@ -45,7 +60,15 @@ export const constructInputToWrite = () =>
     .split('<n>')
     .join(TV.cpgDefaultPrompt.length + TWS.data_obj.cursorPosition);
 
+/**
+ * construct output to write
+ * @param {*} prompt
+ * @param {*} value
+ * @param {*} isCircuitUI
+ * @returns
+ */
 export const constructOutputToWrite = (prompt, value, isCircuitUI) => {
+  console.log('constructOutputToWrite: ', { prompt, value, isCircuitUI });
   if (isCircuitUI) {
     return `<pre>${value}</pre>`;
   }
@@ -57,15 +80,34 @@ export const constructOutputToWrite = (prompt, value, isCircuitUI) => {
   );
 };
 
+/**
+ * Function to minimze or maximize terminal
+ * @param {boolean} bool
+ * @returns true if terminal is minimized otherwise false
+ */
 export const handleTerminalMaximizeToggle = bool => {
+  console.log('handleTerminalMaximizeToggle: ', bool);
   return { isMaximized: !bool };
 };
 
+/**
+ * Function to resize the terminal height
+ * @param {*} fitAddon
+ */
 export const handleResize = fitAddon => {
+  console.log('handleResize: ', fitAddon);
   fitAddon && fitAddon.fit();
 };
 
+/**
+ * function to empty workspace
+ * @param {*} workspace
+ * @param {*} prev_workspace
+ * @returns true if no project is available,
+ * false if a project is found otherwise an empty object
+ */
 export const handleEmptyWorkspace = (workspace, prev_workspace) => {
+  console.log('handleEmptyWorkspace: ', { workspace, prev_workspace });
   if (workspace && Object.keys(workspace.projects).length < 1) {
     return { isMaximized: true };
   } else if (
@@ -80,11 +122,20 @@ export const handleEmptyWorkspace = (workspace, prev_workspace) => {
   return {};
 };
 
+/**
+ * set suggestion box tracker content
+ */
 export const setSuggestionBoxTrackerContent = el => {
+  console.log('setSuggestionBoxTrackerContent: ', el);
   el.innerText = data_obj.data;
 };
 
+/**
+ * Function to suggest queries related to what the user is typing on the
+ * query input
+ */
 export const suggestSimilarQueries = () => {
+  console.log('suggestSimilarQueries: =>');
   const { results } = store.getState().query;
   let query_strings = Object.keys(results);
   query_strings = query_strings.map(key => results[key].query);
@@ -98,7 +149,14 @@ export const suggestSimilarQueries = () => {
   store.dispatch(setQuerySuggestions(query_strings));
 };
 
+/**
+ * handle suggestion click
+ * @param {*} e
+ * @param {*} refs
+ * @param {*} term
+ */
 export const handleSuggestionClick = async (e, refs, term) => {
+  console.log('handleSuggestionClick: ', { e, refs, term });
   const str = e.target.innerText;
   TWS.updateData(null);
   TWS.updateCursorPosition(0);
@@ -109,7 +167,13 @@ export const handleSuggestionClick = async (e, refs, term) => {
   refs.circuitUIRef.current.children[1].children[0].focus();
 };
 
+/**
+ * open XTerm
+ * @param {*} refs
+ * @param {*} term
+ */
 export const openXTerm = (refs, term) => {
+  console.log('openXTerm: ', { refs, term });
   if (term) {
     term.onKey(async e => {
       await TWS.handleXTermOnKey(term, refs, e);
@@ -121,7 +185,12 @@ export const openXTerm = (refs, term) => {
   }
 };
 
+/**
+ * suggest query for Xterm
+ * @param {*} term
+ */
 export const suggestQueryForXterm = async term => {
+  console.log('suggestQueryForXterm: ', term);
   const { query_suggestions } = store.getState().terminal;
   await TWS.termWrite(term, TWS.constructInputToWrite());
   if (query_suggestions.length > 0) {
@@ -143,7 +212,13 @@ export const suggestQueryForXterm = async term => {
   }
 };
 
+/**
+ * write suggestion to xterm
+ * @param {*} term
+ * @param {*} refs
+ */
 export const writeSuggestionToXterm = async (term, refs) => {
+  console.log('writeSuggestionToXterm: ', { term, refs });
   const { query_suggestions } = store.getState().terminal;
   if (
     !(TWS.data_obj.cursorPosition < TWS.data_obj.data.length) &&
@@ -159,20 +234,48 @@ export const writeSuggestionToXterm = async (term, refs) => {
   }
 };
 
-export const termWrite = (term, value) =>
-  new Promise(r => term.write(value, r));
+/**
+ * term write
+ * @param {*} term
+ * @param {*} value
+ * @returns
+ */
+export const termWrite = (term, value) => {
+  console.log('termWrite: ', { term, value });
+  return new Promise(r => term.write(value, r));
+};
 
-export const termWriteLn = (term, value) =>
-  new Promise(r => term.writeln(value, r));
+/**
+ * term write ln
+ * @param {*} term
+ * @param {*} value
+ * @returns
+ */
+export const termWriteLn = (term, value) => {
+  console.log('termWriteLn: ', { term, value });
+  return new Promise(r => term.writeln(value, r));
+};
 
+/**
+ * get Next
+ * @param {*} history
+ * @returns
+ */
 export const getNext = history => {
+  console.log('getNext: ', history);
   let next = Object.keys(history.next_queries);
   next = next[next.length - 1];
   next = history.next_queries[next];
   return next ? next : '';
 };
 
+/**
+ * get Prev
+ * @param {*} history
+ * @returns
+ */
 export const getPrev = history => {
+  console.log('getPrev: ', history);
   let prev = Object.keys(history.prev_queries);
   prev = prev[prev.length - 1];
   prev = history.prev_queries[prev];
@@ -184,12 +287,27 @@ export const getPrev = history => {
   }
 };
 
+/**
+ * remove oldest query from history
+ * @param {*} history
+ * @param {*} prev_keys
+ * @returns
+ */
 export const removeOldestQueryFromHistory = (history, prev_keys) => {
+  console.log('removeOldestQueryFromHistory: ', { history, prev_keys });
   delete history.prev_queries[prev_keys[0]];
   return history;
 };
 
+/**
+ * add query to history
+ * @param {*} history
+ * @param {*} queue
+ * @param {*} key
+ * @returns
+ */
 export const addQueryToHistory = (history, queue, key) => {
+  console.log('addQueryToHistory: ', { history, queue, key });
   while (Object.keys(history.next_queries).length > 0) {
     history = TWS.rotateNext(history);
   }
@@ -198,7 +316,14 @@ export const addQueryToHistory = (history, queue, key) => {
   return history;
 };
 
+/**
+ * rotate next
+ * @param {*} param0
+ * @returns
+ */
 export const rotateNext = ({ prev_queries, next_queries }) => {
+  console.log('rotateNext: ', { prev_queries, next_queries });
+
   prev_queries = { ...prev_queries };
   next_queries = { ...next_queries };
 
@@ -213,7 +338,13 @@ export const rotateNext = ({ prev_queries, next_queries }) => {
   return { prev_queries, next_queries };
 };
 
+/**
+ * rotate prev
+ * @param {*} param0
+ * @returns
+ */
 export const rotatePrev = ({ prev_queries, next_queries }) => {
+  console.log('rotatePrev: ', { prev_queries, next_queries });
   prev_queries = { ...prev_queries };
   next_queries = { ...next_queries };
 
@@ -228,7 +359,13 @@ export const rotatePrev = ({ prev_queries, next_queries }) => {
   return { prev_queries, next_queries };
 };
 
+/**
+ * initialize fitAddon
+ * @param {*} term
+ * @returns
+ */
 export const initFitAddon = term => {
+  console.log('initFitAddon: ', term);
   let fitAddon = null;
   if (term) {
     fitAddon = new FitAddon();
@@ -240,10 +377,20 @@ export const initFitAddon = term => {
   }
 };
 
+/**
+ * copy to clipboard
+ * @param {*} str
+ */
 export const handleCopyToClipBoard = str => {
+  console.log('handleCopyToClipBoard: ', str);
   windowActionApi.copyToClipBoard(str);
 };
 
+/**
+ * paste from clipboard
+ * @param {*} term
+ * @param {*} refs
+ */
 export const handlePasteFromClipBoard = (term, refs) => {
   windowActionApi.pasteFromClipBoard();
   windowActionApi.registerPasteFromClipBoardListener(async str => {
@@ -251,7 +398,13 @@ export const handlePasteFromClipBoard = (term, refs) => {
   });
 };
 
+/**
+ * Function to give command to run query
+ * @param {*} term
+ * @param {*} refs
+ */
 export const handleEnter = async (term, refs) => {
+  console.log('handleEnter: ', { term, refs });
   const query = {
     query: TWS.data_obj.data,
     origin: 'terminal',
@@ -267,7 +420,13 @@ export const handleEnter = async (term, refs) => {
   TWS.handleWriteToCircuitUIInput(refs);
 };
 
+/**
+ * backspace
+ * @param {*} term
+ * @param {*} refs
+ */
 export const handleBackspace = async (term, refs) => {
+  console.log('handleBackspace');
   const data = TWS.data_obj.data;
   const cursorPosition = TWS.data_obj.cursorPosition;
   TWS.updateData(null);
@@ -281,7 +440,15 @@ export const handleBackspace = async (term, refs) => {
   TWS.handleWriteToCircuitUIInput(refs);
 };
 
+/**
+ * handle Arrow up
+ * @param {*} term
+ * @param {*} refs
+ * @param {*} history
+ * @param {*} ev
+ */
 export const handleArrowUp = async (term, refs, history, ev) => {
+  console.log('handleArrowUp: ', { term, refs, history, ev });
   ev.preventDefault();
   let prev_query = TWS.getPrev(history);
   let new_history = TWS.rotatePrev({ ...history });
@@ -299,7 +466,15 @@ export const handleArrowUp = async (term, refs, history, ev) => {
   store.dispatch(setHistory(new_history));
 };
 
+/**
+ * handle arrow down
+ * @param {*} term
+ * @param {*} refs
+ * @param {*} history
+ * @param {*} ev
+ */
 export const handleArrowDown = async (term, refs, history, ev) => {
+  console.log('handleArrowDown: ', { term, refs, history, ev });
   ev.preventDefault();
   let next_query = TWS.getNext(history);
   let new_history = TWS.rotateNext({ ...history });
@@ -317,7 +492,13 @@ export const handleArrowDown = async (term, refs, history, ev) => {
   store.dispatch(setHistory(new_history));
 };
 
+/**
+ * handle arrow left
+ * @param {*} term
+ * @param {*} refs
+ */
 export const handleArrowLeft = async (term, refs) => {
+  console.log('handleArrowLeft: ', { term, refs });
   TWS.updateCursorPosition(
     TWS.data_obj.cursorPosition > 0 ? TWS.data_obj.cursorPosition - 1 : 0,
   );
@@ -325,7 +506,13 @@ export const handleArrowLeft = async (term, refs) => {
   TWS.handleWriteToCircuitUIInput(refs);
 };
 
+/**
+ * handle arrow right
+ * @param {*} term
+ * @param {*} refs
+ */
 export const handleArrowRight = async (term, refs) => {
+  console.log(handleArrowRight, { term, refs });
   await writeSuggestionToXterm(term, refs);
   TWS.updateCursorPosition(
     TWS.data_obj.cursorPosition < TWS.data_obj.data.length
@@ -336,14 +523,29 @@ export const handleArrowRight = async (term, refs) => {
   TWS.handleWriteToCircuitUIInput(refs);
 };
 
+/**
+ * handle printable
+ * @param {*} term
+ * @param {*} refs
+ * @param {*} e
+ */
 export const handlePrintable = async (term, refs, e) => {
+  console.log('handlePrintable: ', { term, refs, e });
   TWS.updateData(e.key);
   TWS.updateCursorPosition(TWS.data_obj.cursorPosition + e.key.length);
   await TWS.termWrite(term, TWS.constructInputToWrite());
   TWS.handleWriteToCircuitUIInput(refs);
 };
 
+/**
+ * write query result
+ * @param {*} term
+ * @param {*} refs
+ * @param {*} latest
+ * @returns
+ */
 export const handleWriteQueryResult = async (term, refs, latest) => {
+  console.log('handleWriteQueryResult: ', { term, refs, latest });
   TWS.updateData(null);
   TWS.updateCursorPosition(0);
 
@@ -365,7 +567,15 @@ export const handleWriteQueryResult = async (term, refs, latest) => {
   return true;
 };
 
+/**
+ * write script query
+ * @param {*} term
+ * @param {*} refs
+ * @param {*} latest
+ */
 export const handleWriteScriptQuery = async (term, refs, latest) => {
+  console.log(handleWriteScriptQuery, { term, refs, latest });
+
   const { busy } = store.getState().terminal;
 
   TWS.updateData(null);
@@ -380,7 +590,14 @@ export const handleWriteScriptQuery = async (term, refs, latest) => {
   !busy && (await term.prompt());
 };
 
+/**
+ * write query
+ * @param {*} term
+ * @param {*} refs
+ * @param {*} latest
+ */
 export const handleWriteQuery = async (term, refs, latest) => {
+  console.log('handleWriteQuery: ', { term, refs, latest });
   TWS.updateData(null);
   TWS.updateCursorPosition(0);
 
@@ -402,7 +619,11 @@ export const handleWriteQuery = async (term, refs, latest) => {
   store.dispatch(setTerminalBusy(true));
 };
 
+/**
+ * init Xterm
+ */
 export const initXterm = async prefersDarkMode => {
+  console.log('initXterm: ', { prefersDarkMode });
   const term = new Terminal({
     cursorBlink: true,
     theme: {
@@ -425,7 +646,13 @@ export const initXterm = async prefersDarkMode => {
   return term;
 };
 
+/**
+ * init circuit ui
+ * @param {*} refs
+ * @returns
+ */
 export const initCircuitUI = refs => {
+  console.log('initCircuitUI: ', refs);
   const el = refs.circuitUIRef.current;
 
   el.children[1].children[0].addEventListener(
@@ -468,7 +695,13 @@ export const initCircuitUI = refs => {
   };
 };
 
+/**
+ * parse circuit ui response value
+ * @param {*} value
+ * @returns
+ */
 export const parseCircuitUIResponseValue = value => {
+  console.log('parseCircuitUIResponseValue: ', value);
   try {
     const listContentSeperator = createHash('sha256')
       .update(String(Date.now() + Math.random() * 1000))
@@ -519,11 +752,20 @@ export const parseCircuitUIResponseValue = value => {
   }
 };
 
+/**
+ * openFileAndGoToLineFromCircuitUI
+ * @param {*} param0
+ */
 export const openFileAndGoToLineFromCircuitUI = async ({
   filename,
   lineNumber: startLine,
   lineNumberEnd: endLine,
 }) => {
+  console.log(openFileAndGoToLineFromCircuitUI, {
+    filename,
+    lineNumber: startLine,
+    lineNumberEnd: endLine,
+  });
   if (
     filename &&
     filename !== '<empty>' &&
@@ -538,7 +780,12 @@ export const openFileAndGoToLineFromCircuitUI = async ({
   }
 };
 
+/**
+ * toggle all blocks
+ * @param {*} e
+ */
 export const handleToggleAllBlocks = e => {
+  console.log('handleToggleAllBlocks: ', e);
   const collapsed = e.target.getAttribute('data-blocks-collapsed');
 
   const queryContainers =
@@ -571,7 +818,12 @@ export const handleToggleAllBlocks = e => {
   }
 };
 
+/**
+ * Function to toggle the visibility of query response block
+ * @param {HTMLCollection} e
+ */
 export const handleToggleBlock = e => {
+  console.log('handleToggleBlock: ', e);
   const queryContainer = e.target.parentElement;
 
   const blockID = queryContainer.getAttribute('data-block-id');
@@ -584,7 +836,12 @@ export const handleToggleBlock = e => {
   responseContainer.classList.toggle('dropdown');
 };
 
+/**
+ * toggle all sub blocks
+ * @param {*} e
+ */
 export const handleToggleAllSubBlocks = e => {
+  console.log('handleToggleAllSubBlocks: ', e);
   const collapsed = e.target.getAttribute('data-sub-blocks-collapsed');
 
   const objectContainers =
@@ -607,11 +864,21 @@ export const handleToggleAllSubBlocks = e => {
   }
 };
 
+/**
+ * toggle sub block
+ * @param {*} e
+ */
 export const handleToggleSubBlock = e => {
+  console.log('handleToggleSubBlock: ', e);
   e.target.parentElement.classList.toggle('dropdown');
 };
 
+/**
+ * handleInsertELementToCircuitUIResponseNode
+ * @param {*} obj
+ */
 export const handleInsertELementToCircuitUIResponseNode = obj => {
+  console.log('handleInsertELementToCircuitUIResponseNode: ', obj);
   let {
     e,
     value,
@@ -689,7 +956,14 @@ export const handleInsertELementToCircuitUIResponseNode = obj => {
   }
 };
 
+/**
+ * handleWriteToCircuitUIResponse
+ * @param {*} refs
+ * @param {*} value
+ * @param {*} res_type
+ */
 export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
+  console.log('handleWriteToCircuitUIResponse: ', { refs, value, res_type });
   const key = generateRandomID();
 
   let p, valueWrapper, valueContainer;
@@ -774,7 +1048,12 @@ export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
   }
 };
 
+/**
+ * Function to write to the query input
+ * @param {*} refs
+ */
 export const handleWriteToCircuitUIInput = refs => {
+  console.log('handleWriteToCircuitUIInput: ', refs);
   const input = refs.circuitUIRef.current.children[1].children[0];
   input.value = TWS.data_obj.data;
   input.setSelectionRange(
@@ -784,7 +1063,14 @@ export const handleWriteToCircuitUIInput = refs => {
   suggestSimilarQueries();
 };
 
+/**
+ * Function to set terminal height
+ * @param {Object} window
+ * @param {Object} props
+ * @returns a fixed terminal height or the maximum terminal height
+ */
 export const handleMaximize = (window, props) => {
+  console.log('handleMaximize: ', { window, props });
   if (props.terminal.isMaximized) {
     return {
       terminalHeight: `${
@@ -799,7 +1085,16 @@ export const handleMaximize = (window, props) => {
   }
 };
 
+/**
+ * resizeHandler
+ * @param {*} terminalHeight
+ * @param {*} diff
+ * @param {*} props
+ * @param {*} window
+ * @returns
+ */
 export const resizeHandler = (terminalHeight, diff, props, window) => {
+  console.log('resizeHandler: ', { terminalHeight, diff, props, window });
   if (Number(terminalHeight.split('px')[0]) < 218 && diff < 0) {
     return { terminalHeight: 0 };
   } else if (Number(terminalHeight.split('px')[0]) < 218 && diff > 0) {
@@ -815,7 +1110,12 @@ export const resizeHandler = (terminalHeight, diff, props, window) => {
   }
 };
 
+/**
+ * Add query to history
+ * @param {*} queue
+ */
 export const handleAddQueryToHistory = queue => {
+  console.log('handleAddQueryToHistory: ', queue);
   let { history } = store.getState().terminal;
   history = {
     prev_queries: { ...history.prev_queries },
@@ -841,7 +1141,15 @@ export const handleAddQueryToHistory = queue => {
   }
 };
 
+/**
+ * handle Xterm on key
+ * @param {*} term
+ * @param {*} refs
+ * @param {*} e
+ * @returns
+ */
 export const handleXTermOnKey = async (term, refs, e) => {
+  console.log('handleXTermOnKey: ', { term, refs, e });
   const ev = e.domEvent;
   const not_combination_keys = !ev.altKey && !ev.ctrlKey && !ev.metaKey;
   const { history, busy } = store.getState().terminal;
@@ -873,7 +1181,14 @@ export const handleXTermOnKey = async (term, refs, e) => {
   }
 };
 
+/**
+ * Send query result to Xterm
+ * @param {*} results
+ * @param {*} refs
+ * @returns
+ */
 export const sendQueryResultToXTerm = async (results, refs) => {
+  console.log('sendQueryResultToXTerm: ', { results, refs });
   const { term } = store.getState().terminal;
 
   const latest = results[Object.keys(results)[Object.keys(results).length - 1]];

@@ -5,7 +5,15 @@ import {
   openSyntheticFile,
 } from '../assets/js/utils/scripts';
 
+/**
+ * Check if query should run
+ * @param {*} prev_queue
+ * @param {*} queue
+ * @param {*} query
+ * @returns a boolean value indication if query should run
+ */
 export const shouldRunQuery = (prev_queue, queue, query) => {
+  console.log('shouldRunQuery: ', { prev_queue, queue, query });
   const prev_queue_count = prev_queue ? Object.keys(prev_queue).length : 0;
   const queue_count = Object.keys(queue).length;
 
@@ -16,7 +24,14 @@ export const shouldRunQuery = (prev_queue, queue, query) => {
   }
 };
 
+/**
+ * Indicate when a script has successfully run
+ * @param {*} prev_results
+ * @param {*} results
+ * @returns
+ */
 export const shouldAlertScriptRunSuccessful = (prev_results, results) => {
+  console.log('shouldAlertScriptRunSuccessful: ', { prev_results, results });
   let prev_last_script_result, last_script_result;
   let prev_uuids = Object.keys(prev_results);
   let uuids = Object.keys(results);
@@ -39,11 +54,22 @@ export const shouldAlertScriptRunSuccessful = (prev_results, results) => {
   }
 };
 
+/**
+ * process script result
+ * @param {*} prev_results
+ * @param {*} results
+ * @param {*} handleSetState
+ */
 export const processScriptResult = async (
   prev_results,
   results,
   handleSetState,
 ) => {
+  console.log('processScriptResult: ', {
+    prev_results,
+    results,
+    handleSetState,
+  });
   const script_result = shouldAlertScriptRunSuccessful(prev_results, results);
 
   if (script_result) {

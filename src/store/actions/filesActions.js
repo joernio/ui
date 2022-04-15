@@ -2,6 +2,7 @@ import { forNodeAtPath, forEachNode } from '../../assets/js/utils/scripts';
 import { store } from '../configureStore';
 
 export const setFiles = payload => {
+  console.log('setFiles: ', payload);
   return dispatch => {
     dispatch({
       type: 'SET_FILES',
@@ -11,6 +12,7 @@ export const setFiles = payload => {
 };
 
 export const setRecent = payload => {
+  console.log('setRecent: ', payload);
   const recent_keys = Object.keys(payload.recent ? payload.recent : {});
   if (recent_keys.length > 50) {
     delete payload.recent[recent_keys[0]];
@@ -25,6 +27,7 @@ export const setRecent = payload => {
 };
 
 export const setFolders = payload => {
+  console.log('setFolders: ', payload);
   return dispatch => {
     dispatch({
       type: 'SET_FOLDERS',
@@ -34,6 +37,7 @@ export const setFolders = payload => {
 };
 
 export const setOpenFiles = payload => {
+  console.log('setOpenFiles: ', payload);
   return dispatch => {
     dispatch({
       type: 'SET_OPEN_FILES',
@@ -43,6 +47,7 @@ export const setOpenFiles = payload => {
 };
 
 export const setOpenFilePath = payload => {
+  console.log('setOpenFilePath: ', payload);
   return dispatch => {
     dispatch({
       type: 'SET_OPEN_FILE_PATH',
@@ -52,6 +57,7 @@ export const setOpenFilePath = payload => {
 };
 
 export const setOpenFileContent = payload => {
+  console.log('setOpenFileContent: ', payload);
   return dispatch => {
     dispatch({
       type: 'SET_OPEN_FILE_CONTENT',
@@ -61,6 +67,7 @@ export const setOpenFileContent = payload => {
 };
 
 export const setOpenFileIsReadOnly = payload => {
+  console.log('setOpenFileIsReadOnly: ', payload);
   return dispatch => {
     dispatch({
       type: 'SET_OPEN_FILE_IS_READ_ONLY',
@@ -70,6 +77,7 @@ export const setOpenFileIsReadOnly = payload => {
 };
 
 export const expandOrCollapseFolder = (nodePath, bool) => {
+  console.log('expandOrCollapseFolder: ', nodePath, bool);
   return dispatch => {
     const updatedFolders = store.getState().files.folders;
     forNodeAtPath(updatedFolders, nodePath, node => {
@@ -84,6 +92,7 @@ export const expandOrCollapseFolder = (nodePath, bool) => {
 };
 
 export const setIsSelected = nodePath => {
+  console.log('setIsSelected: ', nodePath);
   return dispatch => {
     const updatedFolders = store.getState().files.folders;
 

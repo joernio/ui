@@ -7,6 +7,13 @@ import {
   shouldProcessQueryResult,
 } from './workspaceProcessorScripts';
 
+/**
+ * Handles WorkspaceProcessor
+ * @param {Object} workspace
+ * @param {Object} query
+ * @returns {null} null
+ */
+
 function WorkspaceProcessor(props) {
   React.useEffect(() => {
     const latest = shouldProcessQueryResult(props.query.results);

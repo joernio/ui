@@ -21,17 +21,44 @@ export const chokidarVars = {
   }),
 };
 
+/**
+ * Function to toggle script dropdown. This allows you to view all
+ * the availble scripts associated with an opened workspace
+ * @param {*} scriptsVisible
+ * @returns true if the script is not visible, otherwise false
+ */
 export const handleToggleScriptsVisible = scriptsVisible => {
+  console.log('handleToggleScriptsVisible: ', scriptsVisible);
   return { scriptsVisible: !scriptsVisible };
 };
 
-export const toggleScriptsArgsDialog = bool => ({ openDialog: !bool });
+/**
+ * Funciton to toggle scripts dialog
+ * @param {*} bool
+ * @returns
+ */
+export const toggleScriptsArgsDialog = bool => {
+  console.log('toggleScriptsArgsDialog: ', bool);
+  return { openDialog: !bool };
+};
 
+/**
+ * Function to add to script
+ * @param {*} query
+ * @param {*} props
+ */
 export const addToScriptsQueue = (query, props) => {
+  console.log('addToScriptsQueue: ', query);
   props.enQueueScriptsQuery(query);
 };
 
+/**
+ * Function to get cpg script
+ * @param {*} props
+ * @returns
+ */
 export const getCpgScripts = async props => {
+  console.log('getCpgScripts: ', props);
   let path = props.settings.scriptsDir;
 
   if (path) {
@@ -87,10 +114,23 @@ export const getCpgScripts = async props => {
   }
 };
 
-export const extractScriptTagName = data =>
-  data.split('<tag>')[1].split('</tag>')[0];
+/**
+ * Function to extract script tag name
+ * @param {*} data
+ * @returns
+ */
+export const extractScriptTagName = data => {
+  console.log('extractScriptTagName: ', data);
+  return data.split('<tag>')[1].split('</tag>')[0];
+};
 
+/**
+ * Function to extract script main function name and args
+ * @param {*} data
+ * @returns
+ */
 export const extractScriptMainFunctionNameAndArgs = data => {
+  console.log('extractScriptMainFunctionNameAndArgs: ', data);
   let mainFunctionArgs;
   let mainFunctionName = data.split('@main')[1].split('def')[1];
   mainFunctionName = mainFunctionName.trim();
@@ -104,7 +144,14 @@ export const extractScriptMainFunctionNameAndArgs = data => {
   return [mainFunctionName, mainFunctionArgs];
 };
 
+/**
+ * Function to collect args values
+ * @param {*} dialogEl
+ * @param {*} dialogFields
+ * @returns
+ */
 export const collectArgsValues = (dialogEl, dialogFields) => {
+  console.log('collectArgsValues: ', dialogEl);
   dialogFields = dialogFields.map(script => ({
     path: script.path,
     filename: script.filename,
@@ -121,7 +168,16 @@ export const collectArgsValues = (dialogEl, dialogFields) => {
   return dialogFields;
 };
 
+/**
+ * Function for running script
+ * @param {*} path
+ * @param {*} args
+ * @param {*} mainFunctionName
+ * @param {*} props
+ */
 export const runScript = async (path, args, mainFunctionName, props) => {
+  console.log('runScript: ', { path, args, mainFunctionName, props });
+
   let workspace_path = props.workspace.path;
   if (path && workspace_path) {
     openFile(path);
@@ -167,7 +223,17 @@ export const runScript = async (path, args, mainFunctionName, props) => {
   }
 };
 
+/**
+ * Function to handle cpg tag click
+ * @param {*} e
+ * @param {*} value
+ * @param {*} scripts
+ * @param {*} selected
+ * @returns
+ */
 export const handleCPGScriptTagClick = (e, value, scripts, selected) => {
+  console.log('handleCPGScriptTagClick: ', { e, value, scripts, selected });
+
   const tag_scripts_paths = Object.keys(scripts[value]);
   if (Array.isArray(tag_scripts_paths) && tag_scripts_paths.length > 1) {
     openFile(tag_scripts_paths[1]);
@@ -186,7 +252,16 @@ export const handleCPGScriptTagClick = (e, value, scripts, selected) => {
   }
 };
 
+/**
+ * Run
+ * @param {*} selected
+ * @param {*} scripts
+ * @param {*} props
+ * @returns
+ */
 export const handleRun = (selected, scripts, props) => {
+  console.log('handleRun: ', { selected, scripts, props });
+
   if (mainScriptsFunctionsTakeArgs(Object.keys(selected), scripts)) {
     return {
       dialogFields: populateArgsDialogFields(Object.keys(selected), scripts),
@@ -199,7 +274,13 @@ export const handleRun = (selected, scripts, props) => {
   }
 };
 
+/**
+ * Function to format args
+ * @param {*} args
+ * @returns
+ */
 export const formatArgs = args => {
+  console.log('formatArgs: ', args);
   if (args.length < 1) {
     return args.join(',');
   } else {
@@ -208,12 +289,25 @@ export const formatArgs = args => {
   }
 };
 
+/**
+ * Function to run selected
+ * @param {*} dialogFields
+ * @param {*} selected
+ * @param {*} organised_scripts
+ * @param {*} props
+ */
 export const runSelected = async (
   dialogFields,
   selected,
   organised_scripts,
   props,
 ) => {
+  console.log('runSelected: ', {
+    dialogFields,
+    selected,
+    organised_scripts,
+    props,
+  });
   const paths = Object.keys(selected);
   const scripts = organisedScriptsToScripts(organised_scripts);
 
@@ -226,12 +320,22 @@ export const runSelected = async (
   }
 };
 
+/**
+ * Function to deleteAll
+ * @param {*} scripts
+ */
 export const deleteAll = scripts => {
+  console.log('deleteAll: ', scripts);
   const selected = organisedScriptsToScripts(scripts);
   deleteSelected(selected);
 };
 
+/**
+ * Function to deleteSelected
+ * @param {*} selected
+ */
 export const deleteSelected = async selected => {
+  console.log('deleteSelected: ', selected);
   const paths = Object.keys(selected);
 
   for (let i = 0; i < paths.length; i++) {
@@ -240,7 +344,12 @@ export const deleteSelected = async selected => {
   }
 };
 
+/**
+ * Function to switch between different scripts folders
+ * @param {Object} props
+ */
 export const switchDefaultScriptsFolder = async props => {
+  console.log('switchDefaultScriptsFolder: ', props);
   selectDirApi.selectDir('select-dir');
 
   const path = await new Promise((resolve, reject) => {
@@ -263,6 +372,10 @@ export const switchDefaultScriptsFolder = async props => {
 };
 
 export const mainScriptsFunctionsTakeArgs = (pathsArr, organised_scripts) => {
+  console.log('mainScriptsFunctionsTakeArgs: ', {
+    pathsArr,
+    organised_scripts,
+  });
   let scripts = {};
   let takesArgs = false;
 
@@ -278,6 +391,10 @@ export const mainScriptsFunctionsTakeArgs = (pathsArr, organised_scripts) => {
 };
 
 export const populateArgsDialogFields = (pathsArr, organised_scripts) => {
+  console.log('populateArgsDialogFields: ', {
+    pathsArr,
+    organised_scripts,
+  });
   let scripts = {};
   let fieldsArr = [];
 
@@ -301,6 +418,8 @@ export const populateArgsDialogFields = (pathsArr, organised_scripts) => {
 };
 
 export const organisedScriptsToScripts = organised_scripts => {
+  console.log('athsArr, organised_scripts: ', organised_scripts);
+
   let scripts = {};
 
   Object.keys(organised_scripts).forEach(key => {

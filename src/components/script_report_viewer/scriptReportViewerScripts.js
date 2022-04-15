@@ -1,4 +1,10 @@
+/**
+ * Parse script report
+ * @param {*} str
+ * @returns
+ */
 export const parseScriptReportJSON = str => {
+  console.log('parseScriptReportJSON: ', str);
   try {
     const report = JSON.parse(str);
     return { report, bannerMessage: '' };

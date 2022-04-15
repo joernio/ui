@@ -4,23 +4,48 @@ export const vars = {
   spaceF4: 600,
 };
 
+/**
+ * Check if mouse is down
+ * @param {*} val
+ * @returns the frame position of the mouse
+ */
 export const handleMouseDown = val => {
   return { mouseOver: val };
 };
 
+/**
+ * Function to check if mouse is no more on the table
+ * @returns a negative value to cancel all hover effect
+ */
 export const handleMouseOut = () => {
   return { hover: -1 };
 };
 
+/**
+ * Function to check is mouse on the table
+ * @param {*} idx
+ * @returns the index of the table row
+ */
 export const handleMouseOver = idx => {
   return { hover: idx };
 };
 
+/**
+ * Function to compute the width of the window on resize
+ * @param {Object} window
+ * @param {string} drawerWidth
+ * @returns width of the window
+ */
 export const handleResize = (window, drawerWidth) => ({
   containerWidth:
     window.innerWidth - 56 - Number(String(drawerWidth).split('px').join('')),
 });
 
+/**
+ * Function to parse keybinding
+ * @param {*} keybinding
+ * @returns keybinding
+ */
 export const parseKeyBinding = keybinding => {
   keybinding = keybinding.split('+').reduce((acc, val) => {
     acc.push(val);
@@ -50,6 +75,15 @@ export const parseKeyBinding = keybinding => {
   return keybinding;
 };
 
+/**
+ * Function to set initial table width after page reload
+ * @param {*} window
+ * @param {*} drawerWidth
+ * @param {*} containerWidth
+ * @param {*} handleSetState
+ * @param {*} refs
+ * @returns the width of all the table frames
+ */
 export const handleInitialTableWidth = (
   window,
   drawerWidth,
@@ -85,6 +119,11 @@ export const handleInitialTableWidth = (
   } catch (error) {}
 };
 
+/**
+ * Check when a frame is being resized or dragged
+ * @param {*} params
+ * @returns the active size of the dragged frame
+ */
 export const handleMove = params => {
   const {
     event,

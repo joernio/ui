@@ -46,7 +46,6 @@ function App(props) {
       </ThemeProvider>
       <QueryProcessor />
       <WorkspaceProcessor />
-
       <FilesProcessor />
       <Toaster />
     </div>

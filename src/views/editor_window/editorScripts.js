@@ -5,8 +5,13 @@ import { setHighlightRange } from '../../store/actions/editorActions';
 import { store } from '../../store/configureStore';
 
 let delta_decorations = [];
-
+/**
+ *
+ * @param {*} newValue
+ * @param {*} props
+ */
 export const handleEditorOnChange = (newValue, props) => {
+  console.log('handleEditorOnChange: ', { newValue, props });
   props.setOpenFileContent(newValue);
   if (props.files.openFiles[props.files.openFilePath] === true) {
     const openFiles = { ...props.files.openFiles };
@@ -15,10 +20,20 @@ export const handleEditorOnChange = (newValue, props) => {
   }
 };
 
+/**
+ * Go to line and hightlight
+ * @param {*} refs
+ * @param {*} param1
+ */
 export const handleEditorGoToLineAndHighlight = (
   refs,
   { startLine, endLine },
 ) => {
+  console.log('handleEditorGoToLineAndHighlight: ', {
+    refs,
+    startLine,
+    endLine,
+  });
   setTimeout(() => {
     goToLine(refs.editorEl.current.editor, startLine);
     highlightRange(refs.editorEl.current.editor, {
@@ -28,12 +43,25 @@ export const handleEditorGoToLineAndHighlight = (
   }, 1000);
 };
 
+/**
+ * go to line
+ * @param {*} editor
+ * @param {*} row
+ * @param {*} column
+ */
 export const goToLine = (editor, row = 1, column = 1) => {
+  console.log('goToLine: ', { editor, row, column });
   editor.setPosition({ column: column, lineNumber: row ? row : 1 });
   editor.revealLineInCenter(row ? row : 1);
 };
 
+/**
+ * highlight range
+ * @param {*} editor
+ * @param {*} range
+ */
 export const highlightRange = (editor, range) => {
+  console.log('highlightRange: ', { editor, range });
   const rangeArr = [];
 
   if (range.startLine && !range.endLine) {
@@ -62,7 +90,13 @@ export const highlightRange = (editor, range) => {
   }
 };
 
+/**
+ * editor did mount
+ * @param {*} editor
+ * @param {*} monaco
+ */
 export const editorDidMount = (editor, monaco) => {
+  console.log('editorDidMount: ', { editor, monaco });
   editor.focus();
   monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
     noSemanticValidation: true,
@@ -70,7 +104,13 @@ export const editorDidMount = (editor, monaco) => {
   });
 };
 
+/**
+ * is line number in query result
+ * @param {*} results
+ * @returns
+ */
 export const isLineNumberInQueryResult = results => {
+  console.log('isLineNumberInQueryResult: ', results);
   const latest = results[Object.keys(results)[Object.keys(results).length - 1]];
   let range = { startLine: null, endLine: null };
 
@@ -117,7 +157,11 @@ export const isLineNumberInQueryResult = results => {
   }
 };
 
+/**
+ * editor should go to line
+ */
 export const editorShouldGoToLine = () => {
+  console.log('editorShouldGoToLine: =>');
   const { openFilePath: open_file_path } = store.getState().files;
   const { results } = store.getState().query;
   const file_path = isFilePathInQueryResult(results);

@@ -6,7 +6,12 @@ import {
 } from '../assets/js/utils/scripts';
 import { editorShouldGoToLine } from '../views/editor_window/editorScripts';
 
+/**
+ * Process files
+ * @param {*} props
+ */
 export const processFiles = async props => {
+  console.log('processFiles: ', props);
   const file_path = isFilePathInQueryResult(props.query.results);
   file_path && (await openFile(file_path));
   file_path && editorShouldGoToLine();

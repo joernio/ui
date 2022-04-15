@@ -1,21 +1,45 @@
 import { openSyntheticFile } from '../../assets/js/utils/scripts';
-
+/**
+ * toggle settings dialog
+ * @param {*} isSettingsDialogOpen
+ * @returns
+ */
 export const toggleSettingsDialog = isSettingsDialogOpen => {
+  console.log('toggleSettingsDialog: ', isSettingsDialogOpen);
   return {
     isSettingsDialogOpen: !isSettingsDialogOpen,
   };
 };
 
+/**
+ * Function to toggles the explorer section visible or invisible
+ * @param {*} props
+ * @returns 0 if drawerWidth is true, otherwise 250px
+ */
 export const handleDrawerToggle = props => {
+  console.log('handleDrawerToggle: ', props);
   return { drawerWidth: props.drawerWidth ? 0 : '250px' };
 };
 
+/**
+ * Function to toggle terminal visible or invisible
+ * @param {Object} props
+ * @returns the height of the terminal
+ */
 export const handleTerminalToggle = props => {
+  console.log('handleTerminalToggle: ', props);
   const terminalHeight = props.terminalHeight ? 0 : '468px';
   return { terminalHeight };
 };
 
+/**
+ * handle onchange
+ * @param {*} e
+ * @param {*} values
+ * @returns
+ */
 export const handleOnChange = (e, values) => {
+  console.log('handleOnChange: ', { e, values });
   if (
     e.target.id === 'prefers_dark_mode' ||
     e.target.id === 'prefers_terminal_view'
@@ -27,7 +51,15 @@ export const handleOnChange = (e, values) => {
   return { values };
 };
 
+/**
+ * function to initiallize the app default settings.
+ * @param {Object} settings This has the values required for the app startup
+ * e.g server connections parameters, websocket url, script directory, default theme etc.
+ * @returns the initial settings
+ */
+
 export const getSettingsInitialValues = settings => {
+  console.log('getSettingsInitialValues: ', settings);
   const initialSettings = {};
 
   initialSettings['server_url'] = settings?.server?.url;
@@ -45,7 +77,13 @@ export const getSettingsInitialValues = settings => {
   return initialSettings;
 };
 
+/**
+ * collect settings values
+ * @param {*} values
+ * @returns
+ */
 export const collectSettingsValues = values => {
+  console.log('collectSettingsValues: ', values);
   const settings = {
     server: {
       url: values['server_url'],
@@ -65,6 +103,10 @@ export const collectSettingsValues = values => {
   return settings;
 };
 
+/**
+ * Function to open the query shortcut page
+ */
 export const openShortcutsPage = () => {
+  console.log('openShortcutsPage: =>');
   openSyntheticFile('Query Shortcuts', 'Query Shortcuts');
 };

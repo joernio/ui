@@ -5,7 +5,14 @@ import {
   handleSetToast,
 } from '../assets/js/utils/scripts';
 
+/**
+ * modify space name and active project
+ * @param {*} obj
+ * @param {*} workspace
+ * @returns
+ */
 export const modifyWorkSpaceNameAndActiveProject = (obj, workspace) => {
+  console.log('modifyWorkSpaceNameAndActiveProject: ', { obj, workspace });
   const {
     pathToWorkSpace,
     pathToProject,
@@ -36,7 +43,13 @@ export const modifyWorkSpaceNameAndActiveProject = (obj, workspace) => {
   return workspace;
 };
 
+/**
+ * extract workspace name and active project
+ * @param {*} parsedProject
+ * @returns
+ */
 export const extractWorkSpaceNameAndActiveProject = parsedProject => {
+  console.log('extractWorkSpaceNameAndActiveProject: ', parsedProject);
   const {
     name: activeProjectName,
     inputPath,
@@ -55,7 +68,13 @@ export const extractWorkSpaceNameAndActiveProject = parsedProject => {
   };
 };
 
+/**
+ * extract language from string
+ * @param {*} str
+ * @returns
+ */
 export const extractLanguageFromString = str => {
+  console.log('extractLanguageFromString: ', str);
   try {
     const language = str.split('"')[1];
     if (language) {
@@ -79,7 +98,13 @@ export const extractLanguageFromString = str => {
   }
 };
 
+/**
+ * process query result
+ * @param {*} query_result
+ * @param {*} props
+ */
 export const processQueryResult = (query_result, props) => {
+  console.log('processQueryResult: ', { query_result, props });
   const {
     query,
     project: parsed_project,
@@ -158,7 +183,13 @@ export const processQueryResult = (query_result, props) => {
   }
 };
 
+/**
+ * Show if query result will be processed
+ * @param {*} results
+ * @returns
+ */
 export const shouldProcessQueryResult = results => {
+  console.log('shouldProcessQueryResult: ', results);
   const latest = results[Object.keys(results)[Object.keys(results).length - 1]];
   if (latest?.project || latest?.workspace) {
     return latest;

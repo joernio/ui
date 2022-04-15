@@ -2,6 +2,14 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { toaster } from '../../assets/js/utils/toaster';
 
+/**
+ * Show notification.
+ * @param {Object} status The state for the notification
+ * @param {null} status.connected The status of the app
+ * @param {null} status.toast The content of the toast
+ * @returns {null} null
+ */
+
 function Toaster(props) {
   const [state, _] = React.useState({
     timeout: 4000,

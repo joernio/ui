@@ -4,6 +4,15 @@ import { refreshRecent, refreshOpenFiles } from '../assets/js/utils/scripts';
 
 import { processFiles } from './filesProcessorScripts';
 
+/**
+ * Handles files and folders
+ * @param {Object} files
+ * @param {Object} workspace
+ * @param {Object} editor
+ * @param {Object} query
+ * @returns {null} null
+ */
+
 function FilesProcessor(props) {
   React.useEffect(() => {
     refreshRecent();

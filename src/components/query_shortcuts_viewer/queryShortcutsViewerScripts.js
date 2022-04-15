@@ -3,6 +3,12 @@ const vars = {
   currentDialogKeyBinding: '',
 };
 
+/**
+ * Function to delete query shortcut
+ * @param {*} key
+ * @param {*} queryShortcuts
+ * @returns the query shortcut to delete
+ */
 export const deleteQueryShorcut = (key, queryShortcuts) => {
   if (key) {
     delete queryShortcuts[key];
@@ -14,6 +20,11 @@ export const deleteQueryShorcut = (key, queryShortcuts) => {
   return queryShortcuts;
 };
 
+/**
+ * Function to collect query shortcut values
+ * @param {*} values
+ * @returns
+ */
 export const collectQueryShortcutValues = values => {
   if (!values.query) {
     handleSetToast({
@@ -55,6 +66,13 @@ export const collectQueryShortcutValues = values => {
   return shortcut;
 };
 
+/**
+ * Function to save query shortcut
+ * @param {*} values
+ * @param {*} queryShortcuts
+ * @param {*} props
+ * @returns
+ */
 export const handleSaveQueryShortcut = (values, queryShortcuts, props) => {
   if (collectQueryShortcutValues(values)) {
     props.setQueryShortcuts(deleteQueryShorcut(null, queryShortcuts));
@@ -63,6 +81,12 @@ export const handleSaveQueryShortcut = (values, queryShortcuts, props) => {
   }
 };
 
+/**
+ *
+ * @param {*} e
+ * @param {*} values
+ * @returns
+ */
 export const handleOnKeyDown = (e, values) => {
   if (e.target.id === 'background') {
     values[e.target.id] = e.target.checked;
@@ -131,6 +155,12 @@ export const handleOnKeyDown = (e, values) => {
   return { values };
 };
 
+/**
+ * Function to open dialog
+ * @param {*} key
+ * @param {*} queryShortcuts
+ * @returns
+ */
 export const openDialog = (key, queryShortcuts) => {
   const queryShortcut = queryShortcuts[key];
 
@@ -148,12 +178,22 @@ export const openDialog = (key, queryShortcuts) => {
   return { values, dialogOpen: true };
 };
 
+/**
+ * Function to close dialog
+ * @returns
+ */
 export const closeDialog = () => {
   const values = {};
   vars.currentDialogKeyBinding = '';
   return { values, dialogOpen: false };
 };
 
+/**
+ * Function to build property columns
+ * @param {*} searchString
+ * @param {*} queryShortcuts
+ * @returns
+ */
 export const buildPropertyColumns = (searchString, queryShortcuts) => {
   if (queryShortcuts) {
     let shortcutEntries = Object.entries(queryShortcuts);
@@ -191,12 +231,23 @@ export const buildPropertyColumns = (searchString, queryShortcuts) => {
   }
 };
 
+/**
+ * Function to move cursor to the end
+ * @param {*} el
+ * @param {*} len
+ */
 export const moveCursorToEnd = (el, len) => {
   el.focus();
   el.setSelectionRange(len, len);
   el.scrollLeft = el.scrollWidth;
 };
 
+/**
+ * Function to clear keybinding input
+ * @param {*} e
+ * @param {*} values
+ * @returns
+ */
 export const clearKeybindingInput = (e, values) => {
   e.target.parentElement.parentElement.children[0].value = '';
   e.target.parentElement.parentElement.parentElement.children[0].value = ''; //hack to make sure the input field is cleared

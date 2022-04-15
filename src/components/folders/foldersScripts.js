@@ -20,11 +20,25 @@ export const chokidarVars = {
   }),
 };
 
+/**
+ * Function to toggle folders dropdown. This allows you to view all
+ * the availble folders associated with an opened workspace
+ * @param {*} foldersVisible
+ * @returns true if the folder is not visible, otherwise false
+ */
 export const handleToggleFoldersVisible = foldersVisible => {
+  console.log('handleToggleFoldersVisible: ', foldersVisible);
   return { foldersVisible: !foldersVisible };
 };
 
+/**
+ * Check if a new folder will be opened
+ * @param {*} prev_workspace
+ * @param {*} workspace
+ * @returns
+ */
 export const shouldSwitchFolder = (prev_workspace, workspace) => {
+  console.log('shouldSwitchFolder: ', { prev_workspace, workspace });
   if (
     Object.keys(workspace?.projects ? workspace?.projects : {}).length ===
     Object.keys(prev_workspace?.projects ? prev_workspace?.projects : {}).length
@@ -57,7 +71,14 @@ export const shouldSwitchFolder = (prev_workspace, workspace) => {
   }
 };
 
+/**
+ *
+ * @param {*} arr
+ * @param {*} base
+ * @param {*} isFile
+ */
 const fsToJson = (arr, base, isFile) => {
+  console.log('fsToJson: ', { arr, base, isFile });
   let nestedArr = base;
   let pathToDir = '';
 
@@ -99,7 +120,14 @@ const fsToJson = (arr, base, isFile) => {
   });
 };
 
+/**
+ * get root
+ * @param {*} folder_json_model
+ * @param {*} root
+ * @returns
+ */
 export const getRoot = (folder_json_model, root) => {
+  console.log('getRoot: ', { folder_json_model, root });
   root = root.split('/');
   root = root[root.length - 1];
 
@@ -114,7 +142,12 @@ export const getRoot = (folder_json_model, root) => {
   }
 };
 
+/**
+ * Function to switch between different folders
+ * @returns path to the new folder
+ */
 export const selectFolderStructureRootPath = async () => {
+  console.log('selectFolderStructureRootPath: =>');
   selectDirApi.selectDir('select-dir');
 
   const path = await new Promise((resolve, reject) => {
@@ -132,7 +165,14 @@ export const selectFolderStructureRootPath = async () => {
   return { path };
 };
 
+/**
+ * Function to create folder json model
+ * @param {Object} obj
+ * @param {Function} callback
+ */
 export const createFolderJsonModel = async (obj, callback) => {
+  console.log('createFolderJsonModel: ', { obj, callback });
+
   let { path: root_path } = obj;
   const uiIgnoreArr = getUIIgnoreArr(
     '',
