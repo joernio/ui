@@ -1,0 +1,42 @@
+{
+  "name": "ui-client",
+  "version": "1.0.0",
+  "description": "The Bug Hunter's Workbench",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joernio/ui.git"
+  },
+  "author": {
+    "name": "ShiftLeft, Inc.",
+    "url": "https://www.shiftleft.io/"
+  },
+  "contributors": [
+    {
+      "name": "Ndibe Raymond",
+      "email": "ndiberaymond1@gmail.com",
+      "url": "https://github.com/NdibeRaymond"
+    }
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/joernio/ui/issues"
+  },
+  "keywords": [
+    "Security Analysis",
+    "Bug Tracking",
+    "CPG UI Client"
+  ],
+  "homepage": "https://github.com/joernio/ui#readme",
+  "main": "./dist/main/main.prod.js",
+  "scripts": {
+    "electron-rebuild": "node ../../.erb/scripts/electron-rebuild.js",
+    "link-modules": "node ../../.erb/scripts/link-modules.js",
+    "postinstall": "npm run electron-rebuild && npm run link-modules"
+  },
+  "config": {
+    "forge": "./forge.config.js"
+  },
+  "dependencies": {
+    "websocket": "^1.0.34"
+  }
+}
