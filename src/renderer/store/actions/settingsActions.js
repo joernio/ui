@@ -1,17 +1,12 @@
-export const setSettings = setting => {
-  return dispatch => {
-    dispatch({
-      type: 'SET_SETTINGS',
-      payload: setting,
-    });
-  };
+export const setSettings = setting => dispatch => {
+	dispatch({
+		type: 'SET_SETTINGS',
+		payload: setting,
+	});
 };
 
-export const setQueryShortcuts = payload => {
-  return dispatch => {
-    return dispatch({
-      type: 'SET_QUERY_SHORTCUTS',
-      payload,
-    });
-  };
-};
+export const setQueryShortcuts = payload => dispatch =>
+	dispatch({
+		type: 'SET_QUERY_SHORTCUTS',
+		payload,
+	});

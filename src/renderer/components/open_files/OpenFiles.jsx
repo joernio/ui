@@ -4,17 +4,17 @@ import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { Icon } from '@blueprintjs/core';
 import {
-  openFile,
-  closeFile,
-  handleScrollTop,
-  discardDialogHandler,
-  openSyntheticFile,
+	openFile,
+	closeFile,
+	handleScrollTop,
+	discardDialogHandler,
+	openSyntheticFile,
 } from '../../assets/js/utils/scripts';
 import { syntheticFiles } from '../../assets/js/utils/defaultVariables';
 import styles from '../../assets/js/styles/components/open_files/openFilesStyles';
 import {
-  getEditorFilesFromOpenFiles,
-  handleToggleFilesVisible,
+	getEditorFilesFromOpenFiles,
+	handleToggleFilesVisible,
 } from './openFilesScripts';
 import DiscardDialog from '../discard_dialog/DiscardDialog';
 import commonStyles from '../../assets/js/styles';
@@ -23,147 +23,176 @@ const useStyles = makeStyles(styles);
 const useCommonStyles = makeStyles(commonStyles);
 
 function OpenFiles(props) {
-  const filesContainerEl = React.useRef(null);
-  const classes = useStyles(props);
-  const commonClasses = useCommonStyles(props);
-  const [state, setState] = React.useState({
-    files: {},
-    filesVisible: true,
-    scrolled: false,
-    openDiscardDialog: false,
-    discardDialogCallback: () => {},
-  });
+	const filesContainerEl = React.useRef(null);
+	const classes = useStyles(props);
+	const commonClasses = useCommonStyles(props);
 
-  React.useEffect(() => {
-    if (props.files?.openFiles) {
-      const files = getEditorFilesFromOpenFiles(props);
-      handleSetState({ files: files ? files : {} });
-    }
-  }, [props.files.openFiles]);
+	const [state, setState] = React.useState({
+		files: {},
+		filesVisible: true,
+		scrolled: false,
+		openDiscardDialog: false,
+		discardDialogCallback: () => {},
+	});
 
-  React.useEffect(() => {
-    const callback = e => handleSetState(handleScrollTop(e));
+	const handleSetState = obj => {
+		if (obj) {
+			Promise.resolve(obj).then(obj => {
+				setState(state => ({ ...state, ...obj }));
+			});
+		}
+	};
 
-    if (filesContainerEl.current) {
-      filesContainerEl.current.addEventListener('scroll', callback);
+	React.useEffect(() => {
+		if (props.files?.openFiles) {
+			const files = getEditorFilesFromOpenFiles(props);
+			handleSetState({ files: files || {} });
+		}
+	}, [props.files.openFiles]);
 
-      return () =>
-        filesContainerEl.current &&
-        filesContainerEl.current.removeEventListener('scroll', callback);
-    }
-  }, [filesContainerEl.current]);
+	React.useEffect(() => {
+		const callback = e => handleSetState(handleScrollTop(e));
 
-  const handleSetState = obj => {
-    if (obj) {
-      Promise.resolve(obj).then(obj => {
-        setState(state => ({ ...state, ...obj }));
-      });
-    }
-  };
+		if (filesContainerEl.current) {
+			filesContainerEl.current.addEventListener('scroll', callback);
 
-  const {
-    files,
-    filesVisible,
-    scrolled,
-    openDiscardDialog,
-    discardDialogCallback,
-  } = state;
+			return () =>
+				filesContainerEl.current &&
+				filesContainerEl.current.removeEventListener(
+					'scroll',
+					callback,
+				);
+		}
+	}, [filesContainerEl.current]);
 
-  const { openFiles, openFilePath } = props.files;
+	const {
+		files,
+		filesVisible,
+		scrolled,
+		openDiscardDialog,
+		discardDialogCallback,
+	} = state;
 
-  return Object.keys(props.workspace.projects).length > 0 ? (
-    <div className={classes.rootStyle} tabIndex="0" data-test="open-files">
-      <div
-        className={classes.titleSectionStyle}
-        onClick={() => handleSetState(handleToggleFilesVisible(filesVisible))}
-      >
-        {filesVisible ? (
-          <Icon className={classes.iconStyle} icon="chevron-down" />
-        ) : (
-          <Icon className={classes.iconStyle} icon="chevron-right" />
-        )}
-        <h2 className={classes.titleStyle}>Open Editor</h2>
-      </div>
-      <div
-        ref={filesContainerEl}
-        className={clsx(
-          classes.filesSectionStyle,
-          commonClasses.scrollBarStyle,
-          commonClasses.scrollBarDarkStyle,
+	const { openFiles, openFilePath } = props.files;
 
-          {
-            [classes.scrolledStyle]: scrolled,
-          },
-          {
-            [classes.filesVisible]: filesVisible,
-            [classes.filesHidden]: !filesVisible,
-          },
-        )}
-      >
-        {filesVisible && files
-          ? Object.keys(files).map(path => {
-              let filename = path.split('/');
-              filename = filename[filename.length - 1];
-              return (
-                <div className={classes.fileSectionStyle} tabIndex="0">
-                  <h3
-                    className={classes.fileNameStyle}
-                    key={path}
-                    onClick={() =>
-                      handleSetState(
-                        discardDialogHandler(openFiles, openFilePath, () => {
-                          syntheticFiles.filter(type => path.endsWith(type))
-                            .length > 0
-                            ? openSyntheticFile(path, openFiles[path])
-                            : openFile(path);
-                        }),
-                      )
-                    }
-                  >
-                    {filename}
-                  </h3>
+	return Object.keys(props.workspace.projects).length > 0 ? (
+		<div className={classes.rootStyle} tabIndex="0" data-test="open-files">
+			<div
+				className={classes.titleSectionStyle}
+				onClick={() =>
+					handleSetState(handleToggleFilesVisible(filesVisible))
+				}
+			>
+				{filesVisible ? (
+					<Icon className={classes.iconStyle} icon="chevron-down" />
+				) : (
+					<Icon className={classes.iconStyle} icon="chevron-right" />
+				)}
+				<h2 className={classes.titleStyle}>Open Editor</h2>
+			</div>
+			<div
+				ref={filesContainerEl}
+				className={clsx(
+					classes.filesSectionStyle,
+					commonClasses.scrollBarStyle,
+					commonClasses.scrollBarDarkStyle,
 
-                  {files[path] === false ? (
-                    <Icon
-                      icon="dot"
-                      className={clsx('unsaved-icon', classes.iconStyle)}
-                    />
-                  ) : null}
+					{
+						[classes.scrolledStyle]: scrolled,
+					},
+					{
+						[classes.filesVisible]: filesVisible,
+						[classes.filesHidden]: !filesVisible,
+					},
+				)}
+			>
+				{filesVisible && files
+					? Object.keys(files).map((path, idx) => {
+							let filename = path.split('/');
+							filename = filename[filename.length - 1];
+							return (
+								<div
+									key={`${idx}-${filename}`}
+									className={classes.fileSectionStyle}
+									tabIndex="0"
+								>
+									<h3
+										className={classes.fileNameStyle}
+										key={path}
+										onClick={() =>
+											handleSetState(
+												discardDialogHandler(
+													openFiles,
+													openFilePath,
+													() => {
+														syntheticFiles.filter(
+															type =>
+																path.endsWith(
+																	type,
+																),
+														).length > 0
+															? openSyntheticFile(
+																	path,
+																	openFiles[
+																		path
+																	],
+															  )
+															: openFile(path);
+													},
+												),
+											)
+										}
+									>
+										{filename}
+									</h3>
 
-                  <Icon
-                    icon="small-cross"
-                    className={clsx(classes.iconStyle, {
-                      'unsaved-cross-icon': files[path] === false,
-                    })}
-                    onClick={() =>
-                      handleSetState(
-                        discardDialogHandler(openFiles, openFilePath, () => {
-                          closeFile(path);
-                        }),
-                      )
-                    }
-                  />
-                </div>
-              );
-            })
-          : null}
-      </div>
-      <DiscardDialog
-        handleSetState={handleSetState}
-        openDiscardDialog={openDiscardDialog}
-        callback={discardDialogCallback}
-      />
-    </div>
-  ) : null;
+									{files[path] === false ? (
+										<Icon
+											icon="dot"
+											className={clsx(
+												'unsaved-icon',
+												classes.iconStyle,
+											)}
+										/>
+									) : null}
+
+									<Icon
+										icon="small-cross"
+										className={clsx(classes.iconStyle, {
+											'unsaved-cross-icon':
+												files[path] === false,
+										})}
+										onClick={() =>
+											handleSetState(
+												discardDialogHandler(
+													openFiles,
+													openFilePath,
+													() => {
+														closeFile(path);
+													},
+												),
+											)
+										}
+									/>
+								</div>
+							);
+					  })
+					: null}
+			</div>
+			<DiscardDialog
+				handleSetState={handleSetState}
+				openDiscardDialog={openDiscardDialog}
+				callback={discardDialogCallback}
+			/>
+		</div>
+	) : null;
 }
 
-const mapStateToProps = state => {
-  return {
-    query: state.query,
-    files: state.files,
-    settings: state.settings,
-    workspace: state.workspace,
-  };
-};
+const mapStateToProps = state => ({
+	query: state.query,
+	files: state.files,
+	settings: state.settings,
+	workspace: state.workspace,
+});
 
 export default connect(mapStateToProps, null)(OpenFiles);

@@ -1,62 +1,42 @@
-export const setTerminal = payload => {
-  return dispatch => {
-    dispatch({
-      type: 'SET_TERMINAL',
-      payload,
-    });
-  };
+export const setTerminal = payload => dispatch => {
+	dispatch({
+		type: 'SET_TERMINAL',
+		payload,
+	});
 };
 
-export const setTerm = term => {
-  return dispatch => {
-    dispatch(setTerminal({ term }));
-  };
+export const setTerm = term => dispatch => {
+	dispatch(setTerminal({ term }));
 };
 
-export const setRefs = refs => {
-  return dispatch => {
-    dispatch(setTerminal({ refs }));
-  };
+export const setRefs = refs => dispatch => {
+	dispatch(setTerminal({ refs }));
 };
 
-export const setFitAddon = fitAddon => {
-  return dispatch => {
-    dispatch(setTerminal({ fitAddon }));
-  };
+export const setFitAddon = fitAddon => dispatch => {
+	dispatch(setTerminal({ fitAddon }));
 };
 
-export const setPrevResults = prev_results => {
-  return dispatch => {
-    dispatch(setTerminal({ prev_results }));
-  };
+export const setPrevResults = prev_results => dispatch => {
+	dispatch(setTerminal({ prev_results }));
 };
 
-export const setPrevWorkspace = prev_workspace => {
-  return dispatch => {
-    dispatch(setTerminal({ prev_workspace }));
-  };
+export const setPrevWorkspace = prev_workspace => dispatch => {
+	dispatch(setTerminal({ prev_workspace }));
 };
 
-export const setIsMaximized = obj => {
-  return dispatch => {
-    dispatch(setTerminal(obj));
-  };
+export const setIsMaximized = obj => dispatch => {
+	dispatch(setTerminal(obj));
 };
 
-export const setHistory = history => {
-  return dispatch => {
-    dispatch(setTerminal({ history }));
-  };
+export const setHistory = history => dispatch => {
+	dispatch(setTerminal({ history }));
 };
 
-export const setTerminalBusy = busy => {
-  return dispatch => {
-    dispatch(setTerminal({ busy }));
-  };
+export const setTerminalBusy = busy => dispatch => {
+	dispatch(setTerminal({ busy }));
 };
 
-export const setQuerySuggestions = query_suggestions => {
-  return dispatch => {
-    dispatch(setTerminal({ query_suggestions }));
-  };
+export const setQuerySuggestions = query_suggestions => dispatch => {
+	dispatch(setTerminal({ query_suggestions }));
 };
