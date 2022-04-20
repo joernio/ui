@@ -44,20 +44,21 @@
     "build:renderer:dev": "NODE_ENV=development webpack --watch --progress --config ./.erb/configs/webpack.config.renderer.dev.js",
     "build:renderer:dev:no-watch": "NODE_ENV=development webpack --config ./.erb/configs/webpack.config.renderer.dev.js",
     "electron": "NODE_ENV=development electronmon ./release/app/dist/main/main.dev.js",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "husky install"
   },
   "lint-staged": {
     "*.{js,jsx}": [
-      "NODE_ENV=development eslint --cache"
+      "eslint --cache"
     ],
     "*.json,.{eslintrc,prettierrc}": [
-      "prettier --ignore-path .eslintignore --config .prettierrc.yaml --parser json --write"
+      "prettier --ignore-path .eslintignore --config ./.prettierrc.yaml --write"
     ],
     "*.{css,scss}": [
-      "prettier --ignore-path .eslintignore --config .prettierrc.yaml --write"
+      "prettier --ignore-path .eslintignore --config ./.prettierrc.yaml --write"
     ],
     "*.{html,md,yml}": [
-      "prettier --ignore-path .eslintignore --config .prettierrc.yaml --write"
+      "prettier --ignore-path .eslintignore --config ./.prettierrc.yaml --write"
     ]
   },
   "electronmon": {
@@ -95,20 +96,25 @@
     "enzyme": "^3.11.0",
     "eslint": "^8.13.0",
     "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-import-resolver-webpack": "^0.13.2",
     "eslint-plugin-compat": "^4.0.0",
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-jest": "^25.3.2",
+    "eslint-plugin-json": "^3.1.0",
     "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-react": "^7.28.0",
     "eslint-plugin-react-hooks": "^4.3.0",
     "html-webpack-plugin": "^5.5.0",
+    "husky": "^7.0.4",
     "jest": "^27.0.6",
     "jest-enzyme": "^7.1.2",
     "jsdoc": "^3.6.10",
     "jsdom": "11.12.0",
     "jsdom-global": "3.0.2",
+    "lint-staged": "^12.3.8",
     "mini-css-extract-plugin": "^2.4.5",
     "monaco-editor-webpack-plugin": "^3.0.1",
     "moxios": "^0.4.0",

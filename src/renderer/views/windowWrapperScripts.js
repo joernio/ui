@@ -4,8 +4,8 @@
  * @returns
  */
 export const handleOpenFile = e => {
-  if (e?.target?.files[0]?.path) {
-    let path = e.target.files[0].path;
-    return path;
-  }
+	if (e?.target?.files[0]?.path) {
+		const { path } = e.target.files[0];
+		return path;
+	}
 };

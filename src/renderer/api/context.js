@@ -1,4 +1,6 @@
+/* eslint-disable react/display-name */
 import React from 'react';
+
 const APIContext = React.createContext(null);
 
 /**
@@ -7,10 +9,10 @@ const APIContext = React.createContext(null);
  * @returns a react higher order component
  */
 export const withAPI = Component => props =>
-  (
-    <APIContext.Consumer>
-      {api => <Component {...props} api={api} />}
-    </APIContext.Consumer>
-  );
+	(
+		<APIContext.Consumer>
+			{api => <Component {...props} api={api} />}
+		</APIContext.Consumer>
+	);
 
 export default APIContext;

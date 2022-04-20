@@ -7,10 +7,9 @@ import { saveFile } from '../../assets/js/utils/scripts';
  * @returns
  */
 export const handleSave = async (path, callback) => {
-  console.log('handleSave: ', { path, callback });
-  await saveFile(path);
-  callback();
-  return { openDiscardDialog: false, callback: () => {} };
+	await saveFile(path);
+	callback();
+	return { openDiscardDialog: false, callback: () => {} };
 };
 
 /**
@@ -22,19 +21,14 @@ export const handleSave = async (path, callback) => {
  * @returns
  */
 export const handleDiscard = (path, openFiles, callback, setOpenFiles) => {
-  console.log('handleDiscard: ', { path, openFiles, callback, setOpenFiles });
-  openFiles = { ...openFiles };
-  openFiles[path] = true;
-  setOpenFiles(openFiles);
-  callback();
-  return { openDiscardDialog: false, callback: () => {} };
+	openFiles = { ...openFiles };
+	openFiles[path] = true;
+	setOpenFiles(openFiles);
+	callback();
+	return { openDiscardDialog: false, callback: () => {} };
 };
 
-/**
- * cancel file
- * @returns
- */
-export const handleCancel = () => {
-  console.log('handleCancel =>');
-  return { openDiscardDialog: false, callback: () => {} };
-};
+export const handleCancel = () => ({
+	openDiscardDialog: false,
+	callback: () => {},
+});

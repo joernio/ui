@@ -1,12 +1,11 @@
 /**
- * Function to count queries
- * @param {*} results
- * @returns the number of queries
+ * 
+ * @param {*} results 
+ * @returns 
  */
-export const countQueries = results => {
-  console.log('countQueries: ', results);
-  return { queriesCount: Object.keys(results).length };
-};
+export const countQueries = results => ({
+	queriesCount: Object.keys(results).length,
+});
 
 /**
  * Function to uopdate query statistics
@@ -14,19 +13,18 @@ export const countQueries = results => {
  * @returns
  */
 export const updateQueriesStats = results => {
-  console.log('updateQueriesStats: ', results);
-  const queriesStats = [];
+	const queriesStats = [];
 
-  for (let key in results) {
-    const result = results[key];
-    queriesStats.push({
-      query: result.query,
-      t_elapsed: result.t_1
-        ? result.t_1 - result.t_0
-        : performance.now() - result.t_0,
-      completed: result.t_1 ? true : false,
-    });
-  }
+	Object.keys(results).forEach(key => {
+		const result = results[key];
+		queriesStats.push({
+			query: result.query,
+			t_elapsed: result.t_1
+				? result.t_1 - result.t_0
+				: performance.now() - result.t_0,
+			completed: !!result.t_1,
+		});
+	});
 
-  return { queriesStats };
+	return { queriesStats };
 };

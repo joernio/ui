@@ -17,19 +17,17 @@ export const closeDialog = () => {
  * @param {*} props
  */
 export const runQueryWithArgs = (el, props) => {
-  console.log('runQueryWithArgs: ', { el, props });
-  let query = props.query.queryShortcut.query.split('\\0');
+	let query = props.query.queryShortcut.query.split('\\0');
 
-  query = query
-    .map((str, index) => {
-      if (index === 0) {
-        return str;
-      } else {
-        return el.current.querySelector(`#arg-${index}`).value + str;
-      }
-    })
-    .join('');
+	query = query
+		.map((str, index) => {
+			if (index === 0) {
+				return str;
+			}
+			return el.current.querySelector(`#arg-${index}`).value + str;
+		})
+		.join('');
 
-  const queryShortcut = { ...props.query.queryShortcut, query };
-  debouncedHandleShortcut(queryShortcut);
+	const queryShortcut = { ...props.query.queryShortcut, query };
+	debouncedHandleShortcut(queryShortcut);
 };

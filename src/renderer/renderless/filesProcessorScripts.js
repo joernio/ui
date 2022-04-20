@@ -1,8 +1,8 @@
 import {
-  openFile,
-  openSyntheticFile,
-  isFilePathInQueryResult,
-  isQueryResultToOpenSynthFile,
+	openFile,
+	openSyntheticFile,
+	isFilePathInQueryResult,
+	isQueryResultToOpenSynthFile,
 } from '../assets/js/utils/scripts';
 import { editorShouldGoToLine } from '../views/editor_window/editorScripts';
 
@@ -11,16 +11,15 @@ import { editorShouldGoToLine } from '../views/editor_window/editorScripts';
  * @param {*} props
  */
 export const processFiles = async props => {
-  console.log('processFiles: ', props);
-  const file_path = isFilePathInQueryResult(props.query.results);
-  file_path && (await openFile(file_path));
-  file_path && editorShouldGoToLine();
+	const file_path = isFilePathInQueryResult(props.query.results);
+	file_path && (await openFile(file_path));
+	file_path && editorShouldGoToLine();
 
-  const { synth_file_path, content } = await isQueryResultToOpenSynthFile(
-    props.query.results,
-  );
+	const { synth_file_path, content } = await isQueryResultToOpenSynthFile(
+		props.query.results,
+	);
 
-  synth_file_path && content && openSyntheticFile(synth_file_path, content);
+	synth_file_path && content && openSyntheticFile(synth_file_path, content);
 };
 
 // import fs from 'fs';

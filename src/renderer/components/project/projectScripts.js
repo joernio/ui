@@ -4,10 +4,9 @@
  * @param {*} props
  */
 export const addToQueue = (query, props) => {
-  console.log('addToQueue: ', { query, props });
-  if (query) {
-    props.enQueueQuery(query);
-  }
+	if (query) {
+		props.enQueueQuery(query);
+	}
 };
 
 /**
@@ -16,15 +15,14 @@ export const addToQueue = (query, props) => {
  * @returns query construct
  */
 export const handleOpenProject = name => {
-  console.log('handleOpenProject: ', name);
-  if (name) {
-    const query = {
-      query: `open("${name}")`,
-      origin: 'workspace',
-      ignore: false,
-    };
-    return query;
-  }
+	if (name) {
+		const query = {
+			query: `open("${name}")`,
+			origin: 'workspace',
+			ignore: false,
+		};
+		return query;
+	}
 };
 
 /**
@@ -33,15 +31,14 @@ export const handleOpenProject = name => {
  * @returns query construct
  */
 export const handleCloseProject = name => {
-  console.log('handleCloseProject: ', name);
-  if (name) {
-    const query = {
-      query: `close("${name}")`,
-      origin: 'workspace',
-      ignore: false,
-    };
-    return query;
-  }
+	if (name) {
+		const query = {
+			query: `close("${name}")`,
+			origin: 'workspace',
+			ignore: false,
+		};
+		return query;
+	}
 };
 
 /**
@@ -50,13 +47,12 @@ export const handleCloseProject = name => {
  * @returns query construct
  */
 export const handleDeleteProject = name => {
-  console.log('handleDeleteProject: ', name);
-  if (name) {
-    const query = {
-      query: `delete("${name}")`,
-      origin: 'workspace',
-      ignore: false,
-    };
-    return query;
-  }
+	if (name) {
+		const query = {
+			query: `delete("${name}")`,
+			origin: 'workspace',
+			ignore: false,
+		};
+		return query;
+	}
 };
