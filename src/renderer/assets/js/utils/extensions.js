@@ -1,5 +1,5 @@
 /**
- * Fucntion that handles listening to Mouse events.
+ * Handles Keyboard shortcuts
  * It is binded gloablly across the app.
  * @param {*} mousetrap
  *

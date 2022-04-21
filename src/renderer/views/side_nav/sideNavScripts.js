@@ -22,7 +22,7 @@ export const handleTerminalToggle = props => {
  * handle onchange
  * @param {*} e
  * @param {*} values
- * @returns
+ * @returns value
  */
 export const handleOnChange = (e, values) => {
 	if (
@@ -64,7 +64,7 @@ export const getSettingsInitialValues = settings => {
 /**
  * collect settings values
  * @param {*} values
- * @returns
+ * @returns settings
  */
 export const collectSettingsValues = values => {
 	const settings = {

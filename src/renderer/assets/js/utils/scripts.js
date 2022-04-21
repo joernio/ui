@@ -32,12 +32,25 @@ import { handlePrintable } from '../../../views/terminal_window/terminalWindowSc
 
 mouseTrapGlobalBindig(Mousetrap);
 
+/**
+ * Generates unique ID
+ * @returns a unique number 
+ */
 export const generateRandomID = () => nanoid();
 
+/**
+ * Sets notification messages
+ * @param {{ connected: null, toast: null }} toast 
+ */
 export const handleSetToast = toast => {
 	store.dispatch(setToast(toast));
 };
 
+/**
+ * Checks if queue is empty
+ * @param {Object} queue 
+ * @returns true if queue is empty, otherwise false
+ */
 export const queueEmpty = queue => {
 	if (queue && Object.keys(queue).length === 0) {
 		return true;
@@ -48,12 +61,21 @@ export const queueEmpty = queue => {
 	return false;
 };
 
+/**
+ * Adds query to queue if query is present
+ * @param {{ query: string ,origin: string ,ignore: boolean }} query a cpg command
+ * @param {Object} props 
+ */
 export const addToQueue = (query, props) => {
 	if (query) {
 		props.enQueueQuery(query);
 	}
 };
 
+/**
+ * Adds workspace query to queue
+ * @returns a query object
+ */
 export const addWorkSpaceQueryToQueue = () => {
 	const query = {
 		query: 'workspace',
@@ -65,12 +87,10 @@ export const addWorkSpaceQueryToQueue = () => {
 };
 
 /**
- * Function to adds query to queue. A query is the CPG
- * command run in the terminal. A queue is a collection of
- * all the queries to run.
- * @param {Object} query The new query
- * @param {Object} queue The query collection
- * @returns The updated queue
+ * Performs an update that adds a new query to the queue
+ * @param {{ query: string ,origin: string ,ignore: boolean }} query a cpg command
+ * @param {Object} queue a query collection
+ * @returns an updated queue
  */
 export const performEnQueueQuery = (query, queue) => {
 	const key = `${Object.keys(queue).length}-${generateRandomID()}`;
@@ -80,9 +100,9 @@ export const performEnQueueQuery = (query, queue) => {
 };
 
 /**
- * Function to removes the last query from queue
+ * Performs an update that removes a query from the queue
  * @param {Object} queue The query collection
- * @returns The updated queue
+ * @returns an updated queue
  */
 export const performDeQueueQuery = queue => {
 	const key = Object.keys(queue).shift();
@@ -95,7 +115,7 @@ export const performDeQueueQuery = queue => {
 };
 
 /**
- * Function to gets the first query in a queue
+ * Looks for the first query in a queue
  * @param {Object} queue The query collection
  * @returns the first query in the queue
  */
@@ -106,7 +126,7 @@ export const performPeekQueue = queue => {
 };
 
 /**
- * Function to send message to perform an action on the window
+ * Sends message to the window to perform an action
  * It could be to close the window or to reload
  * @param {string} action to be performed by the window
  */
@@ -115,7 +135,7 @@ export const sendWindowsMessage = action => {
 };
 
 /**
- * Function to reconnectes web socket to server
+ * Reconnectes web socket to the server
  * @param {string} ws_url websocket url
  */
 export const wsReconnectToServer = ws_url => {
@@ -123,19 +143,12 @@ export const wsReconnectToServer = ws_url => {
 };
 
 /**
- * Function to disconnects web socket from server
+ * Disconnects web socket from the server
  */
 export const wsDisconnectFromServer = () => {
 	windowActionApi.disconnectFromWebSocketAction();
 };
 
-/**
- * Function to appends a classname to a node. This can return
- * null if no node exist
- * @param {Object} nodes uploaded folders
- * @param {Function} callback
- * @returns
- */
 export const forEachNode = (nodes, callback) => {
 	if (nodes === undefined) {
 		return;
@@ -147,21 +160,15 @@ export const forEachNode = (nodes, callback) => {
 	});
 };
 
-/**
- * Function to lood through nodes
- * @param {Object} nodes uploaded folders
- * @param {string} path
- * @param {Function} callback
- */
 export const forNodeAtPath = (nodes, path, callback) => {
 	callback(Tree.nodeFromPath(path, nodes));
 };
 
 /**
- * Function to add the result of a query to results collection
+ * Performs an update that adds a auery response to the results object.
  * @param {Object} result A query response
- * @param {Object} results A collection of all query response
- * @returns results. This cannot be more than 500 in a collection
+ * @param {Object} results A collection of query response
+ * @returns an updated results. This cannot be more than 500 in a collection
  */
 export const performPushResult = (result, results) => {
 	results = { ...results };
@@ -175,29 +182,45 @@ export const performPushResult = (result, results) => {
 };
 
 /**
- * Function to searches for result with post-query-key.
- * Post-query is a ...
- * @param {Object} results The result collection from running a query
- * @param {Object} post_query_key The post query key
- * @returns key
+ * Searches for a result with post_query_uuid equal to post_query_key.
+ * When we run a query, it sends a request to the server which returns a uuid
+ * to keep track of the query. This uuid is used to construct a result object
+ * for the query. When the query response is ready on the server, websocket notifies 
+ * the client with the a uuid of the processed query. This uuid now used to 
+ * fetch the query response from the server and update the results object as required. 
+ * The uuid is what we refer to as a post_query_key.
+ * @param {Object} results query results
+ * @param {Object} post_query_key an id return by a websocket to indicate that a 
+ * query has finished processing on the server
+ * @returns a result object pointing to the post_query_key
+ */
+
+/* This function is a modification for the one below it.
+ * consider to use it or to use the previous function.
  */
 export const getResultObjWithPostQueryKey = (results, post_query_key) => {
-	let res;
-	Object.keys(results).some(key => {
-		if (key && results[key].post_query_uuid === post_query_key) {
-			res = key;
-			return true;
-		}
-		return false;
-	});
-
-	return res;
+	for (let key in results){
+		if(results[key].post_query_uuid === post_query_key) return key;
+	}
 };
+// export const getResultObjWithPostQueryKey = (results, post_query_key) => {
+// 	let res;
+// 	Object.keys(results).some(key => {
+// 		if (key && results[key].post_query_uuid === post_query_key) {
+// 			res = key;
+// 			return true;
+// 		}
+// 		return false;
+// 	});
+
+// 	return res;
+// };
+
 
 /**
  * Function to parse projects
  * @param {*} data
- * @returns projects
+ * @returns parsed projects
  */
 export const parseProjects = data => {
 	if (data.stdout.split('=')[1].trim().startsWith('empty')) {
@@ -226,7 +249,7 @@ export const parseProjects = data => {
 /**
  * Function to parse a single project
  * @param {*} data
- * @returns a project
+ * @returns a parsed project
  */
 export const parseProject = data => {
 	let inputPath;
@@ -257,11 +280,10 @@ export const parseProject = data => {
 };
 
 /**
- * Function to perform a postQuery.
- * PostQuery is a ...
- * @param {Object} store
- * @param {Object} results
- * @param {number} key
+ * performs a postQuery.
+ * @param {Object} store the state
+ * @param {Object} results query response object
+ * @param {number} key a post_query_uuid
  */
 const performPostQuery = (store, results, key) => {
 	let post_query;
@@ -280,7 +302,7 @@ const performPostQuery = (store, results, key) => {
 };
 
 /**
- * Function to print a query result to the terminal
+ * Prints a query result to the terminal
  * @param {Object} data
  * @param {Object} store
  * @param {number} key
@@ -337,7 +359,8 @@ const setQueryResult = (data, store, key, results) => {
 };
 
 /**
- * Function to handles websocket response
+ * Fetches query response from the server using the data object returned
+ * by websocket and updates query results
  * @param {Object} data
  */
 export const handleWebSocketResponse = data => {
@@ -369,7 +392,7 @@ export const handleWebSocketResponse = data => {
 };
 
 /**
- * Function to enable or disable scroll to top
+ * Enables or disables scroll to top
  * @param {Object} e
  * @returns true if scrolled to the top of the window, and false otherwise.
  */
@@ -381,9 +404,8 @@ export const handleScrollTop = e =>
  * @param {Object} openFiles
  * @param {Object} openFilePath
  * @param {Function} callback
- * @returns
+ * @returns object
  */
-
 export const discardDialogHandler = (openFiles, openFilePath, callback) => {
 	if (openFiles[openFilePath] === false) {
 		return { openDiscardDialog: true, discardDialogCallback: callback };
@@ -407,17 +429,23 @@ export const getOpenFileName = path => {
 };
 
 /**
- * Function to get extension of a file
+ * Gets file extension
  * @param {string} path
- * @returns . if ext is true, otherwise empty space
+ * @returns .extension-name if ext is true, otherwise empty space
  */
 export const getExtension = path => {
 	const ext = path.split('.')[path.split('.').length - 1];
 	return ext ? `.${ext}` : '';
 };
 
-export const readFile = path =>
-	new Promise((resolve, reject) => {
+/**
+ * Reads the content of a file
+ * @param {string} path 
+ * @returns a promise that resolves to a path if media files is 
+ * found, otherwise resolve to the file data
+ */
+export const readFile = path =>{
+	return new Promise((resolve, reject) => {
 		if (path) {
 			// avoid reading media files (images, etc) into memory. just return the file path instead;
 			if (
@@ -439,7 +467,12 @@ export const readFile = path =>
 			reject();
 		}
 	});
+}
 
+/**
+ * Opens a file
+ * @param {string} path 
+ */
 export const openFile = async path => {
 	if (path) {
 		const files = { ...store.getState().files };
@@ -503,7 +536,7 @@ export const openFile = async path => {
 };
 
 /**
- * function to open sythentic files
+ * Opens a sythentic files
  * synthetic files are interface that can be opened as file in the editor
  * @param {string} path
  * @param {Object} content
@@ -546,7 +579,7 @@ export const openSyntheticFile = async (path, content) => {
 };
 
 /**
- * Function to close a file
+ * Closes a file
  * @param {string} path
  */
 export const closeFile = async path => {
@@ -630,7 +663,7 @@ export const closeFile = async path => {
 };
 
 /**
- * Function to open a new File
+ * Opens a new File
  */
 export const openEmptyFile = () => {
 	const files = { ...store.getState().files };
@@ -674,9 +707,9 @@ export const openEmptyFile = () => {
 };
 
 /**
- * Function to save a file
+ * Saves file
  * @param {string} path
- * @param {*} base_dir
+ * @param {string} base_dir
  */
 export const saveFile = async (path, base_dir) => {
 	const file_content = store.getState().files.openFileContent;
@@ -847,6 +880,7 @@ export const saveFile = async (path, base_dir) => {
 	}
 };
 
+
 export const refreshRecent = async () => {
 	const files = { ...store.getState().files };
 	if (
@@ -885,7 +919,7 @@ export const refreshRecent = async () => {
 };
 
 /**
- * Function to refresh open files
+ * Refreshes open files
  */
 export const refreshOpenFiles = async () => {
 	const files = { ...store.getState().files };
@@ -937,6 +971,10 @@ export const refreshOpenFiles = async () => {
 	}
 };
 
+/**
+ * Deletes file
+ * @param {string} path 
+ */
 export const deleteFile = async path => {
 	if (path) {
 		const readOnly = !(path && path.slice(path.length - 3) === '.sc');
@@ -997,9 +1035,9 @@ export const deleteFile = async path => {
 };
 
 /**
- * Function to check if a file path is contained in a query result
+ * Checks if a file path is contained in a query result
  * @param {Object} results
- * @returns
+ * @returns file path, otherwise false
  */
 export const isFilePathInQueryResult = results => {
 	const latest =
@@ -1031,9 +1069,9 @@ export const isFilePathInQueryResult = results => {
 };
 
 /**
- * Function to check if a query result can open a synthetic file
+ * Checks if a query result can open a synthetic file
  * @param {Object} results
- * @returns
+ * @returns object containing the synthetic file path and the content
  */
 export const isQueryResultToOpenSynthFile = results => {
 	const latest =
@@ -1063,9 +1101,9 @@ export const isQueryResultToOpenSynthFile = results => {
 };
 
 /**
- * Function to check if a script query result can open a synthetic file
- * @param {*} result
- * @returns
+ * Checks if a script query result can open a synthetic file
+ * @param {Object} result
+ * @returns object containing the synthetic file path and the content
  */
 
 export const isScriptQueryResultToOpenSynthFile = async result => {
@@ -1104,10 +1142,10 @@ export const isScriptQueryResultToOpenSynthFile = async result => {
 };
 
 /**
- * Function to get ingnore array
+ * Gets ingnore array
  * @param {string} src
  * @param {string} uiIgnore
- * @returns
+ * @returns an array of UIignore, otherwise empty array
  */
 export const getUIIgnoreArr = (src, uiIgnore) => {
 	if (uiIgnore && typeof uiIgnore === 'string') {
@@ -1169,7 +1207,7 @@ export const watchFolderPath = (path, vars, callback) => {
 };
 
 /**
- * Function to get folder structure root-path from workspace
+ * Gets folder structure root-path from workspace
  * @param {Object} workspace
  * @returns path and root
  */
@@ -1313,7 +1351,7 @@ export const initResize = (resizeHandle, type, resizeHandler) => {
 };
 
 /**
- * Function to compare if results are equal
+ * Compare if results are equal
  * @param {Object} prev_results
  * @param {Object} results
  * @returns true if equal otherwise false
@@ -1334,7 +1372,7 @@ export const areResultsEqual = (prev_results, results) => {
 };
 
 /**
- * Function to check if there are open projects
+ * Checks if there is an open project
  * @param {Object} workspace
  * @returns open projects length, otherwise null
  */
@@ -1369,10 +1407,10 @@ export const latestIsManCommand = results => {
 };
 
 /**
- * Function to contruct query with path
+ * Contructs query with path
  * @param {string} query_name
  * @param {string} type
- * @returns
+ * @returns query
  */
 export const contructQueryWithPath = async (query_name, type) => {
 	selectDirApi.selectDir(
@@ -1416,8 +1454,8 @@ export const contructQueryWithPath = async (query_name, type) => {
 };
 
 /**
- * Function to switch workspace
- * @returns
+ * Switches workspace
+ * @returns query object
  */
 
 export const handleSwitchWorkspace = async () => {
@@ -1447,7 +1485,7 @@ export const handleSwitchWorkspace = async () => {
 };
 
 /**
- * Function to handle api query error
+ * Handles api query error
  * @param {Object} err
  */
 export const handleAPIQueryError = err => {
@@ -1484,7 +1522,7 @@ export const handleAPIQueryError = err => {
 };
 
 /**
- * Function to handle shortcut
+ * Handles query shortcut
  * @param {Object} shortcutObj
  */
 export const handleShortcut = shortcutObj => {
@@ -1512,7 +1550,7 @@ export const handleShortcut = shortcutObj => {
 };
 
 /**
- * Function to register query shortcut
+ * Registers query shortcut
  * @param {*} keybinding
  */
 export const registerQueryShortcut = keybinding => {
@@ -1522,7 +1560,7 @@ export const registerQueryShortcut = keybinding => {
 };
 
 /**
- * Function to unRegister query shortcut
+ * UnRegisters query shortcut
  * @param {*} keybinding
  */
 export const unRegisterQueryShortcut = keybinding => {
@@ -1530,7 +1568,7 @@ export const unRegisterQueryShortcut = keybinding => {
 };
 
 /**
- * Function to initialize shortcuts
+ * Initializes shortcuts
  */
 export const initShortcuts = () => {
 	const { queryShortcuts } = store.getState().settings;
@@ -1552,7 +1590,7 @@ export const initShortcuts = () => {
 };
 
 /**
- * Function to remove shortcuts
+ * Removes shortcuts
  */
 export const removeShortcuts = () => {
 	const { queryShortcuts } = store.getState().settings;
@@ -1565,7 +1603,7 @@ export const removeShortcuts = () => {
 };
 
 /**
- * Function to format number to a given unit
+ * Formats number to a given unit
  * @param {number} num
  * @returns formatted number
  */
@@ -1583,7 +1621,7 @@ export const nFormatter = num => {
 };
 
 /**
- * Function to handle fontsize change
+ * Changes fontsize
  * @param {HTMLCollection} doc
  * @param {string} fontSize
  */
@@ -1593,7 +1631,7 @@ export const handleFontSizeChange = (doc, fontSize) => {
 };
 
 /**
- * Function to get script result
+ * Gets script result
  * @param {number} uuids
  * @param {Object} results
  * @returns result
@@ -1612,12 +1650,11 @@ export const getScriptResult = (uuids, results) => {
 };
 
 /**
- * Function to generate script-import query
+ * Generates script-import query
  * @param {string} path_to_script
  * @param {string} path_to_workspace
  * @returns true if error, otherwise undefined
  */
-
 export const generateScriptImportQuery = async (
 	path_to_script,
 	path_to_workspace,

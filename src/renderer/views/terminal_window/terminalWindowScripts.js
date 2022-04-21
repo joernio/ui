@@ -49,7 +49,7 @@ export const updateCursorPosition = value => {
 
 /**
  * Function to construct input to write
- * @returns
+ * @returns undefined
  */
 export const constructInputToWrite = () =>
 	TV.clearLine +
@@ -65,7 +65,7 @@ export const constructInputToWrite = () =>
  * @param {*} prompt
  * @param {*} value
  * @param {*} isCircuitUI
- * @returns
+ * @returns string
  */
 export const constructOutputToWrite = (prompt, value, isCircuitUI) => {
 	if (isCircuitUI) {
@@ -430,7 +430,7 @@ export const initFitAddon = term => {
  * @param {*} term
  * @param {*} refs
  * @param {*} latest
- * @returns
+ * @returns true
  */
 export const handleWriteQueryResult = async (term, refs, latest) => {
 	TWS.updateData(null);
@@ -538,7 +538,7 @@ export const initXterm = async prefersDarkMode => {
 /**
  * init circuit ui
  * @param {*} refs
- * @returns
+ * @returns object
  */
 export const initCircuitUI = refs => {
 	const el = refs.circuitUIRef.current;
@@ -905,7 +905,7 @@ export const handleMaximize = (window, props) => {
  * @param {*} diff
  * @param {*} props
  * @param {*} window
- * @returns
+ * @returns terminal height
  */
 export const resizeHandler = (terminalHeight, diff, props, window) => {
 	if (Number(terminalHeight.split('px')[0]) < 218 && diff < 0) {
@@ -959,7 +959,7 @@ export const handleAddQueryToHistory = queue => {
  * Send query result to Xterm
  * @param {*} results
  * @param {*} refs
- * @returns
+ * @returns the result from handleWriteQueryResult
  */
 export const sendQueryResultToXTerm = async (results, refs) => {
 	const { term } = store.getState().terminal;

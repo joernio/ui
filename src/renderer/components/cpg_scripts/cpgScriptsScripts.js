@@ -16,7 +16,7 @@ export const handleToggleScriptsVisible = scriptsVisible => ({
 /**
  * Funciton to toggle scripts dialog
  * @param {*} bool
- * @returns
+ * @returns true or false
  */
 export const toggleScriptsArgsDialog = bool => {
   console.log('toggleScriptsArgsDialog: ', bool);

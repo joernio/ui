@@ -45,7 +45,8 @@
     "build:renderer:dev:no-watch": "NODE_ENV=development webpack --config ./.erb/configs/webpack.config.renderer.dev.js",
     "electron": "NODE_ENV=development electronmon ./release/app/dist/main/main.dev.js",
     "test": "jest",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "doc": "jsdoc -c jsdoc.json"
   },
   "lint-staged": {
     "*.{js,jsx}": [

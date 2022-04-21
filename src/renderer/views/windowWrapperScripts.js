@@ -1,7 +1,7 @@
 /**
  * get open file path
  * @param {*} e
- * @returns
+ * @returns path
  */
 export const handleOpenFile = e => {
 	if (e?.target?.files[0]?.path) {

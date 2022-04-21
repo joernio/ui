@@ -93,7 +93,7 @@ export const editorDidMount = (editor, monaco) => {
 /**
  * is line number in query result
  * @param {*} results
- * @returns
+ * @returns range
  */
 export const isLineNumberInQueryResult = results => {
 	const latest =

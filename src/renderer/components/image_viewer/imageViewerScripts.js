@@ -1,7 +1,7 @@
 /**
  *
  * @param {*} e
- * @returns
+ * @returns true if ctrl key is pressed
  */
 export const isCtrlKeyPressed = e => {
 	if (e.code === 'ControlLeft' || e.code === 'ControlRight') {
@@ -10,9 +10,9 @@ export const isCtrlKeyPressed = e => {
 };
 
 /**
- *
+ * 
  * @param {*} e
- * @returns
+ * @returns false if ctrl key is unpressed
  */
 export const isCtrlKeyUnpressed = e => {
 	if (e.code === 'ControlLeft' || e.code === 'ControlRight') {
@@ -21,9 +21,9 @@ export const isCtrlKeyUnpressed = e => {
 };
 
 /**
- *
+ * 
  * @param {*} param0
- * @returns
+ * @returns zoomin range
  */
 export const zoomIn = ({ imageViewerHeight, imageViewerWidth }) => {
 	const res = {
@@ -36,7 +36,7 @@ export const zoomIn = ({ imageViewerHeight, imageViewerWidth }) => {
 /**
  *
  * @param {*} param0
- * @returns
+ * @returns zoom-out range
  */
 export const zoomOut = ({ imageViewerHeight, imageViewerWidth }) => {
 	const res = {

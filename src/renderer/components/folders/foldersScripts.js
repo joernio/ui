@@ -28,7 +28,7 @@ export const handleToggleFoldersVisible = foldersVisible => ({
  * Check if a new folder will be opened
  * @param {*} prev_workspace
  * @param {*} workspace
- * @returns
+ * @returns true if a new folder will be opened, otherwise false
  */
 export const shouldSwitchFolder = (prev_workspace, workspace) => {
 	if (
@@ -117,7 +117,7 @@ const fsToJson = (arr, base, isFile) => {
  * get root
  * @param {*} folder_json_model
  * @param {*} root
- * @returns
+ * @returns node
  */
 export const getRoot = (folder_json_model, root) => {
 	root = root.split('/');

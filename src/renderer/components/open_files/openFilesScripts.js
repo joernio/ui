@@ -1,7 +1,7 @@
 /**
- * Function to display open files on the editor
+ * Function to get open files on the editor
  * @param {*} props
- * @returns
+ * @returns all the editor open files
  */
 export const getEditorFilesFromOpenFiles = props => {
 	if (props.files.openFiles) {

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/query_shortcut_table/queryShortcutTableScripts.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/query_shortcut_table/queryShortcutTableScripts.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>export const vars = {
+	spaceF2: 200,
+	spaceF3: 400,
+	spaceF4: 600,
+};
+
+/**
+ * Check if mouse is down
+ * @param {*} val
+ * @returns the frame position of the mouse
+ */
+export const handleMouseDown = val => ({ mouseOver: val });
+
+/**
+ * Function to check if mouse is no more on the table
+ * @returns a negative value to cancel all hover effect
+ */
+export const handleMouseOut = () => ({ hover: -1 });
+
+/**
+ * Function to check is mouse on the table
+ * @param {*} idx
+ * @returns the index of the table row
+ */
+export const handleMouseOver = idx => ({ hover: idx });
+
+/**
+ * Function to compute the width of the window on resize
+ * @param {Object} window
+ * @param {string} drawerWidth
+ * @returns width of the window
+ */
+export const handleResize = (window, drawerWidth) => ({
+	containerWidth:
+		window.innerWidth -
+		56 -
+		Number(String(drawerWidth).split('px').join('')),
+});
+
+/**
+ * Function to parse keybinding
+ * @param {*} keybinding
+ * @returns keybinding
+ */
+export const parseKeyBinding = keybinding => {
+	keybinding = keybinding.split('+').reduce((acc, val) => {
+		acc.push(val);
+		acc.push('+');
+		return acc;
+	}, []);
+
+	keybinding.pop();
+
+	for (let i = 0; i &lt; keybinding.length; i += 1) {
+		if (
+			JSON.stringify(keybinding[i].split(' ')) !==
+			JSON.stringify(keybinding[i].split())
+		) {
+			keybinding[i] = keybinding[i].split(' ');
+			keybinding[i] = keybinding[i].reduce((acc, val) => {
+				acc.push(val);
+				acc.push(' ');
+				return acc;
+			}, []);
+			keybinding[i].pop();
+		}
+	}
+
+	keybinding = keybinding.flat();
+
+	return keybinding;
+};
+
+/**
+ * Function to set initial table width after page reload
+ * @param {*} window
+ * @param {*} drawerWidth
+ * @param {*} containerWidth
+ * @param {*} handleSetState
+ * @param {*} refs
+ * @returns the width of all the table frames
+ */
+export const handleInitialTableWidth = (
+	window,
+	drawerWidth,
+	containerWidth,
+	frameWidth,
+	handleSetState,
+	refs,
+) => {
+	try {
+		if (
+			window.innerWidth -
+				56 -
+				Number(String(drawerWidth).split('px').join('')) &lt;
+			560
+		)
+			return;
+		refs.frame2Ref.current.style.transform = `translateX(${
+			(25 / 100) * containerWidth
+		}px)`;
+		refs.frame3Ref.current.style.transform = `translateX(${
+			(50 / 100) * containerWidth
+		}px)`;
+		refs.frame4Ref.current.style.transform = `translateX(${
+			(75 / 100) * containerWidth
+		}px)`;
+		handleSetState({
+			frameWidth: {
+				...frameWidth,
+				f2: (25 / 100) * containerWidth,
+				f3: (50 / 100) * containerWidth,
+				f4: (75 / 100) * containerWidth,
+			},
+		});
+	} catch (error) {} // eslint-disable-line no-empty
+};
+
+/**
+ * Check when a frame is being resized or dragged
+ * @param {*} params
+ * @returns the active size of the dragged frame
+ */
+export const handleMove = params => {
+	const {
+		event,
+		drawerWidth,
+		window,
+		refs,
+		state: { frameWidth, mouseOver },
+		handleSetState,
+	} = params;
+
+	const cx =
+		event.clientX - 56 - Number(String(drawerWidth).split('px').join(''));
+	const fw = frameWidth;
+	let f4w = window.innerWidth;
+
+	try {
+		f4w = refs.frame4Ref.current.offsetWidth;
+	} catch (error) {} // eslint-disable-line no-empty
+
+	switch (mouseOver) {
+		case 'frame2':
+			if (cx - fw.f1 &lt; vars.spaceF2) return;
+			if (fw.f3 - cx &lt; vars.spaceF2) {
+				if (fw.f4 - cx &lt; vars.spaceF3) {
+					if (f4w - cx &lt; vars.spaceF4) return;
+					handleSetState({
+						frameWidth: { ...frameWidth, f3: cx + vars.spaceF2 },
+					});
+					refs.frame3Ref.current.style.transform = `translateX(${
+						cx + vars.spaceF2
+					}px)`;
+					refs.frame2Ref.current.style.transform = `translateX(${cx}px)`;
+					handleSetState({
+						frameWidth: { ...frameWidth, f4: cx + vars.spaceF3 },
+					});
+					refs.frame4Ref.current.style.transform = `translateX(${
+						cx + vars.spaceF3
+					}px)`;
+					refs.frame3Ref.current.style.transform = `translateX(${
+						cx + vars.spaceF2
+					}px)`;
+				}
+				handleSetState({
+					frameWidth: { ...frameWidth, f3: cx + vars.spaceF2 },
+				});
+				refs.frame3Ref.current.style.transform = `translateX(${
+					cx + vars.spaceF2
+				}px)`;
+				refs.frame2Ref.current.style.transform = `translateX(${cx}px)`;
+			}
+			refs.frame2Ref.current.style.transform = `translateX(${cx}px)`;
+			handleSetState({ frameWidth: { ...frameWidth, f2: cx } });
+			refs.containerRef.current.onmouseup = () => {
+				handleSetState({ mouseOver: 'up' });
+			};
+			break;
+
+		case 'frame3':
+			if (cx - fw.f2 &lt; vars.spaceF2) {
+				if (cx - fw.f1 &lt; vars.spaceF3) return;
+				refs.frame2Ref.current.style.transform = `translateX(${
+					cx - vars.spaceF2
+				}px)`;
+				handleSetState({
+					frameWidth: { ...frameWidth, f2: cx - vars.spaceF2 },
+				});
+			}
+			if (fw.f4 - cx &lt; vars.spaceF2) {
+				if (f4w - cx &lt; vars.spaceF3) return;
+				handleSetState({
+					frameWidth: { ...frameWidth, f4: cx + vars.spaceF2 },
+				});
+				refs.frame4Ref.current.style.transform = `translateX(${
+					cx + vars.spaceF2
+				}px)`;
+				refs.frame3Ref.current.style.transform = `translateX(${cx}px)`;
+			}
+			refs.frame3Ref.current.style.transform = `translateX(${cx}px)`;
+			handleSetState({ frameWidth: { ...frameWidth, f3: cx } });
+			refs.containerRef.current.onmouseup = () => {
+				handleSetState({ mouseOver: 'up' });
+			};
+			break;
+
+		case 'frame4':
+			if (cx - fw.f3 &lt; vars.spaceF2) {
+				if (cx - fw.f2 &lt; vars.spaceF3) {
+					if (cx - fw.f1 &lt; vars.spaceF4) return;
+					refs.frame2Ref.current.style.transform = `translateX(${
+						cx - vars.spaceF3
+					}px)`;
+					handleSetState({
+						frameWidth: { ...frameWidth, f2: cx - vars.spaceF3 },
+					});
+				}
+				refs.frame3Ref.current.style.transform = `translateX(${
+					cx - vars.spaceF2
+				}px)`;
+				handleSetState({
+					frameWidth: { ...frameWidth, f3: cx - vars.spaceF2 },
+				});
+			}
+			if (f4w - cx &lt; vars.spaceF2) return;
+			handleSetState({ frameWidth: { ...frameWidth, f4: cx } });
+			refs.frame4Ref.current.style.transform = `translateX(${cx}px)`;
+			refs.containerRef.current.onmouseup = () => {
+				handleSetState({ mouseOver: 'up' });
+			};
+			break;
+		default:
+			break;
+	}
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addRemoveKeyDownKeyUpEvent">addRemoveKeyDownKeyUpEvent</a></li><li><a href="global.html#addToQueue">addToQueue</a></li><li><a href="global.html#addToScriptsQueue">addToScriptsQueue</a></li><li><a href="global.html#areResultsEqual">areResultsEqual</a></li><li><a href="global.html#closeDialog">closeDialog</a></li><li><a href="global.html#closeFile">closeFile</a></li><li><a href="global.html#collectSettingsValues">collectSettingsValues</a></li><li><a href="global.html#constructInputToWrite">constructInputToWrite</a></li><li><a href="global.html#constructOutputToWrite">constructOutputToWrite</a></li><li><a href="global.html#contructQueryWithPath">contructQueryWithPath</a></li><li><a href="global.html#countQueries">countQueries</a></li><li><a href="global.html#createFolderJsonModel">createFolderJsonModel</a></li><li><a href="global.html#discardDialogHandler">discardDialogHandler</a></li><li><a href="global.html#editorDidMount">editorDidMount</a></li><li><a href="global.html#editorShouldGoToLine">editorShouldGoToLine</a></li><li><a href="global.html#extractLanguageFromString">extractLanguageFromString</a></li><li><a href="global.html#extractWorkSpaceNameAndActiveProject">extractWorkSpaceNameAndActiveProject</a></li><li><a href="global.html#forEachNode">forEachNode</a></li><li><a href="global.html#forNodeAtPath">forNodeAtPath</a></li><li><a href="global.html#fsToJson">fsToJson</a></li><li><a href="global.html#generateScriptImportQuery">generateScriptImportQuery</a></li><li><a href="global.html#getEditorFilesFromOpenFiles">getEditorFilesFromOpenFiles</a></li><li><a href="global.html#getExtension">getExtension</a></li><li><a href="global.html#getFolderStructureRootPathFromWorkspace">getFolderStructureRootPathFromWorkspace</a></li><li><a href="global.html#getOpenFileName">getOpenFileName</a></li><li><a href="global.html#getResultObjWithPostQueryKey">getResultObjWithPostQueryKey</a></li><li><a href="global.html#getRoot">getRoot</a></li><li><a href="global.html#getScriptResult">getScriptResult</a></li><li><a href="global.html#getSettingsInitialValues">getSettingsInitialValues</a></li><li><a href="global.html#getUIIgnoreArr">getUIIgnoreArr</a></li><li><a href="global.html#getWindowHeight">getWindowHeight</a></li><li><a href="global.html#goToLine">goToLine</a></li><li><a href="global.html#handleAddQueryToHistory">handleAddQueryToHistory</a></li><li><a href="global.html#handleAPIQueryError">handleAPIQueryError</a></li><li><a href="global.html#handleCloseProject">handleCloseProject</a></li><li><a href="global.html#handleDeleteProject">handleDeleteProject</a></li><li><a href="global.html#handleDiscard">handleDiscard</a></li><li><a href="global.html#handleEditorOnChange">handleEditorOnChange</a></li><li><a href="global.html#handleEmptyWorkspace">handleEmptyWorkspace</a></li><li><a href="global.html#handleFontSizeChange">handleFontSizeChange</a></li><li><a href="global.html#handleInitialTableWidth">handleInitialTableWidth</a></li><li><a href="global.html#handleInsertELementToCircuitUIResponseNode">handleInsertELementToCircuitUIResponseNode</a></li><li><a href="global.html#handleMaximize">handleMaximize</a></li><li><a href="global.html#handleMouseDown">handleMouseDown</a></li><li><a href="global.html#handleMouseOut">handleMouseOut</a></li><li><a href="global.html#handleMouseOver">handleMouseOver</a></li><li><a href="global.html#handleMove">handleMove</a></li><li><a href="global.html#handleOnChange">handleOnChange</a></li><li><a href="global.html#handleOpenFile">handleOpenFile</a></li><li><a href="global.html#handleOpenProject">handleOpenProject</a></li><li><a href="global.html#handleResize">handleResize</a></li><li><a href="global.html#handleSave">handleSave</a></li><li><a href="global.html#handleScrollTop">handleScrollTop</a></li><li><a href="global.html#handleShortcut">handleShortcut</a></li><li><a href="global.html#handleSuggestionClick">handleSuggestionClick</a></li><li><a href="global.html#handleSwitchWorkspace">handleSwitchWorkspace</a></li><li><a href="global.html#handleTerminalToggle">handleTerminalToggle</a></li><li><a href="global.html#handleToggleAllBlocks">handleToggleAllBlocks</a></li><li><a href="global.html#handleToggleAllSubBlocks">handleToggleAllSubBlocks</a></li><li><a href="global.html#handleToggleBlock">handleToggleBlock</a></li><li><a href="global.html#handleToggleSubBlock">handleToggleSubBlock</a></li><li><a href="global.html#handleWebSocketResponse">handleWebSocketResponse</a></li><li><a href="global.html#handleWriteQuery">handleWriteQuery</a></li><li><a href="global.html#handleWriteQueryResult">handleWriteQueryResult</a></li><li><a href="global.html#handleWriteScriptQuery">handleWriteScriptQuery</a></li><li><a href="global.html#handleWriteToCircuitUIInput">handleWriteToCircuitUIInput</a></li><li><a href="global.html#handleWriteToCircuitUIResponse">handleWriteToCircuitUIResponse</a></li><li><a href="global.html#highlightRange">highlightRange</a></li><li><a href="global.html#initCircuitUI">initCircuitUI</a></li><li><a href="global.html#initShortcuts">initShortcuts</a></li><li><a href="global.html#initXterm">initXterm</a></li><li><a href="global.html#isCtrlKeyPressed">isCtrlKeyPressed</a></li><li><a href="global.html#isCtrlKeyUnpressed">isCtrlKeyUnpressed</a></li><li><a href="global.html#isFilePathInQueryResult">isFilePathInQueryResult</a></li><li><a href="global.html#isLineNumberInQueryResult">isLineNumberInQueryResult</a></li><li><a href="global.html#isQueryResultToOpenSynthFile">isQueryResultToOpenSynthFile</a></li><li><a href="global.html#isScriptQueryResultToOpenSynthFile">isScriptQueryResultToOpenSynthFile</a></li><li><a href="global.html#modifyWorkSpaceNameAndActiveProject">modifyWorkSpaceNameAndActiveProject</a></li><li><a href="global.html#mouseTrapGlobalBindig">mouseTrapGlobalBindig</a></li><li><a href="global.html#nFormatter">nFormatter</a></li><li><a href="global.html#openEmptyFile">openEmptyFile</a></li><li><a href="global.html#openProjectExists">openProjectExists</a></li><li><a href="global.html#openShortcutsPage">openShortcutsPage</a></li><li><a href="global.html#openSyntheticFile">openSyntheticFile</a></li><li><a href="global.html#parseKeyBinding">parseKeyBinding</a></li><li><a href="global.html#parseProject">parseProject</a></li><li><a href="global.html#parseProjects">parseProjects</a></li><li><a href="global.html#parseScriptReportJSON">parseScriptReportJSON</a></li><li><a href="global.html#performDeQueueQuery">performDeQueueQuery</a></li><li><a href="global.html#performEnQueueQuery">performEnQueueQuery</a></li><li><a href="global.html#performPeekQueue">performPeekQueue</a></li><li><a href="global.html#performPostQuery">performPostQuery</a></li><li><a href="global.html#performPushResult">performPushResult</a></li><li><a href="global.html#processFiles">processFiles</a></li><li><a href="global.html#processQueryResult">processQueryResult</a></li><li><a href="global.html#processScriptResult">processScriptResult</a></li><li><a href="global.html#refreshOpenFiles">refreshOpenFiles</a></li><li><a href="global.html#registerQueryShortcut">registerQueryShortcut</a></li><li><a href="global.html#removeShortcuts">removeShortcuts</a></li><li><a href="global.html#resizeHandler">resizeHandler</a></li><li><a href="global.html#runQueryWithArgs">runQueryWithArgs</a></li><li><a href="global.html#saveFile">saveFile</a></li><li><a href="global.html#selectFolderStructureRootPath">selectFolderStructureRootPath</a></li><li><a href="global.html#sendQueryResultToXTerm">sendQueryResultToXTerm</a></li><li><a href="global.html#sendWindowsMessage">sendWindowsMessage</a></li><li><a href="global.html#setQueryResult">setQueryResult</a></li><li><a href="global.html#setSuggestionBoxTrackerContent">setSuggestionBoxTrackerContent</a></li><li><a href="global.html#shouldAlertScriptRunSuccessful">shouldAlertScriptRunSuccessful</a></li><li><a href="global.html#shouldProcessQueryResult">shouldProcessQueryResult</a></li><li><a href="global.html#shouldRunQuery">shouldRunQuery</a></li><li><a href="global.html#shouldSwitchFolder">shouldSwitchFolder</a></li><li><a href="global.html#suggestQueryForXterm">suggestQueryForXterm</a></li><li><a href="global.html#suggestSimilarQueries">suggestSimilarQueries</a></li><li><a href="global.html#toggleScriptsArgsDialog">toggleScriptsArgsDialog</a></li><li><a href="global.html#unRegisterQueryShortcut">unRegisterQueryShortcut</a></li><li><a href="global.html#updateCursorPosition">updateCursorPosition</a></li><li><a href="global.html#updateData">updateData</a></li><li><a href="global.html#updateQueriesStats">updateQueriesStats</a></li><li><a href="global.html#withAPI">withAPI</a></li><li><a href="global.html#wsDisconnectFromServer">wsDisconnectFromServer</a></li><li><a href="global.html#wsReconnectToServer">wsReconnectToServer</a></li><li><a href="global.html#zoomIn">zoomIn</a></li><li><a href="global.html#zoomOut">zoomOut</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Wed Apr 20 2022 13:38:41 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

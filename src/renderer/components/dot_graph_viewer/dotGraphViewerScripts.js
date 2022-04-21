@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 /**
  *
  * @param {*} e
- * @returns
+ * @returns true if ctrl Key was pressed
  */
 export const isCtrlKeyPressed = e => {
 	if (e.code === 'ControlLeft' || e.code === 'ControlRight') {
@@ -14,7 +14,7 @@ export const isCtrlKeyPressed = e => {
 /**
  *
  * @param {*} e
- * @returns
+ * @returns false if ctrl key was unpressed
  */
 export const isCtrlKeyUnpressed = e => {
 	if (e.code === 'ControlLeft' || e.code === 'ControlRight') {
@@ -36,7 +36,7 @@ export const addRemoveKeyDownKeyUpEvent = (type, document, handleSetState) => {
 /**
  *
  * @param {*} param0
- * @returns
+ * @returns a number that denotes dotGraphViewerScale
  */
 export const zoomIn = ({ node, dotGraphViewerScale }) => {
 	dotGraphViewerScale += 5;
@@ -58,7 +58,7 @@ export const zoomIn = ({ node, dotGraphViewerScale }) => {
 /**
  *
  * @param {*} param0
- * @returns
+ * @returns a number that denotes dotGraphViewerScale
  */
 export const zoomOut = ({ node, dotGraphViewerScale }) => {
 	dotGraphViewerScale -= 5;

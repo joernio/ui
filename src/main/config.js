@@ -3,6 +3,10 @@ export const defaults = {
 	windowSize: [1300, 950],
 };
 
+/**
+ * Calculates the window position
+ * @returns size and position of a window
+ */
 export const getWindowPosition = () => {
 	const size = defaults.windowSize;
 

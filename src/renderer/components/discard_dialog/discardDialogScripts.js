@@ -4,7 +4,7 @@ import { saveFile } from '../../assets/js/utils/scripts';
  * saves file
  * @param {*} path
  * @param {*} callback
- * @returns
+ * @returns object
  */
 export const handleSave = async (path, callback) => {
 	await saveFile(path);
@@ -18,7 +18,7 @@ export const handleSave = async (path, callback) => {
  * @param {*} openFiles
  * @param {*} callback
  * @param {*} setOpenFiles
- * @returns
+ * @returns object
  */
 export const handleDiscard = (path, openFiles, callback, setOpenFiles) => {
 	openFiles = { ...openFiles };

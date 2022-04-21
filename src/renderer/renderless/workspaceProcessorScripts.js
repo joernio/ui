@@ -9,7 +9,7 @@ import {
  * modify space name and active project
  * @param {*} obj
  * @param {*} workspace
- * @returns
+ * @returns workspace
  */
 export const modifyWorkSpaceNameAndActiveProject = (obj, workspace) => {
 	const {
@@ -45,7 +45,7 @@ export const modifyWorkSpaceNameAndActiveProject = (obj, workspace) => {
 /**
  * extract workspace name and active project
  * @param {*} parsedProject
- * @returns
+ * @returns workspace name
  */
 export const extractWorkSpaceNameAndActiveProject = parsedProject => {
 	const {
@@ -69,7 +69,7 @@ export const extractWorkSpaceNameAndActiveProject = parsedProject => {
 /**
  * extract language from string
  * @param {*} str
- * @returns
+ * @returns string unsupported
  */
 export const extractLanguageFromString = str => {
 	try {
@@ -182,7 +182,7 @@ export const processQueryResult = (query_result, props) => {
 /**
  * Show if query result will be processed
  * @param {*} results
- * @returns
+ * @returns latest result
  */
 export const shouldProcessQueryResult = results => {
 	const latest =

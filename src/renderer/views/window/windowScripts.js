@@ -3,7 +3,7 @@
  * @param {*} clientHeight 
  * @param {*} topNavHeight 
  * @param {*} statusBarHeight 
- * @returns 
+ * @returns number
  */
 export const getWindowHeight = (clientHeight, topNavHeight, statusBarHeight) =>
 	clientHeight -

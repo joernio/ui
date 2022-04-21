@@ -28,7 +28,7 @@ export const shouldRunQuery = (prev_queue, queue, query) => {
  * Indicate when a script has successfully run
  * @param {*} prev_results
  * @param {*} results
- * @returns
+ * @returns last sccript result otherwise false
  */
 export const shouldAlertScriptRunSuccessful = (prev_results, results) => {
 	const prev_uuids = Object.keys(prev_results);

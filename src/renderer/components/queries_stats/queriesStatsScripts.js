@@ -1,7 +1,7 @@
 /**
  * 
  * @param {*} results 
- * @returns 
+ * @returns query counts
  */
 export const countQueries = results => ({
 	queriesCount: Object.keys(results).length,
@@ -10,7 +10,7 @@ export const countQueries = results => ({
 /**
  * Function to uopdate query statistics
  * @param {*} results
- * @returns
+ * @returns queryStats
  */
 export const updateQueriesStats = results => {
 	const queriesStats = [];

@@ -4,7 +4,7 @@ const debouncedHandleShortcut = debounceLeading(handleShortcut, 1000);
 
 /**
  * Function to close dialogue
- * @returns
+ * @returns false
  */
 export const closeDialog = () => {
   console.log('closeDialog: => ');
