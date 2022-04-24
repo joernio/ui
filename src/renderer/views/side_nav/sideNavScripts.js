@@ -9,7 +9,7 @@ export const handleDrawerToggle = props => ({
 });
 
 /**
- * Function to toggle terminal visible or invisible
+ * Toggles terminal visible or invisible
  * @param {Object} props
  * @returns the height of the terminal
  */
@@ -19,9 +19,9 @@ export const handleTerminalToggle = props => {
 };
 
 /**
- * handle onchange
- * @param {*} e
- * @param {*} values
+ * Handles onchange
+ * @param {Object} e
+ * @param {Object} values
  * @returns value
  */
 export const handleOnChange = (e, values) => {
@@ -62,8 +62,8 @@ export const getSettingsInitialValues = settings => {
 };
 
 /**
- * collect settings values
- * @param {*} values
+ * Collects settings values
+ * @param {Object} values
  * @returns settings
  */
 export const collectSettingsValues = values => {
@@ -87,7 +87,7 @@ export const collectSettingsValues = values => {
 };
 
 /**
- * Function to open the query shortcut page
+ * Opens the query shortcut page
  */
 export const openShortcutsPage = () => {
 	openSyntheticFile('Query Shortcuts', 'Query Shortcuts');

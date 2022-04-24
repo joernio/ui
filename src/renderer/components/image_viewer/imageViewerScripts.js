@@ -1,5 +1,5 @@
 /**
- *
+ * Checks if control key is pressed
  * @param {*} e
  * @returns true if ctrl key is pressed
  */
@@ -10,7 +10,7 @@ export const isCtrlKeyPressed = e => {
 };
 
 /**
- * 
+ * Checks if ctrl key is pressed
  * @param {*} e
  * @returns false if ctrl key is unpressed
  */
@@ -21,7 +21,7 @@ export const isCtrlKeyUnpressed = e => {
 };
 
 /**
- * 
+ * Controls zoom-in range
  * @param {*} param0
  * @returns zoomin range
  */
@@ -34,7 +34,7 @@ export const zoomIn = ({ imageViewerHeight, imageViewerWidth }) => {
 };
 
 /**
- *
+ * Controls zoom-out range
  * @param {*} param0
  * @returns zoom-out range
  */

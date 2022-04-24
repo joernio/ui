@@ -23,10 +23,6 @@ import * as TWS from './terminalWindowScripts';
 export const { workerPool } = store.getState().query;
 export const data_obj = { data: '', cursorPosition: 0, currentBlockID: null };
 
-/**
- * udate data
- * @param {*} str
- */
 export const updateData = str => {
 	if (str) {
 		TWS.data_obj.data = `${TWS.data_obj.data.slice(
@@ -38,19 +34,10 @@ export const updateData = str => {
 	}
 };
 
-/**
- * Function to update the cursor position when
- * typing query in the query input
- * @param {number} value
- */
 export const updateCursorPosition = value => {
 	TWS.data_obj.cursorPosition = value;
 };
 
-/**
- * Function to construct input to write
- * @returns undefined
- */
 export const constructInputToWrite = () =>
 	TV.clearLine +
 	TV.cpgDefaultPrompt +
@@ -60,13 +47,7 @@ export const constructInputToWrite = () =>
 		.split('<n>')
 		.join(TV.cpgDefaultPrompt.length + TWS.data_obj.cursorPosition);
 
-/**
- * construct output to write
- * @param {*} prompt
- * @param {*} value
- * @param {*} isCircuitUI
- * @returns string
- */
+
 export const constructOutputToWrite = (prompt, value, isCircuitUI) => {
 	if (isCircuitUI) {
 		return `<pre>${value}</pre>`;
@@ -81,21 +62,10 @@ export const constructOutputToWrite = (prompt, value, isCircuitUI) => {
 
 export const handleTerminalMaximizeToggle = bool => ({ isMaximized: !bool });
 
-/**
- * Function to resize the terminal height
- * @param {*} fitAddon
- */
 export const handleResize = fitAddon => {
 	fitAddon && fitAddon.fit();
 };
 
-/**
- * function to empty workspace
- * @param {*} workspace
- * @param {*} prev_workspace
- * @returns true if no project is available,
- * false if a project is found otherwise an empty object
- */
 export const handleEmptyWorkspace = (workspace, prev_workspace) => {
 	if (workspace && Object.keys(workspace.projects).length < 1) {
 		return { isMaximized: true };
@@ -112,17 +82,10 @@ export const handleEmptyWorkspace = (workspace, prev_workspace) => {
 	return {};
 };
 
-/**
- * set suggestion box tracker content
- */
 export const setSuggestionBoxTrackerContent = el => {
 	el.innerText = data_obj.data;
 };
 
-/**
- * Function to suggest queries related to what the user is typing on the
- * query input
- */
 export const suggestSimilarQueries = () => {
 	const { results } = store.getState().query;
 	let query_strings = Object.keys(results);
@@ -140,12 +103,6 @@ export const suggestSimilarQueries = () => {
 	store.dispatch(setQuerySuggestions(query_strings));
 };
 
-/**
- * handle suggestion click
- * @param {*} e
- * @param {*} refs
- * @param {*} term
- */
 export const handleSuggestionClick = async (e, refs, term) => {
 	const str = e.target.innerText;
 	TWS.updateData(null);
@@ -157,10 +114,6 @@ export const handleSuggestionClick = async (e, refs, term) => {
 	refs.circuitUIRef.current.children[1].children[0].focus();
 };
 
-/**
- * suggest query for Xterm
- * @param {*} term
- */
 export const suggestQueryForXterm = async term => {
 	const { query_suggestions } = store.getState().terminal;
 	await TWS.termWrite(term, TWS.constructInputToWrite());
@@ -427,9 +380,9 @@ export const initFitAddon = term => {
 
 /**
  * write query result
- * @param {*} term
- * @param {*} refs
- * @param {*} latest
+ * @param {Object} term
+ * @param {Object} refs
+ * @param {Object} latest
  * @returns true
  */
 export const handleWriteQueryResult = async (term, refs, latest) => {
@@ -457,9 +410,9 @@ export const handleWriteQueryResult = async (term, refs, latest) => {
 
 /**
  * write script query
- * @param {*} term
- * @param {*} refs
- * @param {*} latest
+ * @param {Object} term
+ * @param {Object} refs
+ * @param {Object} latest
  */
 export const handleWriteScriptQuery = async (term, refs, latest) => {
 	const { busy } = store.getState().terminal;
@@ -478,9 +431,9 @@ export const handleWriteScriptQuery = async (term, refs, latest) => {
 
 /**
  * write query
- * @param {*} term
- * @param {*} refs
- * @param {*} latest
+ * @param {Object} term
+ * @param {Object} refs
+ * @param {Object} latest
  */
 export const handleWriteQuery = async (term, refs, latest) => {
 	TWS.updateData(null);
@@ -537,7 +490,7 @@ export const initXterm = async prefersDarkMode => {
 
 /**
  * init circuit ui
- * @param {*} refs
+ * @param {Object} refs
  * @returns object
  */
 export const initCircuitUI = refs => {
@@ -608,7 +561,7 @@ export const openFileAndGoToLineFromCircuitUI = async ({
 
 /**
  * toggle all blocks
- * @param {*} e
+ * @param {Object} e
  */
 export const handleToggleAllBlocks = e => {
 	const collapsed = e.target.getAttribute('data-blocks-collapsed');
@@ -663,7 +616,7 @@ export const handleToggleBlock = e => {
 
 /**
  * toggle all sub blocks
- * @param {*} e
+ * @param {Object} e
  */
 export const handleToggleAllSubBlocks = e => {
 	const collapsed = e.target.getAttribute('data-sub-blocks-collapsed');
@@ -690,7 +643,7 @@ export const handleToggleAllSubBlocks = e => {
 
 /**
  * toggle sub block
- * @param {*} e
+ * @param {Object} e
  */
 export const handleToggleSubBlock = e => {
 	e.target.parentElement.classList.toggle('dropdown');
@@ -698,7 +651,7 @@ export const handleToggleSubBlock = e => {
 
 /**
  * handleInsertELementToCircuitUIResponseNode
- * @param {*} obj
+ * @param {Object} obj
  */
 export const handleInsertELementToCircuitUIResponseNode = obj => {
 	let { value } = obj;
@@ -753,9 +706,9 @@ export const handleInsertELementToCircuitUIResponseNode = obj => {
 
 /**
  * handleWriteToCircuitUIResponse
- * @param {*} refs
- * @param {*} value
- * @param {*} res_type
+ * @param {Object} refs
+ * @param {Object} value
+ * @param {Object} res_type
  */
 export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
 	const key = generateRandomID();
@@ -867,7 +820,7 @@ export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
 
 /**
  * Function to write to the query input
- * @param {*} refs
+ * @param {Object} refs
  */
 export const handleWriteToCircuitUIInput = refs => {
 	const input = refs.circuitUIRef.current.children[1].children[0];
@@ -901,10 +854,10 @@ export const handleMaximize = (window, props) => {
 
 /**
  * resizeHandler
- * @param {*} terminalHeight
- * @param {*} diff
- * @param {*} props
- * @param {*} window
+ * @param {Object} terminalHeight
+ * @param {Object} diff
+ * @param {Object} props
+ * @param {Object} window
  * @returns terminal height
  */
 export const resizeHandler = (terminalHeight, diff, props, window) => {
@@ -927,7 +880,7 @@ export const resizeHandler = (terminalHeight, diff, props, window) => {
 
 /**
  * Add query to history
- * @param {*} queue
+ * @param {Object} queue
  */
 export const handleAddQueryToHistory = queue => {
 	let { history } = store.getState().terminal;
@@ -957,8 +910,8 @@ export const handleAddQueryToHistory = queue => {
 
 /**
  * Send query result to Xterm
- * @param {*} results
- * @param {*} refs
+ * @param {Object} results
+ * @param {Object} refs
  * @returns the result from handleWriteQueryResult
  */
 export const sendQueryResultToXTerm = async (results, refs) => {

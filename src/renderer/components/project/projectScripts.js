@@ -1,7 +1,7 @@
 /**
  * Add to Queue
- * @param {*} query
- * @param {*} props
+ * @param {Object} query
+ * @param {Object} props
  */
 export const addToQueue = (query, props) => {
 	if (query) {
@@ -10,8 +10,8 @@ export const addToQueue = (query, props) => {
 };
 
 /**
- * Function to open a project
- * @param {*} name The name of the project to open
+ * Opens a project
+ * @param {string} name The name of the project to open
  * @returns query construct
  */
 export const handleOpenProject = name => {
@@ -26,8 +26,8 @@ export const handleOpenProject = name => {
 };
 
 /**
- * Function to close a project
- * @param {*} name The name of the project to close
+ * Closes a project
+ * @param {string} name The name of the project to close
  * @returns query construct
  */
 export const handleCloseProject = name => {
@@ -42,8 +42,8 @@ export const handleCloseProject = name => {
 };
 
 /**
- * Function to delete a project
- * @param {*} name
+ * Deletes a project
+ * @param {string} name
  * @returns query construct
  */
 export const handleDeleteProject = name => {

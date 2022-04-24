@@ -5,11 +5,7 @@ import { setHighlightRange } from '../../store/actions/editorActions';
 import { store } from '../../store/configureStore';
 
 let delta_decorations = [];
-/**
- *
- * @param {*} newValue
- * @param {*} props
- */
+
 export const handleEditorOnChange = (newValue, props) => {
 	props.setOpenFileContent(newValue);
 	if (props.files.openFiles[props.files.openFilePath] === true) {
@@ -19,22 +15,11 @@ export const handleEditorOnChange = (newValue, props) => {
 	}
 };
 
-/**
- * go to line
- * @param {*} editor
- * @param {*} row
- * @param {*} column
- */
 export const goToLine = (editor, row = 1, column = 1) => {
 	editor.setPosition({ column, lineNumber: row || 1 });
 	editor.revealLineInCenter(row || 1);
 };
 
-/**
- * highlight range
- * @param {*} editor
- * @param {*} range
- */
 export const highlightRange = (editor, range) => {
 	const rangeArr = [];
 
@@ -77,11 +62,6 @@ export const handleEditorGoToLineAndHighlight = (
 	}, 1000);
 };
 
-/**
- * editor did mount
- * @param {*} editor
- * @param {*} monaco
- */
 export const editorDidMount = (editor, monaco) => {
 	editor.focus();
 	monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
@@ -90,11 +70,6 @@ export const editorDidMount = (editor, monaco) => {
 	});
 };
 
-/**
- * is line number in query result
- * @param {*} results
- * @returns range
- */
 export const isLineNumberInQueryResult = results => {
 	const latest =
 		results[Object.keys(results)[Object.keys(results).length - 1]];
@@ -143,9 +118,6 @@ export const isLineNumberInQueryResult = results => {
 	}
 };
 
-/**
- * editor should go to line
- */
 export const editorShouldGoToLine = () => {
 	const { openFilePath: open_file_path } = store.getState().files;
 	const { results } = store.getState().query;

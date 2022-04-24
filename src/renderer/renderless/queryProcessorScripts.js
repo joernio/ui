@@ -6,11 +6,11 @@ import {
 } from '../assets/js/utils/scripts';
 
 /**
- * Check if query should run
- * @param {*} prev_queue
- * @param {*} queue
- * @param {*} query
- * @returns a boolean value indication if query should run
+ * Checks if query should run
+ * @param {Object} prev_queue
+ * @param {Object} queue
+ * @param {Object} query
+ * @returns a boolean value indicator if query should run
  */
 export const shouldRunQuery = (prev_queue, queue, query) => {
 	const prev_queue_count = prev_queue ? Object.keys(prev_queue).length : 0;
@@ -25,9 +25,9 @@ export const shouldRunQuery = (prev_queue, queue, query) => {
 };
 
 /**
- * Indicate when a script has successfully run
- * @param {*} prev_results
- * @param {*} results
+ * Indicates when a script has successfully run
+ * @param {Object} prev_results
+ * @param {Object} results
  * @returns last sccript result otherwise false
  */
 export const shouldAlertScriptRunSuccessful = (prev_results, results) => {
@@ -53,10 +53,10 @@ export const shouldAlertScriptRunSuccessful = (prev_results, results) => {
 };
 
 /**
- * process script result
- * @param {*} prev_results
- * @param {*} results
- * @param {*} handleSetState
+ * Processes script result
+ * @param {Object} prev_results
+ * @param {Object} results
+ * @param {Object} handleSetState
  */
 export const processScriptResult = async (
 	prev_results,

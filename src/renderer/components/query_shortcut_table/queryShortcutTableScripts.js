@@ -6,7 +6,7 @@ export const vars = {
 
 /**
  * Check if mouse is down
- * @param {*} val
+ * @param {string | number} val
  * @returns the frame position of the mouse
  */
 export const handleMouseDown = val => ({ mouseOver: val });
@@ -19,7 +19,7 @@ export const handleMouseOut = () => ({ hover: -1 });
 
 /**
  * Function to check is mouse on the table
- * @param {*} idx
+ * @param {number} idx
  * @returns the index of the table row
  */
 export const handleMouseOver = idx => ({ hover: idx });
@@ -73,10 +73,10 @@ export const parseKeyBinding = keybinding => {
 
 /**
  * Function to set initial table width after page reload
- * @param {*} window
- * @param {*} drawerWidth
- * @param {*} containerWidth
- * @param {*} handleSetState
+ * @param {Object} window
+ * @param {string} drawerWidth
+ * @param {number} containerWidth
+ * @param {Object} handleSetState
  * @param {*} refs
  * @returns the width of all the table frames
  */
@@ -118,7 +118,7 @@ export const handleInitialTableWidth = (
 
 /**
  * Check when a frame is being resized or dragged
- * @param {*} params
+ * @param {Object} params
  * @returns the active size of the dragged frame
  */
 export const handleMove = params => {

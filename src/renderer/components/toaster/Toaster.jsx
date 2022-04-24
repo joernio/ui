@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { toaster } from '../../assets/js/utils/toaster';
 
 /**
- * Show notification.
+ * Shows notification.
  * @param {Object} status The state for the notification
  * @param {null} status.connected The status of the app
  * @param {null} status.toast The content of the toast

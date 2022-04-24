@@ -1,6 +1,6 @@
 /**
- * 
- * @param {*} results 
+ * Counts queries
+ * @param {Object} results 
  * @returns query counts
  */
 export const countQueries = results => ({
@@ -8,8 +8,8 @@ export const countQueries = results => ({
 });
 
 /**
- * Function to uopdate query statistics
- * @param {*} results
+ * Updates query statistics
+ * @param {Object} results
  * @returns queryStats
  */
 export const updateQueriesStats = results => {

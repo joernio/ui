@@ -3,7 +3,7 @@ import { debounceLeading, handleShortcut } from '../../assets/js/utils/scripts';
 const debouncedHandleShortcut = debounceLeading(handleShortcut, 1000);
 
 /**
- * Function to close dialogue
+ * Closes dialogue
  * @returns false
  */
 export const closeDialog = () => {
@@ -12,7 +12,7 @@ export const closeDialog = () => {
 };
 
 /**
- * function to run query with args
+ * Runs function to run query with args
  * @param {*} el
  * @param {*} props
  */

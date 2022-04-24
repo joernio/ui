@@ -6,9 +6,9 @@ import {
 } from '../assets/js/utils/scripts';
 
 /**
- * modify space name and active project
- * @param {*} obj
- * @param {*} workspace
+ * Modifies space name and active project
+ * @param {Object} obj
+ * @param {Object} workspace
  * @returns workspace
  */
 export const modifyWorkSpaceNameAndActiveProject = (obj, workspace) => {
@@ -44,7 +44,7 @@ export const modifyWorkSpaceNameAndActiveProject = (obj, workspace) => {
 
 /**
  * extract workspace name and active project
- * @param {*} parsedProject
+ * @param {Object} parsedProject
  * @returns workspace name
  */
 export const extractWorkSpaceNameAndActiveProject = parsedProject => {
@@ -68,7 +68,7 @@ export const extractWorkSpaceNameAndActiveProject = parsedProject => {
 
 /**
  * extract language from string
- * @param {*} str
+ * @param {string} str
  * @returns string unsupported
  */
 export const extractLanguageFromString = str => {
@@ -97,8 +97,8 @@ export const extractLanguageFromString = str => {
 
 /**
  * process query result
- * @param {*} query_result
- * @param {*} props
+ * @param {Object} query_result
+ * @param {Object} props
  */
 export const processQueryResult = (query_result, props) => {
 	const {
@@ -181,7 +181,7 @@ export const processQueryResult = (query_result, props) => {
 
 /**
  * Show if query result will be processed
- * @param {*} results
+ * @param {Object} results
  * @returns latest result
  */
 export const shouldProcessQueryResult = results => {

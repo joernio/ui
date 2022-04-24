@@ -11,6 +11,11 @@ export const getEditorFilesFromOpenFiles = props => {
 	}
 };
 
+/**
+ * Checks if files will be visible
+ * @param {boolean} filesVisible 
+ * @returns true if folder is visible, otherwise false
+ */
 export const handleToggleFilesVisible = filesVisible => ({
 	filesVisible: !filesVisible,
 });

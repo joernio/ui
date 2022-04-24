@@ -8,7 +8,7 @@ import { editorShouldGoToLine } from '../views/editor_window/editorScripts';
 
 /**
  * Process files
- * @param {*} props
+ * @param {Object} props
  */
 export const processFiles = async props => {
 	const file_path = isFilePathInQueryResult(props.query.results);
