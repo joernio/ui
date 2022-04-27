@@ -1,4 +1,4 @@
-import 'jsdom-global/register';
+// import 'jsdom-global/register';
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { mount } from 'enzyme';
@@ -6,6 +6,7 @@ import EditorTabs from './EditorTabs';
 import { default_state as settings } from '../../store/reducers/settingsReducers';
 import { default_state as files } from '../../store/reducers/filesReducers';
 import { findByTestAttr, testStore } from '../../assets/js/utils/testUtils';
+import { Provider as ReduxProvider } from 'react-redux'
 
 jest.mock('@material-ui/core/styles', () => ({
 	__esModule: true,
@@ -14,7 +15,11 @@ jest.mock('@material-ui/core/styles', () => ({
 
 const setUp = (initialState = {}) => {
 	const store = testStore(initialState);
-	const wrapper = mount(<EditorTabs store={store} />);
+	const wrapper = mount(
+		<ReduxProvider store={store}>
+			<EditorTabs/>
+	  	</ReduxProvider>
+	);
 	return { wrapper, store };
 };
 

@@ -282,7 +282,7 @@ function TerminalWindow(props) {
 									commonClasses.scrollBarDarkStyle,
 								)}
 							>
-								{query_suggestions.map(
+								{query_suggestions && query_suggestions.map(
 									(query_suggestion, idx) => (
 										<div
 											key={`${idx}-${query_suggestion}`}
@@ -307,7 +307,7 @@ function TerminalWindow(props) {
 						interactionKind="click"
 						minimal={true}
 						isOpen={
-							query_suggestions.length > 0 && !prefersTerminalView
+							query_suggestions && query_suggestions.length > 0 && !prefersTerminalView
 						}
 					>
 						<span id="suggestion-box-tracker"></span>

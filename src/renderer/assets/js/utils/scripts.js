@@ -1,3 +1,4 @@
+/* eslint-disable guard-for-in */
 import { nanoid } from 'nanoid';
 import glob from 'glob';
 import fs from 'fs';
@@ -126,16 +127,22 @@ export const performPushResult = (result, results) => {
 };
 
 export const getResultObjWithPostQueryKey = (results, post_query_key) => {
-	let res;
-	Object.keys(results).some(key => {
-		if (key && results[key].post_query_uuid === post_query_key) {
-			res = key;
-			return true;
-		}
-		return false;
-	});
+	// consider using the code below
 
-	return res;
+	for(const key in results){
+		return results[key].post_query_uuid === post_query_key ? key : false
+	} 
+
+	// let res;
+	// Object.keys(results).some(key => {
+	// 	if (key && results[key].post_query_uuid === post_query_key) {
+	// 		res = key;
+	// 		return true;
+	// 	}
+	// 	return false;
+	// });
+
+	// return res;
 };
 
 export const parseProjects = data => {
@@ -163,6 +170,7 @@ export const parseProjects = data => {
 };
 
 export const parseProject = data => {
+	console.log('parse project data: ', data)
 	let inputPath;
 	let name;
 	let path;
@@ -187,10 +195,12 @@ export const parseProject = data => {
 		path = null;
 	}
 
+	const obj = { name, inputPath, path, cpg, language }
+	console.log('return results: ', obj)
 	return { name, inputPath, path, cpg, language };
 };
 
-const performPostQuery = (store, results, key) => {
+export const performPostQuery = (store, results, key) => {
 	let post_query;
 	const result = results[key];
 
@@ -295,14 +305,18 @@ export const discardDialogHandler = (openFiles, openFilePath, callback) => {
 	callback();
 };
 
-export const getOpenFileName = path => {
-	if (path) {
-		path = path ? path.split('/') : null;
-		path = path ? path[path.length - 1] : null;
+export const getOpenFileName = path => 
+	// consider using the code below. 
 
-		return path;
-	}
-};
+	 path ? path.split('/')[path.split('/').length - 1] : null
+
+	// if (path) {
+	// 	path = path ? path.split('/') : null;
+	// 	path = path ? path[path.length - 1] : null;
+
+	// 	return path;
+	// }
+;
 
 export const getExtension = path => {
 	const ext = path.split('.')[path.split('.').length - 1];
@@ -1020,6 +1034,7 @@ export const watchFolderPath = (path, vars, callback) => {
 
 export const getFolderStructureRootPathFromWorkspace = workspace => {
 	const { projects } = workspace;
+	console.log('projects: ', projects)
 	let path = null;
 
 	projects &&
@@ -1159,7 +1174,7 @@ export const initResize = (resizeHandle, type, resizeHandler) => {
 
 export const areResultsEqual = (prev_results, results) => {
 	if (results) {
-		let prev_latest_uuid = Object.keys(prev_results || {});
+		let prev_latest_uuid = Object.keys(prev_results || {}); 
 		prev_latest_uuid = prev_latest_uuid[prev_latest_uuid.length - 1];
 
 		let latest_uuid = Object.keys(results);

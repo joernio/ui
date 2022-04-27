@@ -1,4 +1,4 @@
-import 'jsdom-global/register';
+// import 'jsdom-global/register';
 import React from 'react';
 import MonacoEditor from 'react-monaco-editor';
 import { makeStyles } from '@material-ui/core/styles';
