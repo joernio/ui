@@ -28,7 +28,9 @@ jest.mock('../assets/js/utils/scripts', () => ({
 
 const setUp = (initialState = {}) => {
 	const store = testStore(initialState);
-	const wrapper = mount(<QueryProcessor store={store} />);
+	const wrapper = mount(
+		<QueryProcessor store={store}/>
+	);
 	return { wrapper, store };
 };
 

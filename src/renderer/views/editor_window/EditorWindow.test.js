@@ -9,8 +9,10 @@ import { default_state as settings } from '../../store/reducers/settingsReducers
 import { default_state as files } from '../../store/reducers/filesReducers';
 import { default_state as query } from '../../store/reducers/queryReducers';
 import { default_state as workspace } from '../../store/reducers/workSpaceReducers';
-import { findByTestAttr } from '../../assets/js/utils/testUtils';
+import { findByTestAttr, testStore } from '../../assets/js/utils/testUtils';
 import { editorDidMount } from './editorScripts';
+import { Provider as ReactProvider } from 'react-redux';
+
 // import {setWorkSpace} from '../../store/actions/workSpaceActions';
 
 // const mock_file_content = 'abcdefgh';
@@ -51,10 +53,13 @@ jest.mock('./editorScripts', () => ({
 	handleChangeMadeToOpenFiles: jest.fn(() => {}),
 }));
 
-const setUp = () => {
-	// const store = testStore(initialState);
-	const store = {}; // to be removed when test is fixed;
-	const wrapper = mount(<EditorWindow store={store} />);
+const setUp = (initialState = {}) => {
+	const store = testStore(initialState);
+	const wrapper = mount(
+		<ReactProvider store={store}>
+			<EditorWindow />
+		</ReactProvider>
+	);
 	return { wrapper, store };
 };
 

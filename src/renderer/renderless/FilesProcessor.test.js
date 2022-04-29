@@ -8,6 +8,8 @@ import { default_state as workspace } from '../store/reducers/workSpaceReducers'
 import { testStore } from '../assets/js/utils/testUtils';
 // import { isFilePathInQueryResult, openFile, refreshRecent, refreshOpenFiles } from '../assets/js/utils/scripts';
 import * as scripts from '../assets/js/utils/scripts';
+import { processFiles } from './filesProcessorScripts';
+
 // import {
 //   getFilePathToOpen,
 //   isFileInRecentlyOpened,
@@ -18,6 +20,11 @@ import * as scripts from '../assets/js/utils/scripts';
 //   getFilePathToOpen: jest.fn(() => new Promise(r => r(false))),
 //   isFileInRecentlyOpened: jest.fn(() => {}),
 // }));
+
+jest.mock('./filesProcessorScripts', ()=> ({
+	__esmodule: true,
+	processFiles: jest.fn( async ()=> {})
+}))
 
 const setUp = (initialState = {}) => {
 	const store = testStore(initialState);

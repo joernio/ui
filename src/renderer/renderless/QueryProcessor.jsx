@@ -78,11 +78,13 @@ function QueryProcessor(props) {
 	]);
 
 	React.useEffect(() => {
-		processScriptResult(
-			state.prev_results,
-			props.query.results,
-			handleSetState,
-		);
+		(async function run (){
+			await processScriptResult(
+				state.prev_results,
+				props.query.results,
+				handleSetState,
+			);
+		}())
 	}, [props.query.results]);
 
 	return null;

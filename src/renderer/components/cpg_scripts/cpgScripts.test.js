@@ -9,6 +9,8 @@ import { default_state as query } from '../../store/reducers/queryReducers';
 import { default_state as workspace } from '../../store/reducers/workSpaceReducers';
 import { findByTestAttr, testStore } from '../../assets/js/utils/testUtils';
 import { getCpgScripts } from './cpgScriptsScripts';
+import { Provider as ReduxProvider } from 'react-redux';
+import { act } from 'react-test-renderer';
 
 const mock_workspace = {
 	path: '/home/raymond/Desktop/workspace',
@@ -31,14 +33,26 @@ jest.mock('@material-ui/core/styles', () => ({
 	makeStyles: jest.fn(() => () => ({})),
 }));
 
-jest.mock('./cpgScriptsScripts', () => ({
-	__esModule: true,
-	getCpgScripts: jest.fn(() => new Promise(r => r({}))),
-}));
+// jest.mock('./cpgScriptsScripts', () => ({
+// 	__esModule: true,
+// 	getCpgScripts: jest.fn(() => new Promise(r => r({}))),
+// }));
+
+jest.mock("./cpgScriptsScripts", () => {
+    const original = jest.requireActual("./cpgScriptsScripts");
+    return {
+        ...original,
+        getCpgScripts: jest.fn()
+    };
+});
 
 const setUp = (initialState = {}) => {
 	const store = testStore(initialState);
-	const wrapper = mount(<CpgScripts store={store} />);
+	const wrapper = mount(
+		<ReduxProvider store={store}>
+			<CpgScripts />
+		</ReduxProvider>
+	);
 	return { wrapper, store };
 };
 
@@ -60,6 +74,7 @@ describe('CpgScripts component when workspace is empty:', () => {
 	});
 
 	it('expect getCpgScripts to have been called', () => {
+		getCpgScripts.mockImplementation(()=> new Promise(r => r({})))
 		expect(getCpgScripts).toHaveBeenCalled();
 	});
 
@@ -91,6 +106,7 @@ describe('CpgScripts component when workspace is not empty:', () => {
 	});
 
 	it('expect getCpgScripts to have been called', () => {
+		getCpgScripts.mockImplementation(()=> new Promise(r => r({})))
 		expect(getCpgScripts).toHaveBeenCalled();
 	});
 
