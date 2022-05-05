@@ -1,3 +1,9 @@
+/**
+ * function to calculate the width of the explorer when resized
+ * @param {string} drawerWidth
+ * @param {number} diff
+ * @returns drawerWidth
+ */
 export const resizeHandler = (drawerWidth, diff) => {
 	if (!drawerWidth || typeof drawerWidth !== 'string') return { drawerWidth };
 

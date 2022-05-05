@@ -8,11 +8,22 @@ export const handleDrawerToggle = props => ({
 	drawerWidth: props.drawerWidth ? 0 : '250px',
 });
 
+/**
+ * Toggles terminal visible or invisible
+ * @param {Object} props
+ * @returns the height of the terminal
+ */
 export const handleTerminalToggle = props => {
 	const terminalHeight = props.terminalHeight ? 0 : '468px';
 	return { terminalHeight };
 };
 
+/**
+ * Handles onchange
+ * @param {Object} e
+ * @param {Object} values
+ * @returns value
+ */
 export const handleOnChange = (e, values) => {
 	if (
 		e.target.id === 'prefers_dark_mode' ||
@@ -24,6 +35,13 @@ export const handleOnChange = (e, values) => {
 	}
 	return { values };
 };
+
+/**
+ * function to initiallize the app default settings.
+ * @param {Object} settings This has the values required for the app startup
+ * e.g server connections parameters, websocket url, script directory, default theme etc.
+ * @returns the initial settings
+ */
 
 export const getSettingsInitialValues = settings => {
 	const initialSettings = {};
@@ -43,6 +61,11 @@ export const getSettingsInitialValues = settings => {
 	return initialSettings;
 };
 
+/**
+ * Collects settings values
+ * @param {Object} values
+ * @returns settings
+ */
 export const collectSettingsValues = values => {
 	const settings = {
 		server: {
@@ -63,6 +86,9 @@ export const collectSettingsValues = values => {
 	return settings;
 };
 
+/**
+ * Opens the query shortcut page
+ */
 export const openShortcutsPage = () => {
 	openSyntheticFile('Query Shortcuts', 'Query Shortcuts');
 };

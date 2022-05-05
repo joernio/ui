@@ -1,3 +1,9 @@
+/**
+ * Handles Keyboard shortcuts
+ * It is binded gloablly across the app.
+ * @param {*} mousetrap
+ *
+ */
 export const mouseTrapGlobalBindig = mousetrap => {
 	(function (a) {
 		const c = {};

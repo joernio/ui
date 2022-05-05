@@ -13,8 +13,21 @@ export const handleToggleScriptsVisible = scriptsVisible => ({
 	scriptsVisible: !scriptsVisible,
 });
 
-export const toggleScriptsArgsDialog = bool => ({ openDialog: !bool });
+/**
+ * Funciton to toggle scripts dialog
+ * @param {*} bool
+ * @returns true or false
+ */
+export const toggleScriptsArgsDialog = bool => {
+  console.log('toggleScriptsArgsDialog: ', bool);
+  return { openDialog: !bool };
+};
 
+/**
+ * Function to add to script
+ * @param {*} query
+ * @param {*} props
+ */
 export const addToScriptsQueue = (query, props) => {
 	props.enQueueScriptsQuery(query);
 };

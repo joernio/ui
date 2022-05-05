@@ -47,6 +47,7 @@ export const constructInputToWrite = () =>
 		.split('<n>')
 		.join(TV.cpgDefaultPrompt.length + TWS.data_obj.cursorPosition);
 
+
 export const constructOutputToWrite = (prompt, value, isCircuitUI) => {
 	if (isCircuitUI) {
 		return `<pre>${value}</pre>`;
@@ -377,6 +378,13 @@ export const initFitAddon = term => {
 	return fitAddon;
 };
 
+/**
+ * write query result
+ * @param {Object} term
+ * @param {Object} refs
+ * @param {Object} latest
+ * @returns true
+ */
 export const handleWriteQueryResult = async (term, refs, latest) => {
 	TWS.updateData(null);
 	TWS.updateCursorPosition(0);
@@ -400,6 +408,12 @@ export const handleWriteQueryResult = async (term, refs, latest) => {
 	return true;
 };
 
+/**
+ * write script query
+ * @param {Object} term
+ * @param {Object} refs
+ * @param {Object} latest
+ */
 export const handleWriteScriptQuery = async (term, refs, latest) => {
 	const { busy } = store.getState().terminal;
 
@@ -415,6 +429,12 @@ export const handleWriteScriptQuery = async (term, refs, latest) => {
 	!busy && (await term.prompt());
 };
 
+/**
+ * write query
+ * @param {Object} term
+ * @param {Object} refs
+ * @param {Object} latest
+ */
 export const handleWriteQuery = async (term, refs, latest) => {
 	TWS.updateData(null);
 	TWS.updateCursorPosition(0);
@@ -442,6 +462,9 @@ export const handleWriteQuery = async (term, refs, latest) => {
 	store.dispatch(setTerminalBusy(true));
 };
 
+/**
+ * init Xterm
+ */
 export const initXterm = async prefersDarkMode => {
 	const term = new Terminal({
 		cursorBlink: true,
@@ -465,6 +488,11 @@ export const initXterm = async prefersDarkMode => {
 	return term;
 };
 
+/**
+ * init circuit ui
+ * @param {Object} refs
+ * @returns object
+ */
 export const initCircuitUI = refs => {
 	const el = refs.circuitUIRef.current;
 
@@ -531,6 +559,10 @@ export const openFileAndGoToLineFromCircuitUI = async ({
 	}
 };
 
+/**
+ * toggle all blocks
+ * @param {Object} e
+ */
 export const handleToggleAllBlocks = e => {
 	const collapsed = e.target.getAttribute('data-blocks-collapsed');
 
@@ -565,6 +597,10 @@ export const handleToggleAllBlocks = e => {
 	}
 };
 
+/**
+ * Function to toggle the visibility of query response block
+ * @param {HTMLCollection} e
+ */
 export const handleToggleBlock = e => {
 	const queryContainer = e.target.parentElement;
 
@@ -578,6 +614,10 @@ export const handleToggleBlock = e => {
 	responseContainer.classList.toggle('dropdown');
 };
 
+/**
+ * toggle all sub blocks
+ * @param {Object} e
+ */
 export const handleToggleAllSubBlocks = e => {
 	const collapsed = e.target.getAttribute('data-sub-blocks-collapsed');
 
@@ -601,10 +641,18 @@ export const handleToggleAllSubBlocks = e => {
 	}
 };
 
+/**
+ * toggle sub block
+ * @param {Object} e
+ */
 export const handleToggleSubBlock = e => {
 	e.target.parentElement.classList.toggle('dropdown');
 };
 
+/**
+ * handleInsertELementToCircuitUIResponseNode
+ * @param {Object} obj
+ */
 export const handleInsertELementToCircuitUIResponseNode = obj => {
 	let { value } = obj;
 	const { resultsContainer, valueContainer } = obj;
@@ -656,6 +704,12 @@ export const handleInsertELementToCircuitUIResponseNode = obj => {
 	resultsContainer.scrollTop = resultsContainer.scrollHeight;
 };
 
+/**
+ * handleWriteToCircuitUIResponse
+ * @param {Object} refs
+ * @param {Object} value
+ * @param {Object} res_type
+ */
 export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
 	const key = generateRandomID();
 
@@ -764,6 +818,10 @@ export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
 	}
 };
 
+/**
+ * Function to write to the query input
+ * @param {Object} refs
+ */
 export const handleWriteToCircuitUIInput = refs => {
 	const input = refs.circuitUIRef.current.children[1].children[0];
 	input.value = TWS.data_obj.data;
@@ -774,6 +832,12 @@ export const handleWriteToCircuitUIInput = refs => {
 	suggestSimilarQueries();
 };
 
+/**
+ * Function to set terminal height
+ * @param {Object} window
+ * @param {Object} props
+ * @returns a fixed terminal height or the maximum terminal height
+ */
 export const handleMaximize = (window, props) => {
 	if (props.terminal.isMaximized) {
 		return {
@@ -788,6 +852,14 @@ export const handleMaximize = (window, props) => {
 	return { terminalHeight: '468px' };
 };
 
+/**
+ * resizeHandler
+ * @param {Object} terminalHeight
+ * @param {Object} diff
+ * @param {Object} props
+ * @param {Object} window
+ * @returns terminal height
+ */
 export const resizeHandler = (terminalHeight, diff, props, window) => {
 	if (Number(terminalHeight.split('px')[0]) < 218 && diff < 0) {
 		return { terminalHeight: 0 };
@@ -806,6 +878,10 @@ export const resizeHandler = (terminalHeight, diff, props, window) => {
 	}
 };
 
+/**
+ * Add query to history
+ * @param {Object} queue
+ */
 export const handleAddQueryToHistory = queue => {
 	let { history } = store.getState().terminal;
 	history = {
@@ -832,6 +908,12 @@ export const handleAddQueryToHistory = queue => {
 	}
 };
 
+/**
+ * Send query result to Xterm
+ * @param {Object} results
+ * @param {Object} refs
+ * @returns the result from handleWriteQueryResult
+ */
 export const sendQueryResultToXTerm = async (results, refs) => {
 	const { term } = store.getState().terminal;
 

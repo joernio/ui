@@ -20,10 +20,21 @@ export const chokidarVars = {
 	}),
 };
 
+/**
+ * Checks if folder will be opened or closed
+ * @param {boolean} foldersVisible 
+ * @returns true if folder is visible, otherwise false
+ */
 export const handleToggleFoldersVisible = foldersVisible => ({
 	foldersVisible: !foldersVisible,
 });
 
+/**
+ * Checks if a new folder will be opened
+ * @param {Object} prev_workspace
+ * @param {Object} workspace
+ * @returns true if a new folder will be opened, otherwise false
+ */
 export const shouldSwitchFolder = (prev_workspace, workspace) => {
 	if (
 		Object.keys(workspace?.projects ? workspace?.projects : {}).length ===
@@ -59,6 +70,12 @@ export const shouldSwitchFolder = (prev_workspace, workspace) => {
 	return true;
 };
 
+/**
+ *
+ * @param {Array} arr
+ * @param {Array} base
+ * @param {boolean} isFile
+ */
 const fsToJson = (arr, base, isFile) => {
 	let nestedArr = base;
 	let pathToDir = '';
@@ -101,6 +118,12 @@ const fsToJson = (arr, base, isFile) => {
 	});
 };
 
+/**
+ * get root
+ * @param {*} folder_json_model
+ * @param {string} root
+ * @returns node
+ */
 export const getRoot = (folder_json_model, root) => {
 	root = root.split('/');
 	root = root[root.length - 1];
@@ -115,6 +138,10 @@ export const getRoot = (folder_json_model, root) => {
 	}
 };
 
+/**
+ * Function to switch between different folders
+ * @returns path to the new folder
+ */
 export const selectFolderStructureRootPath = async () => {
 	selectDirApi.selectDir('select-dir');
 
@@ -133,6 +160,11 @@ export const selectFolderStructureRootPath = async () => {
 	return { path };
 };
 
+/**
+ * Function to create folder json model
+ * @param {Object} obj
+ * @param {Function} callback
+ */
 export const createFolderJsonModel = async (obj, callback) => {
 	const { path: root_path } = obj;
 	const uiIgnoreArr = getUIIgnoreArr(

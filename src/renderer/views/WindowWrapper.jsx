@@ -27,6 +27,16 @@ import { handleOpenFile } from './windowWrapperScripts';
 
 const useStyles = makeStyles(styles);
 
+/**
+ * Handles WindowWrapper
+ * @param {Object} query
+ * @param {Object} status
+ * @param {Object} settings
+ * @param {Object} files
+ * @param {Object} workspace
+ * @returns {null} null
+ */
+
 function WindowWrapper(props) {
 	const hiddenInputEl = React.useRef(null);
 	const classes = useStyles(props);

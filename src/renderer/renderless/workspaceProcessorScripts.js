@@ -5,6 +5,12 @@ import {
 	handleSetToast,
 } from '../assets/js/utils/scripts';
 
+/**
+ * Modifies space name and active project
+ * @param {Object} obj
+ * @param {Object} workspace
+ * @returns workspace
+ */
 export const modifyWorkSpaceNameAndActiveProject = (obj, workspace) => {
 	const {
 		pathToWorkSpace,
@@ -36,6 +42,11 @@ export const modifyWorkSpaceNameAndActiveProject = (obj, workspace) => {
 	return workspace;
 };
 
+/**
+ * extract workspace name and active project
+ * @param {Object} parsedProject
+ * @returns workspace name
+ */
 export const extractWorkSpaceNameAndActiveProject = parsedProject => {
 	const {
 		name: activeProjectName,
@@ -55,6 +66,11 @@ export const extractWorkSpaceNameAndActiveProject = parsedProject => {
 	};
 };
 
+/**
+ * extract language from string
+ * @param {string} str
+ * @returns string unsupported
+ */
 export const extractLanguageFromString = str => {
 	try {
 		const language = str.split('"')[1];
@@ -79,6 +95,11 @@ export const extractLanguageFromString = str => {
 	}
 };
 
+/**
+ * process query result
+ * @param {Object} query_result
+ * @param {Object} props
+ */
 export const processQueryResult = (query_result, props) => {
 	const {
 		query,
@@ -158,6 +179,11 @@ export const processQueryResult = (query_result, props) => {
 	}
 };
 
+/**
+ * Show if query result will be processed
+ * @param {Object} results
+ * @returns latest result
+ */
 export const shouldProcessQueryResult = results => {
 	const latest =
 		results[Object.keys(results)[Object.keys(results).length - 1]];

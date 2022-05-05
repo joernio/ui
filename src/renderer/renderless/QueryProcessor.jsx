@@ -7,6 +7,14 @@ import {
 	addWorkSpaceQueryToQueue,
 } from '../assets/js/utils/scripts';
 
+/**
+ * Handles QueryProcessor
+ * @param {Object} query
+ * @param {Object} status
+ * @param {Object} settings
+ * @returns {null} null
+ */
+
 function QueryProcessor(props) {
 	const [state, setState] = React.useState({
 		prev_queue: {},

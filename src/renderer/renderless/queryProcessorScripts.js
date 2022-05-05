@@ -5,6 +5,13 @@ import {
 	openSyntheticFile,
 } from '../assets/js/utils/scripts';
 
+/**
+ * Checks if query should run
+ * @param {Object} prev_queue
+ * @param {Object} queue
+ * @param {Object} query
+ * @returns a boolean value indicator if query should run
+ */
 export const shouldRunQuery = (prev_queue, queue, query) => {
 	const prev_queue_count = prev_queue ? Object.keys(prev_queue).length : 0;
 	const queue_count = Object.keys(queue).length;
@@ -17,6 +24,12 @@ export const shouldRunQuery = (prev_queue, queue, query) => {
 	}
 };
 
+/**
+ * Indicates when a script has successfully run
+ * @param {Object} prev_results
+ * @param {Object} results
+ * @returns last sccript result otherwise false
+ */
 export const shouldAlertScriptRunSuccessful = (prev_results, results) => {
 	const prev_uuids = Object.keys(prev_results);
 	const uuids = Object.keys(results);
@@ -39,6 +52,12 @@ export const shouldAlertScriptRunSuccessful = (prev_results, results) => {
 	return false;
 };
 
+/**
+ * Processes script result
+ * @param {Object} prev_results
+ * @param {Object} results
+ * @param {Object} handleSetState
+ */
 export const processScriptResult = async (
 	prev_results,
 	results,

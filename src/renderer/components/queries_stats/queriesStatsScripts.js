@@ -1,7 +1,17 @@
+/**
+ * Counts queries
+ * @param {Object} results 
+ * @returns query counts
+ */
 export const countQueries = results => ({
 	queriesCount: Object.keys(results).length,
 });
 
+/**
+ * Updates query statistics
+ * @param {Object} results
+ * @returns queryStats
+ */
 export const updateQueriesStats = results => {
 	const queriesStats = [];
 

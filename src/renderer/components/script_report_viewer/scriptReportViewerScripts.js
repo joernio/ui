@@ -1,3 +1,8 @@
+/**
+ * Parse script report
+ * @param {string} str
+ * @returns report if script report json do not throw and error, otherwise empty object
+ */
 export const parseScriptReportJSON = str => {
 	try {
 		const report = JSON.parse(str);
