@@ -52,7 +52,12 @@ import {
 	areResultsEqual,
 	handleSwitchWorkspace,
 	nFormatter,
-	readFile
+	readFile,
+	wsReconnectToServer,
+	wsDisconnectFromServer,
+	parseProject,
+	setQueryResult,
+	openFile,
 } from './scripts';
 
 // workerPool was commented out in queryReducers.js for this test to pass.
@@ -131,7 +136,11 @@ jest.mock('../../../store/actions/editorActions', () => ({
 
 jest.mock('./ipcRenderer', () => ({
 	__esModule: true,
-	windowActionApi: { sendWindowAction: jest.fn() },
+	windowActionApi: {
+		sendWindowAction: jest.fn(),
+		connectToWebSocketAction: jest.fn(),
+		disconnectFromWebSocketAction: jest.fn(),
+	},
 	selectDirApi: jest.fn(() => {}),
 }));
 
@@ -245,11 +254,27 @@ describe('script', () => {
 		expect(queryObj).toEqual(query);
 	});
 
-	// it('send windows message', ()=> {
-	// 	sendWindowsMessage('reload');
+	it('send windows message', () => {
+		sendWindowsMessage('reload');
+		expect(windowActionApi.sendWindowAction).toHaveBeenCalled();
+		expect(windowActionApi.sendWindowAction).toHaveBeenCalledWith('reload');
+	});
 
-	// 	expect(windowActionApi).toHaveBeenCalled()
-	// })
+	it('reconnect websocket to server', () => {
+		let mock_ws_url = 'ws://3000';
+		wsReconnectToServer(mock_ws_url);
+		expect(windowActionApi.connectToWebSocketAction).toHaveBeenCalled();
+		expect(windowActionApi.connectToWebSocketAction).toHaveBeenCalledWith(
+			mock_ws_url,
+		);
+	});
+
+	it('disconnects websocket from server', () => {
+		wsDisconnectFromServer();
+		expect(
+			windowActionApi.disconnectFromWebSocketAction,
+		).toHaveBeenCalled();
+	});
 
 	it('perform push result', () => {
 		const mockResult = { a: 'test-value' };
@@ -324,7 +349,24 @@ describe('script', () => {
 		expect(projects).toEqual(mockProjects);
 	});
 
-	// parseProject
+	it('parses project', () => {
+		const mockProject = {
+			success: true,
+			uuid: '14885ebb-b628-4d07-961a-8375e8fa919c',
+			stdout: '',
+			stderr: '  ammonite.$sess.cmd14$.<clinit>(cmd14.sc:1)java.lang.RuntimeException: No CPG loaded for project c  io.joern.console.workspacehandling.WorkspaceManager.cpg(WorkspaceManager.scala:238)  io.joern.console.Console.cpg(Console.scala:128)  io.joern.console.Console.project(Console.scala:108)  ammonite.$sess.cmd15$.<clinit>(cmd15.sc:1)',
+		};
+
+		const mockResult = {
+			name: null,
+			inputPath: null,
+			path: null,
+			cpg: null,
+			language: null,
+		};
+
+		expect(parseProject(mockProject)).toEqual(mockResult);
+	});
 
 	it('performs post query for project', () => {
 		const mockResults = { a: { query: '' } };
@@ -342,16 +384,73 @@ describe('script', () => {
 		expect(postQuery).toHaveBeenCalledWith('workspace', key);
 	});
 
-	// it('sets query result', ()=> {
-	// 	const data
-	// 	const store
-	// 	const key
-	// 	const results
+	it('sets query result when data has no value', ()=> {
+		const data = null;
+		const key = 'a'
+		const results = {
+			'a': {
+				t_0: '000001',
+				t_1: null,
+				result: {
+					stderr: '',
+					stdout: ''
+				}
+			}
+		}
 
-	// 	setQueryResult(data, store, key, results)
+		setQueryResult(data, store, key, results)
+		expect(results[key].result.stderr).toBe('query failed');
+		expect(store.dispatch).toHaveBeenCalledWith(setResults(results));
+	})
 
-	// 	expect(setResults).toHaveBeenCalled();
-	// })
+	it('sets query result when data has a valid response', ()=> {
+		const data = {
+			stderr: '',
+			stdout: 'res'
+		};
+		const key = 'a'
+		const results = {
+			'a': {
+				t_0: '000001',
+				t_1: null,
+				result: {
+					stderr: '',
+					stdout: ''
+				}
+			}
+		}
+
+		setQueryResult(data, store, key, results)
+		expect(results[key].result.stdout).toBe('res');
+		expect(store.dispatch).toHaveBeenCalledWith(setResults(results));
+	});
+
+	it('sets query result when data has an error response', ()=> {
+		const data = {
+			stderr: 'err',
+			stdout: ''
+		};
+		const key = 'a'
+		const results = {
+			'a': {
+				t_0: '000001',
+				t_1: null,
+				result: {
+					stderr: '',
+					stdout: ''
+				}
+			}
+		}
+
+		setQueryResult(data, store, key, results)
+		expect(results[key].result.stderr).toBe('err');
+		expect(store.dispatch).toHaveBeenCalledWith(setResults(results));
+	});
+
+	it('should not open file if file path is empty', async ()=> {
+		const path = '';
+		expect(await openFile(path)).toBeUndefined();
+	})
 
 	it('returns true if scrollTop is greater than zero', () => {
 		const e = { target: { scrollTop: 1 } };

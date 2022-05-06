@@ -216,7 +216,7 @@ export const performPostQuery = (store, results, key) => {
 	store.dispatch(postQuery(post_query, key));
 };
 
-const setQueryResult = (data, store, key, results) => {
+export const setQueryResult = (data, store, key, results) => {
 	if (results[key].t_0 && !results[key].t_1) {
 		results[key].t_1 = performance.now();
 	}
