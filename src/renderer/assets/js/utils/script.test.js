@@ -58,6 +58,9 @@ import {
 	parseProject,
 	setQueryResult,
 	openFile,
+	getScriptResult,
+	registerQueryShortcut,
+	unRegisterQueryShortcut,
 } from './scripts';
 
 // workerPool was commented out in queryReducers.js for this test to pass.
@@ -146,8 +149,23 @@ jest.mock('./ipcRenderer', () => ({
 
 jest.mock('../../../store/configureStore', () => ({
 	__esModule: true,
-	store: { dispatch: jest.fn() },
+	store: {
+		dispatch: jest.fn(),
+		getState: jest.fn(() => ({
+			settings: {
+				queryShortcuts: [],
+			},
+		})),
+	},
 }));
+
+// jest.mock('mousetrap', () => ({
+// 	__esModule: true,
+// 	Mousetrap: {
+// 		bindGlobal: jest.fn(),
+// 		unbind: jest.fn(),
+// 	},
+// }));
 
 jest.mock('./extensions', () => ({
 	__esModule: true,
@@ -384,74 +402,74 @@ describe('script', () => {
 		expect(postQuery).toHaveBeenCalledWith('workspace', key);
 	});
 
-	it('sets query result when data has no value', ()=> {
+	it('sets query result when data has no value', () => {
 		const data = null;
-		const key = 'a'
+		const key = 'a';
 		const results = {
-			'a': {
+			a: {
 				t_0: '000001',
 				t_1: null,
 				result: {
 					stderr: '',
-					stdout: ''
-				}
-			}
-		}
+					stdout: '',
+				},
+			},
+		};
 
-		setQueryResult(data, store, key, results)
+		setQueryResult(data, store, key, results);
 		expect(results[key].result.stderr).toBe('query failed');
 		expect(store.dispatch).toHaveBeenCalledWith(setResults(results));
-	})
+	});
 
-	it('sets query result when data has a valid response', ()=> {
+	it('sets query result when data has a valid response', () => {
 		const data = {
 			stderr: '',
-			stdout: 'res'
+			stdout: 'res',
 		};
-		const key = 'a'
+		const key = 'a';
 		const results = {
-			'a': {
+			a: {
 				t_0: '000001',
 				t_1: null,
 				result: {
 					stderr: '',
-					stdout: ''
-				}
-			}
-		}
+					stdout: '',
+				},
+			},
+		};
 
-		setQueryResult(data, store, key, results)
+		setQueryResult(data, store, key, results);
 		expect(results[key].result.stdout).toBe('res');
 		expect(store.dispatch).toHaveBeenCalledWith(setResults(results));
 	});
 
-	it('sets query result when data has an error response', ()=> {
+	it('sets query result when data has an error response', () => {
 		const data = {
 			stderr: 'err',
-			stdout: ''
+			stdout: '',
 		};
-		const key = 'a'
+		const key = 'a';
 		const results = {
-			'a': {
+			a: {
 				t_0: '000001',
 				t_1: null,
 				result: {
 					stderr: '',
-					stdout: ''
-				}
-			}
-		}
+					stdout: '',
+				},
+			},
+		};
 
-		setQueryResult(data, store, key, results)
+		setQueryResult(data, store, key, results);
 		expect(results[key].result.stderr).toBe('err');
 		expect(store.dispatch).toHaveBeenCalledWith(setResults(results));
 	});
 
-	it('should not open file if file path is empty', async ()=> {
+	it('should not open file if file path is empty', async () => {
 		const path = '';
 		expect(await openFile(path)).toBeUndefined();
-	})
-
+	});
+	
 	it('returns true if scrollTop is greater than zero', () => {
 		const e = { target: { scrollTop: 1 } };
 		const result = handleScrollTop(e);
@@ -592,4 +610,54 @@ describe('script', () => {
 		const result = nFormatter(num);
 		expect(result).toBe(num);
 	});
+
+	it('returns script result', () => {
+		const mock_uuid = ['a', 'b'];
+		const mock_results = {
+			a: {
+				t_0: '000001',
+				t_1: null,
+				result: {
+					stderr: '',
+					stdout: '',
+				},
+				origin: '',
+			},
+			b: {
+				t_0: '002002',
+				t_1: null,
+				result: {
+					stderr: '',
+					stdout: '',
+				},
+				origin: 'script',
+			},
+		};
+
+		const expected = {
+			t_0: '002002',
+			t_1: null,
+			result: {
+				stderr: '',
+				stdout: '',
+			},
+			origin: 'script',
+		};
+
+		let result = getScriptResult(mock_uuid, mock_results);
+		expect(result).toEqual(expected);
+	});
+
+	// it('registers query shortcut', () => {
+	// 	const keybinding = 'ctrl + q';
+	// 	// registerQueryShortcut(keybinding);
+	// 	expect(Mousetrap.bindGlobal).toHaveBeenCalled();
+	// });
+
+	// it('unregisters query shortcut', () => {
+	// 	unRegisterQueryShortcut;
+	// 	const keybinding = 'ctrl + q';
+	// 	// unRegisterQueryShortcut(keybinding);
+	// 	expect(Mousetrap.unbind).toHaveBeenCalled();
+	// });
 });

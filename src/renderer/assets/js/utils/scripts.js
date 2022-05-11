@@ -170,7 +170,6 @@ export const parseProjects = data => {
 };
 
 export const parseProject = data => {
-	console.log('parse project data: ', data)
 	let inputPath;
 	let name;
 	let path;
@@ -194,9 +193,6 @@ export const parseProject = data => {
 		name = null;
 		path = null;
 	}
-
-	const obj = { name, inputPath, path, cpg, language }
-	console.log('return results: ', obj)
 	return { name, inputPath, path, cpg, language };
 };
 
@@ -1034,7 +1030,6 @@ export const watchFolderPath = (path, vars, callback) => {
 
 export const getFolderStructureRootPathFromWorkspace = workspace => {
 	const { projects } = workspace;
-	console.log('projects: ', projects)
 	let path = null;
 
 	projects &&
