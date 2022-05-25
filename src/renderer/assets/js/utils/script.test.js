@@ -85,11 +85,6 @@ jest.mock('fs', () => ({
 	default: jest.fn(() => {}),
 }));
 
-jest.mock('mousetrap', () => ({
-	__esModule: true,
-	default: jest.fn(() => {}),
-}));
-
 jest.mock('@blueprintjs/core', () => ({
 	__esModule: true,
 	Tree: jest.fn(() => {}),
@@ -147,17 +142,16 @@ jest.mock('./ipcRenderer', () => ({
 	selectDirApi: jest.fn(() => {}),
 }));
 
-jest.mock('../../../store/configureStore', () => ({
-	__esModule: true,
-	store: {
-		dispatch: jest.fn(),
-		getState: jest.fn(() => ({
-			settings: {
-				queryShortcuts: [],
-			},
-		})),
-	},
-}));
+// jest.mock('../../../store/configureStore', () => ({
+// 	__esModule: true,
+// 	store: {
+// 		getState: jest.fn(() => ({
+// 			settings: {
+// 				queryShortcuts: [],
+// 			},
+// 		})),
+// 	},
+// }));
 
 // jest.mock('mousetrap', () => ({
 // 	__esModule: true,
@@ -167,10 +161,10 @@ jest.mock('../../../store/configureStore', () => ({
 // 	},
 // }));
 
-jest.mock('./extensions', () => ({
-	__esModule: true,
-	mouseTrapGlobalBindig: jest.fn(() => {}),
-}));
+// jest.mock('./extensions', () => ({
+// 	__esModule: true,
+// 	mouseTrapGlobalBindig: jest.fn(() => {}),
+// }));
 
 jest.mock('../../../views/terminal_window/terminalWindowScripts', () => ({
 	__esModule: true,
@@ -185,6 +179,7 @@ describe('script', () => {
 	});
 
 	it('sets a toast message', () => {
+		const dispatch = jest.spyOn(store, 'dispatch').mockImplementation(()=> {})
 		const toast = {
 			icon: 'warning-sign',
 			intent: 'danger',
@@ -192,7 +187,7 @@ describe('script', () => {
 		};
 
 		handleSetToast(toast);
-		expect(store.dispatch).toHaveBeenCalled(setToast(toast));
+		expect(dispatch).toHaveBeenCalled(setToast(toast));
 		expect(setToast).toHaveBeenCalledWith(toast);
 	});
 
@@ -394,15 +389,19 @@ describe('script', () => {
 	});
 
 	it('performs post query for workspace', () => {
+		const dispatch = jest.spyOn(store, 'dispatch').mockImplementation(()=> {})
+
 		const mockResults = { a: { query: 'project' } };
 		const key = 'a';
 		performPostQuery(store, mockResults, key);
-		expect(store.dispatch).toHaveBeenCalled();
-		expect(store.dispatch).toHaveBeenCalledWith(postQuery());
+		expect(dispatch).toHaveBeenCalled();
+		expect(dispatch).toHaveBeenCalledWith(postQuery());
 		expect(postQuery).toHaveBeenCalledWith('workspace', key);
 	});
 
 	it('sets query result when data has no value', () => {
+		const dispatch = jest.spyOn(store, 'dispatch').mockImplementation(()=> {})
+
 		const data = null;
 		const key = 'a';
 		const results = {
@@ -418,10 +417,12 @@ describe('script', () => {
 
 		setQueryResult(data, store, key, results);
 		expect(results[key].result.stderr).toBe('query failed');
-		expect(store.dispatch).toHaveBeenCalledWith(setResults(results));
+		expect(dispatch).toHaveBeenCalledWith(setResults(results));
 	});
 
 	it('sets query result when data has a valid response', () => {
+		const dispatch = jest.spyOn(store, 'dispatch').mockImplementation(()=> {})
+
 		const data = {
 			stderr: '',
 			stdout: 'res',
@@ -440,10 +441,12 @@ describe('script', () => {
 
 		setQueryResult(data, store, key, results);
 		expect(results[key].result.stdout).toBe('res');
-		expect(store.dispatch).toHaveBeenCalledWith(setResults(results));
+		expect(dispatch).toHaveBeenCalledWith(setResults(results));
 	});
 
 	it('sets query result when data has an error response', () => {
+		const dispatch = jest.spyOn(store, 'dispatch').mockImplementation(()=> {})
+
 		const data = {
 			stderr: 'err',
 			stdout: '',
@@ -462,13 +465,54 @@ describe('script', () => {
 
 		setQueryResult(data, store, key, results);
 		expect(results[key].result.stderr).toBe('err');
-		expect(store.dispatch).toHaveBeenCalledWith(setResults(results));
+		expect(dispatch).toHaveBeenCalledWith(setResults(results));
 	});
 
 	it('should not open file if file path is empty', async () => {
 		const path = '';
 		expect(await openFile(path)).toBeUndefined();
 	});
+
+	it('should open a file path', async ()=> {
+		// const mock_path = "/home/emmanuel/bin/joern/joern-cli/scripts/c/const-ish.sc";
+		// const mock_file = {
+		// 	"recent": {
+		// 		"/home/emmanuel/bin/joern/joern-cli/scripts/c/const-ish.sc": true
+		// 	},
+		// 	"folders": [
+		// 		{
+		// 			"className": "folder",
+		// 			"id": "/home/emmanuel/Desktop/x42/c",
+		// 			"hasCaret": true,
+		// 			"isExpanded": true,
+		// 			"icon": "folder-open",
+		// 			"label": "c",
+		// 			"childNodes": [
+		// 				{
+		// 					"className": "folder",
+		// 					"id": "/home/emmanuel/Desktop/x42/c/Makefile",
+		// 					"icon": "document",
+		// 					"label": "Makefile"
+		// 				},
+		// 				{
+		// 					"className": "folder",
+		// 					"id": "/home/emmanuel/Desktop/x42/c/X42.c",
+		// 					"icon": "document",
+		// 					"label": "X42.c"
+		// 				}
+		// 			]
+		// 		}
+		// 	],
+		// 	"openFiles": {
+		// 		"/home/emmanuel/bin/joern/joern-cli/scripts/c/const-ish.sc": true
+		// 	},
+		// 	"openFilePath": "/home/emmanuel/bin/joern/joern-cli/scripts/c/const-ish.sc",
+		// 	"openFileContent": "import io.shiftleft.codepropertygraph.Cpg\nimport io.shiftleft.codepropertygraph.generated.nodes.{Member, Method}\nimport io.joern.dataflowengineoss.language._\nimport io.shiftleft.semanticcpg.language._\nimport overflowdb.traversal._\n\n@main def main() = {\n  cpg.method\n    .internal\n    .filter { method =>\n      method\n        .start\n        .assignments\n        .target\n        .reachableBy(method.parameter.filter(_.typeFullName.contains(\"const\")))\n        .nonEmpty\n  }.toSetImmutable\n}\n",
+		// 	"openFileIsReadOnly": false
+		// }
+
+		// await openFile(mock_path);
+	})
 	
 	it('returns true if scrollTop is greater than zero', () => {
 		const e = { target: { scrollTop: 1 } };
@@ -648,16 +692,23 @@ describe('script', () => {
 		expect(result).toEqual(expected);
 	});
 
-	// it('registers query shortcut', () => {
-	// 	const keybinding = 'ctrl + q';
-	// 	// registerQueryShortcut(keybinding);
-	// 	expect(Mousetrap.bindGlobal).toHaveBeenCalled();
-	// });
+	it('registers query shortcut', () => {
+		mouseTrapGlobalBindig(Mousetrap);
 
-	// it('unregisters query shortcut', () => {
-	// 	unRegisterQueryShortcut;
-	// 	const keybinding = 'ctrl + q';
-	// 	// unRegisterQueryShortcut(keybinding);
-	// 	expect(Mousetrap.unbind).toHaveBeenCalled();
-	// });
+		const bindGlobal = jest.spyOn(Mousetrap, 'bindGlobal').mockImplementation(()=>{});
+		const keybinding = 'ctrl + q';
+		
+		registerQueryShortcut(keybinding);
+		expect(bindGlobal).toHaveBeenCalled();
+	});
+
+	it('unregisters query shortcut', () => {
+		mouseTrapGlobalBindig(Mousetrap);
+		
+		const unbind = jest.spyOn(Mousetrap, 'unbind').mockImplementation(()=>{});
+		const keybinding = 'ctrl + q';
+
+		unRegisterQueryShortcut(keybinding);
+		expect(unbind).toHaveBeenCalledWith([keybinding]);
+	});
 });

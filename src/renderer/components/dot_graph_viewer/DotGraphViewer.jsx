@@ -122,7 +122,7 @@ function DotGraphViewer(props) {
 
 	return (
 		<>
-			<EditorWindowBanner message={errorMessage} />
+			<EditorWindowBanner message={errorMessage} data-test="editor-window-banner" />
 			{errorMessage ? (
 				<div
 					className={clsx(
@@ -130,6 +130,7 @@ function DotGraphViewer(props) {
 						commonClasses.scrollBarStyle,
 						commonClasses.scrollBarLightStyle,
 					)}
+					data-test="dot-graph-on-error"
 				>
 					{props.content.split('\n').map((str, idx) => (
 						<p key={`${idx}-${str}`}>{str}</p>
@@ -147,6 +148,7 @@ function DotGraphViewer(props) {
 							[classes.zoomOutStyle]: ctrlKeyPressed,
 						},
 					)}
+					data-test="dot-graph-on-no-error"
 				>
 					<div></div>
 				</div>

@@ -89,6 +89,7 @@ function ImageViewer(props) {
 					[classes.zoomOutStyle]: ctrlKeyPressed,
 				},
 			)}
+			data-test="image-viewer"
 		>
 			<img
 				style={{
