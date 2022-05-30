@@ -189,3 +189,7 @@ pre {
   padding-bottom: 0.2em;
   height: auto;
 }
+
+.ReactVirtualized__Grid {
+  outline: none;
+}

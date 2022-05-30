@@ -6,6 +6,7 @@ import {
 	generateScriptImportQuery,
 	handleSetToast,
 	getUIIgnoreArr,
+	deepClone,
 } from '../../assets/js/utils/scripts';
 import { selectDirApi } from '../../assets/js/utils/ipcRenderer';
 
@@ -332,7 +333,7 @@ export const switchDefaultScriptsFolder = async props => {
 	});
 
 	if (path) {
-		const values = JSON.parse(JSON.stringify(props.settings));
+		const values = deepClone(props.settings);
 		values.scriptsDir = path;
 		props.setSettings(values);
 	}

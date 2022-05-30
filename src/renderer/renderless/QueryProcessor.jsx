@@ -5,6 +5,7 @@ import { shouldRunQuery, processScriptResult } from './queryProcessorScripts';
 import {
 	addToQueue,
 	addWorkSpaceQueryToQueue,
+	deepClone,
 } from '../assets/js/utils/scripts';
 
 function QueryProcessor(props) {
@@ -48,9 +49,7 @@ function QueryProcessor(props) {
 		}
 
 		handleSetState({
-			prev_queue: props.query.queue
-				? JSON.parse(JSON.stringify(props.query.queue))
-				: {},
+			prev_queue: props.query.queue ? deepClone(props.query.queue) : {},
 		});
 	}, [props.query.queue]);
 
@@ -64,7 +63,7 @@ function QueryProcessor(props) {
 		run_query && props.mainQuery(query);
 		handleSetState({
 			prev_scripts_queue: props.query.scriptsQueue
-				? JSON.parse(JSON.stringify(props.query.scriptsQueue))
+				? deepClone(props.query.scriptsQueue)
 				: {},
 		});
 	}, [props.query.scriptsQueue]);

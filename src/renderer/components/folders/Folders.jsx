@@ -12,6 +12,7 @@ import {
 	openFile,
 	watchFolderPath,
 	getFolderStructureRootPathFromWorkspace,
+	deepClone,
 } from '../../assets/js/utils/scripts';
 import styles from '../../assets/js/styles/components/folders/foldersStyles';
 
@@ -87,9 +88,7 @@ function Folders(props) {
 		}
 
 		handleSetState({
-			prev_workspace: JSON.parse(
-				JSON.stringify(props.workspace ? props.workspace : {}),
-			),
+			prev_workspace: deepClone(props.workspace ? props.workspace : {}),
 		});
 	}, [props.workspace]);
 
