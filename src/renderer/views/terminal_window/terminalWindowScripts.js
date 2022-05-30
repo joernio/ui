@@ -1,9 +1,8 @@
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 
-import iconChevronDown from '../../assets/image/icon-chevron-down.svg';
 import { windowActionApi } from '../../assets/js/utils/ipcRenderer';
-import { openFile, generateRandomID } from '../../assets/js/utils/scripts';
+import { generateRandomID, deepClone } from '../../assets/js/utils/scripts';
 import {
 	terminalVariables as TV,
 	printable,
@@ -13,8 +12,8 @@ import {
 	setHistory,
 	setTerminalBusy,
 	setQuerySuggestions,
+	setCircuitUIResponses,
 } from '../../store/actions/terminalActions';
-import { setHighlightRange } from '../../store/actions/editorActions';
 import { enQueueQuery } from '../../store/actions/queryActions';
 import { store } from '../../store/configureStore';
 
@@ -510,236 +509,111 @@ export const initCircuitUI = refs => {
 	};
 };
 
-export const openFileAndGoToLineFromCircuitUI = async ({
-	filename,
-	lineNumber: startLine,
-	lineNumberEnd: endLine,
-}) => {
-	if (
-		filename &&
-		filename !== '<empty>' &&
-		filename.split('<').length === 1 &&
-		startLine &&
-		endLine
-	) {
-		startLine = Number(
-			startLine.replace('Some(value = ', '').replace(')', ''),
-		);
-		endLine = Number(endLine.replace('Some(value = ', '').replace(')', ''));
-		await openFile(filename);
-		store.dispatch(setHighlightRange({ startLine, endLine }));
-	}
-};
-
-export const handleToggleAllBlocks = e => {
-	const collapsed = e.target.getAttribute('data-blocks-collapsed');
-
-	const queryContainers =
-		e.target.parentElement.getElementsByClassName('query');
-	const responseContainers =
-		e.target.parentElement.getElementsByClassName('response');
-
-	if (responseContainers.length) {
-		if (collapsed) {
-			e.target.removeAttribute('data-blocks-collapsed');
-		} else {
-			e.target.setAttribute('data-blocks-collapsed', true);
-		}
-	}
-	// eslint-disable-next-line no-restricted-syntax
-	for (const el of queryContainers) {
-		if (collapsed) {
-			el.classList.remove('dropdown');
-		} else {
-			el.classList.add('dropdown');
-		}
-	}
-
-	// eslint-disable-next-line no-restricted-syntax
-	for (const el of responseContainers) {
-		if (collapsed) {
-			el.classList.remove('dropdown');
-		} else {
-			el.classList.add('dropdown');
-		}
-	}
-};
-
-export const handleToggleBlock = e => {
-	const queryContainer = e.target.parentElement;
-
-	const blockID = queryContainer.getAttribute('data-block-id');
-
-	const responseContainer = queryContainer.parentElement.querySelector(
-		`.response[data-block-id='${blockID}']`,
+export const handleToggleAllBlocks = (cache, vList) => {
+	const circuit_ui_responses = deepClone(
+		store.getState().terminal.circuit_ui_responses,
 	);
 
-	queryContainer.classList.toggle('dropdown');
-	responseContainer.classList.toggle('dropdown');
-};
+	circuit_ui_responses.dropdown = !circuit_ui_responses.dropdown;
 
-export const handleToggleAllSubBlocks = e => {
-	const collapsed = e.target.getAttribute('data-sub-blocks-collapsed');
+	Object.keys(circuit_ui_responses.all).forEach(block_id => {
+		const block = circuit_ui_responses.all[block_id];
+		block.dropdown = circuit_ui_responses.dropdown;
+	});
 
-	const objectContainers =
-		e.target.parentElement.getElementsByClassName('object-container');
+	store.dispatch(setCircuitUIResponses(circuit_ui_responses));
 
-	if (objectContainers.length) {
-		if (collapsed) {
-			e.target.removeAttribute('data-sub-blocks-collapsed');
-		} else {
-			e.target.setAttribute('data-sub-blocks-collapsed', true);
-		}
-	}
-	// eslint-disable-next-line no-restricted-syntax
-	for (const el of objectContainers) {
-		if (collapsed) {
-			el.classList.remove('dropdown');
-		} else {
-			el.classList.add('dropdown');
-		}
-	}
-};
-
-export const handleToggleSubBlock = e => {
-	e.target.parentElement.classList.toggle('dropdown');
-};
-
-export const handleInsertELementToCircuitUIResponseNode = obj => {
-	let { value } = obj;
-	const { resultsContainer, valueContainer } = obj;
-
-	if (typeof value === 'string') {
-		valueContainer.parentElement.removeChild(
-			valueContainer.parentElement.children[0],
-		);
-
-		value = TWS.constructOutputToWrite(null, value, true);
-
-		const p = resultsContainer.ownerDocument.createElement('p');
-		p.classList.add('content');
-		p.innerHTML = value;
-		valueContainer.appendChild(p);
-	} else {
-		const objContainer =
-			resultsContainer.ownerDocument.createElement('div');
-		objContainer.classList.add('object-container');
-		const objTitle = resultsContainer.ownerDocument.createElement('span');
-		objTitle.innerHTML = `${value.fullName}()`;
-		objTitle.classList.add('object-title');
-
-		objTitle.onclick = () => openFileAndGoToLineFromCircuitUI(value);
-
-		const objToggleIcon =
-			resultsContainer.ownerDocument.createElement('img');
-		objToggleIcon.setAttribute('src', iconChevronDown);
-		objToggleIcon.onclick = handleToggleSubBlock;
-		objContainer.append(objTitle, objToggleIcon);
-
-		Object.keys(value).forEach(prop => {
-			const objEntryContainer =
-				resultsContainer.ownerDocument.createElement('div');
-			objEntryContainer.classList.add('object-entry-container');
-			const objKey = resultsContainer.ownerDocument.createElement('span');
-			objKey.classList.add('object-key');
-			const objValue =
-				resultsContainer.ownerDocument.createElement('span');
-			objKey.innerText = prop;
-			objValue.innerText = value[prop];
-			objEntryContainer.append(objKey, objValue);
-			objContainer.append(objEntryContainer);
-		});
-
-		valueContainer.appendChild(objContainer);
-	}
-
-	resultsContainer.scrollTop = resultsContainer.scrollHeight;
+	cache.clearAll();
+	vList.recomputeRowHeights();
 };
 
 export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
-	const key = generateRandomID();
-
-	let p;
-	let valueWrapper;
-	let valueContainer;
-	const resultsContainer = refs.circuitUIRef.current.children[0];
-	const circuitUIResEl =
-		resultsContainer.ownerDocument.getElementById('circuit-ui-results');
-
-	const containerDiv = circuitUIResEl.ownerDocument.createElement('div');
-	circuitUIResEl.append(containerDiv);
+	let { circuit_ui_responses } = store.getState().terminal;
+	circuit_ui_responses = deepClone(circuit_ui_responses);
 
 	if (res_type === 'query') {
-		const blockToggleIcon =
-			circuitUIResEl.ownerDocument.createElement('img');
-		blockToggleIcon.classList.toggle('hide-icon');
-		blockToggleIcon.setAttribute('src', iconChevronDown);
-		blockToggleIcon.onclick = TWS.handleToggleBlock;
+		const block_id = generateRandomID();
 
-		TWS.data_obj.currentBlockID = key;
-		containerDiv.setAttribute('data-block-id', key);
-
-		containerDiv.classList.add('query', 'dropdown');
+		TWS.data_obj.currentBlockID = block_id;
 		value = TWS.constructOutputToWrite(null, value, true);
-		containerDiv.append(blockToggleIcon);
 
-		p = circuitUIResEl.ownerDocument.createElement('p');
-		p.classList.add('content');
-		p.innerHTML = value;
-		containerDiv.append(p);
+		const block = {
+			dropdown: true,
+			ui_query: {
+				res_type,
+				value,
+			},
+		};
 
-		resultsContainer.scrollTop = resultsContainer.scrollHeight;
+		circuit_ui_responses.length += 1;
+		circuit_ui_responses.indexes.push({
+			res_type,
+			block,
+			block_id,
+			sub_block_id: null,
+		});
+
+		circuit_ui_responses.all[block_id] = block;
+
+		store.dispatch(setCircuitUIResponses(circuit_ui_responses));
 	} else {
-		const queryContainer = circuitUIResEl.querySelector(
-			`.query[data-block-id='${TWS.data_obj.currentBlockID}']`,
-		);
-		queryContainer.querySelector('img').classList.toggle('hide-icon');
-
-		containerDiv.setAttribute('data-block-id', TWS.data_obj.currentBlockID);
-		containerDiv.classList.add('response', 'dropdown');
-
-		valueWrapper = circuitUIResEl.ownerDocument.createElement('div');
-		valueWrapper.classList.add('value-wrapper');
-		valueContainer = circuitUIResEl.ownerDocument.createElement('div');
-		valueContainer.classList.add('value-container');
-
-		valueWrapper.append(valueContainer);
-		containerDiv.append(valueWrapper);
+		circuit_ui_responses.all[TWS.data_obj.currentBlockID]['ui_response'] = {
+			res_type,
+			responses: {},
+		};
 
 		if (res_type === 'stderr') {
 			value = TWS.constructOutputToWrite(null, value, true);
 
-			const errEl = resultsContainer.ownerDocument.createElement('span');
-			errEl.classList.add('error');
-			errEl.innerText = 'ERROR';
+			const block_id = TWS.data_obj.currentBlockID;
+			const sub_block_id = generateRandomID();
+			const block = circuit_ui_responses.all[block_id];
 
-			const p = resultsContainer.ownerDocument.createElement('p');
-			p.classList.add('content');
-			p.innerHTML = value;
+			block['ui_response']['responses'][sub_block_id] = { value };
 
-			p.prepend(errEl);
-			valueContainer.appendChild(p);
+			block['ui_response']['length'] = 1;
+			circuit_ui_responses.length += 1;
+			circuit_ui_responses.indexes.push({
+				res_type,
+				block,
+				block_id,
+				sub_block_id,
+			});
 
-			resultsContainer.scrollTop = resultsContainer.scrollHeight;
+			store.dispatch(setCircuitUIResponses(circuit_ui_responses));
 		} else if (res_type === 'stdout') {
 			const listContentSeperator = generateRandomID();
 			const objValueSeperator = generateRandomID();
 
-			const sideToggleBar =
-				circuitUIResEl.ownerDocument.createElement('div');
-			sideToggleBar.classList.add('toggle-bar');
-			sideToggleBar.onclick = TWS.handleToggleAllSubBlocks;
-
-			valueWrapper.prepend(sideToggleBar);
-
 			const callback = value => {
-				window.requestIdleCallback(() =>
-					handleInsertELementToCircuitUIResponseNode({
+				window.requestIdleCallback(() => {
+					const block_id = TWS.data_obj.currentBlockID;
+					const sub_block_id = generateRandomID();
+					const block = circuit_ui_responses.all[block_id];
+
+					block['ui_response']['length'] = block['ui_response'][
+						'length'
+					]
+						? block['ui_response']['length'] + 1
+						: 1;
+					circuit_ui_responses.length += 1;
+
+					circuit_ui_responses.indexes.push({
+						res_type,
+						block,
+						block_id,
+						sub_block_id,
+					});
+
+					block['ui_response']['dropdown'] = true;
+
+					block['ui_response']['responses'][sub_block_id] = {
+						dropdown: false,
 						value,
-						resultsContainer,
-						valueContainer,
-					}),
-				);
+					};
+
+					store.dispatch(setCircuitUIResponses(circuit_ui_responses));
+				});
 			};
 
 			/**
@@ -747,11 +621,26 @@ export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
 			 * heavy parsing and is therefore more suitable for the worker process.
 			 */
 			if (!value.split('List[Method] = List(')[1]) {
-				handleInsertELementToCircuitUIResponseNode({
-					value,
-					resultsContainer,
-					valueContainer,
+				value = TWS.constructOutputToWrite(null, value, true);
+				const block_id = TWS.data_obj.currentBlockID;
+				const sub_block_id = generateRandomID();
+				const block = circuit_ui_responses.all[block_id];
+
+				block['ui_response']['length'] = block['ui_response']['length']
+					? block['ui_response']['length'] + 1
+					: 1;
+				circuit_ui_responses.length += 1;
+
+				circuit_ui_responses.indexes.push({
+					res_type,
+					block,
+					block_id,
+					sub_block_id,
 				});
+
+				block['ui_response']['responses'][sub_block_id] = { value };
+
+				store.dispatch(setCircuitUIResponses(circuit_ui_responses));
 			} else {
 				const data = { value, listContentSeperator, objValueSeperator };
 				TWS.workerPool.queue(worker =>
@@ -775,7 +664,7 @@ export const handleWriteToCircuitUIInput = refs => {
 };
 
 export const handleMaximize = (window, props) => {
-	if (props.terminal.isMaximized) {
+	if (props.isMaximized) {
 		return {
 			terminalHeight: `${
 				window.screen.height -

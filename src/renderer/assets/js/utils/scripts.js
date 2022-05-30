@@ -125,6 +125,36 @@ export const performPushResult = (result, results) => {
 	return results;
 };
 
+export const deepClone = obj => {
+	let new_obj;
+	let i;
+
+	if (typeof obj !== 'object') {
+		return obj;
+	}
+	if (!obj) {
+		return obj;
+	}
+
+	if (Object.prototype.toString.apply(obj) === '[object Array]') {
+		new_obj = [];
+		for (i = 0; i < obj.length; i += 1) {
+			new_obj[i] = deepClone(obj[i]);
+		}
+		return new_obj;
+	}
+
+	new_obj = {};
+	for (i in obj) {
+		// eslint-disable-line no-restricted-syntax
+		if (obj.hasOwnProperty(i)) {
+			// eslint-disable-line no-prototype-builtins
+			new_obj[i] = deepClone(obj[i]);
+		}
+	}
+	return new_obj;
+};
+
 export const getResultObjWithPostQueryKey = (results, post_query_key) => {
 	let res;
 	Object.keys(results).some(key => {

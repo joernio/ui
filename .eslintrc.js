@@ -31,6 +31,7 @@ module.exports = {
 		'react/prop-types': 'off',
 		'no-param-reassign': 'off',
 		'no-shadow': 'off',
+		'dot-notation': 'off',
 		camelcase: 'off',
 		'consistent-return': 'off',
 		'no-nested-ternary': 'off',

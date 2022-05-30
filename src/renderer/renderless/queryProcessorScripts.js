@@ -3,6 +3,7 @@ import {
 	handleSetToast,
 	isScriptQueryResultToOpenSynthFile,
 	openSyntheticFile,
+	deepClone,
 } from '../assets/js/utils/scripts';
 
 export const shouldRunQuery = (prev_queue, queue, query) => {
@@ -61,6 +62,6 @@ export const processScriptResult = async (
 	}
 
 	handleSetState({
-		prev_results: results ? JSON.parse(JSON.stringify(results)) : {},
+		prev_results: results ? deepClone(results) : {},
 	});
 };

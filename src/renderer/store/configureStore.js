@@ -10,7 +10,7 @@ import migrations from './storeMigrations';
 const persistConfig = {
 	key: 'root',
 	storage,
-	version: 0,
+	version: 1,
 	whitelist: ['settings', 'files'],
 	blacklist: ['status', 'terminal', 'query', 'workspace', 'editor'],
 	stateReconciler: autoMergeLevel2,
