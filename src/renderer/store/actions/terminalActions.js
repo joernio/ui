@@ -21,8 +21,8 @@ export const setPrevResults = prev_results => dispatch => {
 	dispatch(setTerminal({ prev_results }));
 };
 
-export const setPrevWorkspace = prev_workspace => dispatch => {
-	dispatch(setTerminal({ prev_workspace }));
+export const setPrevProjects = prev_projects => dispatch => {
+	dispatch(setTerminal({ prev_projects }));
 };
 
 export const setIsMaximized = obj => dispatch => {

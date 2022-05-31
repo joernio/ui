@@ -2,15 +2,11 @@ const styles = theme => ({
 	rootStyle: {
 		borderTop: props =>
 			`1px solid rgba${
-				props.settings.prefersDarkMode
-					? '(255,255,255,0.2)'
-					: '(0,0,0,0.2)'
+				props.prefersDarkMode ? '(255,255,255,0.2)' : '(0,0,0,0.2)'
 			}`,
 		borderBottom: props =>
 			`1px solid rgba${
-				props.settings.prefersDarkMode
-					? '(0,0,0,0.2)'
-					: '(255,255,255,0.2)'
+				props.prefersDarkMode ? '(0,0,0,0.2)' : '(255,255,255,0.2)'
 			}`,
 		'&:focus': {
 			border: '1px solid #0090F1',
@@ -30,7 +26,7 @@ const styles = theme => ({
 		marginBottom: '0.3em',
 		color: props =>
 			theme.palette.explorer.base[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 	},
 	filesSectionStyle: {
@@ -58,7 +54,7 @@ const styles = theme => ({
 			},
 			backgroundColor: props =>
 				theme.palette.explorer.hover[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 		},
 		'&:focus': {
@@ -72,7 +68,7 @@ const styles = theme => ({
 		maxWidth: '180px',
 		color: props =>
 			theme.palette.explorer.base[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		textOverflow: 'ellipsis',
 		overflow: 'hidden',
@@ -102,11 +98,11 @@ const styles = theme => ({
 	iconStyle: {
 		color: props =>
 			theme.palette.sideNav.base[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		'&:hover': {
 			color: props =>
-				props.settings.prefersDarkMode
+				props.prefersDarkMode
 					? theme.palette.sideNav.hover.dark
 					: theme.palette.sideNav.background.light,
 		},
@@ -115,7 +111,7 @@ const styles = theme => ({
 		boxShadow: props =>
 			`inset 0px 2px 8px 1px ${
 				theme.palette.editor.background[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				]
 			}`,
 	},

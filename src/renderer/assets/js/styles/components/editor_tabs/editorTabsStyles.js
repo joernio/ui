@@ -4,7 +4,7 @@ const styles = theme => ({
 		maxWidth: '100%',
 		backgroundColor: props =>
 			theme.palette.editorNavBar.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		overflowX: 'scroll',
 	},
@@ -18,18 +18,18 @@ const styles = theme => ({
 		borderLeft: props =>
 			`0.5px solid ${
 				theme.palette.editor.background[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				]
 			}`,
 		borderRight: props =>
 			`0.5px solid ${
 				theme.palette.editor.background[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				]
 			}`,
 		color: props =>
 			theme.palette.editorNavBar.base[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		'& > .unsaved-close-icon-style': {
 			display: 'none',
@@ -55,12 +55,10 @@ const styles = theme => ({
 	editorTabActiveStyle: {
 		backgroundColor: props =>
 			theme.palette.editor.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		color: props =>
-			theme.palette.editor.base[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
-			],
+			theme.palette.editor.base[props.prefersDarkMode ? 'dark' : 'light'],
 	},
 	editorTabTitleStyle: {
 		cursor: 'pointer',
@@ -82,7 +80,7 @@ const styles = theme => ({
 		'&:hover': {
 			backgroundColor: props =>
 				theme.palette.editorNavBar.hover[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 		},
 	},

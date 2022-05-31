@@ -1,7 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
+import * as terminalSelectors from '../../store/selectors/terminalSelectors';
 import {
 	handleToggleAllSubBlocks,
 	handleToggleSubBlock,
@@ -91,10 +91,7 @@ function UiQueryResponse(props) {
 }
 
 const mapStateToProps = state => ({
-	circuit_ui_responses: createSelector(
-		[state => state.terminal],
-		terminal => terminal.circuit_ui_responses,
-	)(state),
+	circuit_ui_responses: terminalSelectors.selectCircuitUiResponses(state),
 });
 
 export default connect(mapStateToProps, null)(UiQueryResponse);

@@ -4,12 +4,13 @@ import { connect } from 'react-redux';
 import * as d3 from 'd3';
 import 'd3-graphviz';
 import { makeStyles } from '@material-ui/core';
+import EditorWindowBanner from '../editor_window_banner/EditorWindowBanner';
+import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import {
 	zoomOut,
 	zoomIn,
 	addRemoveKeyDownKeyUpEvent,
 } from './dotGraphViewerScripts';
-import EditorWindowBanner from '../editor_window_banner/EditorWindowBanner';
 import styles from '../../assets/js/styles/components/dot_graph_viewer/dotGraphViewerStyles';
 import commonStyles from '../../assets/js/styles';
 
@@ -156,7 +157,7 @@ function DotGraphViewer(props) {
 }
 
 const mapStateToProps = state => ({
-	settings: state.settings,
+	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
 
 export default connect(mapStateToProps, null)(DotGraphViewer);

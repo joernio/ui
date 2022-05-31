@@ -3,6 +3,9 @@ import clsx from 'clsx';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { Icon } from '@blueprintjs/core';
+import * as filesSelectors from '../../store/selectors/filesSelectors';
+import * as settingsSelectors from '../../store/selectors/settingsSelectors';
+import * as workSpaceSelectors from '../../store/selectors/workSpaceSelectors';
 import {
 	openFile,
 	closeFile,
@@ -44,11 +47,11 @@ function OpenFiles(props) {
 	};
 
 	React.useEffect(() => {
-		if (props.files?.openFiles) {
-			const files = getEditorFilesFromOpenFiles(props);
+		if (props.openFiles) {
+			const files = getEditorFilesFromOpenFiles(props.openFiles);
 			handleSetState({ files: files || {} });
 		}
-	}, [props.files.openFiles]);
+	}, [props.openFiles]);
 
 	React.useEffect(() => {
 		const callback = e => handleSetState(handleScrollTop(e));
@@ -73,9 +76,9 @@ function OpenFiles(props) {
 		discardDialogCallback,
 	} = state;
 
-	const { openFiles, openFilePath } = props.files;
+	const { openFiles, openFilePath } = props;
 
-	return Object.keys(props.workspace.projects).length > 0 ? (
+	return Object.keys(props.projects).length > 0 ? (
 		<div className={classes.rootStyle} tabIndex="0" data-test="open-files">
 			<div
 				className={classes.titleSectionStyle}
@@ -189,10 +192,10 @@ function OpenFiles(props) {
 }
 
 const mapStateToProps = state => ({
-	query: state.query,
-	files: state.files,
-	settings: state.settings,
-	workspace: state.workspace,
+	openFiles: filesSelectors.selectOpenFiles(state),
+	openFilePath: filesSelectors.selectOpenFilePath(state),
+	projects: workSpaceSelectors.selectProjects(state),
+	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
 
 export default connect(mapStateToProps, null)(OpenFiles);

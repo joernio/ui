@@ -5,6 +5,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import { MenuDivider, Menu, MenuItem, Icon } from '@blueprintjs/core';
 import { Popover2 } from '@blueprintjs/popover2';
 import * as queryActions from '../../store/actions/queryActions';
+import * as settingsSelectors from '../../store/selectors/settingsSelectors';
+import * as querySelectors from '../../store/selectors/querySelectors';
+import * as workSpaceSelectors from '../../store/selectors/workSpaceSelectors';
 import Project from '../project/Project';
 import styles from '../../assets/js/styles/components/workspace/workspaceStyles';
 import {
@@ -67,8 +70,8 @@ function Workspace(props) {
 
 	return (
 		<div data-test="workspace">
-			{Object.keys(props.workspace.projects).length > 0 ||
-			!queueEmpty(props.query.queue) ? (
+			{Object.keys(props.projects).length > 0 ||
+			!queueEmpty(props.queue) ? (
 				<div className={classes.rootStyle} tabIndex="0">
 					<div className={classes.titleSectionStyle}>
 						{projectsVisible ? (
@@ -108,8 +111,8 @@ function Workspace(props) {
 						>
 							Workspace
 						</h2>
-						{!queueEmpty(props.query.queue) &&
-						latestIsManCommand(props.query.results) ? (
+						{!queueEmpty(props.queue) &&
+						latestIsManCommand(props.results) ? (
 							<Icon
 								icon="refresh"
 								className={clsx(
@@ -220,16 +223,14 @@ function Workspace(props) {
 						)}
 					>
 						{projectsVisible &&
-							Object.keys(props.workspace.projects).map(
-								(name, index) => (
-									<Project
-										key={`${name}-${index}`}
-										name={name}
-										index={index}
-										{...props}
-									/>
-								),
-							)}
+							Object.keys(props.projects).map((name, index) => (
+								<Project
+									key={`${name}-${index}`}
+									name={name}
+									index={index}
+									{...props}
+								/>
+							))}
 					</div>
 				</div>
 			) : (
@@ -288,9 +289,10 @@ function Workspace(props) {
 }
 
 const mapStateToProps = state => ({
-	query: state.query,
-	workspace: state.workspace,
-	settings: state.settings,
+	queue: querySelectors.selectQueue(state),
+	results: querySelectors.selectResults(state),
+	projects: workSpaceSelectors.selectProjects(state),
+	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
 
 const mapDispatchToProps = dispatch => ({

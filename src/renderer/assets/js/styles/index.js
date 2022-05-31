@@ -10,28 +10,28 @@ const styles = theme => ({
 		'&::-webkit-scrollbar-corner': {
 			backgroundColor: props =>
 				theme.palette.editor.background[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 		},
 
 		'&::-webkit-scrollbar-thumb': {
 			backgroundColor: props =>
 				theme.palette.scrollbar.background[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 		},
 
 		'&:hover::-webkit-scrollbar-thumb': {
 			backgroundColor: props =>
 				theme.palette.scrollbar.base[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 		},
 
 		'&::-webkit-scrollbar-thumb:hover': {
 			backgroundColor: props =>
 				theme.palette.scrollbar.hover[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 		},
 	},
@@ -39,7 +39,7 @@ const styles = theme => ({
 		'&::-webkit-scrollbar-track': {
 			backgroundColor: props =>
 				theme.palette.editor.background[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 		},
 	},
@@ -47,7 +47,7 @@ const styles = theme => ({
 		'&::-webkit-scrollbar-track': {
 			backgroundColor: props =>
 				theme.palette.scrollbar.background[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 		},
 	},

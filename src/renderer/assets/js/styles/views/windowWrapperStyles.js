@@ -4,7 +4,7 @@ const styles = theme => ({
 		height: '35px',
 		backgroundColor: props =>
 			theme.palette.navBar.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		display: 'flex',
 		alignItems: 'center',
@@ -19,12 +19,10 @@ const styles = theme => ({
 		display: 'flex',
 		backgroundColor: props =>
 			theme.palette.navBar.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		color: props =>
-			theme.palette.navBar.base[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
-			],
+			theme.palette.navBar.base[props.prefersDarkMode ? 'dark' : 'light'],
 	},
 	statusBarRightStyle: {
 		height: '100%',
@@ -35,28 +33,26 @@ const styles = theme => ({
 	menuStyle: {
 		backgroundColor: props =>
 			theme.palette.menu.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		borderRadius: 0,
 	},
 	menuItemStyle: {
 		borderRadius: 0,
 		color: props =>
-			theme.palette.menu.base[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
-			],
+			theme.palette.menu.base[props.prefersDarkMode ? 'dark' : 'light'],
 		'& span': {
 			color: props =>
 				`${
 					theme.palette.menu.base[
-						props.settings.prefersDarkMode ? 'dark' : 'light'
+						props.prefersDarkMode ? 'dark' : 'light'
 					]
 				} !important`,
 		},
 		'&:hover': {
 			backgroundColor: props =>
 				theme.palette.menu.hover[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 			color: '#FFFFFF',
 			'& span': {
@@ -68,15 +64,13 @@ const styles = theme => ({
 		borderTop: props =>
 			`1px solid ${
 				theme.palette.menu.base[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				]
 			}50`,
 	},
 	controlButtonStyle: {
 		color: props =>
-			theme.palette.navBar.base[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
-			],
+			theme.palette.navBar.base[props.prefersDarkMode ? 'dark' : 'light'],
 		fontSize: '1em',
 		display: 'flex',
 		width: '3em',
@@ -92,7 +86,7 @@ const styles = theme => ({
 		'&:hover': {
 			backgroundColor: props =>
 				theme.palette.navBar.hover[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 		},
 		'&.close:hover': {
@@ -110,15 +104,13 @@ const styles = theme => ({
 			fontSize: '1em',
 			color: props =>
 				theme.palette.navBar.base[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 		},
 	},
 	windowActionIconStyle: {
 		fill: props =>
-			theme.palette.navBar.base[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
-			],
+			theme.palette.navBar.base[props.prefersDarkMode ? 'dark' : 'light'],
 		width: '0.6em',
 		height: '0.6em',
 	},
@@ -133,7 +125,7 @@ const styles = theme => ({
 		'&:hover': {
 			backgroundColor: props =>
 				theme.palette.navBar.hover[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 		},
 		'& h3': {

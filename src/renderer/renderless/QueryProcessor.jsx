@@ -1,5 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import * as settingsSelectors from '../store/selectors/settingsSelectors';
+import * as querySelectors from '../store/selectors/querySelectors';
+import * as statusSelectors from '../store/selectors/statusSelectors';
 import * as queryActions from '../store/actions/queryActions';
 import { shouldRunQuery, processScriptResult } from './queryProcessorScripts';
 import {
@@ -25,11 +28,7 @@ function QueryProcessor(props) {
 
 	React.useEffect(() => {
 		const query = props.peekQueue();
-		const run_query = shouldRunQuery(
-			state.prev_queue,
-			props.query.queue,
-			query,
-		);
+		const run_query = shouldRunQuery(state.prev_queue, props.queue, query);
 
 		if (run_query) {
 			props.mainQuery(query);
@@ -49,48 +48,43 @@ function QueryProcessor(props) {
 		}
 
 		handleSetState({
-			prev_queue: props.query.queue ? deepClone(props.query.queue) : {},
+			prev_queue: props.queue ? deepClone(props.queue) : {},
 		});
-	}, [props.query.queue]);
+	}, [props.queue]);
 
 	React.useEffect(() => {
 		const query = props.peekScriptsQueue();
 		const run_query = shouldRunQuery(
 			state.prev_scripts_queue,
-			props.query.scriptsQueue,
+			props.scriptsQueue,
 			query,
 		);
 		run_query && props.mainQuery(query);
 		handleSetState({
-			prev_scripts_queue: props.query.scriptsQueue
-				? deepClone(props.query.scriptsQueue)
+			prev_scripts_queue: props.scriptsQueue
+				? deepClone(props.scriptsQueue)
 				: {},
 		});
-	}, [props.query.scriptsQueue]);
+	}, [props.scriptsQueue]);
 
 	React.useEffect(() => {
-		props.status.connected && addToQueue(addWorkSpaceQueryToQueue(), props);
-	}, [
-		props.status.connected,
-		props.settings.server,
-		props.settings.websocket,
-	]);
+		props.connected && addToQueue(addWorkSpaceQueryToQueue(), props);
+	}, [props.connected, props.server, props.websocket]);
 
 	React.useEffect(() => {
-		processScriptResult(
-			state.prev_results,
-			props.query.results,
-			handleSetState,
-		);
-	}, [props.query.results]);
+		processScriptResult(state.prev_results, props.results, handleSetState);
+	}, [props.results]);
 
 	return null;
 }
 
 const mapStateToProps = state => ({
-	query: state.query,
-	status: state.status,
-	settings: state.settings,
+	results: querySelectors.selectResults(state),
+	queue: querySelectors.selectQueue(state),
+	scriptsQueue: querySelectors.selectScriptsQueue(state),
+	connected: statusSelectors.selectConnected(state),
+	server: settingsSelectors.selectServer(state),
+	websocket: settingsSelectors.selectWebSocket(state),
 });
 
 const mapDispatchToProps = dispatch => ({

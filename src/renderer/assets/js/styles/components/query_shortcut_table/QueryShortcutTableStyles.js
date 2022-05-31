@@ -7,7 +7,7 @@ const styles = theme => ({
 		overflowY: 'auto',
 		backgroundColor: props =>
 			theme.palette.editor.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		'& > div': {
 			width: '100%',
@@ -15,8 +15,7 @@ const styles = theme => ({
 			position: 'absolute',
 			left: '0',
 			top: '0',
-			color: props =>
-				props.settings.prefersDarkMode ? '#C3CCCC' : '#616161',
+			color: props => (props.prefersDarkMode ? '#C3CCCC' : '#616161'),
 		},
 	},
 	iconContainerStyle: {
@@ -27,11 +26,11 @@ const styles = theme => ({
 	iconStyle: {
 		color: props =>
 			theme.palette.sideNav.base[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		'&:hover': {
 			color: props =>
-				props.settings.prefersDarkMode
+				props.prefersDarkMode
 					? theme.palette.sideNav.hover.dark
 					: theme.palette.sideNav.background.light,
 		},
@@ -43,7 +42,7 @@ const styles = theme => ({
 		transform: 'translateX(0)',
 		backgroundColor: props =>
 			theme.palette.editor.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		'& div': {
 			borderLeft: 'none',
@@ -58,28 +57,28 @@ const styles = theme => ({
 		transform: 'translateX(100px)',
 		backgroundColor: props =>
 			theme.palette.editor.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 	},
 	frame2Style: {
 		transform: 'translateX(400px)',
 		backgroundColor: props =>
 			theme.palette.editor.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 	},
 	frame3Style: {
 		transform: 'translateX(700px)',
 		backgroundColor: props =>
 			theme.palette.editor.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 	},
 	frame4Style: {
 		transform: 'translateX(1000px)',
 		backgroundColor: props =>
 			theme.palette.editor.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 	},
 	dragStyle: {
@@ -93,7 +92,7 @@ const styles = theme => ({
 		backgroundColor: 'transparent',
 		'&:hover': {
 			backgroundColor: props =>
-				props.settings.prefersDarkMode
+				props.prefersDarkMode
 					? 'rgba(255, 255, 255, 0.5)'
 					: 'rgba(0,0,0,0.5)',
 		},
@@ -116,7 +115,7 @@ const styles = theme => ({
 		justifyContent: 'center',
 		position: 'relative',
 		borderLeft: props =>
-			props.settings.prefersDarkMode
+			props.prefersDarkMode
 				? '1px solid rgba(255, 255, 255, 0.5)'
 				: '1px solid rgba(0,0,0,0.5)',
 	},
@@ -127,8 +126,7 @@ const styles = theme => ({
 		display: 'flex',
 		alignItems: 'center',
 		justifyContent: 'flex-start',
-		color: props =>
-			props.settings.prefersDarkMode ? '#C3CCCC' : '#616161',
+		color: props => (props.prefersDarkMode ? '#C3CCCC' : '#616161'),
 	},
 	headingStyle: {
 		width: '100%',
@@ -137,19 +135,17 @@ const styles = theme => ({
 		top: 0,
 		backgroundColor: props =>
 			theme.palette.explorer.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		padding: '0.5em 1.5em',
 		fontWeight: 'bold',
 		color: props =>
-			theme.palette.editor.base[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
-			],
+			theme.palette.editor.base[props.prefersDarkMode ? 'dark' : 'light'],
 	},
 	evenStyle: {
 		backgroundColor: props =>
 			theme.palette.explorer.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 	},
 	oddStyle: {
@@ -158,7 +154,7 @@ const styles = theme => ({
 	hoverStyle: {
 		backgroundColor: props =>
 			theme.palette.explorer.hover[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 	},
 	tagSeparationStyle: {

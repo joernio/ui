@@ -7,6 +7,8 @@ import Folders from '../../components/folders/Folders';
 import Workspace from '../../components/workspace/Workspace';
 import CpgScripts from '../../components/cpg_scripts/CpgScripts';
 import OpenFiles from '../../components/open_files/OpenFiles';
+import * as settingsSelectors from '../../store/selectors/settingsSelectors';
+import * as querySelectors from '../../store/selectors/querySelectors';
 import { initResize } from '../../assets/js/utils/scripts';
 import { resizeHandler } from './explorerWindowScripts';
 import styles from '../../assets/js/styles/views/explorer_window/explorerWindowStyles';
@@ -45,7 +47,7 @@ function ExplorerWindow(props) {
 		>
 			<div ref={resizeEl} className={classes.resizeHandleStyle}></div>
 			<h1 className={classes.titleStyle}>explorer</h1>
-			{Object.keys(props.query.results).length < 1 ? (
+			{Object.keys(props.results).length < 1 ? (
 				<Icon
 					icon="refresh"
 					iconSize={40}
@@ -67,8 +69,8 @@ function ExplorerWindow(props) {
 }
 
 const mapStateToProps = state => ({
-	query: state.query,
-	settings: state.settings,
+	results: querySelectors.selectResults(state),
+	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
 
 export default connect(mapStateToProps, null)(ExplorerWindow);

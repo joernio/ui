@@ -145,10 +145,10 @@ export const deepClone = obj => {
 	}
 
 	new_obj = {};
+	// eslint-disable-next-line no-restricted-syntax
 	for (i in obj) {
-		// eslint-disable-line no-restricted-syntax
+		// eslint-disable-next-line no-prototype-builtins
 		if (obj.hasOwnProperty(i)) {
-			// eslint-disable-line no-prototype-builtins
 			new_obj[i] = deepClone(obj[i]);
 		}
 	}
@@ -1048,8 +1048,7 @@ export const watchFolderPath = (path, vars, callback) => {
 	}
 };
 
-export const getFolderStructureRootPathFromWorkspace = workspace => {
-	const { projects } = workspace;
+export const getFolderStructureRootPathFromWorkspaceProjects = projects => {
 	let path = null;
 
 	projects &&
@@ -1202,12 +1201,9 @@ export const areResultsEqual = (prev_results, results) => {
 	return true; // this is a trick to force the code not to perform the action that depends on this function.
 };
 
-export const openProjectExists = workspace => {
+export const openProjectExists = projects => {
 	const is_open_project =
-		workspace?.projects &&
-		Object.keys(workspace.projects).filter(
-			name => !!workspace.projects[name].open,
-		);
+		projects && Object.keys(projects).filter(name => !!projects[name].open);
 	return is_open_project && is_open_project.length;
 };
 

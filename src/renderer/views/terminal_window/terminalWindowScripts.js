@@ -64,15 +64,14 @@ export const handleResize = fitAddon => {
 	fitAddon && fitAddon.fit();
 };
 
-export const handleEmptyWorkspace = (workspace, prev_workspace) => {
-	if (workspace && Object.keys(workspace.projects).length < 1) {
+export const handleEmptyWorkspace = (projects, prev_projects) => {
+	if (projects && Object.keys(projects).length < 1) {
 		return { isMaximized: true };
 	}
 	if (
-		workspace &&
-		Object.keys(workspace.projects).length > 0 &&
-		Object.keys(prev_workspace?.projects ? prev_workspace.projects : {})
-			.length < 1
+		projects &&
+		Object.keys(projects).length > 0 &&
+		Object.keys(prev_projects ? prev_projects : {}).length < 1
 	) {
 		return { isMaximized: false };
 	}

@@ -5,12 +5,10 @@ const styles = theme => ({
 		display: 'flex',
 		backgroundColor: props =>
 			theme.palette.editor.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		color: props =>
-			theme.palette.editor.base[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
-			],
+			theme.palette.editor.base[props.prefersDarkMode ? 'dark' : 'light'],
 		overflow: 'scroll',
 	},
 

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Dialog, Icon, HTMLSelect, Switch, Divider } from '@blueprintjs/core';
 import { makeStyles } from '@material-ui/core';
 import * as settingsActions from '../../store/actions/settingsActions';
+import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import {
 	handleSaveQueryShortcut,
 	buildPropertyColumns,
@@ -49,7 +50,7 @@ function QueryShortcutsViewer(props) {
 					refs.searchQueryShortcutsEl.current?.value
 						? refs.searchQueryShortcutsEl.current.value
 						: '',
-					props.settings.queryShortcuts,
+					props.queryShortcuts,
 				),
 			);
 		callback();
@@ -69,7 +70,7 @@ function QueryShortcutsViewer(props) {
 					callback,
 				);
 		}
-	}, [props.settings.queryShortcuts, refs.searchQueryShortcutsEl.current]);
+	}, [props.queryShortcuts, refs.searchQueryShortcutsEl.current]);
 
 	const {
 		queries,
@@ -80,7 +81,7 @@ function QueryShortcutsViewer(props) {
 		values,
 	} = state;
 
-	const { queryShortcuts } = props.settings;
+	const { queryShortcuts } = props;
 
 	return (
 		<div className={classes.rootStyle}>
@@ -212,8 +213,8 @@ function QueryShortcutsViewer(props) {
 }
 
 const mapStateToProps = state => ({
-	query: state.query,
-	settings: state.settings,
+	queryShortcuts: settingsSelectors.selectQueryShortcuts(state),
+	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -8,14 +8,14 @@ const styles = theme => ({
 	drawerOpen: {
 		backgroundColor: props =>
 			theme.palette.explorer.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		width: props => props.drawerWidth,
 	},
 	drawerClose: {
 		backgroundColor: props =>
 			theme.palette.explorer.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		overflowX: 'hidden',
 		width: 0,
@@ -26,11 +26,11 @@ const styles = theme => ({
 		left: '50%',
 		color: props =>
 			theme.palette.sideNav.base[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		'&:hover': {
 			color: props =>
-				props.settings.prefersDarkMode
+				props.prefersDarkMode
 					? theme.palette.sideNav.hover.dark
 					: theme.palette.sideNav.background.light,
 		},
@@ -44,7 +44,7 @@ const styles = theme => ({
 		backgroundColor: 'transparent',
 		'&:hover': {
 			backgroundColor: props =>
-				props.settings.prefersDarkMode
+				props.prefersDarkMode
 					? 'rgba(255, 255, 255, 0.5)'
 					: 'rgba(0,0,0,0.5)',
 		},
@@ -56,7 +56,7 @@ const styles = theme => ({
 		fontWeight: 400,
 		color: props =>
 			theme.palette.explorer.base[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 	},
 	drawerPaddingLeft: {

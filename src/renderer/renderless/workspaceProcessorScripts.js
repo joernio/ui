@@ -104,7 +104,8 @@ export const processQueryResult = (query_result, props) => {
 			result.stdout,
 		);
 
-		let { workspace } = props;
+		const { projects, path } = props;
+		let workspace = { projects, path };
 		workspace = modifyWorkSpaceNameAndActiveProject(
 			workspace_name_and_active_project,
 			workspace,
@@ -115,7 +116,8 @@ export const processQueryResult = (query_result, props) => {
 		const parsed_project = parseProject(result);
 
 		props.setProjects(parsed_workspace.projects);
-		let { workspace } = props;
+		const { projects, path } = props;
+		let workspace = { projects, path };
 		workspace.projects = parsed_workspace.projects;
 
 		const workspace_name_and_active_project =
@@ -130,7 +132,8 @@ export const processQueryResult = (query_result, props) => {
 		// if workspace query
 		const parsed_projects = parseProjects(result);
 
-		let { workspace } = props;
+		const { projects, path } = props;
+		let workspace = { projects, path };
 		workspace.projects = parsed_projects;
 
 		const workspace_name_and_active_project =
@@ -145,7 +148,8 @@ export const processQueryResult = (query_result, props) => {
 		// if any other query with parsed project in result
 		const workspace_name_and_active_project =
 			extractWorkSpaceNameAndActiveProject(parsed_project);
-		let { workspace } = props;
+		const { projects, path } = props;
+		let workspace = { projects, path };
 		workspace = modifyWorkSpaceNameAndActiveProject(
 			workspace_name_and_active_project,
 			workspace,

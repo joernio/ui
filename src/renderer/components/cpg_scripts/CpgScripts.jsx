@@ -14,6 +14,9 @@ import {
 import { Popover2 } from '@blueprintjs/popover2';
 import * as queryActions from '../../store/actions/queryActions';
 import * as settingsActions from '../../store/actions/settingsActions';
+import * as filesSelectors from '../../store/selectors/filesSelectors';
+import * as settingsSelectors from '../../store/selectors/settingsSelectors';
+import * as workSpaceSelectors from '../../store/selectors/workSpaceSelectors';
 import CpgScript from '../cpg_script/CpgScript';
 import DiscardDialog from '../discard_dialog/DiscardDialog';
 import styles from '../../assets/js/styles/components/cpg_scripts/cpgScriptsStyles';
@@ -78,12 +81,8 @@ function CpgScripts(props) {
 			handleSetState({ scripts: scripts || {} });
 		};
 		handleGetCpgScripts();
-		watchFolderPath(
-			props.settings.scriptsDir,
-			chokidarVars,
-			handleGetCpgScripts,
-		);
-	}, [props.settings.scriptsDir]);
+		watchFolderPath(props.scriptsDir, chokidarVars, handleGetCpgScripts);
+	}, [props.scriptsDir]);
 
 	React.useEffect(() => {
 		const callback = e => handleSetState(handleScrollTop(e));
@@ -112,9 +111,9 @@ function CpgScripts(props) {
 		discardDialogCallback,
 	} = state;
 
-	const { openFiles, openFilePath } = props.files;
+	const { openFiles, openFilePath } = props;
 
-	return Object.keys(props.workspace.projects).length > 0 ? (
+	return Object.keys(props.projects).length > 0 ? (
 		<ClickAwayListener
 			onClickAway={() => {
 				handleSetState({ selected: {} });
@@ -258,15 +257,16 @@ function CpgScripts(props) {
 						},
 					)}
 				>
-					{openProjectExists(props.workspace) &&
+					{openProjectExists(props.projects) &&
 					scriptsVisible &&
 					scripts
-						? Object.keys(scripts).map(value => {
+						? Object.keys(scripts).map((value, index) => {
 								if (!scripts[value].tag) {
 									let filename = value.split('/');
 									filename = filename[filename.length - 1];
 									return (
 										<CpgScript
+											key={`${index}-${value}`}
 											filename={filename}
 											path={value}
 											mainFunctionName={
@@ -478,13 +478,16 @@ function CpgScripts(props) {
 }
 
 const mapStateToProps = state => ({
-	workspace: state.workspace,
-	settings: state.settings,
-	files: state.files,
+	openFiles: filesSelectors.selectOpenFiles(state),
+	openFilePath: filesSelectors.selectOpenFilePath(state),
+	projects: workSpaceSelectors.selectProjects(state),
+	path: workSpaceSelectors.selectPath(state),
+	scriptsDir: settingsSelectors.selectScriptsDir(state),
+	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
 
 const mapDispatchToProps = dispatch => ({
-	setSettings: values => dispatch(settingsActions.setSettings(values)),
+	setScriptsDir: payload => dispatch(settingsActions.setScriptsDir(payload)),
 	enQueueScriptsQuery: query =>
 		dispatch(queryActions.enQueueScriptsQuery(query)),
 });

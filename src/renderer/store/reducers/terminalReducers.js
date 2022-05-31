@@ -3,7 +3,7 @@ const default_state = {
 	refs: null,
 	fitAddon: null,
 	prev_results: null,
-	prev_workspace: {},
+	prev_projects: {},
 	history: {
 		prev_queries: {},
 		next_queries: {},

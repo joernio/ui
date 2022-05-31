@@ -1,7 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
 import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
 import {
 	CellMeasurer,
 	WindowScroller,
@@ -17,6 +16,11 @@ import UiQueryResponse from '../../components/ui_query_response/UiQueryResponse'
 import { store } from '../../store/configureStore';
 import * as terminalActions from '../../store/actions/terminalActions';
 import * as settingsActions from '../../store/actions/settingsActions';
+import * as terminalSelectors from '../../store/selectors/terminalSelectors';
+import * as settingsSelectors from '../../store/selectors/settingsSelectors';
+import * as querySelectors from '../../store/selectors/querySelectors';
+import * as statusSelectors from '../../store/selectors/statusSelectors';
+import * as workSpaceSelectors from '../../store/selectors/workSpaceSelectors';
 import styles from '../../assets/js/styles/views/terminal/terminalStyles';
 import {
 	initResize,
@@ -82,8 +86,8 @@ export const rowRenderer = obj => {
 							{...obj}
 						/>
 					);
+					// eslint-disable-next-line no-else-return
 				} else {
-					// eslint-disable-line no-else-return
 					return (
 						<UiQueryResponse
 							cache={refs.cacheRef.current}
@@ -107,7 +111,7 @@ function TerminalWindow(props) {
 	const { prefersTerminalView } = props;
 
 	const classes = useStyles(props);
-	const commonClasses = useCommonStyles({ settings: { ...props } });
+	const commonClasses = useCommonStyles(props);
 
 	const refs = {
 		terminalRef: React.useRef(null),
@@ -170,10 +174,10 @@ function TerminalWindow(props) {
 
 	React.useEffect(() => {
 		props.setIsMaximized(
-			handleEmptyWorkspace(props.workspace, props.prev_workspace),
+			handleEmptyWorkspace(props.projects, props.prev_projects),
 		);
-		props.setPrevWorkspace({
-			prev_workspace: props.workspace ? deepClone(props.workspace) : {},
+		props.setPrevProjects({
+			prev_projects: props.projects ? deepClone(props.projects) : {},
 		});
 	}, [props.projects]);
 
@@ -453,63 +457,24 @@ function TerminalWindow(props) {
 }
 
 const mapStateToProps = state => ({
-	term: createSelector(
-		[state => state.terminal],
-		terminal => terminal.term,
-	)(state),
-	fitAddon: createSelector(
-		[state => state.terminal],
-		terminal => terminal.fitAddon,
-	)(state),
-	prev_results: createSelector(
-		[state => state.terminal],
-		terminal => terminal.prev_results,
-	)(state),
-	prev_workspace: createSelector(
-		[state => state.terminal],
-		terminal => terminal.prev_workspace,
-	)(state),
-	isMaximized: createSelector(
-		[state => state.terminal],
-		terminal => terminal.isMaximized,
-	)(state),
-	query_suggestions: createSelector(
-		[state => state.terminal],
-		terminal => terminal.query_suggestions,
-	)(state),
-	circuit_ui_responses: createSelector(
-		[state => state.terminal],
-		terminal => terminal.circuit_ui_responses,
-	)(state),
+	term: terminalSelectors.selectTerm(state),
+	fitAddon: terminalSelectors.selectFitAddon(state),
+	prev_results: terminalSelectors.selectPrevResults(state),
+	prev_projects: terminalSelectors.selectPrevProjects(state),
+	isMaximized: terminalSelectors.selectIsMaximized(state),
+	query_suggestions: terminalSelectors.selectQuerySuggestions(state),
+	circuit_ui_responses: terminalSelectors.selectCircuitUiResponses(state),
 
-	results: createSelector(
-		[state => state.query],
-		query => query.results,
-	)(state),
-	queue: createSelector([state => state.query], query => query.queue)(state),
+	results: querySelectors.selectResults(state),
+	queue: querySelectors.selectQuery(state),
 
-	projects: createSelector(
-		[state => state.workspace],
-		workspace => workspace.projects,
-	)(state),
+	projects: workSpaceSelectors.selectProjects(state),
 
-	connected: createSelector(
-		[state => state.status],
-		status => status.connected,
-	)(state),
+	connected: statusSelectors.selectConnected(state),
 
-	prefersDarkMode: createSelector(
-		[state => state.settings],
-		settings => settings.prefersDarkMode,
-	)(state),
-	prefersTerminalView: createSelector(
-		[state => state.settings],
-		settings => settings.prefersTerminalView,
-	)(state),
-	fontSize: createSelector(
-		[state => state.settings],
-		settings => settings.fontSize,
-	)(state),
+	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
+	prefersTerminalView: settingsSelectors.selectPrefersTerminalView(state),
+	fontSize: settingsSelectors.selectFontSize(state),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -518,8 +483,8 @@ const mapDispatchToProps = dispatch => ({
 	setFitAddon: fit_addon => dispatch(terminalActions.setFitAddon(fit_addon)),
 	setPrevResults: prev_results =>
 		dispatch(terminalActions.setPrevResults(prev_results)),
-	setPrevWorkspace: prev_workspace =>
-		dispatch(terminalActions.setPrevWorkspace(prev_workspace)),
+	setPrevProjects: prev_projects =>
+		dispatch(terminalActions.setPrevProjects(prev_projects)),
 	setIsMaximized: obj => dispatch(terminalActions.setIsMaximized(obj)),
 	setSettings: values => dispatch(settingsActions.setSettings(values)),
 });

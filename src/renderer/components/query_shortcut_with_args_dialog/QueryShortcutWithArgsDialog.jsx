@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { Dialog, Divider } from '@blueprintjs/core';
 import * as queryActions from '../../store/actions/queryActions';
+import * as settingsSelectors from '../../store/selectors/settingsSelectors';
+import * as querySelectors from '../../store/selectors/querySelectors';
 import styles from '../../assets/js/styles/components/cpg_scripts/cpgScriptsStyles';
 import {
 	closeDialog,
@@ -28,17 +30,17 @@ function QueryShortcutWithArgsDialog(props) {
 
 	React.useEffect(() => {
 		if (
-			props.query.queryShortcut &&
-			Object.keys(props.query.queryShortcut).length > 0
+			props.queryShortcut &&
+			Object.keys(props.queryShortcut).length > 0
 		) {
 			handleSetState({ dialogOpen: true });
 		} else {
 			handleSetState({ dialogOpen: false });
 		}
-	}, [props.query.queryShortcut]);
+	}, [props.queryShortcut]);
 
 	const { dialogOpen } = state;
-	const { queryShortcut } = props.query;
+	const { queryShortcut } = props;
 	return Object.keys(queryShortcut).length > 0 ? (
 		<Dialog
 			portalClassName={classes.scriptsArgsDialogStyle}
@@ -83,7 +85,10 @@ function QueryShortcutWithArgsDialog(props) {
 				<h3
 					className="run"
 					onClick={() => {
-						runQueryWithArgs(queryShortcutArgsContainerEl, props);
+						runQueryWithArgs(
+							queryShortcutArgsContainerEl,
+							props.queryShortcut,
+						);
 						handleSetState(closeDialog());
 						props.setQueryShortcut({});
 					}}
@@ -96,8 +101,8 @@ function QueryShortcutWithArgsDialog(props) {
 }
 
 const mapStateToProps = state => ({
-	settings: state.settings,
-	query: state.query,
+	queryShortcut: querySelectors.selectQueryShortcut(state),
+	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -3,6 +3,8 @@ import { Dialog } from '@blueprintjs/core';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import * as filesActions from '../../store/actions/filesActions';
+import * as filesSelectors from '../../store/selectors/filesSelectors';
+import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import styles from '../../assets/js/styles/components/discard_dialog/discardDialogStyles';
 import { getOpenFileName } from '../../assets/js/utils/scripts';
 import {
@@ -16,7 +18,13 @@ const useStyles = makeStyles(styles);
 function DiscardDialog(props) {
 	const classes = useStyles(props);
 
-	const { openDiscardDialog, callback, handleSetState, files } = props;
+	const {
+		openDiscardDialog,
+		callback,
+		handleSetState,
+		openFiles,
+		openFilePath,
+	} = props;
 
 	return (
 		<Dialog
@@ -32,7 +40,7 @@ function DiscardDialog(props) {
 			<div className={classes.discardDialogContentStyle}>
 				<div>
 					<h3>{`Do you want to save the changes made to ${getOpenFileName(
-						props?.files?.openFilePath,
+						openFilePath,
 					)}`}</h3>
 					<h4>
 						{' '}
@@ -44,9 +52,7 @@ function DiscardDialog(props) {
 				<h3
 					className="save"
 					onClick={async () =>
-						handleSetState(
-							await handleSave(files.openFilePath, callback),
-						)
+						handleSetState(await handleSave(openFilePath, callback))
 					}
 				>
 					Save
@@ -55,8 +61,8 @@ function DiscardDialog(props) {
 					onClick={() =>
 						handleSetState(
 							handleDiscard(
-								files.openFilePath,
-								files.openFiles,
+								openFilePath,
+								openFiles,
 								callback,
 								props.setOpenFiles,
 							),
@@ -72,8 +78,9 @@ function DiscardDialog(props) {
 }
 
 const mapStateToProps = state => ({
-	files: state.files,
-	settings: state.settings,
+	openFiles: filesSelectors.selectOpenFiles(state),
+	openFilePath: filesSelectors.selectOpenFilePath(state),
+	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
 
 const mapDispatchToProps = dispatch => ({

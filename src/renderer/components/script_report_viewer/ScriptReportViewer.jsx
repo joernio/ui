@@ -2,10 +2,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core';
+import EditorWindowBanner from '../editor_window_banner/EditorWindowBanner';
+import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import { parseScriptReportJSON } from './scriptReportViewerScripts';
 import styles from '../../assets/js/styles/components/script_report_viewer/scriptReportViewerStyles';
 import commonStyles from '../../assets/js/styles';
-import EditorWindowBanner from '../editor_window_banner/EditorWindowBanner';
 
 const useStyles = makeStyles(styles);
 const useCommonStyles = makeStyles(commonStyles);
@@ -124,7 +125,7 @@ function ScriptReportViewer(props) {
 }
 
 const mapStateToProps = state => ({
-	settings: state.settings,
+	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
 
 export default connect(mapStateToProps, null)(ScriptReportViewer);
