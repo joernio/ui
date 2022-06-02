@@ -1,4 +1,4 @@
-import 'jsdom-global/register';
+// import 'jsdom-global/register';
 import React from 'react';
 import { makeStyles } from '@material-ui/core';
 import { mount } from 'enzyme';
@@ -22,6 +22,7 @@ import {
 	handleAddQueryToHistory,
 	handleEmptyWorkspace,
 } from './terminalWindowScripts';
+import { Provider as ReduxProvider } from 'react-redux'
 
 const terminal = {}; // to be removed when test is fixed
 
@@ -55,19 +56,24 @@ jest.mock('./terminalWindowScripts', () => ({
 const setUp = (initialState = {}) => {
 	const store = testStore(initialState);
 	const wrapper = mount(
-		<TerminalWindow
-			store={store}
-			terminalHeight=""
-			topNavHeight=""
-			statusBarHeight=""
-			handleSetState={handleSetState}
-		/>,
+		<ReduxProvider store={store}>
+			<TerminalWindow
+				terminalHeight=""
+				topNavHeight=""
+				statusBarHeight=""
+				handleSetState={handleSetState}
+			/>
+	  	</ReduxProvider>
 	);
 	return { wrapper, store };
 };
 
 describe('TerminalWindow component:', () => {
 	let wrapper;
+
+	const getProps = (wrapper) => {
+		return wrapper.props().children.props
+	}
 
 	beforeEach(() => {
 		const wrapper_and_store = setUp({
@@ -85,19 +91,19 @@ describe('TerminalWindow component:', () => {
 	});
 
 	it('expect typeof wrapper.props().terminalHeight to be "string"', () => {
-		expect(typeof wrapper.props().terminalHeight).toBe('string');
+		expect(typeof getProps(wrapper).terminalHeight).toBe('string');
 	});
 
 	it('expect typeof wrapper.props().topNavHeight to be "string"', () => {
-		expect(typeof wrapper.props().topNavHeight).toBe('string');
+		expect(typeof getProps(wrapper).topNavHeight).toBe('string');
 	});
 
 	it('expect typeof wrapper.props().statusBarHeight to be "string"', () => {
-		expect(typeof wrapper.props().statusBarHeight).toBe('string');
+		expect(typeof getProps(wrapper).statusBarHeight).toBe('string');
 	});
 
 	it('expect typeof wrapper.props().handleSetState "function"', () => {
-		expect(typeof wrapper.props().handleSetState).toBe('function');
+		expect(typeof getProps(wrapper).handleSetState).toBe('function');
 	});
 
 	it('expect handleSetState to have been called', () => {

@@ -1,4 +1,4 @@
-import 'jsdom-global/register';
+// import 'jsdom-global/register';
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { mount } from 'enzyme';
@@ -9,6 +9,7 @@ import { default_state as query } from '../../store/reducers/queryReducers';
 import { default_state as workspace } from '../../store/reducers/workSpaceReducers';
 import { findByTestAttr, testStore } from '../../assets/js/utils/testUtils';
 import { getEditorFilesFromOpenFiles } from './openFilesScripts';
+import { Provider as ReactProvider } from 'react-redux';
 
 const mock_workspace = {
 	path: '/home/raymond/Desktop/workspace',
@@ -38,7 +39,11 @@ jest.mock('./openFilesScripts', () => ({
 
 const setUp = (initialState = {}) => {
 	const store = testStore(initialState);
-	const wrapper = mount(<OpenFiles store={store} />);
+	const wrapper = mount(
+		<ReactProvider store={store}>
+			<OpenFiles />
+		</ReactProvider>
+	);
 	return { wrapper, store };
 };
 

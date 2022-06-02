@@ -28,6 +28,7 @@ function DiscardDialog(props) {
 			isOpen={openDiscardDialog}
 			onClose={() => handleSetState(handleCancel())}
 			usePortal={true}
+			data-test="Discard-Dialog"
 		>
 			<div className={classes.discardDialogContentStyle}>
 				<div>

@@ -1,3 +1,4 @@
+/* eslint-disable guard-for-in */
 import { nanoid } from 'nanoid';
 import glob from 'glob';
 import fs from 'fs';
@@ -156,16 +157,22 @@ export const deepClone = obj => {
 };
 
 export const getResultObjWithPostQueryKey = (results, post_query_key) => {
-	let res;
-	Object.keys(results).some(key => {
-		if (key && results[key].post_query_uuid === post_query_key) {
-			res = key;
-			return true;
-		}
-		return false;
-	});
+	// consider using the code below
 
-	return res;
+	for(const key in results){
+		return results[key].post_query_uuid === post_query_key ? key : false
+	} 
+
+	// let res;
+	// Object.keys(results).some(key => {
+	// 	if (key && results[key].post_query_uuid === post_query_key) {
+	// 		res = key;
+	// 		return true;
+	// 	}
+	// 	return false;
+	// });
+
+	// return res;
 };
 
 export const parseProjects = data => {
@@ -216,11 +223,10 @@ export const parseProject = data => {
 		name = null;
 		path = null;
 	}
-
 	return { name, inputPath, path, cpg, language };
 };
 
-const performPostQuery = (store, results, key) => {
+export const performPostQuery = (store, results, key) => {
 	let post_query;
 	const result = results[key];
 
@@ -236,7 +242,7 @@ const performPostQuery = (store, results, key) => {
 	store.dispatch(postQuery(post_query, key));
 };
 
-const setQueryResult = (data, store, key, results) => {
+export const setQueryResult = (data, store, key, results) => {
 	if (results[key].t_0 && !results[key].t_1) {
 		results[key].t_1 = performance.now();
 	}
@@ -325,14 +331,18 @@ export const discardDialogHandler = (openFiles, openFilePath, callback) => {
 	callback();
 };
 
-export const getOpenFileName = path => {
-	if (path) {
-		path = path ? path.split('/') : null;
-		path = path ? path[path.length - 1] : null;
+export const getOpenFileName = path => 
+	// consider using the code below. 
 
-		return path;
-	}
-};
+	 path ? path.split('/')[path.split('/').length - 1] : null
+
+	// if (path) {
+	// 	path = path ? path.split('/') : null;
+	// 	path = path ? path[path.length - 1] : null;
+
+	// 	return path;
+	// }
+;
 
 export const getExtension = path => {
 	const ext = path.split('.')[path.split('.').length - 1];
@@ -1189,7 +1199,7 @@ export const initResize = (resizeHandle, type, resizeHandler) => {
 
 export const areResultsEqual = (prev_results, results) => {
 	if (results) {
-		let prev_latest_uuid = Object.keys(prev_results || {});
+		let prev_latest_uuid = Object.keys(prev_results || {}); 
 		prev_latest_uuid = prev_latest_uuid[prev_latest_uuid.length - 1];
 
 		let latest_uuid = Object.keys(results);

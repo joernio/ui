@@ -1,7 +1,7 @@
 import { spawn, Pool, Worker } from 'threads';
 
-const workerURL = document.querySelector('script[type="text/js-worker"]').src;
-const workerPool = Pool(() => spawn(new Worker(workerURL)));
+// const workerURL = document.querySelector('script[type="text/js-worker"]').src;
+const workerPool = null // Pool(() => spawn(new Worker(workerURL)));
 
 export const default_state = {
 	results: {},

@@ -1,4 +1,4 @@
-import 'jsdom-global/register';
+// import 'jsdom-global/register';
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { mount } from 'enzyme';
@@ -11,6 +11,7 @@ import { default_state as workspace } from '../store/reducers/workSpaceReducers'
 import { findByTestAttr, testStore } from '../assets/js/utils/testUtils';
 import { getOpenFileName } from '../assets/js/utils/scripts';
 import { windowInfoApi, windowActionApi } from '../assets/js/utils/ipcRenderer';
+import { Provider as ReduxProvider } from 'react-redux';
 
 const status = {}; // to be removed when test is fixed
 
@@ -24,10 +25,18 @@ jest.mock('../components/queries_stats/QueriesStats', () => ({
 	default: jest.fn(() => <div data-test="queries-stats"></div>),
 }));
 
-jest.mock('./windowWrapperScripts', () => ({
-	__esModule: true,
-	getOpenFileName: jest.fn(() => 'abcdefgh.js'),
-}));
+// jest.mock('./windowWrapperScripts.js', () => ({
+// 	__esModule: true,
+// 	getOpenFileName: jest.fn(() => 'abcdefgh.js'),
+// }));
+
+jest.mock("../assets/js/utils/scripts", () => {
+    const original = jest.requireActual("../assets/js/utils/scripts");
+    return {
+        ...original,
+        getOpenFileName: jest.fn()
+    };
+});
 
 const getWindowInfo = jest
 	.spyOn(windowInfoApi, 'getWindowInfo')
@@ -38,7 +47,11 @@ const setOpenFileName = jest
 
 const setUp = (initialState = {}) => {
 	const store = testStore(initialState);
-	const wrapper = mount(<WindowWrapper store={store} />);
+	const wrapper = mount(
+		<ReduxProvider store={store} >
+			<WindowWrapper/>
+		</ReduxProvider>
+	);
 	return { wrapper, store };
 };
 
@@ -72,6 +85,7 @@ describe('WindowWrapper component:', () => {
 	});
 
 	it('expect getOpenFileName to have been called', () => {
+		getOpenFileName.mockImplementation(() => 'abcdefgh.js');
 		expect(getOpenFileName).toHaveBeenCalled();
 	});
 

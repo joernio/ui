@@ -93,6 +93,7 @@ function CpgScript(props) {
 					[classes.taggedScriptSectionStyle]: hasTag,
 				})}
 				tabIndex="0"
+				data-test="cpg-script"
 			>
 				<h3
 					className={classes.scriptNameStyle}

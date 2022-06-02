@@ -91,6 +91,7 @@ function QueryShortcutTable(props) {
 						})
 					}
 					className={classes.rootStyle}
+					data-test = "query-shortcut-table"
 				>
 					<div className={classes.frame0Style}>
 						<div className={classes.contentStyle}>

@@ -8,7 +8,7 @@ function EditorWindowBanner(props) {
 	const classes = useStyles(props);
 
 	return props.message ? (
-		<div className={classes.rootStyle}>{props.message}</div>
+		<div data-test="editor-window-banner" className={classes.rootStyle}>{props.message}</div>
 	) : null;
 }
 

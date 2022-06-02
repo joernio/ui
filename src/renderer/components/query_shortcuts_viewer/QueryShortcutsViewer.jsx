@@ -83,7 +83,7 @@ function QueryShortcutsViewer(props) {
 	const { queryShortcuts } = props.settings;
 
 	return (
-		<div className={classes.rootStyle}>
+		<div className={classes.rootStyle} data-test="query-shortcuts-viewer">
 			<input
 				className={classes.searchInputStyle}
 				ref={refs.searchQueryShortcutsEl}
