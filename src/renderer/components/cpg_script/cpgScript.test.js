@@ -82,9 +82,9 @@ describe('CpgScripts component when workspace is empty:', () => {
 	})
 
 	it('should open scripts context menu when selected has content', ()=> {
-		const selected = {};
+		const selected = {"a": "", "b": ""};
 		shouldOpenScriptsContextMenu(selected, handleSetState);
-		expect(handleSetState).not.toHaveBeenCalled()
+		expect(handleSetState).toHaveBeenCalled()
 	})
 
 	afterEach(() => {

@@ -3,9 +3,8 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { mount } from 'enzyme';
 import { default_state as settings } from '../../store/reducers/settingsReducers';
-import { default_state as query } from '../../store/reducers/queryReducers';
 import { findByTestAttr, testStore } from '../../assets/js/utils/testUtils';
-import QueryShortcutTable from './QueryShortcutTable';
+import ScriptReportViewer from './ScriptReportViewer';
 
 jest.mock('@material-ui/core/styles', () => ({
 	__esModule: true,
@@ -15,31 +14,30 @@ jest.mock('@material-ui/core/styles', () => ({
 const setUp = (initialState = {}) => {
 	const store = testStore(initialState);
 	const wrapper = mount(
-		<QueryShortcutTable
-			queries={[1,2,3]}
-			keybindings={[]}
-			behaviours={[]}
-			backgrounds={[]}
-			settings={[]}
-			handleSetState={jest.fn(() => {})}
+		<ScriptReportViewer
+			bannerMessage="hjk"
+			store={store}
+			path="a/b/c"
+			content={`
+            c 
+            on 
+            tent
+            `}
 		/>,
 	);
-	console.log({ store });
 	return { wrapper, store };
 };
 
-describe('QueryShortcutTable component:', () => {
+describe('ScriptReportViewer component:', () => {
 	let wrapper;
 
 	beforeEach(() => {
-		const wrapper_and_store = setUp();
+		const wrapper_and_store = setUp({ settings });
 		wrapper = wrapper_and_store.wrapper;
 	});
 
-	it('should pass', () => {});
-
-	it('should render QueryShortcutTable.jsx without errors', () => {
-		const component = findByTestAttr(wrapper, 'query-shortcut-table');
+	it('should render ScriptReportViewer.jsx without errors', () => {
+		const component = findByTestAttr(wrapper, 'script-report-viewer');
 		expect(component).toHaveLength(1);
 	});
 

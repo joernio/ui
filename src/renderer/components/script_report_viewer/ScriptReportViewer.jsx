@@ -54,6 +54,7 @@ function ScriptReportViewer(props) {
 						commonClasses.scrollBarStyle,
 						commonClasses.scrollBarLightStyle,
 					)}
+					data-test="script-report-viewer"
 				>
 					<div className={classes.propertiesContainerStyle}>
 						<div>

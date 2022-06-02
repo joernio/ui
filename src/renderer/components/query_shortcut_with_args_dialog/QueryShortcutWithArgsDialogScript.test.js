@@ -5,7 +5,7 @@ import { mount } from 'enzyme';
 import { default_state as settings } from '../../store/reducers/settingsReducers';
 import { default_state as query } from '../../store/reducers/queryReducers';
 import { findByTestAttr, testStore } from '../../assets/js/utils/testUtils';
-import QueryShortcutTable from './QueryShortcutTable';
+import QueryShortcutWithArgsDialog from './QueryShortcutWithArgsDialog';
 
 jest.mock('@material-ui/core/styles', () => ({
 	__esModule: true,
@@ -15,32 +15,25 @@ jest.mock('@material-ui/core/styles', () => ({
 const setUp = (initialState = {}) => {
 	const store = testStore(initialState);
 	const wrapper = mount(
-		<QueryShortcutTable
-			queries={[1,2,3]}
-			keybindings={[]}
-			behaviours={[]}
-			backgrounds={[]}
-			settings={[]}
-			handleSetState={jest.fn(() => {})}
-		/>,
+			<QueryShortcutWithArgsDialog store={store}/>
 	);
-	console.log({ store });
 	return { wrapper, store };
 };
 
-describe('QueryShortcutTable component:', () => {
+describe('QueryShortcutWithArgsDialog component:', () => {
 	let wrapper;
 
 	beforeEach(() => {
-		const wrapper_and_store = setUp();
+		const wrapper_and_store = setUp({ settings, query });
 		wrapper = wrapper_and_store.wrapper;
 	});
 
-	it('should pass', () => {});
-
-	it('should render QueryShortcutTable.jsx without errors', () => {
-		const component = findByTestAttr(wrapper, 'query-shortcut-table');
-		expect(component).toHaveLength(1);
+	it('should render QueryShortcutWithArgsDialog.jsx without errors', () => {
+		const component = findByTestAttr(
+			wrapper,
+			'query-shortcut-with-args-dialog',
+		);
+		expect(component).toHaveLength(0);
 	});
 
 	it('expect makeStyles to have been called', () => {

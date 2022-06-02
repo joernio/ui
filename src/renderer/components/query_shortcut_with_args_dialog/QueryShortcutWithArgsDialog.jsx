@@ -55,6 +55,7 @@ function QueryShortcutWithArgsDialog(props) {
 			<div
 				className={classes.scriptsArgsDialogContentStyle}
 				ref={queryShortcutArgsContainerEl}
+				data-test="query-shortcut-with-args-dialog"
 			>
 				{queryShortcut.query.split('\\0').map((str, index) =>
 					index === 0 ? (
