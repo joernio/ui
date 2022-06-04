@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { Icon } from '@blueprintjs/core';
 import DiscardDialog from '../discard_dialog/DiscardDialog';
-import styles from '../../assets/js/styles/components/editor_tabs/editorTabsStyles';
+import * as filesSelectors from '../../store/selectors/filesSelectors';
+import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import {
 	openFile,
 	closeFile,
@@ -16,6 +17,7 @@ import {
 	syntheticFiles,
 	imageFileExtensions,
 } from '../../assets/js/utils/defaultVariables';
+import styles from '../../assets/js/styles/components/editor_tabs/editorTabsStyles';
 import commonStyles from '../../assets/js/styles';
 
 const useCommonStyles = makeStyles(commonStyles);
@@ -38,7 +40,7 @@ function EditorTabs(props) {
 		}
 	};
 
-	const { openFiles, openFilePath } = props.files;
+	const { openFiles, openFilePath } = props;
 	const { openDiscardDialog, discardDialogCallback } = state;
 
 	return (
@@ -145,8 +147,9 @@ function EditorTabs(props) {
 }
 
 const mapStateToProps = state => ({
-	files: state.files,
-	settings: state.settings,
+	openFiles: filesSelectors.selectOpenFiles(state),
+	openFilePath: filesSelectors.selectOpenFilePath(state),
+	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
 
 export default connect(mapStateToProps, null)(EditorTabs);

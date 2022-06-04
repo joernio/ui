@@ -4,8 +4,7 @@ const styles = theme => ({
 		overflow: 'auto',
 		marginLeft: '1em',
 		paddingTop: '1em',
-		color: props =>
-			props.settings.prefersDarkMode ? '#C3CCCC' : '#616161',
+		color: props => (props.prefersDarkMode ? '#C3CCCC' : '#616161'),
 	},
 	synthFileViewerStyle: {
 		width: '100%',
@@ -23,20 +22,18 @@ const styles = theme => ({
 		},
 		backgroundColor: props =>
 			theme.palette.editor.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		color: props =>
-			theme.palette.editor.base[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
-			],
+			theme.palette.editor.base[props.prefersDarkMode ? 'dark' : 'light'],
 		'& > div': {
 			stroke: props =>
 				theme.palette.editor.background[
-					props.settings.prefersDarkMode ? 'light' : 'dark'
+					props.prefersDarkMode ? 'light' : 'dark'
 				],
 			backgroundColor: props =>
 				theme.palette.editor.background[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 			'& polygon': {
 				fill: 'transparent',
@@ -44,13 +41,13 @@ const styles = theme => ({
 			'& .node ellipse': {
 				stroke: props =>
 					theme.palette.editor.background[
-						props.settings.prefersDarkMode ? 'light' : 'dark'
+						props.prefersDarkMode ? 'light' : 'dark'
 					],
 			},
 			'& .edge *': {
 				stroke: props =>
 					theme.palette.editor.background[
-						props.settings.prefersDarkMode ? 'light' : 'dark'
+						props.prefersDarkMode ? 'light' : 'dark'
 					],
 			},
 		},

@@ -3,11 +3,10 @@ const styles = theme => ({
 		height: '95%',
 		width: '100%',
 		overflow: 'scroll',
-		color: props =>
-			props.settings.prefersDarkMode ? '#C3CCCC' : '#616161',
+		color: props => (props.prefersDarkMode ? '#C3CCCC' : '#616161'),
 		backgroundColor: props =>
 			theme.palette.editor.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 	},
 	propertiesContainerStyle: {
@@ -26,9 +25,7 @@ const styles = theme => ({
 		'& td': {
 			borderLeft: props =>
 				`1px solid rgba${
-					props.settings.prefersDarkMode
-						? '(255,255,255,0.2)'
-						: '(0,0,0,0.2)'
+					props.prefersDarkMode ? '(255,255,255,0.2)' : '(0,0,0,0.2)'
 				}`,
 			textAlign: 'left',
 			padding: '0 0.5em',
@@ -46,13 +43,13 @@ const styles = theme => ({
 		'& tr:hover': {
 			backgroundColor: props =>
 				theme.palette.explorer.hover[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 		},
 		'& tr:nth-child(odd)': {
 			backgroundColor: props =>
 				theme.palette.explorer.background[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 		},
 	},
@@ -68,8 +65,7 @@ const styles = theme => ({
 		overflow: 'auto',
 		marginLeft: '1em',
 		paddingTop: '1em',
-		color: props =>
-			props.settings.prefersDarkMode ? '#C3CCCC' : '#616161',
+		color: props => (props.prefersDarkMode ? '#C3CCCC' : '#616161'),
 	},
 });
 

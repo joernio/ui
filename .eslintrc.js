@@ -40,6 +40,7 @@ module.exports = {
 		'no-promise-executor-return': 'off',
 		'func-names': 'off',
 		'default-param-last': 'off',
+		'no-unneeded-ternary': 'off',
 		'import/prefer-default-export': 'off',
 		'import/no-cycle': 'off',
 		'import/no-self-import': 'off',

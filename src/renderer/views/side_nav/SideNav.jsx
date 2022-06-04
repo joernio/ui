@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Icon, Divider, Switch, Dialog } from '@blueprintjs/core';
 import { Tooltip2 } from '@blueprintjs/popover2';
 import * as settingsActions from '../../store/actions/settingsActions';
+import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import styles from '../../assets/js/styles/views/side_nav/sideNavStyles';
 
 import {
@@ -37,8 +38,16 @@ function SideNav(props) {
 	};
 
 	React.useEffect(() => {
-		handleSetState({ values: getSettingsInitialValues(props.settings) });
-	}, [props.settings]);
+		handleSetState({ values: getSettingsInitialValues(props) });
+	}, [
+		props.server,
+		props.websocket,
+		props.prefersDarkMode,
+		props.prefersTerminalView,
+		props.fontSize,
+		props.scriptsDir,
+		props.uiIgnore,
+	]);
 
 	const { values } = state;
 
@@ -328,7 +337,13 @@ function SideNav(props) {
 }
 
 const mapStateToProps = state => ({
-	settings: state.settings,
+	server: settingsSelectors.selectServer(state),
+	websocket: settingsSelectors.selectWebSocket(state),
+	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
+	prefersTerminalView: settingsSelectors.selectPrefersTerminalView(state),
+	fontSize: settingsSelectors.selectFontSize(state),
+	scriptsDir: settingsSelectors.selectScriptsDir(state),
+	uiIgnore: settingsSelectors.selectUiIgnore(state),
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -5,12 +5,10 @@ const styles = theme => ({
 	queriesStatsPopoverContentContainerStyle: {
 		backgroundColor: props =>
 			theme.palette.navBar.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		color: props =>
-			theme.palette.navBar.base[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
-			],
+			theme.palette.navBar.base[props.prefersDarkMode ? 'dark' : 'light'],
 		padding: '0.4em',
 		width: '300px',
 		maxHeight: '50vh',
@@ -24,7 +22,7 @@ const styles = theme => ({
 		'&:hover': {
 			backgroundColor: props =>
 				theme.palette.navBar.hover[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 		},
 	},
@@ -43,25 +41,23 @@ const styles = theme => ({
 		'& .bp3-popover2-content': {
 			backgroundColor: props =>
 				theme.palette.navBar.background[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 		},
 		'& .bp3-popover2-arrow-fill': {
 			fill: props =>
 				theme.palette.navBar.background[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 		},
 	},
 	toolTipTextStyle: {
 		backgroundColor: props =>
 			theme.palette.navBar.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		color: props =>
-			theme.palette.navBar.base[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
-			],
+			theme.palette.navBar.base[props.prefersDarkMode ? 'dark' : 'light'],
 	},
 	queriesStatsQueryPreviewStyle: {
 		maxWidth: '100px',

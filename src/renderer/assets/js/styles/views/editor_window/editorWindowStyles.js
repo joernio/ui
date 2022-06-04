@@ -3,7 +3,7 @@ const styles = theme => ({
 		height: '100%',
 		backgroundColor: props =>
 			theme.palette.editor.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 	},
 

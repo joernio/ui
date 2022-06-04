@@ -1,5 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import * as querySelectors from '../store/selectors/querySelectors';
+import * as workSpaceSelectors from '../store/selectors/workSpaceSelectors';
 import { refreshRecent, refreshOpenFiles } from '../assets/js/utils/scripts';
 
 import { processFiles } from './filesProcessorScripts';
@@ -12,16 +14,14 @@ function FilesProcessor(props) {
 
 	React.useEffect(() => {
 		processFiles(props);
-	}, [props.query.results, props.workspace.projects]);
+	}, [props.results, props.projects]);
 
 	return null;
 }
 
 const mapStateToProps = state => ({
-	files: state.files,
-	workspace: state.workspace,
-	editor: state.editor,
-	query: state.query,
+	results: querySelectors.selectResults(state),
+	projects: workSpaceSelectors.selectProjects(state),
 });
 
 export default connect(mapStateToProps, null)(FilesProcessor);

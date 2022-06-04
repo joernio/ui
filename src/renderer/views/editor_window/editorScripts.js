@@ -8,9 +8,9 @@ let delta_decorations = [];
 
 export const handleEditorOnChange = (newValue, props) => {
 	props.setOpenFileContent(newValue);
-	if (props.files.openFiles[props.files.openFilePath] === true) {
-		const openFiles = { ...props.files.openFiles };
-		openFiles[props.files.openFilePath] = false;
+	if (props.openFiles[props.openFilePath] === true) {
+		const openFiles = { ...props.openFiles };
+		openFiles[props.openFilePath] = false;
 		props.setOpenFiles(openFiles);
 	}
 };

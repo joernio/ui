@@ -2,6 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import * as queryActions from '../store/actions/queryActions';
 import * as workSpaceActions from '../store/actions/workSpaceActions';
+import * as querySelectors from '../store/selectors/querySelectors';
+import * as workSpaceSelectors from '../store/selectors/workSpaceSelectors';
 import {
 	processQueryResult,
 	shouldProcessQueryResult,
@@ -9,18 +11,19 @@ import {
 
 function WorkspaceProcessor(props) {
 	React.useEffect(() => {
-		const latest = shouldProcessQueryResult(props.query.results);
+		const latest = shouldProcessQueryResult(props.results);
 		if (latest) {
 			processQueryResult(latest, props);
 		}
-	}, [props.query.results]);
+	}, [props.results]);
 
 	return null;
 }
 
 const mapStateToProps = state => ({
-	query: state.query,
-	workspace: state.workspace,
+	results: querySelectors.selectResults(state),
+	projects: workSpaceSelectors.selectProjects(state),
+	path: workSpaceSelectors.selectPath(state),
 });
 
 const mapDispatchToProps = dispatch => ({

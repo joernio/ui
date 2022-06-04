@@ -2,13 +2,13 @@ import React from 'react';
 import clsx from 'clsx';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core';
+import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import {
 	isCtrlKeyPressed,
 	isCtrlKeyUnpressed,
 	zoomOut,
 	zoomIn,
 } from './imageViewerScripts';
-
 import styles from '../../assets/js/styles/components/image_viewer/imageViewerStyles';
 import commonStyles from '../../assets/js/styles';
 
@@ -104,7 +104,7 @@ function ImageViewer(props) {
 }
 
 const mapStateToProps = state => ({
-	settings: state.settings,
+	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
 
 export default connect(mapStateToProps, null)(ImageViewer);

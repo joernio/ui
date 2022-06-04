@@ -7,12 +7,12 @@ import {
 import { editorShouldGoToLine } from '../views/editor_window/editorScripts';
 
 export const processFiles = async props => {
-	const file_path = isFilePathInQueryResult(props.query.results);
+	const file_path = isFilePathInQueryResult(props.results);
 	file_path && (await openFile(file_path));
 	file_path && editorShouldGoToLine();
 
 	const { synth_file_path, content } = await isQueryResultToOpenSynthFile(
-		props.query.results,
+		props.results,
 	);
 
 	synth_file_path && content && openSyntheticFile(synth_file_path, content);

@@ -6,7 +6,6 @@ import {
 	generateScriptImportQuery,
 	handleSetToast,
 	getUIIgnoreArr,
-	deepClone,
 } from '../../assets/js/utils/scripts';
 import { selectDirApi } from '../../assets/js/utils/ipcRenderer';
 
@@ -92,7 +91,7 @@ export const extractScriptMainFunctionNameAndArgs = data => {
 };
 
 export const getCpgScripts = async props => {
-	const path = props.settings.scriptsDir;
+	const path = props.scriptsDir;
 
 	if (path) {
 		const scripts = {};
@@ -177,7 +176,7 @@ export const collectArgsValues = (dialogEl, dialogFields) => {
 };
 
 export const runScript = async (path, args, mainFunctionName, props) => {
-	const workspace_path = props.workspace.path;
+	const workspace_path = props.path;
 	if (path && workspace_path) {
 		openFile(path);
 
@@ -333,9 +332,7 @@ export const switchDefaultScriptsFolder = async props => {
 	});
 
 	if (path) {
-		const values = deepClone(props.settings);
-		values.scriptsDir = path;
-		props.setSettings(values);
+		props.setScriptsDir(path);
 	}
 };
 

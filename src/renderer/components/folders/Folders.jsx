@@ -6,12 +6,15 @@ import { Menu, MenuItem, Icon, Classes, Tree } from '@blueprintjs/core';
 import { Popover2 } from '@blueprintjs/popover2';
 import * as filesActions from '../../store/actions/filesActions';
 import * as queryActions from '../../store/actions/queryActions';
+import * as filesSelectors from '../../store/selectors/filesSelectors';
+import * as settingsSelectors from '../../store/selectors/settingsSelectors';
+import * as workSpaceSelectors from '../../store/selectors/workSpaceSelectors';
 import {
 	handleScrollTop,
 	openProjectExists,
 	openFile,
 	watchFolderPath,
-	getFolderStructureRootPathFromWorkspace,
+	getFolderStructureRootPathFromWorkspaceProjects,
 	deepClone,
 } from '../../assets/js/utils/scripts';
 import styles from '../../assets/js/styles/components/folders/foldersStyles';
@@ -35,7 +38,7 @@ function Folders(props) {
 	const [state, setState] = React.useState({
 		scrolled: false,
 		foldersVisible: true,
-		prev_workspace: {},
+		prev_projects: {},
 		foldersMenuIsOpen: false,
 	});
 
@@ -65,12 +68,12 @@ function Folders(props) {
 	React.useEffect(() => {
 		if (
 			shouldSwitchFolder(
-				state.prev_workspace,
-				props.workspace ? props.workspace : {},
+				state.prev_projects,
+				props.projects ? props.projects : {},
 			)
 		) {
 			createFolderJsonModel(
-				getFolderStructureRootPathFromWorkspace(props.workspace),
+				getFolderStructureRootPathFromWorkspaceProjects(props.projects),
 				(folders, root_path) => {
 					props.setFolders(folders);
 
@@ -83,14 +86,14 @@ function Folders(props) {
 			);
 		}
 
-		if (!openProjectExists(props.workspace)) {
+		if (!openProjectExists(props.projects)) {
 			props.setFolders([]);
 		}
 
 		handleSetState({
-			prev_workspace: deepClone(props.workspace ? props.workspace : {}),
+			prev_projects: deepClone(props.projects ? props.projects : {}),
 		});
-	}, [props.workspace]);
+	}, [props.projects]);
 
 	const handleToggleFolderExpand = React.useCallback((node, nodePath) => {
 		props.expandOrCollapseFolder(nodePath, !node.isExpanded);
@@ -112,17 +115,15 @@ function Folders(props) {
 
 	const { foldersVisible, scrolled, foldersMenuIsOpen } = state;
 
-	const { folders } = props.files;
+	const { folders } = props;
 
-	const isOpenProject = openProjectExists(props.workspace);
+	const isOpenProject = openProjectExists(props.projects);
 
-	return Object.keys(props.workspace.projects).length > 0 ? (
+	return Object.keys(props.projects).length > 0 ? (
 		<div
 			className={clsx(
 				classes.rootStyle,
-				props.settings.prefersDarkMode
-					? 'folders-dark'
-					: 'folders-light',
+				props.prefersDarkMode ? 'folders-dark' : 'folders-light',
 			)}
 			tabIndex="0"
 			data-test="folders"
@@ -241,10 +242,9 @@ function Folders(props) {
 }
 
 const mapStateToProps = state => ({
-	query: state.query,
-	workspace: state.workspace,
-	files: state.files,
-	settings: state.settings,
+	projects: workSpaceSelectors.selectProjects(state),
+	folders: filesSelectors.selectFolders(state),
+	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
 
 const mapDispatchToProps = dispatch => ({

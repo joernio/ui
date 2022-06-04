@@ -9,6 +9,9 @@ import EditorTabs from '../../components/editor_tabs/EditorTabs';
 import EditorWindowBanner from '../../components/editor_window_banner/EditorWindowBanner';
 import * as filesActions from '../../store/actions/filesActions';
 import * as editorActions from '../../store/actions/editorActions';
+import * as filesSelectors from '../../store/selectors/filesSelectors';
+import * as editorSelectors from '../../store/selectors/editorSelectors';
+import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import {
 	editorDidMount,
 	handleEditorOnChange,
@@ -40,23 +43,27 @@ function EditorWindow(props) {
 				() =>
 					handleEditorGoToLineAndHighlight(
 						refs,
-						props.editor.highlightRange,
+						props.highlightRange,
 					),
 				1000,
 			);
-	}, [props.editor.highlightRange]);
+	}, [props.highlightRange]);
 
-	const { settings, files } = props;
+	const {
+		fontSize,
+		prefersDarkMode,
+		openFileIsReadOnly,
+		openFilePath,
+		openFileContent,
+	} = props;
 
 	const options = {
 		selectOnLineNumbers: true,
 		roundedSelection: false,
-		readOnly: files.openFileIsReadOnly,
+		readOnly: openFileIsReadOnly,
 		cursorStyle: 'line',
 		automaticLayout: true,
-		fontSize: settings?.fontSize
-			? Number(settings.fontSize.split('px')[0])
-			: 16,
+		fontSize: fontSize ? Number(fontSize.split('px')[0]) : 16,
 	};
 
 	return (
@@ -70,20 +77,20 @@ function EditorWindow(props) {
 			data-test="editor-window"
 		>
 			<EditorTabs />
-			{imageFileExtensions.includes(getExtension(files.openFilePath)) ? (
-				<ImageViewer src={files.openFilePath} />
-			) : syntheticFiles.filter(type => files.openFilePath.endsWith(type))
+			{imageFileExtensions.includes(getExtension(openFilePath)) ? (
+				<ImageViewer src={openFilePath} />
+			) : syntheticFiles.filter(type => openFilePath.endsWith(type))
 					.length > 0 ? (
 				<SynthFileViewer
-					path={files.openFilePath}
-					content={files.openFileContent}
+					path={openFilePath}
+					content={openFileContent}
 					drawerWidth={props.drawerWidth}
 				/>
 			) : (
 				<>
 					<EditorWindowBanner
 						message={
-							files.openFileIsReadOnly
+							openFileIsReadOnly
 								? 'Read-only Mode'
 								: 'Scripts Development Mode'
 						}
@@ -92,11 +99,9 @@ function EditorWindow(props) {
 						ref={refs.editorEl}
 						width="100%"
 						height="90%"
-						theme={
-							settings.prefersDarkMode ? 'vs-dark' : 'vs-light'
-						}
+						theme={prefersDarkMode ? 'vs-dark' : 'vs-light'}
 						language="typescript"
-						value={files?.openFileContent}
+						value={openFileContent}
 						options={options}
 						onChange={newValue =>
 							handleEditorOnChange(newValue, props)
@@ -110,11 +115,13 @@ function EditorWindow(props) {
 }
 
 const mapStateToProps = state => ({
-	editor: state.editor,
-	files: state.files,
-	query: state.query,
-	workspace: state.workspace,
-	settings: state.settings,
+	highlightRange: editorSelectors.selectHighlightRange(state),
+	openFiles: filesSelectors.selectOpenFiles(state),
+	openFilePath: filesSelectors.selectOpenFilePath(state),
+	openFileContent: filesSelectors.selectOpenFileContent(state),
+	openFileIsReadOnly: filesSelectors.selectOpenFileIsReadOnly(state),
+	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
+	fontSize: settingsSelectors.selectFontSize(state),
 });
 
 const mapDispatchToProps = dispatch => ({

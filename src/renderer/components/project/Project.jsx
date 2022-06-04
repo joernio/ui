@@ -25,7 +25,7 @@ function Project(props) {
 			content={
 				<Menu className={classes.menuStyle}>
 					<MenuItem
-						tabindex="0"
+						tabIndex="0"
 						className={classes.menuItemStyle}
 						onClick={() =>
 							addToQueue(handleOpenProject(name), props)
@@ -61,25 +61,25 @@ function Project(props) {
 					<div className={classes.projectInfoContainerStyle}>
 						<p>
 							Language -{' '}
-							{props.workspace.projects[name].language
-								? props.workspace.projects[name].language
+							{props.projects[name].language
+								? props.projects[name].language
 								: 'Unknown'}
 						</p>
 						<p>
 							State -{' '}
-							{props.workspace.projects[name].open
+							{props.projects[name].open
 								? 'Activated'
 								: 'Deactivated'}
 						</p>
 						{/* <p>
               Status -{' '}
-              {props.workspace.projects[name].cpg &&
-              props.workspace.projects[name].language &&
-              props.workspace.projects[name].language !== 'Unknown'
+              {props.projects[name].cpg &&
+              props.projects[name].language &&
+              props.projects[name].language !== 'Unknown'
                 ? 'Supported'
-                : props.workspace.projects[name].open &&
-                  props.workspace.projects[name].language &&
-                  props.workspace.projects[name].language === 'Unknown'
+                : props.projects[name].open &&
+                  props.projects[name].language &&
+                  props.projects[name].language === 'Unknown'
                 ? 'Unsupported'
                 : 'Unknown'}
             </p> */}
@@ -97,9 +97,8 @@ function Project(props) {
 					>
 						{name}
 					</h3>
-					{props.workspace.projects[name].open ? (
-						props.workspace.projects[name].language ===
-						'Unsupported' ? (
+					{props.projects[name].open ? (
+						props.projects[name].language === 'Unsupported' ? (
 							<Icon
 								icon="high-priority"
 								className={classes.iconStyle}

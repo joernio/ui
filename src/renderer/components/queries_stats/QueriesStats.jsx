@@ -4,10 +4,11 @@ import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { Icon } from '@blueprintjs/core';
 import { Popover2, Tooltip2 } from '@blueprintjs/popover2';
-import styles from '../../assets/js/styles/components/queries_stats/queriesStatsStyles';
-
+import * as settingsSelectors from '../../store/selectors/settingsSelectors';
+import * as querySelectors from '../../store/selectors/querySelectors';
 import { queueEmpty, nFormatter } from '../../assets/js/utils/scripts';
 import { countQueries, updateQueriesStats } from './queriesStatsScripts';
+import styles from '../../assets/js/styles/components/queries_stats/queriesStatsStyles';
 import commonStyles from '../../assets/js/styles';
 
 const useStyles = makeStyles(styles);
@@ -34,18 +35,18 @@ function QueriesStats(props) {
 	};
 
 	React.useEffect(() => {
-		if (props.query?.results) {
-			handleSetState(countQueries(props.query.results));
+		if (props.results) {
+			handleSetState(countQueries(props.results));
 		}
-	}, [props.query?.results]);
+	}, [props.results]);
 
 	React.useEffect(() => {
-		if (state.queriesStatsPopoverIsOpen && props.query?.results) {
+		if (state.queriesStatsPopoverIsOpen && props.results) {
 			updateQueryIntervalID = setInterval(
 				() =>
 					setState(state => ({
 						...state,
-						...updateQueriesStats(props.query.results),
+						...updateQueriesStats(props.results),
 					})),
 				100,
 			);
@@ -146,7 +147,7 @@ function QueriesStats(props) {
 				data-test="queries-stats"
 			>
 				<div className={classes.refreshIconContainerStyle}>
-					{!queueEmpty(props.query.queue) ? (
+					{!queueEmpty(props.queue) ? (
 						<Icon
 							icon="refresh"
 							className={clsx(
@@ -164,15 +165,16 @@ function QueriesStats(props) {
 				<p className={classes.queriesStatsStyle}>
 					{nFormatter(queriesCount)}
 				</p>
-				{!queueEmpty(props.query.queue) ? <div>running...</div> : null}
+				{!queueEmpty(props.queue) ? <div>running...</div> : null}
 			</div>
 		</Popover2>
 	);
 }
 
 const mapStateToProps = state => ({
-	query: state.query,
-	settings: state.settings,
+	results: querySelectors.selectResults(state),
+	queue: querySelectors.selectQueue(state),
+	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
 
 export default connect(mapStateToProps, null)(QueriesStats);

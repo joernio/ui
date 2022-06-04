@@ -52,7 +52,7 @@ function QueryShortcutTable(props) {
 		behaviours,
 		backgrounds,
 		drawerWidth,
-		settings: { queryShortcuts },
+		queryShortcuts,
 	} = props;
 
 	useEffect(() => {

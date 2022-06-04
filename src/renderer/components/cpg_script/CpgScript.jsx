@@ -5,7 +5,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Icon, MenuDivider, Menu, MenuItem } from '@blueprintjs/core';
 import { ContextMenu2 } from '@blueprintjs/popover2';
 import DiscardDialog from '../discard_dialog/DiscardDialog';
-import styles from '../../assets/js/styles/components/cpg_script/cpgScriptStyles';
+import * as filesSelectors from '../../store/selectors/filesSelectors';
+import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import {
 	deleteFile,
 	discardDialogHandler,
@@ -14,6 +15,7 @@ import {
 	handleOpenScript,
 	shouldOpenScriptsContextMenu,
 } from './cpgScriptScripts';
+import styles from '../../assets/js/styles/components/cpg_script/cpgScriptStyles';
 
 const useStyles = makeStyles(styles);
 
@@ -40,10 +42,9 @@ function CpgScript(props) {
 		hasTag,
 		handleSetState: parentHandleSetState,
 		runScript,
-		files,
+		openFiles,
+		openFilePath,
 	} = props;
-
-	const { openFiles, openFilePath } = files;
 
 	return (
 		<ContextMenu2
@@ -80,7 +81,7 @@ function CpgScript(props) {
 							onClick={() => {
 								deleteFile(path);
 							}}
-							tabindex="0"
+							tabIndex="0"
 							text="Delete"
 						/>
 					</Menu>
@@ -143,9 +144,9 @@ function CpgScript(props) {
 }
 
 const mapStateToProps = state => ({
-	files: state.files,
-	workspace: state.workspace,
-	settings: state.settings,
+	openFiles: filesSelectors.selectOpenFiles(state),
+	openFilePath: filesSelectors.selectOpenFilePath(state),
+	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
 
 export default connect(mapStateToProps, null)(CpgScript);

@@ -5,6 +5,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Icon, Menu, MenuDivider, MenuItem } from '@blueprintjs/core';
 import { ContextMenu2, Popover2 } from '@blueprintjs/popover2';
 import * as queryActions from '../store/actions/queryActions';
+import * as filesSelectors from '../store/selectors/filesSelectors';
+import * as settingsSelectors from '../store/selectors/settingsSelectors';
+import * as statusSelectors from '../store/selectors/statusSelectors';
 import QueriesStats from '../components/queries_stats/QueriesStats';
 import DiscardDialog from '../components/discard_dialog/DiscardDialog';
 import QueryShortcutWithArgsDialog from '../components/query_shortcut_with_args_dialog/QueryShortcutWithArgsDialog';
@@ -47,13 +50,13 @@ function WindowWrapper(props) {
 	};
 
 	React.useEffect(() => {
-		const filename = getOpenFileName(props?.files?.openFilePath);
+		const filename = getOpenFileName(props?.openFilePath);
 		windowActionApi.setOpenFileName(filename);
-	}, [props.files]);
+	}, [props.openFilePath]);
 
 	const { fileContextIsOpen, openDiscardDialog, discardDialogCallback } =
 		state;
-	const { openFiles, openFilePath } = props.files;
+	const { openFiles, openFilePath } = props;
 
 	return (
 		<div data-test="window-wrapper">
@@ -107,8 +110,8 @@ function WindowWrapper(props) {
 									icon="floppy-disk"
 									onClick={() =>
 										saveFile(
-											props.files.openFilePath,
-											props.settings.scriptsDir,
+											props.openFilePath,
+											props.scriptsDir,
 										)
 									}
 								/>
@@ -275,9 +278,7 @@ function WindowWrapper(props) {
 							<div
 								className={classes.conStatContextContentStyle}
 								onClick={() =>
-									wsReconnectToServer(
-										props.settings.websocket.url,
-									)
+									wsReconnectToServer(props.websocket.url)
 								}
 							>
 								Reconnect
@@ -292,7 +293,7 @@ function WindowWrapper(props) {
 					}
 				>
 					<div className={classes.connectionStatusStyle}>
-						{props.status.connected ? (
+						{props.connected ? (
 							<>
 								<h3>Connected</h3>
 								<div className="ring-container">
@@ -300,7 +301,7 @@ function WindowWrapper(props) {
 									<div className="circle"></div>
 								</div>
 							</>
-						) : props.status.connected === false ? (
+						) : props.connected === false ? (
 							<>
 								<h3>Failed</h3>
 								<Icon icon="delete" intent="danger" />
@@ -337,11 +338,11 @@ function WindowWrapper(props) {
 }
 
 const mapStateToProps = state => ({
-	query: state.query,
-	files: state.files,
-	status: state.status,
-	workspace: state.workspace,
-	settings: state.settings,
+	openFiles: filesSelectors.selectOpenFiles(state),
+	openFilePath: filesSelectors.selectOpenFilePath(state),
+	connected: statusSelectors.selectConnected(state),
+	websocket: settingsSelectors.selectWebSocket(state),
+	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
 
 const mapDispatchToProps = dispatch => ({

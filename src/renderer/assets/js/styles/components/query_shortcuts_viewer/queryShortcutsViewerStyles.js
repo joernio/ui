@@ -6,7 +6,7 @@ const styles = theme => ({
 		flexDirection: 'column',
 		backgroundColor: props =>
 			theme.palette.editor.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 	},
 	searchInputStyle: {
@@ -15,18 +15,17 @@ const styles = theme => ({
 		margin: '0.5em auto',
 		border: props =>
 			`1px solid rgba(206, 206, 206, ${
-				props.settings.prefersDarkMode ? '0' : '1'
+				props.prefersDarkMode ? '0' : '1'
 			})`,
 		backgroundColor: props =>
-			`rgba(60, 60, 60, ${props.settings.prefersDarkMode ? '1' : '0'})`,
-		color: props =>
-			props.settings.prefersDarkMode ? '#C3CCCC' : '#616161',
+			`rgba(60, 60, 60, ${props.prefersDarkMode ? '1' : '0'})`,
+		color: props => (props.prefersDarkMode ? '#C3CCCC' : '#616161'),
 		'&:focus': {
 			outline: '0',
 			border: props =>
 				`1px solid ${
 					theme.palette.menu.hover[
-						props.settings.prefersDarkMode ? 'dark' : 'light'
+						props.prefersDarkMode ? 'dark' : 'light'
 					]
 				}`,
 		},
@@ -41,12 +40,12 @@ const styles = theme => ({
 		justifyContent: 'center',
 		backgroundColor: props =>
 			theme.palette.button.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		'&:hover': {
 			backgroundColor: props =>
 				theme.palette.button.hover[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 		},
 		'& span': {
@@ -57,11 +56,11 @@ const styles = theme => ({
 	iconStyle: {
 		color: props =>
 			theme.palette.sideNav.base[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		'&:hover': {
 			color: props =>
-				props.settings.prefersDarkMode
+				props.prefersDarkMode
 					? theme.palette.sideNav.hover.dark
 					: theme.palette.sideNav.background.light,
 		},
@@ -81,14 +80,14 @@ const styles = theme => ({
 				paddingBottom: 0,
 				backgroundColor: props =>
 					theme.palette.menu.background[
-						props.settings.prefersDarkMode ? 'dark' : 'light'
+						props.prefersDarkMode ? 'dark' : 'light'
 					],
 				borderRadius: 0,
 				'& > div:nth-child(1)': {
 					borderRadius: 0,
 					backgroundColor: props =>
 						theme.palette.menu.background[
-							props.settings.prefersDarkMode ? 'dark' : 'light'
+							props.prefersDarkMode ? 'dark' : 'light'
 						],
 					color: theme.palette.sideNav.base.light,
 					margin: '1em',
@@ -96,23 +95,17 @@ const styles = theme => ({
 					minHeight: 0,
 					'& h4': {
 						color: props =>
-							props.settings.prefersDarkMode
-								? '#FFFFFF'
-								: '#000000',
+							props.prefersDarkMode ? '#FFFFFF' : '#000000',
 						outline: props =>
 							`1px solid ${
 								theme.palette.menu.background[
-									props.settings.prefersDarkMode
-										? 'dark'
-										: 'light'
+									props.prefersDarkMode ? 'dark' : 'light'
 								]
 							}`,
 						borderBottom: props =>
 							`1px solid ${
 								theme.palette.menu.base[
-									props.settings.prefersDarkMode
-										? 'dark'
-										: 'light'
+									props.prefersDarkMode ? 'dark' : 'light'
 								]
 							}50`,
 						paddingBottom: '0.8em',
@@ -125,7 +118,7 @@ const styles = theme => ({
 		margin: ' 1em',
 		backgroundColor: props =>
 			theme.palette.menu.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		'& div': {
 			display: 'flex',
@@ -147,29 +140,24 @@ const styles = theme => ({
 				width: '50%',
 				border: props =>
 					`1px solid rgba(206, 206, 206, ${
-						props.settings.prefersDarkMode ? '0' : '1'
+						props.prefersDarkMode ? '0' : '1'
 					})`,
 				backgroundColor: props =>
-					`rgba(60, 60, 60, ${
-						props.settings.prefersDarkMode ? '1' : '0'
-					})`,
-				color: props =>
-					props.settings.prefersDarkMode ? '#C3CCCC' : '#616161',
+					`rgba(60, 60, 60, ${props.prefersDarkMode ? '1' : '0'})`,
+				color: props => (props.prefersDarkMode ? '#C3CCCC' : '#616161'),
 				'&:focus': {
 					outline: '0',
 					border: props =>
 						`1px solid ${
 							theme.palette.menu.hover[
-								props.settings.prefersDarkMode
-									? 'dark'
-									: 'light'
+								props.prefersDarkMode ? 'dark' : 'light'
 							]
 						}`,
 				},
 				'&:disabled': {
 					backgroundColor: props =>
 						`rgba(60, 60, 60, ${
-							props.settings.prefersDarkMode ? '0.5' : '0.05'
+							props.prefersDarkMode ? '0.5' : '0.05'
 						})`,
 				},
 			},
@@ -179,10 +167,10 @@ const styles = theme => ({
 		width: '50%',
 		position: 'relative',
 		backgroundColor: props =>
-			`rgba(60, 60, 60, ${props.settings.prefersDarkMode ? '1' : '0'})`,
+			`rgba(60, 60, 60, ${props.prefersDarkMode ? '1' : '0'})`,
 		border: props =>
 			`1px solid rgba(206, 206, 206, ${
-				props.settings.prefersDarkMode ? '0' : '1'
+				props.prefersDarkMode ? '0' : '1'
 			})`,
 		'& input': {
 			width: '85%!important',
@@ -192,7 +180,7 @@ const styles = theme => ({
 				border: props =>
 					`1px solid ${
 						theme.palette.menu.hover[
-							props.settings.prefersDarkMode ? 'dark' : 'light'
+							props.prefersDarkMode ? 'dark' : 'light'
 						]
 					}`,
 			},
@@ -203,12 +191,12 @@ const styles = theme => ({
 			cursor: 'pointer',
 			color: props =>
 				theme.palette.sideNav.base[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 			'&:hover': {
 				color: props =>
 					theme.palette.editor.base[
-						props.settings.prefersDarkMode ? 'dark' : 'light'
+						props.prefersDarkMode ? 'dark' : 'light'
 					],
 			},
 		},
@@ -218,23 +206,20 @@ const styles = theme => ({
 		width: '50%',
 		border: props =>
 			`1px solid rgba(206, 206, 206, ${
-				props.settings.prefersDarkMode ? '0' : '1'
+				props.prefersDarkMode ? '0' : '1'
 			})`,
 		backgroundColor: props =>
-			`rgba(60, 60, 60, ${props.settings.prefersDarkMode ? '1' : '0'})`,
+			`rgba(60, 60, 60, ${props.prefersDarkMode ? '1' : '0'})`,
 		'& select': {
 			backgroundColor: props =>
-				`rgba(60, 60, 60, ${
-					props.settings.prefersDarkMode ? '1' : '0'
-				})`,
-			color: props =>
-				props.settings.prefersDarkMode ? '#C3CCCC' : '#616161',
+				`rgba(60, 60, 60, ${props.prefersDarkMode ? '1' : '0'})`,
+			color: props => (props.prefersDarkMode ? '#C3CCCC' : '#616161'),
 			'&:focus': {
 				outline: '0',
 				border: props =>
 					`1px solid ${
 						theme.palette.menu.hover[
-							props.settings.prefersDarkMode ? 'dark' : 'light'
+							props.prefersDarkMode ? 'dark' : 'light'
 						]
 					}`,
 			},
@@ -242,12 +227,12 @@ const styles = theme => ({
 		'& span': {
 			color: props =>
 				theme.palette.sideNav.base[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 			'&:hover': {
 				color: props =>
 					theme.palette.sideNav.hover[
-						props.settings.prefersDarkMode ? 'dark' : 'light'
+						props.prefersDarkMode ? 'dark' : 'light'
 					],
 			},
 		},
@@ -267,11 +252,11 @@ const styles = theme => ({
 		'& h3': {
 			color: props =>
 				theme.palette.button.base[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 			backgroundColor: props =>
 				theme.palette.navBar.hover[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 			cursor: 'pointer',
 			margin: '0.3em',
@@ -282,12 +267,12 @@ const styles = theme => ({
 			color: theme.palette.button.base.dark,
 			backgroundColor: props =>
 				theme.palette.button.background[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 			'&:hover': {
 				backgroundColor: props =>
 					theme.palette.button.hover[
-						props.settings.prefersDarkMode ? 'dark' : 'light'
+						props.prefersDarkMode ? 'dark' : 'light'
 					],
 			},
 		},
@@ -296,7 +281,7 @@ const styles = theme => ({
 		borderTop: props =>
 			`1px solid ${
 				theme.palette.menu.base[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				]
 			}50`,
 	},

@@ -6,7 +6,7 @@ const styles = theme => ({
 		alignItems: 'center',
 		backgroundColor: props =>
 			theme.palette.sideNav.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		width: props => props.sideNavWidth,
 		'& ul': {
@@ -29,25 +29,23 @@ const styles = theme => ({
 		'& .bp3-popover2-content': {
 			backgroundColor: props =>
 				theme.palette.navBar.background[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 		},
 		'& .bp3-popover2-arrow-fill': {
 			fill: props =>
 				theme.palette.navBar.background[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 		},
 	},
 	toolTipTextStyle: {
 		backgroundColor: props =>
 			theme.palette.navBar.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		color: props =>
-			theme.palette.navBar.base[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
-			],
+			theme.palette.navBar.base[props.prefersDarkMode ? 'dark' : 'light'],
 	},
 	settingsDialogStyle: {
 		'& > div > div:nth-child(1)': {
@@ -64,14 +62,14 @@ const styles = theme => ({
 				paddingBottom: 0,
 				backgroundColor: props =>
 					theme.palette.menu.background[
-						props.settings.prefersDarkMode ? 'dark' : 'light'
+						props.prefersDarkMode ? 'dark' : 'light'
 					],
 				borderRadius: 0,
 				'& > div:nth-child(1)': {
 					borderRadius: 0,
 					backgroundColor: props =>
 						theme.palette.menu.background[
-							props.settings.prefersDarkMode ? 'dark' : 'light'
+							props.prefersDarkMode ? 'dark' : 'light'
 						],
 					color: theme.palette.sideNav.base.light,
 					margin: '1em',
@@ -79,23 +77,17 @@ const styles = theme => ({
 					minHeight: 0,
 					'& h4': {
 						color: props =>
-							props.settings.prefersDarkMode
-								? '#FFFFFF'
-								: '#000000',
+							props.prefersDarkMode ? '#FFFFFF' : '#000000',
 						outline: props =>
 							`1px solid ${
 								theme.palette.menu.background[
-									props.settings.prefersDarkMode
-										? 'dark'
-										: 'light'
+									props.prefersDarkMode ? 'dark' : 'light'
 								]
 							}`,
 						borderBottom: props =>
 							`1px solid ${
 								theme.palette.menu.base[
-									props.settings.prefersDarkMode
-										? 'dark'
-										: 'light'
+									props.prefersDarkMode ? 'dark' : 'light'
 								]
 							}50`,
 						paddingBottom: '0.8em',
@@ -108,7 +100,7 @@ const styles = theme => ({
 		margin: ' 1em',
 		backgroundColor: props =>
 			theme.palette.menu.background[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		'& div': {
 			display: 'flex',
@@ -130,29 +122,24 @@ const styles = theme => ({
 				width: '50%',
 				border: props =>
 					`1px solid rgba(206, 206, 206, ${
-						props.settings.prefersDarkMode ? '0' : '1'
+						props.prefersDarkMode ? '0' : '1'
 					})`,
 				backgroundColor: props =>
-					`rgba(60, 60, 60, ${
-						props.settings.prefersDarkMode ? '1' : '0'
-					})`,
-				color: props =>
-					props.settings.prefersDarkMode ? '#C3CCCC' : '#616161',
+					`rgba(60, 60, 60, ${props.prefersDarkMode ? '1' : '0'})`,
+				color: props => (props.prefersDarkMode ? '#C3CCCC' : '#616161'),
 				'&:focus': {
 					outline: '0',
 					border: props =>
 						`1px solid ${
 							theme.palette.menu.hover[
-								props.settings.prefersDarkMode
-									? 'dark'
-									: 'light'
+								props.prefersDarkMode ? 'dark' : 'light'
 							]
 						}`,
 				},
 				'&:disabled': {
 					backgroundColor: props =>
 						`rgba(60, 60, 60, ${
-							props.settings.prefersDarkMode ? '0.5' : '0.05'
+							props.prefersDarkMode ? '0.5' : '0.05'
 						})`,
 				},
 			},
@@ -173,11 +160,11 @@ const styles = theme => ({
 		'& h3': {
 			color: props =>
 				theme.palette.button.base[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 			backgroundColor: props =>
 				theme.palette.navBar.hover[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 			cursor: 'pointer',
 			margin: '0.3em',
@@ -188,12 +175,12 @@ const styles = theme => ({
 			color: theme.palette.button.base.dark,
 			backgroundColor: props =>
 				theme.palette.button.background[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 			'&:hover': {
 				backgroundColor: props =>
 					theme.palette.button.hover[
-						props.settings.prefersDarkMode ? 'dark' : 'light'
+						props.prefersDarkMode ? 'dark' : 'light'
 					],
 			},
 		},
@@ -202,19 +189,19 @@ const styles = theme => ({
 		borderTop: props =>
 			`1px solid ${
 				theme.palette.menu.base[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				]
 			}50`,
 	},
 	iconStyle: {
 		color: props =>
 			theme.palette.sideNav.base[
-				props.settings.prefersDarkMode ? 'dark' : 'light'
+				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		'&:hover': {
 			color: props =>
 				theme.palette.sideNav.hover[
-					props.settings.prefersDarkMode ? 'dark' : 'light'
+					props.prefersDarkMode ? 'dark' : 'light'
 				],
 		},
 		margin: '1em 0',

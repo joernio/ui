@@ -25,20 +25,20 @@ export const handleOnChange = (e, values) => {
 	return { values };
 };
 
-export const getSettingsInitialValues = settings => {
+export const getSettingsInitialValues = props => {
 	const initialSettings = {};
 
-	initialSettings.server_url = settings?.server?.url;
-	initialSettings.server_username = settings?.server?.auth_username;
-	initialSettings.server_password = settings?.server?.auth_password;
+	initialSettings.server_url = props.server?.url;
+	initialSettings.server_username = props.server?.auth_username;
+	initialSettings.server_password = props.server?.auth_password;
 
-	initialSettings.ws_url = settings?.websocket?.url;
+	initialSettings.ws_url = props.websocket?.url;
 
-	initialSettings.prefers_dark_mode = settings?.prefersDarkMode;
-	initialSettings.prefers_terminal_view = settings?.prefersTerminalView;
-	initialSettings.font_size = Number(settings?.fontSize.split('px')[0]);
-	initialSettings.scripts_dir = settings?.scriptsDir;
-	initialSettings.ui_ignore = settings?.uiIgnore;
+	initialSettings.prefers_dark_mode = props.prefersDarkMode;
+	initialSettings.prefers_terminal_view = props.prefersTerminalView;
+	initialSettings.font_size = Number(props.fontSize?.split('px')[0]);
+	initialSettings.scripts_dir = props.scriptsDir;
+	initialSettings.ui_ignore = props.uiIgnore;
 
 	return initialSettings;
 };

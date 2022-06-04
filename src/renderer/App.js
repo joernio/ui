@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
+import * as settingsSelectors from './store/selectors/settingsSelectors';
 import createTheme from './assets/js/theme';
 import initIPCRenderer from './assets/js/utils/ipcRenderer';
 import {
@@ -18,26 +19,26 @@ import Toaster from './components/toaster/Toaster';
 
 function App(props) {
 	React.useEffect(() => {
-		if (props.settings.queryShortcuts) {
+		if (props.queryShortcuts) {
 			removeShortcuts();
 			initShortcuts();
 			return () => removeShortcuts();
 		}
-	}, [props.settings.queryShortcuts]);
+	}, [props.queryShortcuts]);
 
 	React.useEffect(() => {
-		if (props.settings?.websocket?.url) {
-			initIPCRenderer(props.settings.websocket.url);
+		if (props.websocket?.url) {
+			initIPCRenderer(props.websocket.url);
 		}
-	}, [props.settings.websocket]);
+	}, [props.websocket?.url]);
 
 	React.useEffect(() => {
-		if (props.settings?.fontSize) {
-			handleFontSizeChange(document, props.settings.fontSize); // eslint-disable-line no-undef
+		if (props.fontSize) {
+			handleFontSizeChange(document, props.fontSize); // eslint-disable-line no-undef
 		}
-	}, [props.settings.fontSize]);
+	}, [props.fontSize]);
 
-	const theme = createTheme(props.settings.prefersDarkMode);
+	const theme = createTheme(props.prefersDarkMode);
 
 	return (
 		<div data-test="app">
@@ -56,8 +57,10 @@ function App(props) {
 }
 
 const mapStateToProps = state => ({
-	settings: state.settings,
-	query: state.query,
+	queryShortcuts: settingsSelectors.selectQueryShortcuts(state),
+	websocket: settingsSelectors.selectWebSocket(state),
+	fontSize: settingsSelectors.selectFontSize(state),
+	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
 
 export default connect(mapStateToProps, null)(App);

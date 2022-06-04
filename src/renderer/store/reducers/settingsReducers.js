@@ -24,6 +24,41 @@ const settings = (state = default_state, action) => {
 				...state,
 				...action.payload,
 			};
+		case 'SET_SERVER':
+			return {
+				...state,
+				server: { ...state.server, ...action.payload },
+			};
+		case 'SET_WEBSOCKET':
+			return {
+				...state,
+				websocket: { ...state.websocket, ...action.payload },
+			};
+		case 'SET_PREFERSDARKMODE':
+			return {
+				...state,
+				prefersDarkMode: action.payload,
+			};
+		case 'SET_PREFERSTERMINALVIEW':
+			return {
+				...state,
+				prefersTerminalView: action.payload,
+			};
+		case 'SET_FONTSIZE':
+			return {
+				...state,
+				fontSize: action.payload,
+			};
+		case 'SET_SCRIPTSDIR':
+			return {
+				...state,
+				scriptsDir: action.payload,
+			};
+		case 'SET_UIIGNORE':
+			return {
+				...state,
+				uiIgnore: action.payload,
+			};
 		case 'SET_QUERY_SHORTCUTS':
 			return {
 				...state,

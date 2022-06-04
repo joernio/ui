@@ -24,32 +24,21 @@ export const handleToggleFoldersVisible = foldersVisible => ({
 	foldersVisible: !foldersVisible,
 });
 
-export const shouldSwitchFolder = (prev_workspace, workspace) => {
+export const shouldSwitchFolder = (prev_projects, projects) => {
 	if (
-		Object.keys(workspace?.projects ? workspace?.projects : {}).length ===
-		Object.keys(prev_workspace?.projects ? prev_workspace?.projects : {})
-			.length
+		Object.keys(projects ? projects : {}).length ===
+		Object.keys(prev_projects ? prev_projects : {}).length
 	) {
 		let notEqual = false;
 
-		Object.keys(workspace?.projects ? workspace?.projects : {}).forEach(
-			name => {
-				if (
-					workspace.projects[name]?.open !==
-					prev_workspace.projects[name]?.open
-				) {
-					notEqual = true;
-				}
-			},
-		);
+		Object.keys(projects ? projects : {}).forEach(name => {
+			if (projects[name]?.open !== prev_projects[name]?.open) {
+				notEqual = true;
+			}
+		});
 
-		Object.keys(
-			prev_workspace?.projects ? prev_workspace?.projects : {},
-		).forEach(name => {
-			if (
-				workspace.projects[name]?.open !==
-				prev_workspace.projects[name]?.open
-			) {
+		Object.keys(prev_projects ? prev_projects : {}).forEach(name => {
+			if (projects[name]?.open !== prev_projects[name]?.open) {
 				notEqual = true;
 			}
 		});
