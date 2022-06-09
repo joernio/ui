@@ -3,6 +3,7 @@ import {
 	parseProject,
 	parseProjects,
 	handleSetToast,
+  deepClone,
 } from '../assets/js/utils/scripts';
 
 export const modifyWorkSpaceNameAndActiveProject = (obj, workspace) => {
@@ -110,6 +111,7 @@ export const processQueryResult = (query_result, props) => {
 			workspace_name_and_active_project,
 			workspace,
 		);
+    workspace = deepClone(workspace);
 		props.setWorkSpace(workspace);
 	} else if (query === 'project' && (result.stdout || result.stderr)) {
 		// if project query
@@ -126,7 +128,7 @@ export const processQueryResult = (query_result, props) => {
 			workspace_name_and_active_project,
 			workspace,
 		);
-
+    workspace = deepClone(workspace);
 		props.setWorkSpace(workspace);
 	} else if (query === 'workspace' && result.stdout) {
 		// if workspace query
@@ -142,7 +144,7 @@ export const processQueryResult = (query_result, props) => {
 			workspace_name_and_active_project,
 			workspace,
 		);
-
+    workspace = deepClone(workspace);
 		props.setWorkSpace(workspace);
 	} else if (parsed_project) {
 		// if any other query with parsed project in result
@@ -154,11 +156,11 @@ export const processQueryResult = (query_result, props) => {
 			workspace_name_and_active_project,
 			workspace,
 		);
-
+    workspace = deepClone(workspace);
 		props.setWorkSpace(workspace);
 	} else if (parsed_workspace) {
 		// if any other query with  parsed workspace in result
-		props.setProjects(parsed_workspace.projects);
+		props.setProjects(deepClone(parsed_workspace.projects));
 	}
 };
 
