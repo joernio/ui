@@ -16,36 +16,49 @@ import styles from '../../assets/js/styles/views/explorer_window/explorerWindowS
 const useStyles = makeStyles(styles);
 
 function ExplorerWindow(props) {
-	const resizeEl = React.useRef(null);
+  const { drawerWidth } = props;
+
 	const classes = useStyles(props);
+  const refs = {
+    resizeEl: React.useRef(null),
+    explorerWindowEl: React.useRef(null)
+  };
+
+  React.useEffect(()=>{
+    if (refs.explorerWindowEl.current){
+      refs.explorerWindowEl.current.style.width = drawerWidth;
+    }
+  },[drawerWidth]);
 
 	React.useEffect(() => {
-		if (resizeEl.current) {
+		if (refs.resizeEl.current) {
 			const callback = initResize(
-				resizeEl.current,
+				refs.resizeEl.current,
 				'col',
-				(drawerWidth, diff) => {
-					props.handleSetState(resizeHandler(drawerWidth, diff));
+				(drawerWidth, diff, commit) => {
+          const obj = resizeHandler(drawerWidth, diff, refs.explorerWindowEl);
+          refs.explorerWindowEl.current.style.width = obj.drawerWidth;
+
+          if(commit || obj.drawerWidth === 0) props.handleSetState(obj);
 				},
 			);
 			return () => {
-				resizeEl.current &&
-					resizeEl.current.removeEventListener('mousedown', callback);
+				refs.resizeEl.current &&
+					refs.resizeEl.current.removeEventListener('mousedown', callback);
 			};
 		}
-	}, [resizeEl.current]);
-
-	const { drawerWidth } = props;
+	}, [refs.resizeEl.current]);
 
 	return (
 		<div
+      ref={refs.explorerWindowEl}
 			className={clsx(classes.root, {
 				[classes.drawerOpen]: drawerWidth,
 				[classes.drawerClose]: !drawerWidth,
 			})}
 			data-test="explorer-window"
 		>
-			<div ref={resizeEl} className={classes.resizeHandleStyle}></div>
+			<div ref={refs.resizeEl} className={classes.resizeHandleStyle}></div>
 			<h1 className={classes.titleStyle}>explorer</h1>
 			{Object.keys(props.results).length < 1 ? (
 				<Icon

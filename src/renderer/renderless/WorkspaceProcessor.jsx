@@ -27,7 +27,6 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-	enQueueQuery: query => dispatch(queryActions.enQueueQuery(query)),
 	setProjects: projects => dispatch(workSpaceActions.setProjects(projects)),
 	setWorkSpace: workspace =>
 		dispatch(workSpaceActions.setWorkSpace(workspace)),

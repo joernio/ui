@@ -2,7 +2,7 @@ import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 
 import { windowActionApi } from '../../assets/js/utils/ipcRenderer';
-import { generateRandomID, deepClone } from '../../assets/js/utils/scripts';
+import { generateRandomID, deepClone, addToQueue } from '../../assets/js/utils/scripts';
 import {
 	terminalVariables as TV,
 	printable,
@@ -14,7 +14,6 @@ import {
 	setQuerySuggestions,
 	setCircuitUIResponses,
 } from '../../store/actions/terminalActions';
-import { enQueueQuery } from '../../store/actions/queryActions';
 import { store } from '../../store/configureStore';
 
 import * as TWS from './terminalWindowScripts';
@@ -157,7 +156,7 @@ export const handleEnter = async (term, refs) => {
 		origin: 'terminal',
 		ignore: false,
 	};
-	store.dispatch(enQueueQuery(query));
+  addToQueue(query);
 	store.dispatch(setTerminalBusy(true));
 	await TWS.termWrite(term, TWS.constructInputToWrite());
 	await TWS.termWriteLn(term, '');
@@ -384,14 +383,15 @@ export const handleWriteQueryResult = async (term, refs, latest) => {
 		: latest.result.stderr
 		? 'stderr'
 		: null;
+
+	TWS.handleWriteToCircuitUIResponse(refs, latest.result[res_type], res_type);
+
 	const lines = res_type ? latest.result[res_type].split('\n') : [];
 
 	for (let i = 0; i < lines.length; i += 1) {
 		// eslint-disable-next-line no-await-in-loop
 		await TWS.termWriteLn(term, TWS.constructOutputToWrite(null, lines[i]));
 	}
-
-	TWS.handleWriteToCircuitUIResponse(refs, lines.join('\n'), res_type);
 
 	await term.prompt();
 	store.dispatch(setTerminalBusy(false));
@@ -404,11 +404,12 @@ export const handleWriteScriptQuery = async (term, refs, latest) => {
 	TWS.updateData(null);
 	TWS.updateCursorPosition(0);
 
+	TWS.handleWriteToCircuitUIResponse(refs, latest.query, 'query');
+
 	await TWS.termWriteLn(
 		term,
 		TWS.constructOutputToWrite(TV.cpgDefaultPrompt, latest.query),
 	);
-	TWS.handleWriteToCircuitUIResponse(refs, latest.query, 'query');
 
 	!busy && (await term.prompt());
 };
@@ -416,6 +417,8 @@ export const handleWriteScriptQuery = async (term, refs, latest) => {
 export const handleWriteQuery = async (term, refs, latest) => {
 	TWS.updateData(null);
 	TWS.updateCursorPosition(0);
+
+	TWS.handleWriteToCircuitUIResponse(refs, latest.query, 'query');
 
 	const lines = latest.query.split('\n');
 
@@ -434,8 +437,6 @@ export const handleWriteQuery = async (term, refs, latest) => {
 			);
 		}
 	}
-
-	TWS.handleWriteToCircuitUIResponse(refs, lines.join('\n'), 'query');
 
 	store.dispatch(setTerminalBusy(true));
 };
@@ -527,6 +528,7 @@ export const handleToggleAllBlocks = (cache, vList) => {
 };
 
 export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
+  // remove stale refs variable file wide
 	let { circuit_ui_responses } = store.getState().terminal;
 	circuit_ui_responses = deepClone(circuit_ui_responses);
 
@@ -584,9 +586,9 @@ export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
 			const listContentSeperator = generateRandomID();
 			const objValueSeperator = generateRandomID();
 
-			const callback = value => {
+			const callback = data => {
 				window.requestIdleCallback(() => {
-					const block_id = TWS.data_obj.currentBlockID;
+					const block_id = data.blockID;
 					const sub_block_id = generateRandomID();
 					const block = circuit_ui_responses.all[block_id];
 
@@ -608,10 +610,10 @@ export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
 
 					block['ui_response']['responses'][sub_block_id] = {
 						dropdown: false,
-						value,
+						value: data.value,
 					};
 
-					store.dispatch(setCircuitUIResponses(circuit_ui_responses));
+					store.dispatch(setCircuitUIResponses({...circuit_ui_responses}));
 				});
 			};
 
@@ -641,12 +643,10 @@ export const handleWriteToCircuitUIResponse = (refs, value, res_type) => {
 
 				store.dispatch(setCircuitUIResponses(circuit_ui_responses));
 			} else {
-				const data = { value, listContentSeperator, objValueSeperator };
-				TWS.workerPool.queue(worker =>
-					worker
-						.parseCircuitUIResponseValue(data)
-						.subscribe(callback),
-				);
+				const data = { value, listContentSeperator, objValueSeperator, blockID: TWS.data_obj.currentBlockID };
+				TWS.workerPool.queue(worker => {
+					return worker.parseCircuitUIResponseValue(data).subscribe(callback);
+        });
 			}
 		}
 	}
@@ -662,36 +662,28 @@ export const handleWriteToCircuitUIInput = refs => {
 	suggestSimilarQueries();
 };
 
-export const handleMaximize = (window, props) => {
-	if (props.isMaximized) {
+export const handleMaximize = (terminalRef, isMaximized) => {
+	if (isMaximized) {
 		return {
-			terminalHeight: `${
-				window.screen.height -
-				(Number(props.topNavHeight.split('px')[0]) +
-					Number(props.statusBarHeight.split('px')[0]) +
-					52)
-			}px`,
+			terminalHeight: `${terminalRef.current.parentElement.getBoundingClientRect().height - 37}px`,
 		};
 	}
 	return { terminalHeight: '468px' };
 };
 
-export const resizeHandler = (terminalHeight, diff, props, window) => {
+export const resizeHandler = (terminalHeight, diff, terminalRef) => {
+  const parentElementDimension = terminalRef.current.parentElement.getBoundingClientRect();
 	if (Number(terminalHeight.split('px')[0]) < 218 && diff < 0) {
-		return { terminalHeight: 0 };
-	}
-	if (Number(terminalHeight.split('px')[0]) < 218 && diff > 0) {
-		return { terminalHeight: '468px' };
-	}
-	if (
-		Number(props.topNavHeight.split('px')[0]) +
-			Number(props.statusBarHeight.split('px')[0]) +
-			Number(terminalHeight.split('px')[0]) +
-			50 <
-		window.screen.height
+		terminalHeight = 0;
+  } else if(Number(terminalHeight.split('px')[0]) < 218 && diff > 0) {
+		terminalHeight = '468px';
+	} else if ( diff > 0 && terminalRef?.current &&
+    Number(terminalHeight.split('px')[0]) + 37 >= parentElementDimension.height
 	) {
-		return { terminalHeight };
-	}
+		terminalHeight  = `${parentElementDimension.height - 37}px`;
+	};
+
+  return { terminalHeight };
 };
 
 export const handleAddQueryToHistory = queue => {
@@ -744,7 +736,7 @@ export const sendQueryResultToXTerm = async (results, refs) => {
 	) {
 		if (latest.origin === 'script') {
 			await handleWriteScriptQuery(term, refs, latest);
-		} else if (latest.origin !== 'terminal') {
+    } else if (latest.origin !== 'terminal') {
 			await handleWriteQuery(term, refs, latest);
 		}
 	}

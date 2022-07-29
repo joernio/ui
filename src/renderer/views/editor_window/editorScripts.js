@@ -1,10 +1,7 @@
-import { Range } from 'monaco-editor';
 import * as editorScripts from './editorScripts';
 import { isFilePathInQueryResult } from '../../assets/js/utils/scripts';
 import { setHighlightRange } from '../../store/actions/editorActions';
 import { store } from '../../store/configureStore';
-
-let delta_decorations = [];
 
 export const handleEditorOnChange = (newValue, props) => {
 	props.setOpenFileContent(newValue);
@@ -13,53 +10,6 @@ export const handleEditorOnChange = (newValue, props) => {
 		openFiles[props.openFilePath] = false;
 		props.setOpenFiles(openFiles);
 	}
-};
-
-export const goToLine = (editor, row = 1, column = 1) => {
-	editor.setPosition({ column, lineNumber: row || 1 });
-	editor.revealLineInCenter(row || 1);
-};
-
-export const highlightRange = (editor, range) => {
-	const rangeArr = [];
-
-	if (range.startLine && !range.endLine) {
-		rangeArr.push(range.startLine, 0, range.startLine, 0);
-	} else if (!range.startLine && range.endLine) {
-		rangeArr.push(range.endLine, 0, range.endLine, 0);
-	} else if (range.startLine && range.endLine) {
-		rangeArr.push(range.startLine, 0, range.endLine, 0);
-	} else {
-		rangeArr.push(0, 0, 0, 0);
-	}
-
-	if (rangeArr.length) {
-		delta_decorations = editor.deltaDecorations(delta_decorations, [
-			{
-				range: new Range(...rangeArr),
-				options:
-					range.startLine || range.endLine
-						? {
-								isWholeLine: true,
-								inlineClassName: 'editor-line-highlight',
-						  }
-						: {},
-			},
-		]);
-	}
-};
-
-export const handleEditorGoToLineAndHighlight = (
-	refs,
-	{ startLine, endLine },
-) => {
-	setTimeout(() => {
-		goToLine(refs.editorEl.current.editor, startLine);
-		highlightRange(refs.editorEl.current.editor, {
-			startLine,
-			endLine,
-		});
-	}, 1000);
 };
 
 export const editorDidMount = (editor, monaco) => {

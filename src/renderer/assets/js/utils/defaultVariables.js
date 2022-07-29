@@ -152,7 +152,8 @@ export const imageFileExtensions = [
 	'.ico',
 	'.cur',
 ];
-export const syntheticFiles = ['AST Graph', 'Query Shortcuts', 'Script Report'];
+export const syntheticFiles = ['AST Graph', 'Query Shortcuts', 'Script Report', 'Binary Viewer'];
+export const joernBinaryLanguage = 'GHIDRA';
 
 // \r      ██╗ ██████╗ ███████╗██████╗ ███╗   ██╗
 // \r      ██║██╔═══██╗██╔════╝██╔══██╗████╗  ██║

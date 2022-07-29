@@ -37,28 +37,6 @@ const styles = theme => ({
 			justifyContent: 'space-between',
 		},
 	},
-	toolTipStyle: {
-		'& .bp3-popover2-content': {
-			backgroundColor: props =>
-				theme.palette.navBar.background[
-					props.prefersDarkMode ? 'dark' : 'light'
-				],
-		},
-		'& .bp3-popover2-arrow-fill': {
-			fill: props =>
-				theme.palette.navBar.background[
-					props.prefersDarkMode ? 'dark' : 'light'
-				],
-		},
-	},
-	toolTipTextStyle: {
-		backgroundColor: props =>
-			theme.palette.navBar.background[
-				props.prefersDarkMode ? 'dark' : 'light'
-			],
-		color: props =>
-			theme.palette.navBar.base[props.prefersDarkMode ? 'dark' : 'light'],
-	},
 	queriesStatsQueryPreviewStyle: {
 		maxWidth: '100px',
 		overflow: 'hidden',

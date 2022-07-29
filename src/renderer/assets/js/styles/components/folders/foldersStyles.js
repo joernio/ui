@@ -68,30 +68,9 @@ const styles = theme => ({
 	foldersSectionStyle: {
 		overflowY: 'scroll',
 	},
-	scrolledStyle: {
-		boxShadow: props =>
-			`inset 0px 2px 8px 1px ${
-				theme.palette.editor.background[
-					props.prefersDarkMode ? 'dark' : 'light'
-				]
-			}`,
-	},
 	verticalMoreStyle: {
 		transform: 'rotate(90deg)',
 		marginRight: '1.3em',
-	},
-	iconStyle: {
-		cursor: 'pointer',
-		color: props =>
-			theme.palette.sideNav.base[
-				props.prefersDarkMode ? 'dark' : 'light'
-			],
-		'&:hover': {
-			color: props =>
-				props.prefersDarkMode
-					? theme.palette.sideNav.hover.dark
-					: theme.palette.sideNav.background.light,
-		},
 	},
 	foldersVisible: {
 		transition: `mask-position 0.3s, -webkit-mask-position 0.3s,${theme.transitions.create(

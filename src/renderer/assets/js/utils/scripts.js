@@ -4,12 +4,14 @@ import fs from 'fs';
 import Mousetrap from 'mousetrap';
 import { Tree } from '@blueprintjs/core';
 import chokidar from 'chokidar';
+import { Range } from 'monaco-editor';
 import {
 	cpgManagementCommands as manCommands,
 	apiErrorStrings,
 	syntheticFiles,
 	imageFileExtensions,
 	filesToIgnore,
+  joernBinaryLanguage
 } from './defaultVariables';
 import {
 	deQueueQuery,
@@ -26,6 +28,12 @@ import { setFiles, setOpenFiles } from '../../../store/actions/filesActions';
 import { setHighlightRange } from '../../../store/actions/editorActions';
 import { windowActionApi, selectDirApi } from './ipcRenderer';
 import { store } from '../../../store/configureStore';
+
+export const vars = {
+  startX_Y: undefined,
+	currentWidth_Height: undefined,
+  monaco_editor_delta_decorations: []
+};
 
 import { mouseTrapGlobalBindig } from './extensions';
 import { handlePrintable } from '../../../views/terminal_window/terminalWindowScripts';
@@ -48,9 +56,9 @@ export const queueEmpty = queue => {
 	return false;
 };
 
-export const addToQueue = (query, props) => {
+export const addToQueue = query => {
 	if (query) {
-		props.enQueueQuery(query);
+    store.dispatch(enQueueQuery(query));
 	}
 };
 
@@ -166,6 +174,20 @@ export const getResultObjWithPostQueryKey = (results, post_query_key) => {
 	});
 
 	return res;
+};
+
+export const getActiveProject = () => {
+  const  {projects} = store.getState().workspace;
+  let activeProject = null;
+  Object.keys(projects).some(projectName => {
+		if (projects[projectName].open) {
+			activeProject = projects[projectName];
+      return true;//break;
+		}else{
+      return false;
+    };
+	});
+  return activeProject;
 };
 
 export const parseProjects = data => {
@@ -302,7 +324,7 @@ export const handleWebSocketResponse = data => {
 				setQueryResult(data, store, key, results);
 				if (result_obj.origin === 'script') {
 					store.dispatch(deQueueScriptsQuery());
-					store.dispatch(enQueueQuery(addWorkSpaceQueryToQueue()));
+					addToQueue(addWorkSpaceQueryToQueue());
 				} else {
 					performPostQuery(store, results, key);
 				}
@@ -314,8 +336,7 @@ export const handleWebSocketResponse = data => {
 	});
 };
 
-export const handleScrollTop = e =>
-	e.target.scrollTop > 0 ? { scrolled: true } : { scrolled: false };
+export const isElementScrolled = e => e.target.scrollTop > 0 ? true : false;
 
 export const discardDialogHandler = (openFiles, openFilePath, callback) => {
 	if (openFiles[openFilePath] === false) {
@@ -365,8 +386,7 @@ export const readFile = path =>
 
 export const openFile = async path => {
 	if (path) {
-		const files = { ...store.getState().files };
-		files.recent = { ...files.recent };
+		const files = deepClone(store.getState().files);
 		files.recent[path] = true;
 
 		if (!Object.keys(files.openFiles).includes(path)) {
@@ -427,10 +447,9 @@ export const openFile = async path => {
 
 export const openSyntheticFile = async (path, content) => {
 	if (path) {
-		const files = { ...store.getState().files };
+		const files = deepClone(store.getState().files);
 
-		if (path.endsWith('AST Graph')) {
-			files.recent = { ...files.recent };
+		if (path.endsWith(syntheticFiles[0])) {
 			files.recent[path] = content;
 		}
 
@@ -719,11 +738,7 @@ export const saveFile = async (path, base_dir) => {
 										Object.fromEntries(new_entries);
 
 									store.dispatch(setFiles(files));
-									store.dispatch(
-										enQueueQuery(
-											addWorkSpaceQueryToQueue(),
-										),
-									);
+									addToQueue(addWorkSpaceQueryToQueue());
 								})
 								.catch(() => {
 									handleSetToast({
@@ -898,9 +913,7 @@ export const deleteFile = async path => {
 	}
 };
 
-export const isFilePathInQueryResult = results => {
-	const latest =
-		results[Object.keys(results)[Object.keys(results).length - 1]];
+export const isFilePathInQueryResult = latest => {
 
 	if (
 		latest?.result.stdout &&
@@ -927,11 +940,27 @@ export const isFilePathInQueryResult = results => {
 	}
 };
 
-export const isQueryResultToOpenSynthFile = results => {
-	const latest =
-		results[Object.keys(results)[Object.keys(results).length - 1]];
+export const isQueryResultToOpenSynthFile = latest => {
+
 	let synth_file_path = false;
 	let content = false;
+  let binaryProject = true;
+
+  let { workspace:{projects}, files} = store.getState();
+
+  files && Object.keys(files.openFiles).map(name => {
+    if(name.endsWith(syntheticFiles[3])){
+      binaryProject = false;
+    }
+  });
+
+  binaryProject && projects && Object.keys(projects).forEach(name => {
+    if (projects[name].open && projects[name].language === joernBinaryLanguage ) {
+      binaryProject = name;
+    };
+  });
+
+  if(typeof binaryProject === "boolean") binaryProject = false;
 
 	if (
 		latest?.result?.stdout &&
@@ -941,7 +970,7 @@ export const isQueryResultToOpenSynthFile = results => {
 	) {
 		try {
 			const methodName = latest.query.split('("')[1].split('")')[0];
-			synth_file_path = `${methodName} - AST Graph`;
+			synth_file_path = `${methodName} - ${syntheticFiles[0]}`;
 			content = latest.result.stdout.split('"""');
 			content = `${content[1]}`;
 			content = content.split('\\"').join("'");
@@ -949,7 +978,11 @@ export const isQueryResultToOpenSynthFile = results => {
 			synth_file_path = false;
 			content = false;
 		}
-	}
+	} else if(binaryProject){
+
+    synth_file_path = `${binaryProject} - ${syntheticFiles[3]}`;
+    content = synth_file_path;
+  }
 
 	return { synth_file_path, content };
 };
@@ -967,7 +1000,7 @@ export const isScriptQueryResultToOpenSynthFile = async result => {
 		try {
 			synth_file_path = `${
 				result.query.split('`').join('').split('.')[0]
-			}.sc - Script Report`;
+			}.sc - ${syntheticFiles[2]}`;
 			content = result.result.stdout.split('=')[1].split('"')[1];
 			content = await readFile(content).catch(() => {
 				synth_file_path = false;
@@ -987,6 +1020,32 @@ export const isScriptQueryResultToOpenSynthFile = async result => {
 	}
 
 	return { synth_file_path, content };
+};
+
+export const isQueryResultToCloseSynthFile = async () => {
+  const paths_to_close = [];
+
+  let { workspace:{projects}, files} = store.getState();
+
+  let openProject = projects && Object.keys(projects).filter(
+    name => {
+      if(projects[name].open){
+        return true;
+      }else{
+        return false;
+      }
+    }
+  );
+
+  openProject = openProject && openProject.length > 0 ? projects[openProject[0]] : null;
+
+  ![null, joernBinaryLanguage].includes(openProject?.language) && files && Object.keys(files.openFiles).map(name => {
+    if(name.endsWith(syntheticFiles[3])){
+      paths_to_close.push(name);
+    }
+  });
+
+  return paths_to_close;
 };
 
 export const getUIIgnoreArr = (src, uiIgnore) => {
@@ -1111,11 +1170,11 @@ export const handleCloseContextMenu = () => ({
 	},
 });
 
-export const debounce = (callback, args, delay) => {
+export const debounce = (callback, delay) => {
 	let timeout;
-	return () => {
+	return args => {
 		clearTimeout(timeout);
-		timeout = setTimeout(() => callback(...args), delay);
+		timeout = setTimeout(() => callback(args), delay);
 	};
 };
 
@@ -1150,18 +1209,22 @@ export const throttle = (callback, limit) => {
 export const initResize = (resizeHandle, type, resizeHandler) => {
 	let startX_Y;
 	let currentWidth_Height;
+  let commit;
 
-	function doResize(e) {
+	const doResize = e => {
 		const diff =
 			type === 'col' ? e.clientX - startX_Y : startX_Y - e.clientY;
-		resizeHandler(`${currentWidth_Height + diff}px`, diff);
+		resizeHandler(`${currentWidth_Height + diff}px`, diff, commit);
 	}
 
-	function resize(e) {
-		debounceLeading(doResize, 100)(e);
+	const resize = e => {
+    commit = false;
+		debounceLeading(doResize, 50)(e);
 	}
 
-	function stopResize(e) {
+	const stopResize = e => {
+    commit = true;
+    doResize(e);
 		e.target.ownerDocument.removeEventListener('mousemove', resize, false);
 		e.target.ownerDocument.removeEventListener(
 			'mouseup',
@@ -1170,7 +1233,8 @@ export const initResize = (resizeHandle, type, resizeHandler) => {
 		);
 	}
 
-	function initDrag(e) {
+	const initDrag = e => {
+    e.preventDefault();
 		startX_Y = type === 'col' ? e.clientX : e.clientY;
 		currentWidth_Height =
 			type === 'col'
@@ -1348,7 +1412,7 @@ export const handleShortcut = shortcutObj => {
 			origin: 'workspace',
 			ignore: shortcutObj.background,
 		};
-		store.dispatch(enQueueQuery(query));
+		addToQueue(query);
 	}
 };
 
@@ -1520,4 +1584,54 @@ export const generateScriptImportQuery = async (
 	} else {
 		return `import $file${modified_path_to_script}`;
 	}
+};
+
+
+export const goToLine = (editor, row = 1, column = 1) => {
+	editor.setPosition({ column, lineNumber: row || 1 });
+	editor.revealLineInCenter(row || 1);
+};
+
+export const highlightRange = (editor, range) => {
+	const rangeArr = [];
+
+	if (range.startLine && !range.endLine) {
+		rangeArr.push(range.startLine, 0, range.startLine, 0);
+	} else if (!range.startLine && range.endLine) {
+		rangeArr.push(range.endLine, 0, range.endLine, 0);
+	} else if (range.startLine && range.endLine) {
+		rangeArr.push(range.startLine, 0, range.endLine, 0);
+	} else {
+		rangeArr.push(0, 0, 0, 0);
+	}
+
+	if (rangeArr.length) {
+		vars.monaco_editor_delta_decorations = editor.deltaDecorations(vars.monaco_editor_delta_decorations, [
+			{
+				range: new Range(...rangeArr),
+				options:
+					range.startLine || range.endLine
+						? {
+								isWholeLine: true,
+								inlineClassName: 'editor-line-highlight',
+						  }
+						: {},
+			},
+		]);
+	}
+};
+
+export const handleEditorGoToLineAndHighlight = (
+	editor,
+	{ startLine, endLine },
+) => {
+  if(editor){
+    setTimeout(() => {
+      goToLine(editor, startLine);
+      highlightRange(editor, {
+        startLine,
+        endLine,
+      });
+    }, 1000);
+  };
 };

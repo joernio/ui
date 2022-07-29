@@ -53,18 +53,6 @@ const styles = theme => ({
 		},
 		cursor: 'pointer',
 	},
-	iconStyle: {
-		color: props =>
-			theme.palette.sideNav.base[
-				props.prefersDarkMode ? 'dark' : 'light'
-			],
-		'&:hover': {
-			color: props =>
-				props.prefersDarkMode
-					? theme.palette.sideNav.hover.dark
-					: theme.palette.sideNav.background.light,
-		},
-	},
 	queryShortcutCreationDialogStyle: {
 		'& > div > div:nth-child(1)': {
 			backgroundColor: 'rgba(0, 0, 0, 0)',

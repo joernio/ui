@@ -3,18 +3,22 @@ import { MenuDivider, Menu, MenuItem, Icon } from '@blueprintjs/core';
 import { ContextMenu2, Tooltip2 } from '@blueprintjs/popover2';
 import { makeStyles } from '@material-ui/core/styles';
 import styles from '../../assets/js/styles/components/project/projectStyles';
+import commonStyles from '../../assets/js/styles';
 
 import {
-	addToQueue,
 	handleOpenProject,
 	handleCloseProject,
 	handleDeleteProject,
 } from './projectScripts';
 
+import {addToQueue} from '../../assets/js/utils/scripts';
+
 const useStyles = makeStyles(styles);
+const useCommonStyles = makeStyles(commonStyles);
 
 function Project(props) {
 	const classes = useStyles(props);
+  const commonClasses = useCommonStyles(props);
 
 	const { name, index } = props;
 
@@ -28,14 +32,14 @@ function Project(props) {
 						tabIndex="0"
 						className={classes.menuItemStyle}
 						onClick={() =>
-							addToQueue(handleOpenProject(name), props)
+							addToQueue(handleOpenProject(name))
 						}
 						text="open"
 					/>
 					<MenuItem
 						className={classes.menuItemStyle}
 						onClick={() =>
-							addToQueue(handleCloseProject(name), props)
+							addToQueue(handleCloseProject(name))
 						}
 						text="close"
 					/>
@@ -43,7 +47,7 @@ function Project(props) {
 					<MenuItem
 						className={classes.menuItemStyle}
 						onClick={() =>
-							addToQueue(handleDeleteProject(name), props)
+							addToQueue(handleDeleteProject(name))
 						}
 						text="delete"
 					/>
@@ -53,7 +57,7 @@ function Project(props) {
 			<Tooltip2
 				className={classes.projectInfoTooltipStyles}
 				placement="right"
-				popoverClassName={classes.toolTipStyle}
+				popoverClassName={commonClasses.toolTipStyle}
 				minimal={true}
 				usePortal={false}
 				openOnTargetFocus={false}
@@ -101,10 +105,10 @@ function Project(props) {
 						props.projects[name].language === 'Unsupported' ? (
 							<Icon
 								icon="high-priority"
-								className={classes.iconStyle}
+								className={commonClasses.iconStyle}
 							/>
 						) : (
-							<Icon icon="dot" className={classes.iconStyle} />
+							<Icon icon="dot" className={commonClasses.iconStyle} />
 						)
 					) : null}
 				</div>

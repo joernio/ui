@@ -16,11 +16,14 @@ import {
 	shouldOpenScriptsContextMenu,
 } from './cpgScriptScripts';
 import styles from '../../assets/js/styles/components/cpg_script/cpgScriptStyles';
+import commonStyles from '../../assets/js/styles';
 
 const useStyles = makeStyles(styles);
+const useCommonStyles = makeStyles(commonStyles);
 
 function CpgScript(props) {
 	const classes = useStyles(props);
+  const commonClasses = useCommonStyles(props);
 	const [state, setState] = React.useState({
 		openDiscardDialog: false,
 		discardDialogCallback: () => {},
@@ -117,7 +120,7 @@ function CpgScript(props) {
 				{filename.endsWith('.sc') ? (
 					<Icon
 						icon="play"
-						className={classes.iconStyle}
+						className={commonClasses.iconStyle}
 						onClick={e =>
 							handleSetState(
 								discardDialogHandler(

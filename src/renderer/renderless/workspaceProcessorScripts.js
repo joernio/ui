@@ -4,6 +4,7 @@ import {
 	parseProjects,
 	handleSetToast,
   deepClone,
+  addToQueue
 } from '../assets/js/utils/scripts';
 
 export const modifyWorkSpaceNameAndActiveProject = (obj, workspace) => {
@@ -95,7 +96,7 @@ export const processQueryResult = (query_result, props) => {
 			origin: 'workspace',
 			ignore: true,
 		};
-		props.enQueueQuery(query);
+		addToQueue(query);
 	} else if (query === manCommands.cpgLanguage && result.stdout) {
 		// if language query
 		const workspace_name_and_active_project =

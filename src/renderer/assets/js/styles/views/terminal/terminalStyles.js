@@ -1,7 +1,7 @@
 const styles = theme => ({
 	terminalStyle: {
 		width: '100%',
-		zIndex: 0,
+		zIndex: 2,
 		backgroundColor: props =>
 			props.prefersDarkMode
 				? props.prefersTerminalView
@@ -335,7 +335,6 @@ const styles = theme => ({
 		zIndex: 5,
 		width: '100%',
 		height: '2em',
-		paddingTop: '0.5em',
 		display: 'flex',
 		justifyContent: 'flex-end',
 		alignItems: 'center',

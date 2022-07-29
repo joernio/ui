@@ -71,7 +71,7 @@ const styles = theme => ({
 		whiteSpace: 'nowrap',
 		fontWeight: 400,
 	},
-	iconStyle: {
+	editorTabIconStyle: {
 		cursor: 'pointer',
 		padding: '0.2em 0.2em',
 		margin: '0 0.3em',

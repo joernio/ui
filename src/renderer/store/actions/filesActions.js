@@ -57,6 +57,13 @@ export const setOpenFileIsReadOnly = payload => dispatch => {
 	});
 };
 
+export const setBinaryViewerCache = payload => dispatch => {
+  dispatch({
+    type: 'SET_BINARY_VIEWER_CACHE',
+    payload
+  });
+};
+
 export const expandOrCollapseFolder = (nodePath, bool) => dispatch => {
 	const updatedFolders = store.getState().files.folders;
 	forNodeAtPath(updatedFolders, nodePath, node => {

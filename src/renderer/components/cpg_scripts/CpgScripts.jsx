@@ -21,7 +21,7 @@ import CpgScript from '../cpg_script/CpgScript';
 import DiscardDialog from '../discard_dialog/DiscardDialog';
 import styles from '../../assets/js/styles/components/cpg_scripts/cpgScriptsStyles';
 import {
-	handleScrollTop,
+	isElementScrolled,
 	watchFolderPath,
 	openProjectExists,
 	discardDialogHandler,
@@ -85,7 +85,7 @@ function CpgScripts(props) {
 	}, [props.scriptsDir]);
 
 	React.useEffect(() => {
-		const callback = e => handleSetState(handleScrollTop(e));
+		const callback = e => handleSetState({scrolled: isElementScrolled(e)});
 
 		if (scriptsContainerEl.current) {
 			scriptsContainerEl.current.addEventListener('scroll', callback);
@@ -127,7 +127,7 @@ function CpgScripts(props) {
 				<div className={classes.titleSectionStyle}>
 					{scriptsVisible ? (
 						<Icon
-							className={classes.iconStyle}
+							className={commonClasses.iconStyle}
 							icon="chevron-down"
 							onClick={() =>
 								handleSetState(
@@ -137,7 +137,7 @@ function CpgScripts(props) {
 						/>
 					) : (
 						<Icon
-							className={classes.iconStyle}
+							className={commonClasses.iconStyle}
 							icon="chevron-right"
 							onClick={() =>
 								handleSetState(
@@ -236,7 +236,7 @@ function CpgScripts(props) {
 						<Icon
 							icon="more"
 							className={clsx(
-								classes.iconStyle,
+								commonClasses.iconStyle,
 								classes.verticalMoreStyle,
 							)}
 						/>
@@ -245,13 +245,10 @@ function CpgScripts(props) {
 				<div
 					ref={scriptsContainerEl}
 					className={clsx(
-						commonClasses.scrollBarStyle,
-						commonClasses.scrollBarDarkStyle,
 						classes.scriptsSectionStyle,
-						{
-							[classes.scrolledStyle]: scrolled,
-						},
-						{
+            commonClasses.scrollBarStyle,
+						commonClasses.scrollBarDarkStyle,
+						{ [commonClasses.insetScrolledStyle]: scrolled,
 							[classes.scriptsVisible]: scriptsVisible,
 							[classes.scriptsHidden]: !scriptsVisible,
 						},

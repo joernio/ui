@@ -233,29 +233,9 @@ const styles = theme => ({
 				]
 			}50`,
 	},
-	iconStyle: {
-		color: props =>
-			theme.palette.sideNav.base[
-				props.prefersDarkMode ? 'dark' : 'light'
-			],
-		'&:hover': {
-			color: props =>
-				props.prefersDarkMode
-					? theme.palette.sideNav.hover.dark
-					: theme.palette.sideNav.background.light,
-		},
-	},
 	verticalMoreStyle: {
 		transform: 'rotate(90deg)',
 		marginRight: '1.3em',
-	},
-	scrolledStyle: {
-		boxShadow: props =>
-			`inset 0px 2px 8px 1px ${
-				theme.palette.editor.background[
-					props.prefersDarkMode ? 'dark' : 'light'
-				]
-			}`,
 	},
 	contextMenuItemStyle: {
 		textTransform: 'capitalize',
