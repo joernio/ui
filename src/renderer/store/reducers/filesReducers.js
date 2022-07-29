@@ -5,6 +5,14 @@ export const default_state = {
 	openFilePath: '',
 	openFileContent: '',
 	openFileIsReadOnly: true,
+  binaryViewerCache: {
+    filePath: '',
+    methods : [],
+    methodsNameIndexMapping: {},
+    selectedMethodIndex: null,
+    methodBinaries: {},
+    textSelectionRange: {startLine: null, endLine: null}
+  }
 };
 
 const files = (state = default_state, action) => {
@@ -19,6 +27,7 @@ const files = (state = default_state, action) => {
 				openFilePath: state.openFilePath,
 				openFileContent: state.openFileContent,
 				openFileIsReadOnly: state.openFileIsReadOnly,
+        binaryViewerCache: state.binaryViewerCache
 			};
 		case 'SET_FOLDERS':
 			return {
@@ -28,6 +37,7 @@ const files = (state = default_state, action) => {
 				openFilePath: state.openFilePath,
 				openFileContent: state.openFileContent,
 				openFileIsReadOnly: state.openFileIsReadOnly,
+        binaryViewerCache: state.binaryViewerCache
 			};
 		case 'SET_OPEN_FILES':
 			return {
@@ -37,6 +47,7 @@ const files = (state = default_state, action) => {
 				openFilePath: state.openFilePath,
 				openFileContent: state.openFileContent,
 				openFileIsReadOnly: state.openFileIsReadOnly,
+        binaryViewerCache: state.binaryViewerCache
 			};
 		case 'SET_OPEN_FILE_PATH':
 			return {
@@ -46,6 +57,7 @@ const files = (state = default_state, action) => {
 				openFilePath: action.payload,
 				openFileContent: state.openFileContent,
 				openFileIsReadOnly: state.openFileIsReadOnly,
+        binaryViewerCache: state.binaryViewerCache
 			};
 		case 'SET_OPEN_FILE_CONTENT':
 			return {
@@ -55,6 +67,7 @@ const files = (state = default_state, action) => {
 				openFilePath: state.openFilePath,
 				openFileContent: action.payload,
 				openFileIsReadOnly: state.openFileIsReadOnly,
+        binaryViewerCache: state.binaryViewerCache
 			};
 		case 'SET_OPEN_FILE_IS_READ_ONLY':
 			return {
@@ -64,7 +77,18 @@ const files = (state = default_state, action) => {
 				openFilePath: state.openFilePath,
 				openFileContent: state.openFileContent,
 				openFileIsReadOnly: action.payload,
+        binaryViewerCache: state.binaryViewerCache
 			};
+    case 'SET_BINARY_VIEWER_CACHE':
+      return {
+        recent: state.recent,
+				folders: state.folders,
+				openFiles: state.openFiles,
+				openFilePath: state.openFilePath,
+				openFileContent: state.openFileContent,
+				openFileIsReadOnly: action.payload,
+        binaryViewerCache: action.payload
+      }
 		default:
 			return state;
 	}

@@ -2,20 +2,6 @@ const styles = theme => ({
 	projectInfoTooltipStyles: {
 		width: '100%',
 	},
-	toolTipStyle: {
-		'& .bp3-popover2-content': {
-			backgroundColor: props =>
-				theme.palette.navBar.background[
-					props.prefersDarkMode ? 'dark' : 'light'
-				],
-		},
-		'& .bp3-popover2-arrow-fill': {
-			fill: props =>
-				theme.palette.navBar.background[
-					props.prefersDarkMode ? 'dark' : 'light'
-				],
-		},
-	},
 	projectInfoContainerStyle: {
 		backgroundColor: props =>
 			theme.palette.navBar.background[
@@ -101,18 +87,6 @@ const styles = theme => ({
 					props.prefersDarkMode ? 'dark' : 'light'
 				]
 			}50`,
-	},
-	iconStyle: {
-		color: props =>
-			theme.palette.sideNav.base[
-				props.prefersDarkMode ? 'dark' : 'light'
-			],
-		'&:hover': {
-			color: props =>
-				props.prefersDarkMode
-					? theme.palette.sideNav.hover.dark
-					: theme.palette.sideNav.background.light,
-		},
 	},
 	dangerStyle: {
 		color: theme.palette.error.main,

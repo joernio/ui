@@ -17,7 +17,7 @@ import {
 	addWorkSpaceQueryToQueue,
 	handleSwitchWorkspace,
 	contructQueryWithPath,
-	handleScrollTop,
+	isElementScrolled,
 } from '../../assets/js/utils/scripts';
 import { handleToggleProjectsVisible } from './workspaceScripts';
 import commonStyles from '../../assets/js/styles';
@@ -50,7 +50,7 @@ function Workspace(props) {
 	};
 
 	React.useEffect(() => {
-		const callback = e => handleSetState(handleScrollTop(e));
+		const callback = e => handleSetState({scrolled: isElementScrolled(e)});
 
 		if (refs.projectsContainerEl.current) {
 			refs.projectsContainerEl.current.addEventListener(
@@ -76,7 +76,7 @@ function Workspace(props) {
 					<div className={classes.titleSectionStyle}>
 						{projectsVisible ? (
 							<Icon
-								className={classes.iconStyle}
+								className={commonClasses.iconStyle}
 								icon="chevron-down"
 								onClick={() =>
 									handleSetState(
@@ -88,7 +88,7 @@ function Workspace(props) {
 							/>
 						) : (
 							<Icon
-								className={classes.iconStyle}
+								className={commonClasses.iconStyle}
 								icon="chevron-right"
 								onClick={() =>
 									handleSetState(
@@ -116,7 +116,7 @@ function Workspace(props) {
 							<Icon
 								icon="refresh"
 								className={clsx(
-									classes.iconStyle,
+									commonClasses.iconStyle,
 									'refresh-icon-animation',
 								)}
 							/>
@@ -129,9 +129,7 @@ function Workspace(props) {
 										className={classes.menuItemStyle}
 										onClick={() =>
 											addToQueue(
-												addWorkSpaceQueryToQueue(),
-												props,
-											)
+												addWorkSpaceQueryToQueue())
 										}
 										text="Refresh"
 									></MenuItem>
@@ -143,9 +141,8 @@ function Workspace(props) {
 												await contructQueryWithPath(
 													'importCode',
 													'select-dir',
-												),
-												props,
-											)
+												)
+                      )
 										}
 										text="Import Directory"
 									></MenuItem>
@@ -155,8 +152,7 @@ function Workspace(props) {
 											addToQueue(
 												await contructQueryWithPath(
 													'importCode',
-												),
-												props,
+												)
 											)
 										}
 										text="Import File"
@@ -167,11 +163,19 @@ function Workspace(props) {
 											addToQueue(
 												await contructQueryWithPath(
 													'importCpg',
-												),
-												props,
+												)
 											)
 										}
 										text="Import Cpg"
+									></MenuItem>
+                  <MenuItem
+										className={classes.menuItemStyle}
+										onClick={async () =>
+											addToQueue(
+                        await contructQueryWithPath('importCode.ghidra')
+                      )
+										}
+										text="Import Binary"
 									></MenuItem>
 									<MenuDivider
 										className={classes.menuDividerStyle}
@@ -180,8 +184,7 @@ function Workspace(props) {
 										className={classes.menuItemStyle}
 										onClick={async () =>
 											addToQueue(
-												await handleSwitchWorkspace(),
-												props,
+												await handleSwitchWorkspace()
 											)
 										}
 										text="Switch Workspace"
@@ -200,7 +203,8 @@ function Workspace(props) {
 							<Icon
 								icon="more"
 								className={clsx(
-									classes.iconStyle,
+                  commonClasses.cursorPointer,
+									commonClasses.iconStyle,
 									classes.verticalMoreStyle,
 								)}
 							/>
@@ -214,9 +218,7 @@ function Workspace(props) {
 							commonClasses.scrollBarDarkStyle,
 							classes.projectsSectionStyle,
 							{
-								[classes.scrolledStyle]: scrolled,
-							},
-							{
+                [commonClasses.insetScrolledStyle]: scrolled,
 								[classes.projectsVisible]: projectsVisible,
 								[classes.projectsHidden]: !projectsVisible,
 							},
@@ -242,8 +244,7 @@ function Workspace(props) {
 								await contructQueryWithPath(
 									'importCode',
 									'select-dir',
-								),
-								props,
+								)
 							)
 						}
 					>
@@ -254,8 +255,7 @@ function Workspace(props) {
 						className={classes.emptyWorkspaceElementStyle}
 						onClick={async () =>
 							addToQueue(
-								await contructQueryWithPath('importCode'),
-								props,
+								await contructQueryWithPath('importCode')
 							)
 						}
 					>
@@ -266,18 +266,28 @@ function Workspace(props) {
 						className={classes.emptyWorkspaceElementStyle}
 						onClick={async () =>
 							addToQueue(
-								await contructQueryWithPath('importCpg'),
-								props,
+								await contructQueryWithPath('importCpg')
 							)
 						}
 					>
 						Import Cpg
 					</div>
 
+          <div
+						className={classes.emptyWorkspaceElementStyle}
+						onClick={async () =>
+							addToQueue(
+								await contructQueryWithPath('importCode.ghidra')
+							)
+						}
+					>
+						Import Binary
+					</div>
+
 					<div
 						className={classes.emptyWorkspaceElementStyle}
 						onClick={async () =>
-							addToQueue(await handleSwitchWorkspace(), props)
+							addToQueue(await handleSwitchWorkspace())
 						}
 					>
 						Switch Workspace
@@ -295,8 +305,4 @@ const mapStateToProps = state => ({
 	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
 
-const mapDispatchToProps = dispatch => ({
-	enQueueQuery: query => dispatch(queryActions.enQueueQuery(query)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Workspace);
+export default connect(mapStateToProps, null)(Workspace);

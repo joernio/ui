@@ -7,6 +7,7 @@ import { Tooltip2 } from '@blueprintjs/popover2';
 import * as settingsActions from '../../store/actions/settingsActions';
 import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import styles from '../../assets/js/styles/views/side_nav/sideNavStyles';
+import commonStyles from '../../assets/js/styles';
 
 import {
 	toggleSettingsDialog,
@@ -19,9 +20,11 @@ import {
 } from './sideNavScripts';
 
 const useStyles = makeStyles(styles);
+const useCommonStyles = makeStyles(commonStyles);
 
 function SideNav(props) {
 	const classes = useStyles(props);
+  const commonClasses = useCommonStyles(props);
 
 	const [state, setState] = React.useState({
 		anchorEl: null,
@@ -61,9 +64,9 @@ function SideNav(props) {
 					)}
 				>
 					<Tooltip2
-						popoverClassName={classes.toolTipStyle}
+						popoverClassName={commonClasses.toolTipStyle}
 						content={
-							<span className={classes.toolTipTextStyle}>
+							<span className={commonClasses.toolTipTextStyle}>
 								explorer
 							</span>
 						}
@@ -82,9 +85,9 @@ function SideNav(props) {
 					</Tooltip2>
 
 					<Tooltip2
-						popoverClassName={classes.toolTipStyle}
+						popoverClassName={commonClasses.toolTipStyle}
 						content={
-							<span className={classes.toolTipTextStyle}>
+							<span className={commonClasses.toolTipTextStyle}>
 								query shortcuts
 							</span>
 						}
@@ -105,9 +108,9 @@ function SideNav(props) {
 				</div>
 
 				<Tooltip2
-					popoverClassName={classes.toolTipStyle}
+					popoverClassName={commonClasses.toolTipStyle}
 					content={
-						<span className={classes.toolTipTextStyle}>
+						<span className={commonClasses.toolTipTextStyle}>
 							terminal
 						</span>
 					}
@@ -126,9 +129,9 @@ function SideNav(props) {
 				</Tooltip2>
 
 				<Tooltip2
-					popoverClassName={classes.toolTipStyle}
+					popoverClassName={commonClasses.toolTipStyle}
 					content={
-						<span className={classes.toolTipTextStyle}>
+						<span className={commonClasses.toolTipTextStyle}>
 							settings
 						</span>
 					}

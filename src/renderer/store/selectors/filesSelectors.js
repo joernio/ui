@@ -26,3 +26,8 @@ export const selectOpenFileIsReadOnly = createSelector(
 	[selectFiles],
 	files => files.openFileIsReadOnly,
 );
+
+export const selectBinaryViewerCache = createSelector(
+  [selectFiles],
+  files => files.binaryViewerCache
+)

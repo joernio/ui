@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Dialog, Icon, HTMLSelect, Switch, Divider } from '@blueprintjs/core';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, useEventCallback } from '@material-ui/core';
 import * as settingsActions from '../../store/actions/settingsActions';
 import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import {
@@ -13,12 +13,15 @@ import {
 	clearKeybindingInput,
 } from './queryShortcutsViewerScripts';
 import styles from '../../assets/js/styles/components/query_shortcuts_viewer/queryShortcutsViewerStyles';
+import commonStyles from '../../assets/js/styles';
 import QueryShortcutTable from '../query_shortcut_table/QueryShortcutTable';
 
 const useStyles = makeStyles(styles);
+const useCommonStyles = makeStyles(commonStyles);
 
 function QueryShortcutsViewer(props) {
 	const classes = useStyles(props);
+  const commonClasses = useCommonStyles(props);
 	const refs = {
 		searchQueryShortcutsEl: React.useRef(null),
 		shortcutDialogEl: React.useRef(null),
@@ -47,29 +50,30 @@ function QueryShortcutsViewer(props) {
 		const callback = () =>
 			handleSetState(
 				buildPropertyColumns(
-					refs.searchQueryShortcutsEl.current?.value
-						? refs.searchQueryShortcutsEl.current.value
-						: '',
+					refs.searchQueryShortcutsEl.current?.value || '',
 					props.queryShortcuts,
 				),
 			);
 		callback();
-		if (refs.searchQueryShortcutsEl.current) {
-			refs.searchQueryShortcutsEl.current.removeEventListener(
-				'keypress',
-				callback,
-			);
-			refs.searchQueryShortcutsEl.current.addEventListener(
-				'keypress',
-				callback,
-			);
-			return () =>
-				refs.searchQueryShortcutsEl.current &&
-				refs.searchQueryShortcutsEl.current.removeEventListener(
-					'keypress',
-					callback,
-				);
-		}
+
+    refs.searchQueryShortcutsEl.current?.addEventListener('change', callback);
+    return () => refs.searchQueryShortcutsEl.current?.removeEventListener('change', callback);
+		// if (refs.searchQueryShortcutsEl.current) {
+		// 	refs.searchQueryShortcutsEl.current.removeEventListener(
+		// 		'keypress',
+		// 		callback,
+		// 	);
+		// 	refs.searchQueryShortcutsEl.current.addEventListener(
+		// 		'keypress',
+		// 		callback,
+		// 	);
+		// 	return () =>
+		// 		refs.searchQueryShortcutsEl.current &&
+		// 		refs.searchQueryShortcutsEl.current.removeEventListener(
+		// 			'keypress',
+		// 			callback,
+		// 		);
+		// }
 	}, [props.queryShortcuts, refs.searchQueryShortcutsEl.current]);
 
 	const {
@@ -96,7 +100,7 @@ function QueryShortcutsViewer(props) {
 				className={classes.addShortcutStyle}
 				onClick={() => handleSetState(openDialog(null, queryShortcuts))}
 			>
-				<Icon icon="plus" className={classes.iconStyle} />
+				<Icon icon="plus" className={commonClasses.iconStyle} />
 			</div>
 
 			<QueryShortcutTable

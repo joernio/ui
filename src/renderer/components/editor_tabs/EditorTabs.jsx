@@ -90,12 +90,12 @@ function EditorTabs(props) {
 								.length > 0 ? (
 								<Icon
 									icon="align-left"
-									className={classes.iconStyle}
+									className={classes.editorTabIconStyle}
 								/>
 							) : (
 								<Icon
 									icon="document"
-									className={classes.iconStyle}
+									className={classes.editorTabIconStyle}
 								/>
 							)}
 
@@ -106,14 +106,14 @@ function EditorTabs(props) {
 								icon="dot"
 								className={clsx(
 									'unsaved-icon',
-									classes.iconStyle,
+									classes.editorTabIconStyle,
 								)}
 							/>
 						) : null}
 						<Icon
 							icon="small-cross"
 							className={clsx(
-								classes.iconStyle,
+								classes.editorTabIconStyle,
 								classes.closeIconStyle,
 								{
 									'unsaved-close-icon-style':

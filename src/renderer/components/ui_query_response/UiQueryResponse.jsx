@@ -16,7 +16,8 @@ function UiQueryResponse(props) {
 		rowsRendered,
 	} = props;
 	const { circuit_ui_responses } = props;
-	const { value, dropdown: sub_block_dropdown } =
+	if(!circuit_ui_responses.all[block_id].ui_response.responses[sub_block_id]) return null;
+  const { value, dropdown: sub_block_dropdown } =
 		circuit_ui_responses.all[block_id].ui_response.responses[sub_block_id];
 
 	return (

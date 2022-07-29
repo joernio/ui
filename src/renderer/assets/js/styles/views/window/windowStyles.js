@@ -8,7 +8,7 @@ const styles = () => ({
 	sideNavAndExplorerSectionStyle: {
 		display: 'flex',
 		position: 'relative',
-		zIndex: 1,
+		zIndex: 3,
 	},
 	editorAndTerminalSectionStyle: {
 		flexGrow: 1,

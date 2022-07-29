@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core';
 import clsx from 'clsx';
 import { Tag, Icon } from '@blueprintjs/core';
 import styles from '../../assets/js/styles/components/query_shortcut_table/QueryShortcutTableStyles';
+import commonStyles from '../../assets/js/styles';
 import {
 	handleMouseDown,
 	handleMouseOver,
@@ -18,6 +19,7 @@ import {
 } from '../query_shortcuts_viewer/queryShortcutsViewerScripts';
 
 const useStyles = makeStyles(styles);
+const useCommonStyles = makeStyles(commonStyles);
 
 function QueryShortcutTable(props) {
 	const [state, setState] = useState({
@@ -74,6 +76,7 @@ function QueryShortcutTable(props) {
 	}, [containerWidth]);
 
 	const classes = useStyles(props);
+  const commonClasses = useCommonStyles(props);
 
 	return (
 		<>
@@ -132,7 +135,7 @@ function QueryShortcutTable(props) {
 												<Icon
 													icon="trash"
 													className={
-														classes.iconStyle
+														commonClasses.iconStyle
 													}
 													onClick={() =>
 														props.setQueryShortcuts(
@@ -148,7 +151,7 @@ function QueryShortcutTable(props) {
 												<Icon
 													icon="edit"
 													className={clsx(
-														classes.iconStyle,
+														commonClasses.iconStyle,
 														classes.editQueryShortCutIconStyle,
 													)}
 													onClick={() =>

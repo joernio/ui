@@ -15,14 +15,13 @@ import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import {
 	editorDidMount,
 	handleEditorOnChange,
-	handleEditorGoToLineAndHighlight,
 } from './editorScripts';
 import styles from '../../assets/js/styles/views/editor_window/editorWindowStyles';
 import {
 	imageFileExtensions,
 	syntheticFiles,
 } from '../../assets/js/utils/defaultVariables';
-import { getExtension } from '../../assets/js/utils/scripts';
+import { getExtension, handleEditorGoToLineAndHighlight } from '../../assets/js/utils/scripts';
 
 const useStyles = makeStyles(styles);
 
@@ -38,11 +37,11 @@ function EditorWindow(props) {
 	}, []);
 
 	React.useEffect(() => {
-		refs.editorEl.current &&
+		refs.editorEl.current?.editor &&
 			setTimeout(
 				() =>
 					handleEditorGoToLineAndHighlight(
-						refs,
+						refs.editorEl.current.editor,
 						props.highlightRange,
 					),
 				1000,
@@ -85,6 +84,10 @@ function EditorWindow(props) {
 					path={openFilePath}
 					content={openFileContent}
 					drawerWidth={props.drawerWidth}
+          terminalHeight={props.terminalHeight}
+          statusBarHeight={props.statusBarHeight}
+          fontSize={props.fontSize}
+          windowViewHandleSetState={props.windowViewHandleSetState}
 				/>
 			) : (
 				<>

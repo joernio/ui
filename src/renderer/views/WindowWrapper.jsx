@@ -125,8 +125,7 @@ function WindowWrapper(props) {
 											await contructQueryWithPath(
 												'importCode',
 												'select-dir',
-											),
-											props,
+											)
 										)
 									}
 									icon="import"
@@ -138,8 +137,7 @@ function WindowWrapper(props) {
 										addToQueue(
 											await contructQueryWithPath(
 												'importCode',
-											),
-											props,
+											)
 										)
 									}
 									icon="import"
@@ -151,8 +149,7 @@ function WindowWrapper(props) {
 										addToQueue(
 											await contructQueryWithPath(
 												'importCpg',
-											),
-											props,
+											)
 										)
 									}
 									icon="import"
@@ -165,8 +162,7 @@ function WindowWrapper(props) {
 									className={classes.menuItemStyle}
 									onClick={async () =>
 										addToQueue(
-											await handleSwitchWorkspace(),
-											props,
+											await handleSwitchWorkspace()
 										)
 									}
 									icon="swap-horizontal"
@@ -345,8 +341,4 @@ const mapStateToProps = state => ({
 	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
 
-const mapDispatchToProps = dispatch => ({
-	enQueueQuery: query => dispatch(queryActions.enQueueQuery(query)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(WindowWrapper);
+export default connect(mapStateToProps, null)(WindowWrapper);

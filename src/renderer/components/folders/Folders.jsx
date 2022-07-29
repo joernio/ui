@@ -10,7 +10,7 @@ import * as filesSelectors from '../../store/selectors/filesSelectors';
 import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import * as workSpaceSelectors from '../../store/selectors/workSpaceSelectors';
 import {
-	handleScrollTop,
+	isElementScrolled,
 	openProjectExists,
 	openFile,
 	watchFolderPath,
@@ -51,7 +51,7 @@ function Folders(props) {
 	};
 
 	React.useEffect(() => {
-		const callback = e => handleSetState(handleScrollTop(e));
+		const callback = e => handleSetState({scrolled: isElementScrolled(e)});
 
 		if (foldersContainerEl.current) {
 			foldersContainerEl.current.addEventListener('scroll', callback);
@@ -131,7 +131,7 @@ function Folders(props) {
 			<div className={classes.titleSectionStyle}>
 				{foldersVisible ? (
 					<Icon
-						className={classes.iconStyle}
+						className={clsx(commonClasses.cursorPointer, commonClasses.iconStyle)}
 						icon="chevron-down"
 						onClick={() =>
 							handleSetState(
@@ -141,7 +141,7 @@ function Folders(props) {
 					/>
 				) : (
 					<Icon
-						className={classes.iconStyle}
+						className={clsx(commonClasses.cursorPointer, commonClasses.iconStyle)}
 						icon="chevron-right"
 						onClick={() =>
 							handleSetState(
@@ -204,7 +204,8 @@ function Folders(props) {
 					<Icon
 						icon="more"
 						className={clsx(
-							classes.iconStyle,
+              commonClasses.cursorPointer,
+							commonClasses.iconStyle,
 							classes.verticalMoreStyle,
 						)}
 					/>
@@ -218,9 +219,7 @@ function Folders(props) {
 					commonClasses.scrollBarStyle,
 					commonClasses.scrollBarDarkStyle,
 					{
-						[classes.scrolledStyle]: scrolled,
-					},
-					{
+            [commonClasses.insetScrolledStyle]: scrolled,
 						[classes.foldersVisible]:
 							isOpenProject && foldersVisible,
 						[classes.foldersHidden]: !foldersVisible,
@@ -248,7 +247,6 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-	enQueueQuery: query => dispatch(queryActions.enQueueQuery(query)),
 	expandOrCollapseFolder: (nodePath, bool) =>
 		dispatch(filesActions.expandOrCollapseFolder(nodePath, bool)),
 	setFolders: folders => dispatch(filesActions.setFolders(folders)),

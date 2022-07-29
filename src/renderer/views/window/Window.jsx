@@ -73,6 +73,9 @@ const Window = () => {
 				<EditorWindow
 					drawerWidth={drawerWidth}
 					sideNavWidth={sideNavWidth}
+          terminalHeight={terminalHeight}
+          statusBarHeight={statusBarHeight}
+          windowViewHandleSetState={handleSetState}
 				/>
 				<TerminalWindow
 					terminalHeight={terminalHeight}

@@ -78,18 +78,6 @@ const styles = theme => ({
 		marginTop: '0.2em',
 		marginBottom: '0.2em',
 	},
-	iconStyle: {
-		color: props =>
-			theme.palette.sideNav.base[
-				props.prefersDarkMode ? 'dark' : 'light'
-			],
-		'&:hover': {
-			color: props =>
-				props.prefersDarkMode
-					? theme.palette.sideNav.hover.dark
-					: theme.palette.sideNav.background.light,
-		},
-	},
 	contextMenuItemStyle: {
 		textTransform: 'capitalize',
 		backgroundColor: 'rgba(0,0,0,0)',

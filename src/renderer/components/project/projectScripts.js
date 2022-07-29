@@ -1,9 +1,3 @@
-export const addToQueue = (query, props) => {
-	if (query) {
-		props.enQueueQuery(query);
-	}
-};
-
 export const handleOpenProject = name => {
 	if (name) {
 		const query = {

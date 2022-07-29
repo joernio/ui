@@ -2,6 +2,7 @@ const styles = theme => ({
 	titleBarStyle: {
 		width: '100vw',
 		height: '35px',
+    zIndex: 10,
 		backgroundColor: props =>
 			theme.palette.navBar.background[
 				props.prefersDarkMode ? 'dark' : 'light'
@@ -11,12 +12,14 @@ const styles = theme => ({
 	},
 	titleBarRightStyle: {
 		flexGrow: 1,
-		display: 'flex',
+		display: 'flex'
 	},
 	statusBarStyle: {
 		height: '28px',
 		width: '100%',
 		display: 'flex',
+    position: "absolute",
+    zIndex: 10,
 		backgroundColor: props =>
 			theme.palette.navBar.background[
 				props.prefersDarkMode ? 'dark' : 'light'

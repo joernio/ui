@@ -9,7 +9,7 @@ import * as workSpaceSelectors from '../../store/selectors/workSpaceSelectors';
 import {
 	openFile,
 	closeFile,
-	handleScrollTop,
+	isElementScrolled,
 	discardDialogHandler,
 	openSyntheticFile,
 } from '../../assets/js/utils/scripts';
@@ -54,7 +54,7 @@ function OpenFiles(props) {
 	}, [props.openFiles]);
 
 	React.useEffect(() => {
-		const callback = e => handleSetState(handleScrollTop(e));
+		const callback = e => handleSetState({scrolled: isElementScrolled(e)});
 
 		if (filesContainerEl.current) {
 			filesContainerEl.current.addEventListener('scroll', callback);
@@ -87,9 +87,9 @@ function OpenFiles(props) {
 				}
 			>
 				{filesVisible ? (
-					<Icon className={classes.iconStyle} icon="chevron-down" />
+					<Icon className={commonClasses.iconStyle} icon="chevron-down" />
 				) : (
-					<Icon className={classes.iconStyle} icon="chevron-right" />
+					<Icon className={commonClasses.iconStyle} icon="chevron-right" />
 				)}
 				<h2 className={classes.titleStyle}>Open Editor</h2>
 			</div>
@@ -101,7 +101,7 @@ function OpenFiles(props) {
 					commonClasses.scrollBarDarkStyle,
 
 					{
-						[classes.scrolledStyle]: scrolled,
+						[classes.insetScrolledStyle]: scrolled,
 					},
 					{
 						[classes.filesVisible]: filesVisible,
@@ -154,14 +154,14 @@ function OpenFiles(props) {
 											icon="dot"
 											className={clsx(
 												'unsaved-icon',
-												classes.iconStyle,
+												commonClasses.iconStyle,
 											)}
 										/>
 									) : null}
 
 									<Icon
 										icon="small-cross"
-										className={clsx(classes.iconStyle, {
+										className={clsx(commonClasses.iconStyle, {
 											'unsaved-cross-icon':
 												files[path] === false,
 										})}

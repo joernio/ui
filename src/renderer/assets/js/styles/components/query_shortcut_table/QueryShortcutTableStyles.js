@@ -23,18 +23,6 @@ const styles = theme => ({
 		gap: '1em',
 		padding: '0.2em 0',
 	},
-	iconStyle: {
-		color: props =>
-			theme.palette.sideNav.base[
-				props.prefersDarkMode ? 'dark' : 'light'
-			],
-		'&:hover': {
-			color: props =>
-				props.prefersDarkMode
-					? theme.palette.sideNav.hover.dark
-					: theme.palette.sideNav.background.light,
-		},
-	},
 	editQueryShortCutIconStyle: {
 		margin: '0 1em 0 0.5em',
 	},

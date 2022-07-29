@@ -68,7 +68,7 @@ function QueryProcessor(props) {
 	}, [props.scriptsQueue]);
 
 	React.useEffect(() => {
-		props.connected && addToQueue(addWorkSpaceQueryToQueue(), props);
+		props.connected && addToQueue(addWorkSpaceQueryToQueue());
 	}, [props.connected, props.server, props.websocket]);
 
 	React.useEffect(() => {
