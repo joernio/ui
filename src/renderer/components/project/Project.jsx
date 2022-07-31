@@ -11,14 +11,14 @@ import {
 	handleDeleteProject,
 } from './projectScripts';
 
-import {addToQueue} from '../../assets/js/utils/scripts';
+import { addToQueue } from '../../assets/js/utils/scripts';
 
 const useStyles = makeStyles(styles);
 const useCommonStyles = makeStyles(commonStyles);
 
 function Project(props) {
 	const classes = useStyles(props);
-  const commonClasses = useCommonStyles(props);
+	const commonClasses = useCommonStyles(props);
 
 	const { name, index } = props;
 
@@ -31,24 +31,18 @@ function Project(props) {
 					<MenuItem
 						tabIndex="0"
 						className={classes.menuItemStyle}
-						onClick={() =>
-							addToQueue(handleOpenProject(name))
-						}
+						onClick={() => addToQueue(handleOpenProject(name))}
 						text="open"
 					/>
 					<MenuItem
 						className={classes.menuItemStyle}
-						onClick={() =>
-							addToQueue(handleCloseProject(name))
-						}
+						onClick={() => addToQueue(handleCloseProject(name))}
 						text="close"
 					/>
 					<MenuDivider className={classes.menuDividerStyle} />
 					<MenuItem
 						className={classes.menuItemStyle}
-						onClick={() =>
-							addToQueue(handleDeleteProject(name))
-						}
+						onClick={() => addToQueue(handleDeleteProject(name))}
 						text="delete"
 					/>
 				</Menu>
@@ -108,7 +102,10 @@ function Project(props) {
 								className={commonClasses.iconStyle}
 							/>
 						) : (
-							<Icon icon="dot" className={commonClasses.iconStyle} />
+							<Icon
+								icon="dot"
+								className={commonClasses.iconStyle}
+							/>
 						)
 					) : null}
 				</div>

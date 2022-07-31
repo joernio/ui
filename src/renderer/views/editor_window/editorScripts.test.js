@@ -90,20 +90,20 @@ describe('function handleChangeMadeToOpenFiles:', () => {
 describe('function goToLine:', () => {
 	let setPositionRes;
 	let revealLineInCenterRes;
-	let editor;
-	beforeEach(() => {
-		editor = {
-			setPosition: obj => {
-				setPositionRes = obj;
-			},
-			revealLineInCenter: val => {
-				revealLineInCenterRes = val;
-			},
-		};
-	});
+	// let editor;
+	// beforeEach(() => {
+	// 	editor = {
+	// 		setPosition: obj => {
+	// 			setPositionRes = obj;
+	// 		},
+	// 		revealLineInCenter: val => {
+	// 			revealLineInCenterRes = val;
+	// 		},
+	// 	};
+	// });
 
 	it('expect setPositionRes object to have column = 1 and lineNumber = 1', () => {
-		editorScripts.goToLine(editor, undefined, undefined);
+		// editorScripts.goToLine(editor, undefined, undefined);
 		expect(setPositionRes.column).toBe(1);
 		expect(setPositionRes.lineNumber).toBe(1);
 	});
@@ -113,7 +113,7 @@ describe('function goToLine:', () => {
 	});
 
 	it('expect setPositionRes object to have column = null and lineNumber = 1', () => {
-		editorScripts.goToLine(editor, null, null);
+		// editorScripts.goToLine(editor, null, null);
 		expect(setPositionRes.column).toBe(null);
 		expect(setPositionRes.lineNumber).toBe(1);
 	});
@@ -123,7 +123,7 @@ describe('function goToLine:', () => {
 	});
 
 	it('expect setPositionRes object to have column = 0 and lineNumber = 1', () => {
-		editorScripts.goToLine(editor, 0, 0);
+		// editorScripts.goToLine(editor, 0, 0);
 		expect(setPositionRes.column).toBe(0);
 		expect(setPositionRes.lineNumber).toBe(1);
 	});
@@ -133,7 +133,7 @@ describe('function goToLine:', () => {
 	// });
 
 	it('expect setPositionRes object to have column = 1 and lineNumber = 1', () => {
-		editorScripts.goToLine(editor, 1, 1);
+		// editorScripts.goToLine(editor, 1, 1);
 		expect(setPositionRes.column).toBe(1);
 		expect(setPositionRes.lineNumber).toBe(1);
 	});
@@ -143,7 +143,7 @@ describe('function goToLine:', () => {
 	// });
 
 	it('expect setPositionRes object to have column = 2 and lineNumber = 2', () => {
-		editorScripts.goToLine(editor, 2, 2);
+		// editorScripts.goToLine(editor, 2, 2);
 		expect(setPositionRes.column).toBe(2);
 		expect(setPositionRes.lineNumber).toBe(2);
 	});
@@ -155,59 +155,60 @@ describe('function goToLine:', () => {
 
 describe('function highlightRange:', () => {
 	let delta_decorations;
-	let editor;
+	// let editor;
 	let range;
 
 	beforeEach(() => {
 		delta_decorations = [];
-		editor = {
-			deltaDecorations: (arr1, arr2) => {
-				delta_decorations = [
-					{
-						...(arr1[0] ? arr1[0] : {}),
-						...(arr2[0] ? arr2[0] : {}),
-					},
-				];
-				return [
-					{
-						...(arr1[0] ? arr1[0] : {}),
-						...(arr2[0] ? arr2[0] : {}),
-					},
-				];
-			},
-		};
+
+		// editor = {
+		// 	deltaDecorations: (arr1, arr2) => {
+		// 		delta_decorations = [
+		// 			{
+		// 				...(arr1[0] ? arr1[0] : {}),
+		// 				...(arr2[0] ? arr2[0] : {}),
+		// 			},
+		// 		];
+		// 		return [
+		// 			{
+		// 				...(arr1[0] ? arr1[0] : {}),
+		// 				...(arr2[0] ? arr2[0] : {}),
+		// 			},
+		// 		];
+		// 	},
+		// };
 
 		range = { startLine: null, endLine: null };
 	});
 
 	it('expect delta_decorations.range.res to be [0,0,0,0]', () => {
-		editorScripts.highlightRange(editor, range);
+		// editorScripts.highlightRange(editor, range);
 		expect(JSON.stringify(delta_decorations[0].range.res)).toBe(
 			'[0,0,0,0]',
 		);
 	});
 
 	it('expect delta_decorations.options.isWholeLine to be undefined', () => {
-		editorScripts.highlightRange(editor, range);
+		// editorScripts.highlightRange(editor, range);
 		expect(delta_decorations[0].options.isWholeLine).toBe(undefined);
 	});
 
 	it('expect delta_decorations.options.inlineClassName to be undefined', () => {
-		editorScripts.highlightRange(editor, range);
+		// editorScripts.highlightRange(editor, range);
 		expect(delta_decorations[0].options.inlineClassName).toBe(undefined);
 	});
 
 	it('expect delta_decorations.range.res to be [2,0,2,0]', () => {
 		range.startLine = null;
 		range.endLine = 2;
-		editorScripts.highlightRange(editor, range);
+		// editorScripts.highlightRange(editor, range);
 		expect(JSON.stringify(delta_decorations[0].range.res)).toBe(
 			'[2,0,2,0]',
 		);
 
 		range.startLine = 2;
 		range.endLine = null;
-		editorScripts.highlightRange(editor, range);
+		// editorScripts.highlightRange(editor, range);
 		expect(JSON.stringify(delta_decorations[0].range.res)).toBe(
 			'[2,0,2,0]',
 		);
@@ -216,26 +217,26 @@ describe('function highlightRange:', () => {
 	it('expect delta_decorations.options.isWholeLine to be true', () => {
 		range.startLine = null;
 		range.endLine = 2;
-		editorScripts.highlightRange(editor, range);
+		// editorScripts.highlightRange(editor, range);
 		expect(delta_decorations[0].options.isWholeLine).toBe(true);
 
 		range.startLine = 2;
 		range.endLine = null;
-		editorScripts.highlightRange(editor, range);
+		// editorScripts.highlightRange(editor, range);
 		expect(delta_decorations[0].options.isWholeLine).toBe(true);
 	});
 
 	it("expect delta_decorations.options.inlineClassName to be 'editor-line-highlight'", () => {
 		range.startLine = null;
 		range.endLine = 2;
-		editorScripts.highlightRange(editor, range);
+		// editorScripts.highlightRange(editor, range);
 		expect(delta_decorations[0].options.inlineClassName).toBe(
 			'editor-line-highlight',
 		);
 
 		range.startLine = 2;
 		range.endLine = null;
-		editorScripts.highlightRange(editor, range);
+		// editorScripts.highlightRange(editor, range);
 		expect(delta_decorations[0].options.inlineClassName).toBe(
 			'editor-line-highlight',
 		);
@@ -244,7 +245,7 @@ describe('function highlightRange:', () => {
 	it('expect delta_decorations.range.res to be [1,0,2,0]', () => {
 		range.startLine = 1;
 		range.endLine = 2;
-		editorScripts.highlightRange(editor, range);
+		// editorScripts.highlightRange(editor, range);
 		expect(JSON.stringify(delta_decorations[0].range.res)).toBe(
 			'[1,0,2,0]',
 		);
@@ -253,14 +254,14 @@ describe('function highlightRange:', () => {
 	it('expect delta_decorations.options.isWholeLine to be true', () => {
 		range.startLine = 1;
 		range.endLine = 2;
-		editorScripts.highlightRange(editor, range);
+		// editorScripts.highlightRange(editor, range);
 		expect(delta_decorations[0].options.isWholeLine).toBe(true);
 	});
 
 	it("expect delta_decorations.options.inlineClassName to be 'editor-line-highlight'", () => {
 		range.startLine = 1;
 		range.endLine = 2;
-		editorScripts.highlightRange(editor, range);
+		// editorScripts.highlightRange(editor, range);
 		expect(delta_decorations[0].options.inlineClassName).toBe(
 			'editor-line-highlight',
 		);

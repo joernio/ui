@@ -23,7 +23,7 @@ const useCommonStyles = makeStyles(commonStyles);
 
 function CpgScript(props) {
 	const classes = useStyles(props);
-  const commonClasses = useCommonStyles(props);
+	const commonClasses = useCommonStyles(props);
 	const [state, setState] = React.useState({
 		openDiscardDialog: false,
 		discardDialogCallback: () => {},

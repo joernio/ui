@@ -33,6 +33,7 @@ module.exports = {
 		'no-shadow': 'off',
 		'dot-notation': 'off',
 		camelcase: 'off',
+		'no-else-return': 'off',
 		'consistent-return': 'off',
 		'no-nested-ternary': 'off',
 		'prefer-destructuring': 'off',

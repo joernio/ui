@@ -79,7 +79,9 @@ function QueriesStats(props) {
 							>
 								<div>
 									<Tooltip2
-										popoverClassName={commonClasses.toolTipStyle}
+										popoverClassName={
+											commonClasses.toolTipStyle
+										}
 										content={
 											<div
 												className={

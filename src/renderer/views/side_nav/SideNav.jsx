@@ -24,7 +24,7 @@ const useCommonStyles = makeStyles(commonStyles);
 
 function SideNav(props) {
 	const classes = useStyles(props);
-  const commonClasses = useCommonStyles(props);
+	const commonClasses = useCommonStyles(props);
 
 	const [state, setState] = React.useState({
 		anchorEl: null,

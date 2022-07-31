@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import * as queryActions from '../store/actions/queryActions';
 import * as workSpaceActions from '../store/actions/workSpaceActions';
 import * as querySelectors from '../store/selectors/querySelectors';
 import * as workSpaceSelectors from '../store/selectors/workSpaceSelectors';

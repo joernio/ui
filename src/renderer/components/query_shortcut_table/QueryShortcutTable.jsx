@@ -76,7 +76,7 @@ function QueryShortcutTable(props) {
 	}, [containerWidth]);
 
 	const classes = useStyles(props);
-  const commonClasses = useCommonStyles(props);
+	const commonClasses = useCommonStyles(props);
 
 	return (
 		<>
