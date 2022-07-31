@@ -43,11 +43,10 @@ export const parseCircuitUIResponseValue = data => {
 				str.forEach((value, index) => {
 					methodObj[keysArr[index]] = value;
 				});
-				observer.next({value: methodObj, blockID});
+				observer.next({ value: methodObj, blockID });
 			});
-
 		} catch (e) {
-			observer.next({value, blockID});
+			observer.next({ value, blockID });
 			observer.complete();
 		}
 	});

@@ -94,7 +94,7 @@ const styles = theme => ({
 			duration: theme.transitions.duration.enteringScreen,
 		}),
 		height: 0,
-	}
+	},
 });
 
 export default styles;

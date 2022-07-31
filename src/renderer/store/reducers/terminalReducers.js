@@ -11,7 +11,7 @@ const default_state = {
 	isMaximized: true,
 	busy: false,
 	query_suggestions: [],
-	circuit_ui_responses: { length: 0, dropdown: true, all: {}, indexes: [] }
+	circuit_ui_responses: { length: 0, dropdown: true, all: {}, indexes: [] },
 };
 
 const terminal = (state = default_state, action) => {

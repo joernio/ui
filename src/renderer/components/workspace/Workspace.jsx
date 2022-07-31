@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { MenuDivider, Menu, MenuItem, Icon } from '@blueprintjs/core';
 import { Popover2 } from '@blueprintjs/popover2';
-import * as queryActions from '../../store/actions/queryActions';
 import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import * as querySelectors from '../../store/selectors/querySelectors';
 import * as workSpaceSelectors from '../../store/selectors/workSpaceSelectors';
@@ -50,7 +49,8 @@ function Workspace(props) {
 	};
 
 	React.useEffect(() => {
-		const callback = e => handleSetState({scrolled: isElementScrolled(e)});
+		const callback = e =>
+			handleSetState({ scrolled: isElementScrolled(e) });
 
 		if (refs.projectsContainerEl.current) {
 			refs.projectsContainerEl.current.addEventListener(
@@ -129,7 +129,8 @@ function Workspace(props) {
 										className={classes.menuItemStyle}
 										onClick={() =>
 											addToQueue(
-												addWorkSpaceQueryToQueue())
+												addWorkSpaceQueryToQueue(),
+											)
 										}
 										text="Refresh"
 									></MenuItem>
@@ -141,8 +142,8 @@ function Workspace(props) {
 												await contructQueryWithPath(
 													'importCode',
 													'select-dir',
-												)
-                      )
+												),
+											)
 										}
 										text="Import Directory"
 									></MenuItem>
@@ -152,7 +153,7 @@ function Workspace(props) {
 											addToQueue(
 												await contructQueryWithPath(
 													'importCode',
-												)
+												),
 											)
 										}
 										text="Import File"
@@ -163,17 +164,19 @@ function Workspace(props) {
 											addToQueue(
 												await contructQueryWithPath(
 													'importCpg',
-												)
+												),
 											)
 										}
 										text="Import Cpg"
 									></MenuItem>
-                  <MenuItem
+									<MenuItem
 										className={classes.menuItemStyle}
 										onClick={async () =>
 											addToQueue(
-                        await contructQueryWithPath('importCode.ghidra')
-                      )
+												await contructQueryWithPath(
+													'importCode.ghidra',
+												),
+											)
 										}
 										text="Import Binary"
 									></MenuItem>
@@ -184,7 +187,7 @@ function Workspace(props) {
 										className={classes.menuItemStyle}
 										onClick={async () =>
 											addToQueue(
-												await handleSwitchWorkspace()
+												await handleSwitchWorkspace(),
 											)
 										}
 										text="Switch Workspace"
@@ -203,7 +206,7 @@ function Workspace(props) {
 							<Icon
 								icon="more"
 								className={clsx(
-                  commonClasses.cursorPointer,
+									commonClasses.cursorPointer,
 									commonClasses.iconStyle,
 									classes.verticalMoreStyle,
 								)}
@@ -218,7 +221,7 @@ function Workspace(props) {
 							commonClasses.scrollBarDarkStyle,
 							classes.projectsSectionStyle,
 							{
-                [commonClasses.insetScrolledStyle]: scrolled,
+								[commonClasses.insetScrolledStyle]: scrolled,
 								[classes.projectsVisible]: projectsVisible,
 								[classes.projectsHidden]: !projectsVisible,
 							},
@@ -244,7 +247,7 @@ function Workspace(props) {
 								await contructQueryWithPath(
 									'importCode',
 									'select-dir',
-								)
+								),
 							)
 						}
 					>
@@ -255,7 +258,7 @@ function Workspace(props) {
 						className={classes.emptyWorkspaceElementStyle}
 						onClick={async () =>
 							addToQueue(
-								await contructQueryWithPath('importCode')
+								await contructQueryWithPath('importCode'),
 							)
 						}
 					>
@@ -265,19 +268,19 @@ function Workspace(props) {
 					<div
 						className={classes.emptyWorkspaceElementStyle}
 						onClick={async () =>
-							addToQueue(
-								await contructQueryWithPath('importCpg')
-							)
+							addToQueue(await contructQueryWithPath('importCpg'))
 						}
 					>
 						Import Cpg
 					</div>
 
-          <div
+					<div
 						className={classes.emptyWorkspaceElementStyle}
 						onClick={async () =>
 							addToQueue(
-								await contructQueryWithPath('importCode.ghidra')
+								await contructQueryWithPath(
+									'importCode.ghidra',
+								),
 							)
 						}
 					>

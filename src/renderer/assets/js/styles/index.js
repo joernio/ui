@@ -2,18 +2,22 @@ const styles = theme => ({
 	titleStyles: {
 		color: 'blue',
 	},
-  	insetScrolledStyle: {
+	insetScrolledStyle: {
 		boxShadow: props =>
 			`inset 0px 30px 8px -30px ${
-					props.prefersDarkMode ? theme.palette.button.base.light : theme.palette.navBar.base.dark
+				props.prefersDarkMode
+					? theme.palette.button.base.light
+					: theme.palette.navBar.base.dark
 			}`,
 	},
-  scrolledStyle: {
-    boxShadow: props =>
+	scrolledStyle: {
+		boxShadow: props =>
 			`0px 3px 8px 0px ${
-					props.prefersDarkMode ? theme.palette.button.base.light : theme.palette.navBar.base.dark
+				props.prefersDarkMode
+					? theme.palette.button.base.light
+					: theme.palette.navBar.base.dark
 			}`,
-  },
+	},
 	scrollBarStyle: {
 		'&::-webkit-scrollbar': {
 			width: '12px',
@@ -69,7 +73,7 @@ const styles = theme => ({
 			height: '4px',
 		},
 	},
-  iconStyle: {
+	iconStyle: {
 		color: props =>
 			theme.palette.sideNav.base[
 				props.prefersDarkMode ? 'dark' : 'light'
@@ -81,7 +85,7 @@ const styles = theme => ({
 					: theme.palette.sideNav.background.light,
 		},
 	},
-  toolTipStyle: {
+	toolTipStyle: {
 		'& .bp3-popover2-content': {
 			backgroundColor: props =>
 				theme.palette.navBar.background[
@@ -95,7 +99,7 @@ const styles = theme => ({
 				],
 		},
 	},
-  toolTipTextStyle: {
+	toolTipTextStyle: {
 		backgroundColor: props =>
 			theme.palette.navBar.background[
 				props.prefersDarkMode ? 'dark' : 'light'
@@ -163,9 +167,9 @@ const styles = theme => ({
 	width100Percent: {
 		width: '100%',
 	},
-  cursorPointer: {
-    cursor: 'pointer'
-  }
+	cursorPointer: {
+		cursor: 'pointer',
+	},
 });
 
 export default styles;

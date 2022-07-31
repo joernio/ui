@@ -11,7 +11,7 @@ import {
 	syntheticFiles,
 	imageFileExtensions,
 	filesToIgnore,
-  joernBinaryLanguage
+	joernBinaryLanguage,
 } from './defaultVariables';
 import {
 	deQueueQuery,
@@ -28,15 +28,14 @@ import { setFiles, setOpenFiles } from '../../../store/actions/filesActions';
 import { setHighlightRange } from '../../../store/actions/editorActions';
 import { windowActionApi, selectDirApi } from './ipcRenderer';
 import { store } from '../../../store/configureStore';
-
-export const vars = {
-  startX_Y: undefined,
-	currentWidth_Height: undefined,
-  monaco_editor_delta_decorations: []
-};
-
 import { mouseTrapGlobalBindig } from './extensions';
 import { handlePrintable } from '../../../views/terminal_window/terminalWindowScripts';
+
+export const vars = {
+	startX_Y: undefined,
+	currentWidth_Height: undefined,
+	monaco_editor_delta_decorations: [],
+};
 
 mouseTrapGlobalBindig(Mousetrap);
 
@@ -58,7 +57,7 @@ export const queueEmpty = queue => {
 
 export const addToQueue = query => {
 	if (query) {
-    store.dispatch(enQueueQuery(query));
+		store.dispatch(enQueueQuery(query));
 	}
 };
 
@@ -177,17 +176,17 @@ export const getResultObjWithPostQueryKey = (results, post_query_key) => {
 };
 
 export const getActiveProject = () => {
-  const  {projects} = store.getState().workspace;
-  let activeProject = null;
-  Object.keys(projects).some(projectName => {
+	const { projects } = store.getState().workspace;
+	let activeProject = null;
+	Object.keys(projects).some(projectName => {
 		if (projects[projectName].open) {
 			activeProject = projects[projectName];
-      return true;//break;
-		}else{
-      return false;
-    };
+			return true; // break;
+		} else {
+			return false;
+		}
 	});
-  return activeProject;
+	return activeProject;
 };
 
 export const parseProjects = data => {
@@ -336,7 +335,7 @@ export const handleWebSocketResponse = data => {
 	});
 };
 
-export const isElementScrolled = e => e.target.scrollTop > 0 ? true : false;
+export const isElementScrolled = e => (e.target.scrollTop > 0 ? true : false);
 
 export const discardDialogHandler = (openFiles, openFilePath, callback) => {
 	if (openFiles[openFilePath] === false) {
@@ -914,7 +913,6 @@ export const deleteFile = async path => {
 };
 
 export const isFilePathInQueryResult = latest => {
-
 	if (
 		latest?.result.stdout &&
 		typeof latest.result.stdout === 'string' &&
@@ -941,26 +939,34 @@ export const isFilePathInQueryResult = latest => {
 };
 
 export const isQueryResultToOpenSynthFile = latest => {
-
 	let synth_file_path = false;
 	let content = false;
-  let binaryProject = true;
+	let binaryProject = true;
 
-  let { workspace:{projects}, files} = store.getState();
+	const {
+		workspace: { projects },
+		files,
+	} = store.getState();
 
-  files && Object.keys(files.openFiles).map(name => {
-    if(name.endsWith(syntheticFiles[3])){
-      binaryProject = false;
-    }
-  });
+	files &&
+		Object.keys(files.openFiles).forEach(name => {
+			if (name.endsWith(syntheticFiles[3])) {
+				binaryProject = false;
+			}
+		});
 
-  binaryProject && projects && Object.keys(projects).forEach(name => {
-    if (projects[name].open && projects[name].language === joernBinaryLanguage ) {
-      binaryProject = name;
-    };
-  });
+	binaryProject &&
+		projects &&
+		Object.keys(projects).forEach(name => {
+			if (
+				projects[name].open &&
+				projects[name].language === joernBinaryLanguage
+			) {
+				binaryProject = name;
+			}
+		});
 
-  if(typeof binaryProject === "boolean") binaryProject = false;
+	if (typeof binaryProject === 'boolean') binaryProject = false;
 
 	if (
 		latest?.result?.stdout &&
@@ -978,11 +984,10 @@ export const isQueryResultToOpenSynthFile = latest => {
 			synth_file_path = false;
 			content = false;
 		}
-	} else if(binaryProject){
-
-    synth_file_path = `${binaryProject} - ${syntheticFiles[3]}`;
-    content = synth_file_path;
-  }
+	} else if (binaryProject) {
+		synth_file_path = `${binaryProject} - ${syntheticFiles[3]}`;
+		content = synth_file_path;
+	}
 
 	return { synth_file_path, content };
 };
@@ -1023,29 +1028,35 @@ export const isScriptQueryResultToOpenSynthFile = async result => {
 };
 
 export const isQueryResultToCloseSynthFile = async () => {
-  const paths_to_close = [];
+	const paths_to_close = [];
 
-  let { workspace:{projects}, files} = store.getState();
+	const {
+		workspace: { projects },
+		files,
+	} = store.getState();
 
-  let openProject = projects && Object.keys(projects).filter(
-    name => {
-      if(projects[name].open){
-        return true;
-      }else{
-        return false;
-      }
-    }
-  );
+	let openProject =
+		projects &&
+		Object.keys(projects).filter(name => {
+			if (projects[name].open) {
+				return true;
+			} else {
+				return false;
+			}
+		});
 
-  openProject = openProject && openProject.length > 0 ? projects[openProject[0]] : null;
+	openProject =
+		openProject && openProject.length > 0 ? projects[openProject[0]] : null;
 
-  ![null, joernBinaryLanguage].includes(openProject?.language) && files && Object.keys(files.openFiles).map(name => {
-    if(name.endsWith(syntheticFiles[3])){
-      paths_to_close.push(name);
-    }
-  });
+	![null, joernBinaryLanguage].includes(openProject?.language) &&
+		files &&
+		Object.keys(files.openFiles).forEach(name => {
+			if (name.endsWith(syntheticFiles[3])) {
+				paths_to_close.push(name);
+			}
+		});
 
-  return paths_to_close;
+	return paths_to_close;
 };
 
 export const getUIIgnoreArr = (src, uiIgnore) => {
@@ -1209,32 +1220,32 @@ export const throttle = (callback, limit) => {
 export const initResize = (resizeHandle, type, resizeHandler) => {
 	let startX_Y;
 	let currentWidth_Height;
-  let commit;
+	let commit;
 
 	const doResize = e => {
 		const diff =
 			type === 'col' ? e.clientX - startX_Y : startX_Y - e.clientY;
 		resizeHandler(`${currentWidth_Height + diff}px`, diff, commit);
-	}
+	};
 
 	const resize = e => {
-    commit = false;
+		commit = false;
 		debounceLeading(doResize, 50)(e);
-	}
+	};
 
 	const stopResize = e => {
-    commit = true;
-    doResize(e);
+		commit = true;
+		doResize(e);
 		e.target.ownerDocument.removeEventListener('mousemove', resize, false);
 		e.target.ownerDocument.removeEventListener(
 			'mouseup',
 			stopResize,
 			false,
 		);
-	}
+	};
 
 	const initDrag = e => {
-    e.preventDefault();
+		e.preventDefault();
 		startX_Y = type === 'col' ? e.clientX : e.clientY;
 		currentWidth_Height =
 			type === 'col'
@@ -1243,7 +1254,7 @@ export const initResize = (resizeHandle, type, resizeHandler) => {
 
 		e.target.ownerDocument.addEventListener('mousemove', resize, false);
 		e.target.ownerDocument.addEventListener('mouseup', stopResize, false);
-	}
+	};
 
 	resizeHandle.addEventListener('mousedown', initDrag, false);
 
@@ -1586,7 +1597,6 @@ export const generateScriptImportQuery = async (
 	}
 };
 
-
 export const goToLine = (editor, row = 1, column = 1) => {
 	editor.setPosition({ column, lineNumber: row || 1 });
 	editor.revealLineInCenter(row || 1);
@@ -1606,18 +1616,21 @@ export const highlightRange = (editor, range) => {
 	}
 
 	if (rangeArr.length) {
-		vars.monaco_editor_delta_decorations = editor.deltaDecorations(vars.monaco_editor_delta_decorations, [
-			{
-				range: new Range(...rangeArr),
-				options:
-					range.startLine || range.endLine
-						? {
-								isWholeLine: true,
-								inlineClassName: 'editor-line-highlight',
-						  }
-						: {},
-			},
-		]);
+		vars.monaco_editor_delta_decorations = editor.deltaDecorations(
+			vars.monaco_editor_delta_decorations,
+			[
+				{
+					range: new Range(...rangeArr),
+					options:
+						range.startLine || range.endLine
+							? {
+									isWholeLine: true,
+									inlineClassName: 'editor-line-highlight',
+							  }
+							: {},
+				},
+			],
+		);
 	}
 };
 
@@ -1625,13 +1638,13 @@ export const handleEditorGoToLineAndHighlight = (
 	editor,
 	{ startLine, endLine },
 ) => {
-  if(editor){
-    setTimeout(() => {
-      goToLine(editor, startLine);
-      highlightRange(editor, {
-        startLine,
-        endLine,
-      });
-    }, 1000);
-  };
+	if (editor) {
+		setTimeout(() => {
+			goToLine(editor, startLine);
+			highlightRange(editor, {
+				startLine,
+				endLine,
+			});
+		}, 1000);
+	}
 };

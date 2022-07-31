@@ -27,7 +27,7 @@ import {
 	throttle,
 	areResultsEqual,
 	deepClone,
-  isElementScrolled
+	isElementScrolled,
 } from '../../assets/js/utils/scripts';
 import {
 	initXterm,
@@ -87,7 +87,6 @@ export const rowRenderer = obj => {
 							{...obj}
 						/>
 					);
-					// eslint-disable-next-line no-else-return
 				} else {
 					return (
 						<UiQueryResponse
@@ -107,7 +106,6 @@ export const rowRenderer = obj => {
 };
 
 function TerminalWindow(props) {
-
 	const classes = useStyles(props);
 	const commonClasses = useCommonStyles(props);
 
@@ -126,18 +124,20 @@ function TerminalWindow(props) {
 		rowsRenderedRef: React.useRef({}),
 	};
 
-  const [state, setState] = React.useState({
-    scrolled: false
-  });
+	const [state, setState] = React.useState({
+		scrolled: false,
+	});
 
-  const {terminalHeight,
-    prefersTerminalView,
-    isMaximized,
-    query_suggestions,
-    circuit_ui_responses } = props;
-  const {scrolled} = state;
+	const {
+		terminalHeight,
+		prefersTerminalView,
+		isMaximized,
+		query_suggestions,
+		circuit_ui_responses,
+	} = props;
+	const { scrolled } = state;
 
-  const handleSetState = obj => {
+	const handleSetState = obj => {
 		if (obj) {
 			Promise.resolve(obj).then(obj => {
 				setState(state => ({ ...state, ...obj }));
@@ -160,9 +160,8 @@ function TerminalWindow(props) {
 		const el = refs.circuitUIRef.current?.children[0];
 
 		if (el) {
-				el.scrollTop = el.scrollHeight;
-		};
-
+			el.scrollTop = el.scrollHeight;
+		}
 	}, [circuit_ui_responses.length]);
 
 	React.useEffect(() => {
@@ -216,15 +215,17 @@ function TerminalWindow(props) {
 	}, [props.prefersDarkMode, props.fontSize]);
 
 	React.useEffect(() => {
-		props.handleSetState(handleMaximize(refs.terminalRef, props.isMaximized));
+		props.handleSetState(
+			handleMaximize(refs.terminalRef, props.isMaximized),
+		);
 	}, [props.isMaximized]);
 
 	React.useEffect(() => {
 		setTimeout(resize, 0);
 
-    if(refs.terminalRef.current){
-      refs.terminalRef.current.style.height = props.terminalHeight;
-    };
+		if (refs.terminalRef.current) {
+			refs.terminalRef.current.style.height = props.terminalHeight;
+		}
 	}, [props.terminalHeight]);
 
 	React.useEffect(() => {
@@ -252,11 +253,16 @@ function TerminalWindow(props) {
 				refs.resizeEl.current,
 				'row',
 				(terminalHeight, diff, commit) => {
-          const obj = resizeHandler(terminalHeight, diff, refs.terminalRef);
-          refs.terminalRef.current.style.height = obj.terminalHeight;
+					const obj = resizeHandler(
+						terminalHeight,
+						diff,
+						refs.terminalRef,
+					);
+					refs.terminalRef.current.style.height = obj.terminalHeight;
 
-          if (commit || obj.terminalHeight === 0) props.handleSetState(obj);
-        }
+					if (commit || obj.terminalHeight === 0)
+						props.handleSetState(obj);
+				},
 			);
 			return () => {
 				refs.resizeEl.current &&
@@ -285,7 +291,11 @@ function TerminalWindow(props) {
 				ref={refs.resizeEl}
 				className={classes.resizeHandleStyle}
 			></div>
-			<div className={clsx(classes.terminalControlContainerStyle, {[commonClasses.scrolledStyle]: scrolled})}>
+			<div
+				className={clsx(classes.terminalControlContainerStyle, {
+					[commonClasses.scrolledStyle]: scrolled,
+				})}
+			>
 				{prefersTerminalView ? (
 					<Icon
 						icon="application"
@@ -340,7 +350,9 @@ function TerminalWindow(props) {
 				<div
 					className={clsx(commonClasses.scrollBarStyle)}
 					id="circuit-ui-results-container"
-          onScroll={(e) => handleSetState({scrolled: isElementScrolled(e)})}
+					onScroll={e =>
+						handleSetState({ scrolled: isElementScrolled(e) })
+					}
 				>
 					<div id="circuit-ui-welcome-screen-container">
 						<h1>CPG Explorer</h1>

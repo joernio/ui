@@ -5,7 +5,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Menu, MenuItem, Icon, Classes, Tree } from '@blueprintjs/core';
 import { Popover2 } from '@blueprintjs/popover2';
 import * as filesActions from '../../store/actions/filesActions';
-import * as queryActions from '../../store/actions/queryActions';
 import * as filesSelectors from '../../store/selectors/filesSelectors';
 import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import * as workSpaceSelectors from '../../store/selectors/workSpaceSelectors';
@@ -51,7 +50,8 @@ function Folders(props) {
 	};
 
 	React.useEffect(() => {
-		const callback = e => handleSetState({scrolled: isElementScrolled(e)});
+		const callback = e =>
+			handleSetState({ scrolled: isElementScrolled(e) });
 
 		if (foldersContainerEl.current) {
 			foldersContainerEl.current.addEventListener('scroll', callback);
@@ -131,7 +131,10 @@ function Folders(props) {
 			<div className={classes.titleSectionStyle}>
 				{foldersVisible ? (
 					<Icon
-						className={clsx(commonClasses.cursorPointer, commonClasses.iconStyle)}
+						className={clsx(
+							commonClasses.cursorPointer,
+							commonClasses.iconStyle,
+						)}
 						icon="chevron-down"
 						onClick={() =>
 							handleSetState(
@@ -141,7 +144,10 @@ function Folders(props) {
 					/>
 				) : (
 					<Icon
-						className={clsx(commonClasses.cursorPointer, commonClasses.iconStyle)}
+						className={clsx(
+							commonClasses.cursorPointer,
+							commonClasses.iconStyle,
+						)}
 						icon="chevron-right"
 						onClick={() =>
 							handleSetState(
@@ -204,7 +210,7 @@ function Folders(props) {
 					<Icon
 						icon="more"
 						className={clsx(
-              commonClasses.cursorPointer,
+							commonClasses.cursorPointer,
 							commonClasses.iconStyle,
 							classes.verticalMoreStyle,
 						)}
@@ -219,7 +225,7 @@ function Folders(props) {
 					commonClasses.scrollBarStyle,
 					commonClasses.scrollBarDarkStyle,
 					{
-            [commonClasses.insetScrolledStyle]: scrolled,
+						[commonClasses.insetScrolledStyle]: scrolled,
 						[classes.foldersVisible]:
 							isOpenProject && foldersVisible,
 						[classes.foldersHidden]: !foldersVisible,

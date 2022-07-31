@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Dialog, Icon, HTMLSelect, Switch, Divider } from '@blueprintjs/core';
-import { makeStyles, useEventCallback } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import * as settingsActions from '../../store/actions/settingsActions';
 import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import {
@@ -21,7 +21,7 @@ const useCommonStyles = makeStyles(commonStyles);
 
 function QueryShortcutsViewer(props) {
 	const classes = useStyles(props);
-  const commonClasses = useCommonStyles(props);
+	const commonClasses = useCommonStyles(props);
 	const refs = {
 		searchQueryShortcutsEl: React.useRef(null),
 		shortcutDialogEl: React.useRef(null),
@@ -56,8 +56,15 @@ function QueryShortcutsViewer(props) {
 			);
 		callback();
 
-    refs.searchQueryShortcutsEl.current?.addEventListener('change', callback);
-    return () => refs.searchQueryShortcutsEl.current?.removeEventListener('change', callback);
+		refs.searchQueryShortcutsEl.current?.addEventListener(
+			'change',
+			callback,
+		);
+		return () =>
+			refs.searchQueryShortcutsEl.current?.removeEventListener(
+				'change',
+				callback,
+			);
 		// if (refs.searchQueryShortcutsEl.current) {
 		// 	refs.searchQueryShortcutsEl.current.removeEventListener(
 		// 		'keypress',

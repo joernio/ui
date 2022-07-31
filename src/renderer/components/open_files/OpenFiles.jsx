@@ -54,7 +54,8 @@ function OpenFiles(props) {
 	}, [props.openFiles]);
 
 	React.useEffect(() => {
-		const callback = e => handleSetState({scrolled: isElementScrolled(e)});
+		const callback = e =>
+			handleSetState({ scrolled: isElementScrolled(e) });
 
 		if (filesContainerEl.current) {
 			filesContainerEl.current.addEventListener('scroll', callback);
@@ -87,9 +88,15 @@ function OpenFiles(props) {
 				}
 			>
 				{filesVisible ? (
-					<Icon className={commonClasses.iconStyle} icon="chevron-down" />
+					<Icon
+						className={commonClasses.iconStyle}
+						icon="chevron-down"
+					/>
 				) : (
-					<Icon className={commonClasses.iconStyle} icon="chevron-right" />
+					<Icon
+						className={commonClasses.iconStyle}
+						icon="chevron-right"
+					/>
 				)}
 				<h2 className={classes.titleStyle}>Open Editor</h2>
 			</div>
@@ -161,10 +168,13 @@ function OpenFiles(props) {
 
 									<Icon
 										icon="small-cross"
-										className={clsx(commonClasses.iconStyle, {
-											'unsaved-cross-icon':
-												files[path] === false,
-										})}
+										className={clsx(
+											commonClasses.iconStyle,
+											{
+												'unsaved-cross-icon':
+													files[path] === false,
+											},
+										)}
 										onClick={() =>
 											handleSetState(
 												discardDialogHandler(

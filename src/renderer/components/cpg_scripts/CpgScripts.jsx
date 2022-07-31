@@ -85,7 +85,8 @@ function CpgScripts(props) {
 	}, [props.scriptsDir]);
 
 	React.useEffect(() => {
-		const callback = e => handleSetState({scrolled: isElementScrolled(e)});
+		const callback = e =>
+			handleSetState({ scrolled: isElementScrolled(e) });
 
 		if (scriptsContainerEl.current) {
 			scriptsContainerEl.current.addEventListener('scroll', callback);
@@ -246,9 +247,10 @@ function CpgScripts(props) {
 					ref={scriptsContainerEl}
 					className={clsx(
 						classes.scriptsSectionStyle,
-            commonClasses.scrollBarStyle,
+						commonClasses.scrollBarStyle,
 						commonClasses.scrollBarDarkStyle,
-						{ [commonClasses.insetScrolledStyle]: scrolled,
+						{
+							[commonClasses.insetScrolledStyle]: scrolled,
 							[classes.scriptsVisible]: scriptsVisible,
 							[classes.scriptsHidden]: !scriptsVisible,
 						},

@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { Icon, Menu, MenuDivider, MenuItem } from '@blueprintjs/core';
 import { ContextMenu2, Popover2 } from '@blueprintjs/popover2';
-import * as queryActions from '../store/actions/queryActions';
 import * as filesSelectors from '../store/selectors/filesSelectors';
 import * as settingsSelectors from '../store/selectors/settingsSelectors';
 import * as statusSelectors from '../store/selectors/statusSelectors';
@@ -125,7 +124,7 @@ function WindowWrapper(props) {
 											await contructQueryWithPath(
 												'importCode',
 												'select-dir',
-											)
+											),
 										)
 									}
 									icon="import"
@@ -137,7 +136,7 @@ function WindowWrapper(props) {
 										addToQueue(
 											await contructQueryWithPath(
 												'importCode',
-											)
+											),
 										)
 									}
 									icon="import"
@@ -149,7 +148,7 @@ function WindowWrapper(props) {
 										addToQueue(
 											await contructQueryWithPath(
 												'importCpg',
-											)
+											),
 										)
 									}
 									icon="import"
@@ -162,7 +161,7 @@ function WindowWrapper(props) {
 									className={classes.menuItemStyle}
 									onClick={async () =>
 										addToQueue(
-											await handleSwitchWorkspace()
+											await handleSwitchWorkspace(),
 										)
 									}
 									icon="swap-horizontal"
