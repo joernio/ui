@@ -1,4 +1,11 @@
-const default_state = { connected: null, toast: null };
+const default_state = {
+	connected: null,
+	toast: null,
+	discardDialog: {
+		open: false,
+		callback: () => {},
+	},
+};
 
 const status = (state = default_state, action) => {
 	switch (action.type) {

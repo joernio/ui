@@ -8,8 +8,6 @@ import * as filesSelectors from '../store/selectors/filesSelectors';
 import * as settingsSelectors from '../store/selectors/settingsSelectors';
 import * as statusSelectors from '../store/selectors/statusSelectors';
 import QueriesStats from '../components/queries_stats/QueriesStats';
-import DiscardDialog from '../components/discard_dialog/DiscardDialog';
-import QueryShortcutWithArgsDialog from '../components/query_shortcut_with_args_dialog/QueryShortcutWithArgsDialog';
 import { windowInfoApi, windowActionApi } from '../assets/js/utils/ipcRenderer';
 import styles from '../assets/js/styles/views/windowWrapperStyles';
 import {
@@ -36,8 +34,6 @@ function WindowWrapper(props) {
 	const [state, setState] = React.useState({
 		isMaximized: windowInfoApi.getWindowInfo(),
 		fileContextIsOpen: false,
-		openDiscardDialog: false,
-		discardDialogCallback: () => {},
 	});
 
 	const handleSetState = obj => {
@@ -49,13 +45,12 @@ function WindowWrapper(props) {
 	};
 
 	React.useEffect(() => {
-		const filename = getOpenFileName(props?.openFilePath);
+		const filename = getOpenFileName();
 		windowActionApi.setOpenFileName(filename);
 	}, [props.openFilePath]);
 
-	const { fileContextIsOpen, openDiscardDialog, discardDialogCallback } =
-		state;
-	const { openFiles, openFilePath } = props;
+	const { fileContextIsOpen } = state;
+	const { openFilePath } = props;
 
 	return (
 		<div data-test="window-wrapper">
@@ -76,30 +71,18 @@ function WindowWrapper(props) {
 									text="New Script"
 									icon="document"
 									onClick={() =>
-										handleSetState(
-											discardDialogHandler(
-												openFiles,
-												openFilePath,
-												() => {
-													openEmptyFile();
-												},
-											),
-										)
+										discardDialogHandler(() => {
+											openEmptyFile();
+										})
 									}
 								/>
 								<MenuItem
 									className={classes.menuItemStyle}
 									text="Open File"
 									onClick={() =>
-										handleSetState(
-											discardDialogHandler(
-												openFiles,
-												openFilePath,
-												() => {
-													hiddenInputEl.current.click();
-												},
-											),
-										)
+										discardDialogHandler(() => {
+											hiddenInputEl.current.click();
+										})
 									}
 									icon="folder-shared"
 								/>
@@ -109,7 +92,7 @@ function WindowWrapper(props) {
 									icon="floppy-disk"
 									onClick={() =>
 										saveFile(
-											props.openFilePath,
+											openFilePath,
 											props.scriptsDir,
 										)
 									}
@@ -154,18 +137,18 @@ function WindowWrapper(props) {
 									icon="import"
 									text="Import Cpg"
 								></MenuItem>
-                <MenuItem
-                  className={classes.menuItemStyle}
-                  onClick={async () =>
-                    addToQueue(
-                      await constructQueryWithPath(
-                        'importCode.ghidra',
-                      ),
-                    )
-                  }
-                  icon="import"
-                  text="Import Binary"
-                ></MenuItem>
+								<MenuItem
+									className={classes.menuItemStyle}
+									onClick={async () =>
+										addToQueue(
+											await constructQueryWithPath(
+												'importCode.ghidra',
+											),
+										)
+									}
+									icon="import"
+									text="Import Binary"
+								></MenuItem>
 								<MenuDivider
 									className={classes.menuDividerStyle}
 								/>
@@ -187,17 +170,9 @@ function WindowWrapper(props) {
 									text="Reload"
 									icon="refresh"
 									onClick={() =>
-										handleSetState(
-											discardDialogHandler(
-												openFiles,
-												openFilePath,
-												() => {
-													sendWindowsMessage(
-														'reload',
-													);
-												},
-											),
-										)
+										discardDialogHandler(() => {
+											sendWindowsMessage('reload');
+										})
 									}
 								/>
 								<MenuItem
@@ -205,15 +180,9 @@ function WindowWrapper(props) {
 									text="Exit"
 									icon="cross"
 									onClick={() =>
-										handleSetState(
-											discardDialogHandler(
-												openFiles,
-												openFilePath,
-												() => {
-													sendWindowsMessage('close');
-												},
-											),
-										)
+										discardDialogHandler(() => {
+											sendWindowsMessage('close');
+										})
 									}
 								/>
 							</Menu>
@@ -334,18 +303,11 @@ function WindowWrapper(props) {
 					</div>
 				</ContextMenu2>
 			</div>
-			<DiscardDialog
-				handleSetState={handleSetState}
-				openDiscardDialog={openDiscardDialog}
-				callback={discardDialogCallback}
-			/>
-			<QueryShortcutWithArgsDialog />
 		</div>
 	);
 }
 
 const mapStateToProps = state => ({
-	openFiles: filesSelectors.selectOpenFiles(state),
 	openFilePath: filesSelectors.selectOpenFilePath(state),
 	connected: statusSelectors.selectConnected(state),
 	websocket: settingsSelectors.selectWebSocket(state),

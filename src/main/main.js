@@ -33,9 +33,9 @@ function init() {
 		if (process.platform !== 'darwin') app.quit();
 	});
 
-  app.on('certificate-error', (_, webContents) => {
-    webContents.send('certificate-error');
-  });
+	app.on('certificate-error', (_, webContents) => {
+		webContents.send('certificate-error');
+	});
 }
 
 init();

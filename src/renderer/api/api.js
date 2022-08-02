@@ -5,11 +5,11 @@ import { store } from '../store/configureStore';
 class API {
 	// eslint-disable-next-line class-methods-use-this
 	request = ({ path = '/', method = 'GET', data }) => {
-		let {
-			url,
-      enable_http,
-			auth_username: username, // eslint-disable-line prefer-const
-			auth_password: password, // eslint-disable-line prefer-const
+		let { url } = store.getState().settings.server;
+		const {
+			enable_http,
+			auth_username: username,
+			auth_password: password,
 		} = store.getState().settings.server;
 		const connection_status = store.getState().status.connected;
 		url = url.split('/');
@@ -18,18 +18,18 @@ class API {
 				? `${url.join('/')}${path}`
 				: `${url.join('/')}/${path}`;
 
-    if (!connection_status) {
-      return new Promise((_, reject) => {
-        reject(apiErrorStrings.ws_not_connected);
-      });
-    } else if (!enable_http && url.startsWith('http://')) {
-      return new Promise((_, reject) => {
-        reject(apiErrorStrings.http_disabled);
-      });
-    } else if (!url.startsWith('http://') && !url.startsWith('https://')) {
-      return new Promise((_, reject) => {
-        reject(apiErrorStrings.bad_url_format);
-      });
+		if (!connection_status) {
+			return new Promise((_, reject) => {
+				reject(apiErrorStrings.ws_not_connected);
+			});
+		} else if (!enable_http && url.startsWith('http://')) {
+			return new Promise((_, reject) => {
+				reject(apiErrorStrings.http_disabled);
+			});
+		} else if (!url.startsWith('http://') && !url.startsWith('https://')) {
+			return new Promise((_, reject) => {
+				reject(apiErrorStrings.bad_url_format);
+			});
 		} else if (connection_status && method === 'GET') {
 			return axios({
 				method: 'get',
@@ -44,11 +44,10 @@ class API {
 				auth: { username, password },
 			});
 		} else {
-      return new Promise((_, reject) => {
-        reject(apiErrorStrings.bad_request);
-      });
-    }
-
+			return new Promise((_, reject) => {
+				reject(apiErrorStrings.bad_request);
+			});
+		}
 	};
 
 	/** ********************query***************************** */

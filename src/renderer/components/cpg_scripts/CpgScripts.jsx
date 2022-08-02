@@ -14,11 +14,9 @@ import {
 import { Popover2 } from '@blueprintjs/popover2';
 import * as queryActions from '../../store/actions/queryActions';
 import * as settingsActions from '../../store/actions/settingsActions';
-import * as filesSelectors from '../../store/selectors/filesSelectors';
 import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import * as workSpaceSelectors from '../../store/selectors/workSpaceSelectors';
 import CpgScript from '../cpg_script/CpgScript';
-import DiscardDialog from '../discard_dialog/DiscardDialog';
 import styles from '../../assets/js/styles/components/cpg_scripts/cpgScriptsStyles';
 import {
 	isElementScrolled,
@@ -59,8 +57,6 @@ function CpgScripts(props) {
 		dialogFields: [],
 		openDialog: false,
 		scriptsMenuIsOpen: false,
-		openDiscardDialog: false,
-		discardDialogCallback: () => {},
 	});
 
 	const handleSetState = obj => {
@@ -108,11 +104,7 @@ function CpgScripts(props) {
 		openDialog,
 		dialogFields,
 		scriptsMenuIsOpen,
-		openDiscardDialog,
-		discardDialogCallback,
 	} = state;
-
-	const { openFiles, openFilePath } = props;
 
 	return Object.keys(props.projects).length > 0 ? (
 		<ClickAwayListener
@@ -191,15 +183,9 @@ function CpgScripts(props) {
 								<MenuItem
 									className={classes.menuItemStyle}
 									onClick={() =>
-										handleSetState(
-											discardDialogHandler(
-												openFiles,
-												openFilePath,
-												() => {
-													openEmptyFile();
-												},
-											),
-										)
+										discardDialogHandler(() => {
+											openEmptyFile();
+										})
 									}
 									text="New Script"
 								/>
@@ -295,22 +281,16 @@ function CpgScripts(props) {
 											<h3
 												className={classes.tagNameStyle}
 												onClick={e =>
-													handleSetState(
-														discardDialogHandler(
-															openFiles,
-															openFilePath,
-															() => {
-																handleSetState(
-																	handleCPGScriptTagClick(
-																		e,
-																		value,
-																		scripts,
-																		selected,
-																	),
-																);
-															},
-														),
-													)
+													discardDialogHandler(() => {
+														handleSetState(
+															handleCPGScriptTagClick(
+																e,
+																value,
+																scripts,
+																selected,
+															),
+														);
+													})
 												}
 											>
 												{value}
@@ -465,11 +445,6 @@ function CpgScripts(props) {
 							</h3>
 						</div>
 					</Dialog>
-					<DiscardDialog
-						handleSetState={handleSetState}
-						openDiscardDialog={openDiscardDialog}
-						callback={discardDialogCallback}
-					/>
 				</div>
 			</div>
 		</ClickAwayListener>
@@ -477,8 +452,6 @@ function CpgScripts(props) {
 }
 
 const mapStateToProps = state => ({
-	openFiles: filesSelectors.selectOpenFiles(state),
-	openFilePath: filesSelectors.selectOpenFilePath(state),
 	projects: workSpaceSelectors.selectProjects(state),
 	path: workSpaceSelectors.selectPath(state),
 	scriptsDir: settingsSelectors.selectScriptsDir(state),

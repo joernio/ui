@@ -31,16 +31,16 @@ export const cpgManagementCommands = {
 };
 
 export const apiErrorStrings = {
-  ws_not_connected: 'WS_NOT_CONNECTED',
-  http_disabled:
-    'Error querying http server. To send queries, enable http in settings',
-  bad_url_format: 'Bad url format',
-  bad_request: 'Bad request',
-  no_result_for_uuid: 'No result found for specified UUID',
-  certificate_invalid:
-    'Error making https request. Non-existing or Invalid ssl certificate',
-  certificate_import_successful: 'Certificate import successful',
-  certificate_import_failed: 'Certificate import failed',
+	ws_not_connected: 'WS_NOT_CONNECTED',
+	http_disabled:
+		'Error querying http server. To send queries, enable http in settings',
+	bad_url_format: 'Bad url format',
+	bad_request: 'Bad request',
+	no_result_for_uuid: 'No result found for specified UUID',
+	certificate_invalid:
+		'Error making https request. Non-existing or Invalid ssl certificate',
+	certificate_import_successful: 'Certificate import successful',
+	certificate_import_failed: 'Certificate import failed',
 };
 
 export const printable = {

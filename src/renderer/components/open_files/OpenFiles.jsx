@@ -19,7 +19,6 @@ import {
 	getEditorFilesFromOpenFiles,
 	handleToggleFilesVisible,
 } from './openFilesScripts';
-import DiscardDialog from '../discard_dialog/DiscardDialog';
 import commonStyles from '../../assets/js/styles';
 
 const useStyles = makeStyles(styles);
@@ -34,8 +33,6 @@ function OpenFiles(props) {
 		files: {},
 		filesVisible: true,
 		scrolled: false,
-		openDiscardDialog: false,
-		discardDialogCallback: () => {},
 	});
 
 	const handleSetState = obj => {
@@ -69,15 +66,9 @@ function OpenFiles(props) {
 		}
 	}, [filesContainerEl.current]);
 
-	const {
-		files,
-		filesVisible,
-		scrolled,
-		openDiscardDialog,
-		discardDialogCallback,
-	} = state;
+	const { files, filesVisible, scrolled } = state;
 
-	const { openFiles, openFilePath } = props;
+	const { openFiles } = props;
 
 	return Object.keys(props.projects).length > 0 ? (
 		<div className={classes.rootStyle} tabIndex="0" data-test="open-files">
@@ -130,27 +121,16 @@ function OpenFiles(props) {
 										className={classes.fileNameStyle}
 										key={path}
 										onClick={() =>
-											handleSetState(
-												discardDialogHandler(
-													openFiles,
-													openFilePath,
-													() => {
-														syntheticFiles.filter(
-															type =>
-																path.endsWith(
-																	type,
-																),
-														).length > 0
-															? openSyntheticFile(
-																	path,
-																	openFiles[
-																		path
-																	],
-															  )
-															: openFile(path);
-													},
-												),
-											)
+											discardDialogHandler(() => {
+												syntheticFiles.filter(type =>
+													path.endsWith(type),
+												).length > 0
+													? openSyntheticFile(
+															path,
+															openFiles[path],
+													  )
+													: openFile(path);
+											})
 										}
 									>
 										{filename}
@@ -176,15 +156,9 @@ function OpenFiles(props) {
 											},
 										)}
 										onClick={() =>
-											handleSetState(
-												discardDialogHandler(
-													openFiles,
-													openFilePath,
-													() => {
-														closeFile(path);
-													},
-												),
-											)
+											discardDialogHandler(() => {
+												closeFile(path);
+											})
 										}
 									/>
 								</div>
@@ -192,18 +166,12 @@ function OpenFiles(props) {
 					  })
 					: null}
 			</div>
-			<DiscardDialog
-				handleSetState={handleSetState}
-				openDiscardDialog={openDiscardDialog}
-				callback={discardDialogCallback}
-			/>
 		</div>
 	) : null;
 }
 
 const mapStateToProps = state => ({
 	openFiles: filesSelectors.selectOpenFiles(state),
-	openFilePath: filesSelectors.selectOpenFilePath(state),
 	projects: workSpaceSelectors.selectProjects(state),
 	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
