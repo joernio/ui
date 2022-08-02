@@ -306,7 +306,84 @@ function SideNav(props) {
 							}
 						/>
 					</div>
-				</div>
+					<Divider className={classes.menuDividerStyle} />
+          <div>
+            <h3>Network</h3>
+            <h4>
+              Certificate Path &nbsp;
+              <Tooltip2
+                popoverClassName={clsx(
+                  classes.toolTipStyle,
+                  commonClasses.displayInlineBlock,
+                )}
+                content={
+                  <span className={classes.toolTipTextStyle}>
+                    Add path to pkcs12 file here e.g.
+                    /etc/nginx/ssl/localhost.p12
+                  </span>
+                }
+                placement="right"
+                usePortal={false}
+                openOnTargetFocus={false}
+              >
+                <Icon icon="help" iconSize={20} className={classes.iconStyle} />
+              </Tooltip2>
+            </h4>
+            <input
+              type="text"
+              id="cert_path"
+              placeholder={
+                values.cert_path_up_to_date
+                  ? 'field is up to date'
+                  : 'path to pkcs12 file here...'
+              }
+              defaultValue=""
+              onChange={e => handleSetState(handleOnChange(e, values))}
+              onBlur={e => handleSetState(handleOnChange(e, values))}
+            />
+            <h4>
+              Certificate Passphrase &nbsp;
+              <Tooltip2
+                popoverClassName={clsx(
+                  classes.toolTipStyle,
+                  commonClasses.displayInlineBlock,
+                )}
+                content={
+                  <span className={classes.toolTipTextStyle}>
+                    Provide the passphrase for the submitted pkcs12 file
+                  </span>
+                }
+                placement="right"
+                usePortal={false}
+                openOnTargetFocus={false}
+              >
+                <Icon icon="help" iconSize={20} className={classes.iconStyle} />
+              </Tooltip2>
+            </h4>
+            <input
+              type="password"
+              id="cert_passphrase"
+              placeholder={
+                values.cert_passphrase_up_to_date
+                  ? 'field is up to date'
+                  : 'passphrase here...'
+              }
+              defaultValue=""
+              onChange={e => handleSetState(handleOnChange(e, values))}
+              onBlur={e => handleSetState(handleOnChange(e, values))}
+            />
+            <h4>Enable Http</h4>
+            <Switch
+              className={classes.switchStyle}
+              innerLabelChecked="on"
+              id="enable_http"
+              innerLabel="off"
+              defaultChecked={values.enable_http}
+              onChange={e => handleSetState(handleOnChange(e, values))}
+              onBlur={e => handleSetState(handleOnChange(e, values))}
+            />
+          </div>
+        </div>
 				<Divider className={classes.menuDividerStyle} />
 				<div className={classes.submitSectionStyle}>
 					<h3

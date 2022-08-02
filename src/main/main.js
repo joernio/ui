@@ -13,25 +13,29 @@ import { app, BrowserWindow } from 'electron';
 import { createWindow } from './window';
 import { initIpcMain } from './ipcMain';
 
-function initIpcAndWindow() {
-	initIpcMain();
+function initIpcAndWindow(app) {
+	initIpcMain(app);
 	createWindow();
 }
 
 function init() {
 	app.on('ready', () => {
-		initIpcAndWindow();
+		initIpcAndWindow(app);
 	});
 
 	app.on('activate', () => {
 		if (BrowserWindow.getAllWindows().length === 0) {
-			initIpcAndWindow();
+			initIpcAndWindow(app);
 		}
 	});
 
 	app.on('window-all-closed', () => {
 		if (process.platform !== 'darwin') app.quit();
 	});
+
+  app.on('certificate-error', (_, webContents) => {
+    webContents.send('certificate-error');
+  });
 }
 
 init();

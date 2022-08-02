@@ -32,8 +32,23 @@ export const handleWindowAction = (action, window) => {
 	}
 };
 
-export const initIpcMain = () => {
+export const initIpcMain = (app) => {
 	console.log('starting to init ipc');
+
+  ipcMain.on('import-certificate', (event, obj) => {
+    const window = getWindow(event);
+    app.importCertificate(
+      { certificate: obj.cert_path, password: obj.cert_passphrase },
+      result => {
+        if (result === 0) {
+          window.webContents.send('certificate-import-success');
+          setTimeout(() => handleWindowAction('reload', window), 3000);
+        } else {
+          window.webContents.send('certificate-import-error');
+        }
+      },
+    );
+  });
 
 	ipcMain.on('websocket-connect', (event, ws_url) => {
 		const window = getWindow(event);

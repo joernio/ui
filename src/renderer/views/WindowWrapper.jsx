@@ -21,7 +21,7 @@ import {
 	saveFile,
 	getOpenFileName,
 	handleSwitchWorkspace,
-	contructQueryWithPath,
+	constructQueryWithPath,
 	addToQueue,
 	discardDialogHandler,
 } from '../assets/js/utils/scripts';
@@ -121,7 +121,7 @@ function WindowWrapper(props) {
 									className={classes.menuItemStyle}
 									onClick={async () =>
 										addToQueue(
-											await contructQueryWithPath(
+											await constructQueryWithPath(
 												'importCode',
 												'select-dir',
 											),
@@ -134,7 +134,7 @@ function WindowWrapper(props) {
 									className={classes.menuItemStyle}
 									onClick={async () =>
 										addToQueue(
-											await contructQueryWithPath(
+											await constructQueryWithPath(
 												'importCode',
 											),
 										)
@@ -146,7 +146,7 @@ function WindowWrapper(props) {
 									className={classes.menuItemStyle}
 									onClick={async () =>
 										addToQueue(
-											await contructQueryWithPath(
+											await constructQueryWithPath(
 												'importCpg',
 											),
 										)
@@ -154,6 +154,18 @@ function WindowWrapper(props) {
 									icon="import"
 									text="Import Cpg"
 								></MenuItem>
+                <MenuItem
+                  className={classes.menuItemStyle}
+                  onClick={async () =>
+                    addToQueue(
+                      await constructQueryWithPath(
+                        'importCode.ghidra',
+                      ),
+                    )
+                  }
+                  icon="import"
+                  text="Import Binary"
+                ></MenuItem>
 								<MenuDivider
 									className={classes.menuDividerStyle}
 								/>

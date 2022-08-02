@@ -335,6 +335,28 @@ export const handleWebSocketResponse = data => {
 	});
 };
 
+	export const handleCertificateError = () => {
+  handleSetToast({
+    icon: 'warning-sign',
+    intent: 'danger',
+    message: apiErrorStrings.certificate_invalid,
+  });
+};
+export const handleCertificateImportError = () => {
+  handleSetToast({
+    icon: 'warning-sign',
+    intent: 'danger',
+    message: apiErrorStrings.certificate_import_failed,
+  });
+};
+export const handleCertificateSuccess = () => {
+  handleSetToast({
+    icon: 'info-sign',
+    intent: 'success',
+    message: apiErrorStrings.certificate_import_successful,
+  });
+};
+
 export const isElementScrolled = e => (e.target.scrollTop > 0 ? true : false);
 
 export const discardDialogHandler = (openFiles, openFilePath, callback) => {
@@ -1303,7 +1325,7 @@ export const latestIsManCommand = results => {
 	return isManCommand;
 };
 
-export const contructQueryWithPath = async (query_name, type) => {
+export const constructQueryWithPath = async (query_name, type) => {
 	selectDirApi.selectDir(
 		type === 'select-dir' ? 'select-dir' : 'select-file',
 	);
@@ -1371,6 +1393,9 @@ export const handleSwitchWorkspace = async () => {
 };
 
 export const handleAPIQueryError = err => {
+
+  err = typeof err === 'string' ? { message: err } : err;
+
 	if (err === apiErrorStrings.ws_not_connected) {
 		const ws_url = store.getState().settings.websocket.url;
 		handleSetToast({
@@ -1398,7 +1423,13 @@ export const handleAPIQueryError = err => {
 			intent: 'danger',
 			message: `${err.message}. Ensure that no other program is subscribed to the websocket`,
 		});
-	}
+	} else {
+    handleSetToast({
+      icon: 'warning-sign',
+      intent: 'danger',
+      message: err.message,
+    });
+  }
 
 	store.dispatch(resetQueue({}));
 };

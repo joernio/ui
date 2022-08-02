@@ -1,5 +1,10 @@
 import { ipcRenderer as ipc } from 'electron';
-import { handleWebSocketResponse } from './scripts';
+import {
+  handleWebSocketResponse,
+  handleCertificateError,
+  handleCertificateImportError,
+  handleCertificateSuccess,
+} from './scripts';
 import { setConnected } from '../../../store/actions/statusActions';
 import { store } from '../../../store/configureStore';
 
@@ -23,6 +28,9 @@ export const windowActionApi = {
 	registerPasteFromClipBoardListener: callback => {
 		ipc.once('pasted-from-clipboard', (e, str) => callback(str));
 	},
+  importCertificate: cert_path => {
+    ipc.send('import-certificate', cert_path);
+  },
 };
 
 export const windowInfoApi = {
@@ -64,6 +72,16 @@ const initIPCRenderer = ws_url => {
 	ipc.on('websocket-response', (e, data) => {
 		handleWebSocketResponse(data);
 	});
+
+  ipc.on('certificate-error', () => {
+    handleCertificateError();
+  });
+  ipc.on('certificate-import-error', () => {
+    handleCertificateImportError();
+  });
+  ipc.on('certificate-import-success', () => {
+    handleCertificateSuccess();
+  });
 
 	windowActionApi.connectToWebSocketAction(ws_url);
 };

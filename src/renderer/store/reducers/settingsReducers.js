@@ -5,6 +5,7 @@ export const default_state = {
 		url: 'http://localhost:8080',
 		auth_username: '',
 		auth_password: '',
+    enable_http: true,
 	},
 	websocket: {
 		url: 'ws://localhost:8080/connect',

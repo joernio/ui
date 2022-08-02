@@ -7,6 +7,7 @@ class API {
 	request = ({ path = '/', method = 'GET', data }) => {
 		let {
 			url,
+      enable_http,
 			auth_username: username, // eslint-disable-line prefer-const
 			auth_password: password, // eslint-disable-line prefer-const
 		} = store.getState().settings.server;
@@ -17,26 +18,37 @@ class API {
 				? `${url.join('/')}${path}`
 				: `${url.join('/')}/${path}`;
 
-		if (connection_status && method === 'GET') {
+    if (!connection_status) {
+      return new Promise((_, reject) => {
+        reject(apiErrorStrings.ws_not_connected);
+      });
+    } else if (!enable_http && url.startsWith('http://')) {
+      return new Promise((_, reject) => {
+        reject(apiErrorStrings.http_disabled);
+      });
+    } else if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      return new Promise((_, reject) => {
+        reject(apiErrorStrings.bad_url_format);
+      });
+		} else if (connection_status && method === 'GET') {
 			return axios({
 				method: 'get',
 				url,
 				auth: { username, password },
 			});
-		}
-		if (connection_status && data) {
+		} else if (connection_status && data) {
 			return axios({
 				method: 'post',
 				url,
 				data,
 				auth: { username, password },
 			});
-		}
-		if (!connection_status) {
-			return new Promise((_, reject) => {
-				reject(apiErrorStrings.ws_not_connected);
-			});
-		}
+		} else {
+      return new Promise((_, reject) => {
+        reject(apiErrorStrings.bad_request);
+      });
+    }
+
 	};
 
 	/** ********************query***************************** */
