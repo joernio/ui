@@ -1,13 +1,14 @@
 import { windowActionApi } from '../../assets/js/utils/ipcRenderer';
 
 export const setSettings = payload => dispatch => {
-  const { cert_path, cert_passphrase, enable_http } = payload.server;
+	const { cert_path, cert_passphrase, enable_http } = payload.server;
 
-  !enable_http && cert_path &&
-    windowActionApi.importCertificate({ cert_path, cert_passphrase });
+	!enable_http &&
+		cert_path &&
+		windowActionApi.importCertificate({ cert_path, cert_passphrase });
 
-  payload.server.cert_path = 'up to date';
-  payload.server.cert_passphrase = 'up to date';
+	payload.server.cert_path = 'up to date';
+	payload.server.cert_passphrase = 'up to date';
 	dispatch({
 		type: 'SET_SETTINGS',
 		payload,

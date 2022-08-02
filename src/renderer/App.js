@@ -2,7 +2,6 @@ import React from 'react';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import * as settingsSelectors from './store/selectors/settingsSelectors';
-import * as filesSelectors from './store/selectors/filesSelectors';
 import * as statusSelectors from './store/selectors/statusSelectors';
 import createTheme from './assets/js/theme';
 import initIPCRenderer from './assets/js/utils/ipcRenderer';
@@ -10,8 +9,8 @@ import {
 	initShortcuts,
 	removeShortcuts,
 	handleFontSizeChange,
-  discardDialogHandler,
-  sendWindowsMessage
+	discardDialogHandler,
+	sendWindowsMessage,
 } from './assets/js/utils/scripts';
 
 import WindowWrapper from './views/WindowWrapper';
@@ -20,37 +19,22 @@ import QueryProcessor from './renderless/QueryProcessor';
 import WorkspaceProcessor from './renderless/WorkspaceProcessor';
 import FilesProcessor from './renderless/FilesProcessor';
 import Toaster from './components/toaster/Toaster';
+import DiscardDialog from './components/discard_dialog/DiscardDialog';
+import QueryShortcutWithArgsDialog from './components/query_shortcut_with_args_dialog/QueryShortcutWithArgsDialog';
 
 function App(props) {
-
-  const [state, setState] = React.useState({
-		openDiscardDialog: false,
-		discardDialogCallback: () => {},
-	});
-
-  const handleSetState = obj => {
-		if (obj) {
-			Promise.resolve(obj).then(obj => {
-				setState(state => ({ ...state, ...obj }));
-			});
-		}
-	};
-
-  const {openFiles, openFilePath} = props;
-
-  React.useEffect(()=>{
-    props.connected !== null && setTimeout(()=>handleSetState(
-      discardDialogHandler(
-        openFiles,
-        openFilePath,
-        () => {
-          sendWindowsMessage(
-            'reload',
-          );
-        },
-      ),
-    ),0);
-  },[props.server?.enable_http]);
+	React.useEffect(() => {
+		props.connected !== null &&
+			setTimeout(
+				// schedule this operation to run in the next event loop run.
+				// REMOVING THE setTimeout WILL PREVENT enable_http FROM EVER CHANGING!!! WE DON'T WANT THAT!!
+				() =>
+					discardDialogHandler(() => {
+						sendWindowsMessage('reload');
+					}),
+				0,
+			);
+	}, [props.server?.enable_http]);
 
 	React.useEffect(() => {
 		if (props.queryShortcuts) {
@@ -80,10 +64,11 @@ function App(props) {
 				<WindowWrapper>
 					<Window />
 				</WindowWrapper>
+				<DiscardDialog />
+				<QueryShortcutWithArgsDialog />
 			</ThemeProvider>
 			<QueryProcessor />
 			<WorkspaceProcessor />
-
 			<FilesProcessor />
 			<Toaster />
 		</div>
@@ -91,14 +76,12 @@ function App(props) {
 }
 
 const mapStateToProps = state => ({
-  server: settingsSelectors.selectServer(state),
+	server: settingsSelectors.selectServer(state),
 	queryShortcuts: settingsSelectors.selectQueryShortcuts(state),
 	websocket: settingsSelectors.selectWebSocket(state),
 	fontSize: settingsSelectors.selectFontSize(state),
 	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
-  openFiles: filesSelectors.selectOpenFiles(state),
-	openFilePath: filesSelectors.selectOpenFilePath(state),
-  connected: statusSelectors.selectConnected(state),
+	connected: statusSelectors.selectConnected(state),
 });
 
 export default connect(mapStateToProps, null)(App);

@@ -268,7 +268,9 @@ function Workspace(props) {
 					<div
 						className={classes.emptyWorkspaceElementStyle}
 						onClick={async () =>
-							addToQueue(await constructQueryWithPath('importCpg'))
+							addToQueue(
+								await constructQueryWithPath('importCpg'),
+							)
 						}
 					>
 						Import Cpg

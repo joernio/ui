@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { Icon } from '@blueprintjs/core';
-import DiscardDialog from '../discard_dialog/DiscardDialog';
 import * as filesSelectors from '../../store/selectors/filesSelectors';
 import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import {
@@ -27,22 +26,7 @@ function EditorTabs(props) {
 	const classes = useStyles(props);
 	const commonClasses = useCommonStyles(props);
 
-	const [state, setState] = React.useState({
-		openDiscardDialog: false,
-		discardDialogCallback: () => {},
-	});
-
-	const handleSetState = obj => {
-		if (obj) {
-			Promise.resolve(obj).then(obj => {
-				setState(state => ({ ...state, ...obj }));
-			});
-		}
-	};
-
 	const { openFiles, openFilePath } = props;
-	const { openDiscardDialog, discardDialogCallback } = state;
-
 	return (
 		<div
 			className={clsx(
@@ -67,22 +51,16 @@ function EditorTabs(props) {
 						<div
 							className={classes.editorTabTitleStyle}
 							onClick={() =>
-								handleSetState(
-									discardDialogHandler(
-										openFiles,
-										openFilePath,
-										() => {
-											syntheticFiles.filter(type =>
-												path.endsWith(type),
-											).length > 0
-												? openSyntheticFile(
-														path,
-														openFiles[path],
-												  )
-												: openFile(path);
-										},
-									),
-								)
+								discardDialogHandler(() => {
+									syntheticFiles.filter(type =>
+										path.endsWith(type),
+									).length > 0
+										? openSyntheticFile(
+												path,
+												openFiles[path],
+										  )
+										: openFile(path);
+								})
 							}
 						>
 							{imageFileExtensions.includes(getExtension(path)) ||
@@ -123,25 +101,14 @@ function EditorTabs(props) {
 								},
 							)}
 							onClick={() =>
-								handleSetState(
-									discardDialogHandler(
-										openFiles,
-										openFilePath,
-										() => {
-											closeFile(path);
-										},
-									),
-								)
+								discardDialogHandler(() => {
+									closeFile(path);
+								})
 							}
 						/>
 					</div>
 				);
 			})}
-			<DiscardDialog
-				handleSetState={handleSetState}
-				openDiscardDialog={openDiscardDialog}
-				callback={discardDialogCallback}
-			/>
 		</div>
 	);
 }

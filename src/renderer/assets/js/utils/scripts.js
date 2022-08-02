@@ -23,7 +23,10 @@ import {
 	deQueueScriptsQuery,
 	setQueryShortcut,
 } from '../../../store/actions/queryActions';
-import { setToast } from '../../../store/actions/statusActions';
+import {
+	setToast,
+	setDiscardDialog,
+} from '../../../store/actions/statusActions';
 import { setFiles, setOpenFiles } from '../../../store/actions/filesActions';
 import { setHighlightRange } from '../../../store/actions/editorActions';
 import { windowActionApi, selectDirApi } from './ipcRenderer';
@@ -335,39 +338,46 @@ export const handleWebSocketResponse = data => {
 	});
 };
 
-	export const handleCertificateError = () => {
-  handleSetToast({
-    icon: 'warning-sign',
-    intent: 'danger',
-    message: apiErrorStrings.certificate_invalid,
-  });
+export const handleCertificateError = () => {
+	handleSetToast({
+		icon: 'warning-sign',
+		intent: 'danger',
+		message: apiErrorStrings.certificate_invalid,
+	});
 };
 export const handleCertificateImportError = () => {
-  handleSetToast({
-    icon: 'warning-sign',
-    intent: 'danger',
-    message: apiErrorStrings.certificate_import_failed,
-  });
+	handleSetToast({
+		icon: 'warning-sign',
+		intent: 'danger',
+		message: apiErrorStrings.certificate_import_failed,
+	});
 };
 export const handleCertificateSuccess = () => {
-  handleSetToast({
-    icon: 'info-sign',
-    intent: 'success',
-    message: apiErrorStrings.certificate_import_successful,
-  });
+	handleSetToast({
+		icon: 'info-sign',
+		intent: 'success',
+		message: apiErrorStrings.certificate_import_successful,
+	});
 };
 
 export const isElementScrolled = e => (e.target.scrollTop > 0 ? true : false);
 
-export const discardDialogHandler = (openFiles, openFilePath, callback) => {
+export const discardDialogHandler = callback => {
+	const { openFiles, openFilePath } = store.getState().files;
 	if (openFiles[openFilePath] === false) {
-		return { openDiscardDialog: true, discardDialogCallback: callback };
+		store.dispatch(
+			setDiscardDialog({
+				open: true,
+				callback,
+			}),
+		);
+	} else {
+		callback();
 	}
-
-	callback();
 };
 
-export const getOpenFileName = path => {
+export const getOpenFileName = () => {
+	let { openFilePath: path } = store.getState().files;
 	if (path) {
 		path = path ? path.split('/') : null;
 		path = path ? path[path.length - 1] : null;
@@ -1393,8 +1403,7 @@ export const handleSwitchWorkspace = async () => {
 };
 
 export const handleAPIQueryError = err => {
-
-  err = typeof err === 'string' ? { message: err } : err;
+	err = typeof err === 'string' ? { message: err } : err;
 
 	if (err === apiErrorStrings.ws_not_connected) {
 		const ws_url = store.getState().settings.websocket.url;
@@ -1424,12 +1433,12 @@ export const handleAPIQueryError = err => {
 			message: `${err.message}. Ensure that no other program is subscribed to the websocket`,
 		});
 	} else {
-    handleSetToast({
-      icon: 'warning-sign',
-      intent: 'danger',
-      message: err.message,
-    });
-  }
+		handleSetToast({
+			icon: 'warning-sign',
+			intent: 'danger',
+			message: err.message,
+		});
+	}
 
 	store.dispatch(resetQueue({}));
 };

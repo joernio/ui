@@ -12,3 +12,7 @@ export const setConnected = connected => dispatch => {
 export const setToast = toast => dispatch => {
 	dispatch(setStatus({ toast }));
 };
+
+export const setDiscardDialog = discardDialog => dispatch => {
+	dispatch(setStatus({ discardDialog }));
+};

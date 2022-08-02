@@ -18,7 +18,7 @@ export const handleOnChange = (e, values) => {
 	if (
 		e.target.id === 'prefers_dark_mode' ||
 		e.target.id === 'prefers_terminal_view' ||
-    e.target.id === 'enable_http'
+		e.target.id === 'enable_http'
 	) {
 		values[e.target.id] = e.target.checked;
 	} else {
@@ -33,9 +33,9 @@ export const getSettingsInitialValues = props => {
 	initialSettings.server_url = props.server?.url;
 	initialSettings.server_username = props.server?.auth_username;
 	initialSettings.server_password = props.server?.auth_password;
-  initialSettings.cert_path = props.server?.cert_path;
-  initialSettings.enable_http = props.server?.enable_http;
-  initialSettings.cert_passphrase = '';
+	initialSettings.cert_path = props.server?.cert_path;
+	initialSettings.enable_http = props.server?.enable_http;
+	initialSettings.cert_passphrase = '';
 
 	initialSettings.ws_url = props.websocket?.url;
 
@@ -45,13 +45,12 @@ export const getSettingsInitialValues = props => {
 	initialSettings.scripts_dir = props.scriptsDir;
 	initialSettings.ui_ignore = props.uiIgnore;
 
-  initialSettings.cert_path_up_to_date = props.server?.cert_path
-  ? true
-  : false;
-initialSettings.cert_passphrase_up_to_date = props.server
-  ?.cert_passphrase
-  ? true
-  : false;
+	initialSettings.cert_path_up_to_date = props.server?.cert_path
+		? true
+		: false;
+	initialSettings.cert_passphrase_up_to_date = props.server?.cert_passphrase
+		? true
+		: false;
 
 	return initialSettings;
 };
@@ -62,9 +61,9 @@ export const collectSettingsValues = values => {
 			url: values.server_url,
 			auth_username: values.server_username,
 			auth_password: values.server_password,
-      cert_path: values.cert_path,
-      cert_passphrase: values.cert_passphrase,
-      enable_http: values.enable_http,
+			cert_path: values.cert_path,
+			cert_passphrase: values.cert_passphrase,
+			enable_http: values.enable_http,
 		},
 		websocket: {
 			url: values.ws_url,

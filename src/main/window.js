@@ -14,6 +14,7 @@ const installExtensions = async () => {
 	);
 };
 
+// eslint-disable-next-line no-unused-vars
 const devSetup = async () => {
 	if (process.env.NODE_ENV === 'production' && isDev) {
 		const sourceMapSupport = require('source-map-support');
@@ -31,7 +32,7 @@ const devSetup = async () => {
 
 export const createWindow = async () => {
 	// await devSetup();
-	// devSetup(); //uncomment this line to keep devtools always open
+	// devSetup(); // uncomment this line to keep devtools always open
 
 	const { position, size } = getWindowPosition();
 
