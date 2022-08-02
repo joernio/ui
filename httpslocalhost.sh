@@ -69,7 +69,7 @@ openssl x509 -req -in /etc/nginx/ssl/localhost.csr \
 -CAcreateserial -days 3650 -sha256 -extfile /etc/nginx/ssl/localhost.ext \
 -out /etc/nginx/ssl/localhost.crt
 
-# Create password for signed server certificate in pkcs12 format
+# Create password for signed server certificate in pkcs12 format. This is just for test purposes. You should generate your own password and edit this script to insert it.
 echo "4346d3D2fgefr43542w4w5trdfd3454fsFR3trYFDBrtERT4653wedfgtrfdgsREWWE345w3" > /etc/nginx/ssl/p12_passwd #special characters might not work
 
 # Create pkcs12 certificate file

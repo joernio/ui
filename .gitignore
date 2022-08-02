@@ -1,50 +1,45 @@
-# dependencies
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+debug.log
+.env
+.yarn/
+out/
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Coverage directory used by tools like istanbul
+coverage
+.eslintcache
+
+# Dependency directory
+# https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
+node_modules
+
+release/app/dist
+release/build
 
 node_modules/
 build/
 /.pnp
-
-package-lock.json
 .pnp.js
-
-
-# testing
-
-/coverage
-
-
-
-# production
-
 /build
 
-
-
-# misc
-
-.DS_Store
-
-.env.local
-
-.env.development.local
-
-.env.test.local
-
-.env.production.local
-
-
-
-npm-debug.log*
-
-yarn-debug.log*
-
-yarn-error.log*
-
-
-
-debug.log
-
-.env
-.yarn/
-
-out/
+.idea
+npm-debug.log.*
+*.css.d.js
+*.sass.d.js
+*.scss.d.js
