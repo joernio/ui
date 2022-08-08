@@ -48,21 +48,11 @@ git clone https://github.com/joernio/ui
 npm install
 ```
 
-2. after the installation above, run
+2. from the root of the cloned repository, cd into release/app and run:
 
 ```commandline
-npm run rebuild
+npm install
 ```
-
-Note: rebuilding is a one-time process and is only necessary after every time you install the project's packages by running npm install. without the rebuild, you might get incompatibility issues between packages. You don't need to run it again if you are not reinstalling the project's packages from scratch.
-
-3. after rebuilding, run the command
-
-```commandline
-npm run prod-build
-```
-
-you run this command to generate build files. After running it once and unless you make changes to the code, you don't need to run it again every time you want to start up the project.
 
 ### Run Joern in server mode
 
@@ -70,7 +60,9 @@ you run this command to generate build files. After running it once and unless y
 
 ### Run start:
 
-1. To start up the project, run `npm start` in the directory with the project's package.json file
+1. To start up the project, run `npm start` in the repository root directory
+
+Anytime you make changes the files, your changes are auto detected and will trigger a rebuild so you don't need to run npm start again.
 
 # How To Build The Executable On Your Local Machine
 
@@ -88,20 +80,24 @@ If you followed the steps above, you can continue with the steps below to learn 
 1. run the command below to generate a build.
 
 ```commandline
-npm run prod-build
+npm run build
 ```
 
 ### Install Electron Forge
 
-1. After running the step above, run the command below:
+1. cd into release/app and run:
 
 ```commandline
 npm install @electron-forge/cli -D
 ```
 
+```commandline
+npm install @electron-forge/plugin-auto-unpack-natives -D
+```
+
 ### Import The Project Into Electron Forge
 
-1. to import the project into electron forge, run
+1. while still on the release/app directory, to import the project into electron forge, run
 
 ```commandline
 npx electron-forge import
@@ -109,13 +105,13 @@ npx electron-forge import
 
 ### Build Executable
 
-1. After running the command above, electron forge modifies your project (mostly package.json) to the format it accepts while building an executable. run the command below to build an executable for your local machine (be patient, this can take a while).
+1. After running the command above, electron forge modifies your project (mostly release/app/package.json) to the format it accepts while building an executable. run the command below to build an executable for your local machine (be patient, this can take a while).
 
 ```commandline
 npx electron-forge make
 ```
 
-After the step completes, you should find a folder named out in your project root. open "make" folder inside "out" to access your build. (rpm and deb for Linux, zip file for mac). copy the build to a different directory and install.
+After the step completes, you should find a folder named out in release/app/. open "make" folder inside "out" to access your build. (rpm and deb for Linux, zip file for mac). copy the build to a different directory and install.
 
 Note: run "git reset --hard" to get your project back to its initial stage or else you might face issues with further attempts to pull from git or run "npm start".
 
