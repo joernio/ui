@@ -5,11 +5,13 @@ on:
     branches:
       - release
     paths:
-      - '**'
-      - '!.gitignore'
-      - '!.prettierrc.yaml'
-      - '!prettierignore'
-      - '!README.md'
+      - '!**'
+      - 'src/main'
+      - 'src/renderer'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'release/app/package-lock.json'
+      - 'release/app/package-lock.json'
 
   workflow_dispatch:
 
@@ -74,10 +76,11 @@ jobs:
       - name: Build Electron app
         run: |
           npm install
-          npm run prod-build
-          npm install @electron-forge/cli -D
-          npx electron-forge import
-          npx electron-forge make
+          npm run build
+          npm --prefix ./release/app install @electron-forge/cli -D
+          npm --prefix ./release/app install @electron-forge/plugin-auto-unpack-natives -D
+          npx --workspace ./release/app electron-forge import
+          npx --workspace ./release/app electron-forge make
 
       - name: 'Upload Ubuntu Artifacts'
         uses: actions/upload-artifact@v2
@@ -85,7 +88,7 @@ jobs:
         with:
           name: 'ubuntu_build'
           path: |
-            ./out/**/ui-client*.*
+            ./release/app/out/**/ui-client*.*
           retention-days: 1
 
       # - name: 'Upload Macos Artifacts'

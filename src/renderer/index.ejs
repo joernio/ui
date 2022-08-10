@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval' 'unsafe-inline';worker-src 'self' blob:">
+    <title>CPG UI Client</title>
+
+    <!-- embed css -->
+    <% for (let key in htmlWebpackPlugin.files.css) { %>
+        <link href="<%= htmlWebpackPlugin.files.css[key] %>" rel=stylesheet>
+    <% } %>
+
+    <!-- embed scripts -->
+    <% for (let key in htmlWebpackPlugin.files.js) { %>
+       <% if(htmlWebpackPlugin.files.js[key].includes("worker")){ %>
+            <script defer=defer type="text/js-worker" src="<%= htmlWebpackPlugin.files.js[key] %>"></script>
+       <% }else{ %>
+            <script defer=defer type="text/javascript" src="<%= htmlWebpackPlugin.files.js[key] %>"></script>
+        <% } %>
+    <% } %>
+</head>
+<body>
+    <div id="electron"></div>
+</body>
+<script>
+    const global = globalThis;
+  </script>
+</html>
