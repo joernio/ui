@@ -41,6 +41,10 @@ export const setQuerySuggestions = query_suggestions => dispatch => {
 	dispatch(setTerminal({ query_suggestions }));
 };
 
+export const setSuggestionDialogOpen = suggestion_dialog_open => dispatch => {
+		dispatch(setTerminal({ suggestion_dialog_open }));
+	};
+
 export const setCircuitUIResponses = circuit_ui_responses => dispatch => {
 	dispatch(setTerminal({ circuit_ui_responses }));
 };

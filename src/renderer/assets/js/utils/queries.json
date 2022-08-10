@@ -1,0 +1,102 @@
+{
+    "cpg": {
+     "all": {
+        "l": true,
+        "s": true
+    },
+     "argument": {
+        "l": true,
+        "s": true
+    },
+     "arithmetic": {
+        "l": true,
+        "s": true
+    },
+     "assignment": {
+        "l": true,
+        "s": true
+    },
+     "break": {
+        "l": true,
+        "s": true
+    },
+     "call": {
+        "l": true,
+        "s": true
+    },
+     "comment": {
+        "l": true,
+        "s": true
+    },
+     "continue": {
+        "l": true,
+        "s": true
+    },
+     "controlStructure": {
+        "l": true,
+        "s": true
+    },
+     "doBlock": {
+        "l": true,
+        "s": true
+    },
+     "elseBlock": {
+        "l": true,
+        "s": true
+    },
+     "metaData": {
+         "l": {
+             "id": {
+                 "l": true,
+                 "s": true
+             },
+             "hash": {
+                 "l": true,
+                 "s": true
+             },
+             "language": {
+                 "l": true,
+                 "s": true
+             },
+             "overlays": {
+                 "l": true,
+                 "s": true
+             },
+             "version": {
+                 "l": true,
+                 "s": true
+             }
+         }
+     },
+     "method": {
+         "l": true,
+         "s": true,
+         "name": {
+             "l": true,
+             "s": true
+         },
+         "name(\"\")": {
+             "l": true,
+             "s": true
+         }
+     },
+     "method(\"\")": {
+        "l": true,
+         "s": true
+     }
+    },
+    "close(\"\")": true,
+    "importCode(\"\")": true,
+    "delete(\"\")": true,
+    "importCpg(\"\")": true,
+    "open(\"\")": true,
+    "openForInputPath(\"\")": true,
+    "project": true,
+    "run": {
+     "securityprofile": true
+    },
+    "save": true,
+    "switchWorkspace(\"\")": true,
+    "undo": true,
+    "workspace": true
+}

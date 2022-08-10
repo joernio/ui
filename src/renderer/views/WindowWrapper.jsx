@@ -91,10 +91,7 @@ function WindowWrapper(props) {
 									text="Save Script"
 									icon="floppy-disk"
 									onClick={() =>
-										saveFile(
-											openFilePath,
-											props.scriptsDir,
-										)
+										saveFile(openFilePath, props.scriptsDir)
 									}
 								/>
 								<MenuDivider

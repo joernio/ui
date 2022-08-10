@@ -43,6 +43,8 @@ import {
 	handleEmptyWorkspace,
 	handleSuggestionClick,
 	handleToggleAllBlocks,
+  calculateSuggestionsPopoverMarginLeft,
+	vars
 } from './terminalWindowScripts';
 import commonStyles from '../../assets/js/styles';
 
@@ -114,6 +116,8 @@ function TerminalWindow(props) {
 		circuitUIRef: React.useRef(null),
 		resizeEl: React.useRef(null),
 		vListEl: React.useRef(null),
+    suggestionsPopoverMarginLeftTrackerEl: React.useRef(null),
+		suggestionsContainerEl: React.useRef(null),
 		cacheRef: React.useRef(
 			new CellMeasurerCache({
 				minHeight: 0,
@@ -133,6 +137,7 @@ function TerminalWindow(props) {
 		prefersTerminalView,
 		isMaximized,
 		query_suggestions,
+    suggestion_dialog_open,
 		circuit_ui_responses,
 	} = props;
 	const { scrolled } = state;
@@ -220,13 +225,42 @@ function TerminalWindow(props) {
 		);
 	}, [props.isMaximized]);
 
-	React.useEffect(() => {
+	React.useEffect(() => { // verify that this useEffect is useful
 		setTimeout(resize, 0);
 
 		if (refs.terminalRef.current) {
 			refs.terminalRef.current.style.height = props.terminalHeight;
 		}
 	}, [props.terminalHeight]);
+
+  React.useEffect(() => {
+		const observer = new MutationObserver(() =>
+			calculateSuggestionsPopoverMarginLeft(refs),
+		);
+		refs.suggestionsPopoverMarginLeftTrackerEl.current &&
+			observer.observe(
+				refs.suggestionsPopoverMarginLeftTrackerEl.current,
+				{
+					childList: true,
+				},
+			);
+		return () =>
+			refs.suggestionsPopoverMarginLeftTrackerEl.current &&
+			observer.disconnect(
+				refs.suggestionsPopoverMarginLeftTrackerEl.current,
+			);
+	}, [refs.suggestionsPopoverMarginLeftTrackerEl]);
+
+	React.useEffect(() => {
+		if (
+			props.query_suggestions.length > 0 &&
+			!props.prefersTerminalView
+		) {
+			props.setSuggestionDialogOpen(true);
+		} else {
+			props.setSuggestionDialogOpen(false);
+		}
+	}, [props.query_suggestions]);
 
 	React.useEffect(() => {
 		if (props?.queue && Object.keys(props.queue).length) {
@@ -419,13 +453,22 @@ function TerminalWindow(props) {
 				<div id="circuit-ui-input-container">
 					<input type="text" placeholder="▰  query" />
 					<button>Run Query ↵</button>
-					<Popover2
-						className={classes.querySelectionTooltipStyle}
-						portalClassName={
-							classes.querySelectionToolTipPortalStyle
-						}
+          <Popover2
+						shouldReturnFocusOnClose={true}
+						placement="auto-end"
+						interactionKind="click"
+						minimal={true}
+						isOpen={suggestion_dialog_open}
+						onClose={() => props.setSuggestionDialogOpen(false)}
+						className={classes.querySuggestionPopoverStyle}
+						portalClassName={clsx(
+							classes.querySuggestionPopoverPortalStyle,
+							'query-suggestion-popover-portal',
+						)}
+						shouldReturnFocusOnClose={true}
 						content={
 							<div
+								ref={refs.suggestionsContainerEl}
 								className={clsx(
 									classes.querySuggestionsStyle,
 									commonClasses.scrollBarStyle,
@@ -433,12 +476,22 @@ function TerminalWindow(props) {
 								)}
 							>
 								{query_suggestions.map(
-									(query_suggestion, idx) => (
+									(query_suggestion, index) => (
 										<div
-											key={`${idx}-${query_suggestion}`}
-											className={
-												classes.querySuggestionStyle
+											tabIndex="0"
+											autofocus={
+												index === 0 ? true : false
 											}
+											key={`${index}-${query_suggestion.suggestion}`}
+											className={clsx(
+												classes.querySuggestionStyle,
+												{
+													'query-suggestion-selected':
+														index === 0
+															? true
+															: false,
+												},
+											)}
 											onClick={e =>
 												handleSuggestionClick(
 													e,
@@ -447,20 +500,48 @@ function TerminalWindow(props) {
 												)
 											}
 										>
-											{query_suggestion}
+											<Icon
+												icon={query_suggestion.origin}
+												className={
+													classes.querySuggestionOriginIconStyle
+												}
+											/>
+
+											{!vars.data
+												? query_suggestion.suggestion
+												: query_suggestion.suggestion
+														.split(vars.data)
+														.map((str, index) => {
+															return index ===
+																0 ? (
+																<span
+																	className={
+																		classes.querySuggestionMatchStyle
+																	}
+                                  key={`${index}-${str}`}
+																>
+																	{
+																		vars.data
+																	}
+																</span>
+															) : (
+																<span
+                                  key={`${index}-${str}`}
+                                >
+																	{str}
+																</span>
+															);
+														})}
 										</div>
 									),
 								)}
 							</div>
 						}
-						placement="right-end"
-						interactionKind="click"
-						minimal={true}
-						isOpen={
-							query_suggestions.length > 0 && !prefersTerminalView
-						}
 					>
-						<span id="suggestion-box-tracker"></span>
+						<span
+							id="suggestion-box-tracker"
+							ref={refs.suggestionsPopoverMarginLeftTrackerEl}
+						></span>
 					</Popover2>
 				</div>
 			</div>
@@ -475,10 +556,11 @@ const mapStateToProps = state => ({
 	prev_projects: terminalSelectors.selectPrevProjects(state),
 	isMaximized: terminalSelectors.selectIsMaximized(state),
 	query_suggestions: terminalSelectors.selectQuerySuggestions(state),
+  suggestion_dialog_open: terminalSelectors.selectSuggestionDialogOpen(state),
 	circuit_ui_responses: terminalSelectors.selectCircuitUiResponses(state),
 
 	results: querySelectors.selectResults(state),
-	queue: querySelectors.selectQuery(state),
+	queue: querySelectors.selectQueue(state),
 
 	projects: workSpaceSelectors.selectProjects(state),
 
@@ -498,6 +580,7 @@ const mapDispatchToProps = dispatch => ({
 	setPrevProjects: prev_projects =>
 		dispatch(terminalActions.setPrevProjects(prev_projects)),
 	setIsMaximized: obj => dispatch(terminalActions.setIsMaximized(obj)),
+  setSuggestionDialogOpen: bool => dispatch(terminalActions.setSuggestionDialogOpen(bool)),
 	setSettings: values => dispatch(settingsActions.setSettings(values)),
 });
 

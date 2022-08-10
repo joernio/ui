@@ -270,43 +270,57 @@ const styles = theme => ({
 			},
 		},
 	},
-	querySelectionTooltipStyle: {
+	querySuggestionPopoverStyle: {
 		position: 'absolute',
 	},
-	querySelectionToolTipPortalStyle: {
+	querySuggestionPopoverPortalStyle: {
 		'& > div > div:nth-child(1)': {
 			display: 'none',
 		},
 	},
-	querySuggestionsStyle: {
+  querySuggestionsStyle: {
 		backgroundColor: props =>
 			theme.palette.navBar.background[
 				props.prefersDarkMode ? 'dark' : 'light'
 			],
 		color: props =>
-			theme.palette.navBar.base[props.prefersDarkMode ? 'dark' : 'light'],
-		padding: '0.4em',
-		maxHeight: '50vh',
+			theme.palette.navBar.base[
+				props.prefersDarkMode ? 'dark' : 'light'
+			],
+		padding: '0.2em 0',
+		paddingLeft: '12px',
+		maxHeight: '20em',
 		overflowY: 'scroll',
-		'&:hover::-webkit-scrollbar-thumb': {
-			transition: theme.transitions.create('background-color', {
-				easing: theme.transitions.easing.linear,
-				duration: 1000,
-			}),
-		},
-	},
-	querySuggestionStyle: {
-		display: 'flex',
-		width: '100%',
-		padding: '0.5em',
-		justifyContent: 'space-between',
-		cursor: 'pointer',
-		'&:hover': {
+		'& .query-suggestion-selected': {
 			color: props =>
 				theme.palette.sideNav.hover[
 					props.prefersDarkMode ? 'dark' : 'light'
 				],
+			backgroundColor: '#0090F150',
+			border: '1px solid #0090F1',
+			outline: 'none',
+			'&:hover': {
+				backgroundColor: '#0090f16b !important',
+			},
 		},
+	},
+	querySuggestionStyle: {
+		width: '100%',
+		minWidth: '20em',
+		padding: '0.5em',
+		cursor: 'pointer',
+		'&:hover': {
+			backgroundColor: props =>
+				theme.palette.explorer.hover[
+					props.prefersDarkMode ? 'dark' : 'light'
+				],
+		},
+	},
+	querySuggestionMatchStyle: {
+		color: '#0090F1',
+	},
+	querySuggestionOriginIconStyle: {
+		marginRight: '0.5em',
 	},
 	terminalOpen: {
 		transition: theme.transitions.create('height', {

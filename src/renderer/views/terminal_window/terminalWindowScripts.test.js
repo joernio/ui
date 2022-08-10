@@ -59,61 +59,61 @@ jest.mock('../../assets/js/utils/ipcRenderer', () => ({
 
 describe('function updateData:', () => {
 	beforeEach(() => {
-		TWS.data_obj.data = '';
-		TWS.data_obj.cursorPosition = 0;
+		TWS.vars.data = '';
+		TWS.vars.cursorPosition = 0;
 	});
 
-	it("expect data_obj.data to be equal to '' when function arg is falsy:", () => {
+	it("expect vars.data to be equal to '' when function arg is falsy:", () => {
 		[undefined, null, '', false, 0].forEach(arg => {
 			TWS.updateData(arg);
-			expect(TWS.data_obj.data).toBe('');
+			expect(TWS.vars.data).toBe('');
 		});
 	});
 
-	it("expect data_obj.data to be equal to the 'abcdefghi':", () => {
+	it("expect vars.data to be equal to the 'abcdefghi':", () => {
 		TWS.updateData('b');
-		TWS.data_obj.cursorPosition += 1;
+		TWS.vars.cursorPosition += 1;
 		TWS.updateData('d');
-		TWS.data_obj.cursorPosition += 1;
+		TWS.vars.cursorPosition += 1;
 		TWS.updateData('f');
-		TWS.data_obj.cursorPosition += 1;
+		TWS.vars.cursorPosition += 1;
 		TWS.updateData('h');
-		TWS.data_obj.cursorPosition = 0;
+		TWS.vars.cursorPosition = 0;
 		TWS.updateData('a');
-		TWS.data_obj.cursorPosition = 2;
+		TWS.vars.cursorPosition = 2;
 		TWS.updateData('c');
-		TWS.data_obj.cursorPosition = 4;
+		TWS.vars.cursorPosition = 4;
 		TWS.updateData('e');
-		TWS.data_obj.cursorPosition = 6;
+		TWS.vars.cursorPosition = 6;
 		TWS.updateData('g');
-		TWS.data_obj.cursorPosition = 8;
+		TWS.vars.cursorPosition = 8;
 		TWS.updateData('i');
-		expect(TWS.data_obj.data).toBe('abcdefghi');
-		expect(TWS.data_obj.cursorPosition).toBe(8);
+		expect(TWS.vars.data).toBe('abcdefghi');
+		expect(TWS.vars.cursorPosition).toBe(8);
 	});
 });
 
 describe('function updateCursorPosition:', () => {
-	it('expect data_obj.cursorPosition to be equal to arg passed to the function:', () => {
+	it('expect vars.cursorPosition to be equal to arg passed to the function:', () => {
 		const value = 7;
 		TWS.updateCursorPosition(value);
-		expect(TWS.data_obj.cursorPosition).toBe(value);
+		expect(TWS.vars.cursorPosition).toBe(value);
 	});
 });
 
 describe('function constructInputToWrite:', () => {
-	TWS.data_obj.data = 'this is a test';
-	TWS.data_obj.cursorPosition = 14;
+	TWS.vars.data = 'this is a test';
+	TWS.vars.cursorPosition = 14;
 
 	it('expect function to return expected value:', () => {
 		const expected =
 			TV.clearLine +
 			TV.cpgDefaultPrompt +
-			TWS.data_obj.data +
+			TWS.vars.data +
 			TV.carriageReturn +
 			TV.cursorPositionFromStart
 				.split('<n>')
-				.join(TV.cpgDefaultPrompt.length + TWS.data_obj.cursorPosition);
+				.join(TV.cpgDefaultPrompt.length + TWS.vars.cursorPosition);
 		expect(TWS.constructInputToWrite()).toBe(expected);
 	});
 });
@@ -441,8 +441,8 @@ describe('function handlePasteFromClipBoard:', () => {
 	let handleWriteToCircuitUIInput;
 
 	beforeEach(() => {
-		TWS.data_obj.cursorPosition = 0;
-		TWS.data_obj.data = '';
+		TWS.vars.cursorPosition = 0;
+		TWS.vars.data = '';
 		windowActionApi.pasteFromClipBoard.mockClear();
 		windowActionApi.registerPasteFromClipBoardListener.mockClear();
 		updateData = jest.spyOn(TWS, 'updateData').mockImplementation(() => {});
@@ -477,8 +477,8 @@ describe('function handlePasteFromClipBoard:', () => {
 	});
 
 	afterEach(() => {
-		TWS.data_obj.cursorPosition = 0;
-		TWS.data_obj.data = '';
+		TWS.vars.cursorPosition = 0;
+		TWS.vars.data = '';
 		windowActionApi.pasteFromClipBoard.mockClear();
 		windowActionApi.registerPasteFromClipBoardListener.mockClear();
 		updateData.mockRestore();
@@ -498,8 +498,8 @@ describe('function handleEnter:', () => {
 	let handleWriteToCircuitUIInput;
 
 	beforeEach(() => {
-		TWS.data_obj.cursorPosition = 4;
-		TWS.data_obj.data = 'test';
+		TWS.vars.cursorPosition = 4;
+		TWS.vars.data = 'test';
 		updateData = jest.spyOn(TWS, 'updateData').mockImplementation(() => {});
 		updateCursorPosition = jest
 			.spyOn(TWS, 'updateCursorPosition')
@@ -529,7 +529,7 @@ describe('function handleEnter:', () => {
 		expect(termWriteLn).toHaveBeenCalledWith(term, '');
 		expect(constructOutputToWrite).toHaveBeenCalledWith(
 			null,
-			TWS.data_obj.data,
+			TWS.vars.data,
 			true,
 		);
 		expect(handleWriteToCircuitUIResponse).toHaveBeenCalledWith(
@@ -543,8 +543,8 @@ describe('function handleEnter:', () => {
 	});
 
 	afterEach(() => {
-		TWS.data_obj.cursorPosition = 0;
-		TWS.data_obj.data = '';
+		TWS.vars.cursorPosition = 0;
+		TWS.vars.data = '';
 		updateData.mockRestore();
 		updateCursorPosition.mockRestore();
 		termWriteLn.mockRestore();
@@ -565,8 +565,8 @@ describe('function handleBackspace:', () => {
 	let handleWriteToCircuitUIInput;
 
 	beforeEach(() => {
-		TWS.data_obj.cursorPosition = 4;
-		TWS.data_obj.data = 'test';
+		TWS.vars.cursorPosition = 4;
+		TWS.vars.data = 'test';
 		updateData = jest.spyOn(TWS, 'updateData').mockImplementation(() => {});
 		updateCursorPosition = jest
 			.spyOn(TWS, 'updateCursorPosition')
@@ -596,8 +596,8 @@ describe('function handleBackspace:', () => {
 	});
 
 	afterEach(() => {
-		TWS.data_obj.cursorPosition = 0;
-		TWS.data_obj.data = '';
+		TWS.vars.cursorPosition = 0;
+		TWS.vars.data = '';
 		updateData.mockRestore();
 		updateCursorPosition.mockRestore();
 		termWrite.mockRestore();
@@ -617,8 +617,8 @@ describe('function handleArrowUp:', () => {
 	let handleWriteToCircuitUIInput;
 
 	beforeEach(() => {
-		TWS.data_obj.cursorPosition = 0;
-		TWS.data_obj.data = '';
+		TWS.vars.cursorPosition = 0;
+		TWS.vars.data = '';
 		ev = { preventDefault: jest.fn() };
 		getPrev = jest
 			.spyOn(TWS, 'getPrev')
@@ -678,8 +678,8 @@ describe('function handleArrowUp:', () => {
 	});
 
 	afterEach(() => {
-		TWS.data_obj.cursorPosition = 0;
-		TWS.data_obj.data = '';
+		TWS.vars.cursorPosition = 0;
+		TWS.vars.data = '';
 		getPrev.mockRestore();
 		rotatePrev.mockRestore();
 		updateData.mockRestore();
@@ -703,8 +703,8 @@ describe('function handleArrowDown:', () => {
 	let handleWriteToCircuitUIInput;
 
 	beforeEach(() => {
-		TWS.data_obj.cursorPosition = 0;
-		TWS.data_obj.data = '';
+		TWS.vars.cursorPosition = 0;
+		TWS.vars.data = '';
 		ev = { preventDefault: jest.fn() };
 		getNext = jest
 			.spyOn(TWS, 'getNext')
@@ -764,8 +764,8 @@ describe('function handleArrowDown:', () => {
 	});
 
 	afterEach(() => {
-		TWS.data_obj.cursorPosition = 0;
-		TWS.data_obj.data = '';
+		TWS.vars.cursorPosition = 0;
+		TWS.vars.data = '';
 		getNext.mockRestore();
 		rotateNext.mockRestore();
 		updateData.mockRestore();
@@ -802,8 +802,8 @@ describe('function handleArrowLeft:', () => {
 	it('expect function to call specific functions:', async () => {
 		const term = {};
 		const refs = {};
-		TWS.data_obj.cursorPosition = 4;
-		TWS.data_obj.data = 'test';
+		TWS.vars.cursorPosition = 4;
+		TWS.vars.data = 'test';
 		await TWS.handleArrowLeft(term, refs);
 		expect(updateCursorPosition).toHaveBeenCalledWith(3);
 		expect(constructInputToWrite).toHaveBeenCalled();
@@ -814,15 +814,15 @@ describe('function handleArrowLeft:', () => {
 	it('expect updateCursorPosition to be called with 0:', async () => {
 		const term = {};
 		const refs = {};
-		TWS.data_obj.cursorPosition = 0;
-		TWS.data_obj.data = 'test';
+		TWS.vars.cursorPosition = 0;
+		TWS.vars.data = 'test';
 		await TWS.handleArrowLeft(term, refs);
 		expect(updateCursorPosition).toHaveBeenCalledWith(0);
 	});
 
 	afterEach(() => {
-		TWS.data_obj.cursorPosition = 0;
-		TWS.data_obj.data = '';
+		TWS.vars.cursorPosition = 0;
+		TWS.vars.data = '';
 		updateCursorPosition.mockRestore();
 		termWrite.mockRestore();
 		constructInputToWrite.mockRestore();
@@ -854,8 +854,8 @@ describe('function handleArrowRight:', () => {
 	it('expect function to call specific functions:', async () => {
 		const term = {};
 		const refs = {};
-		TWS.data_obj.cursorPosition = 3;
-		TWS.data_obj.data = 'test';
+		TWS.vars.cursorPosition = 3;
+		TWS.vars.data = 'test';
 		await TWS.handleArrowRight(term, refs);
 		expect(updateCursorPosition).toHaveBeenCalledWith(4);
 		expect(constructInputToWrite).toHaveBeenCalled();
@@ -866,15 +866,15 @@ describe('function handleArrowRight:', () => {
 	it('expect updateCursorPosition to be called with 4:', async () => {
 		const term = {};
 		const refs = {};
-		TWS.data_obj.cursorPosition = 4;
-		TWS.data_obj.data = 'test';
+		TWS.vars.cursorPosition = 4;
+		TWS.vars.data = 'test';
 		await TWS.handleArrowRight(term, refs);
 		expect(updateCursorPosition).toHaveBeenCalledWith(4);
 	});
 
 	afterEach(() => {
-		TWS.data_obj.cursorPosition = 0;
-		TWS.data_obj.data = '';
+		TWS.vars.cursorPosition = 0;
+		TWS.vars.data = '';
 		updateCursorPosition.mockRestore();
 		termWrite.mockRestore();
 		constructInputToWrite.mockRestore();
@@ -909,8 +909,8 @@ describe('function handlePrintable:', () => {
 		const term = {};
 		const refs = {};
 		const e = { key: 'a' };
-		TWS.data_obj.cursorPosition = 0;
-		TWS.data_obj.data = '';
+		TWS.vars.cursorPosition = 0;
+		TWS.vars.data = '';
 		await TWS.handlePrintable(term, refs, e);
 		expect(updateData).toHaveBeenCalledWith(e.key);
 		expect(updateCursorPosition).toHaveBeenCalledWith(1);
@@ -920,8 +920,8 @@ describe('function handlePrintable:', () => {
 	});
 
 	afterEach(() => {
-		TWS.data_obj.cursorPosition = 0;
-		TWS.data_obj.data = '';
+		TWS.vars.cursorPosition = 0;
+		TWS.vars.data = '';
 		updateData.mockRestore();
 		updateCursorPosition.mockRestore();
 		termWrite.mockRestore();
@@ -1035,8 +1035,8 @@ describe('function handleWriteQueryResult:', () => {
 	});
 
 	afterEach(() => {
-		TWS.data_obj.cursorPosition = 0;
-		TWS.data_obj.data = '';
+		TWS.vars.cursorPosition = 0;
+		TWS.vars.data = '';
 		updateData.mockRestore();
 		updateCursorPosition.mockRestore();
 		termWriteLn.mockRestore();
@@ -1095,8 +1095,8 @@ describe('function handleWriteScriptQuery:', () => {
 	});
 
 	afterEach(() => {
-		TWS.data_obj.cursorPosition = 0;
-		TWS.data_obj.data = '';
+		TWS.vars.cursorPosition = 0;
+		TWS.vars.data = '';
 		updateData.mockRestore();
 		updateCursorPosition.mockRestore();
 		termWriteLn.mockRestore();
@@ -1155,8 +1155,8 @@ describe('function handleWriteScriptQuery 2:', () => {
 	});
 
 	afterEach(() => {
-		TWS.data_obj.cursorPosition = 0;
-		TWS.data_obj.data = '';
+		TWS.vars.cursorPosition = 0;
+		TWS.vars.data = '';
 		updateData.mockRestore();
 		updateCursorPosition.mockRestore();
 		termWriteLn.mockRestore();
@@ -1244,8 +1244,8 @@ describe('function handleWriteQuery:', () => {
 	});
 
 	afterEach(() => {
-		TWS.data_obj.cursorPosition = 0;
-		TWS.data_obj.data = '';
+		TWS.vars.cursorPosition = 0;
+		TWS.vars.data = '';
 		updateData.mockRestore();
 		updateCursorPosition.mockRestore();
 		termWriteLn.mockRestore();
