@@ -12,7 +12,7 @@ import {
 	isElementScrolled,
 	openProjectExists,
 	openFile,
-	watchFolderPath,
+	watchPath,
 	getFolderStructureRootPathFromWorkspaceProjects,
 	deepClone,
 } from '../../assets/js/utils/scripts';
@@ -77,7 +77,7 @@ function Folders(props) {
 				(folders, root_path) => {
 					props.setFolders(folders);
 
-					watchFolderPath(root_path, chokidarVars, () => {
+					watchPath(root_path, chokidarVars, () => {
 						createFolderJsonModel({ path: root_path }, folders => {
 							props.setFolders(folders);
 						});
@@ -177,7 +177,7 @@ function Folders(props) {
 										await selectFolderStructureRootPath(),
 										(folders, root_path) => {
 											props.setFolders(folders);
-											watchFolderPath(
+											watchPath(
 												root_path,
 												chokidarVars,
 												() => {

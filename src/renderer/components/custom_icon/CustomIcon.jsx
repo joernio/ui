@@ -5,8 +5,8 @@ export default function CustomIcon(props) {
 	if (props.icon === customIcons.analytics) {
 		return (
 			<svg
-				width={props.size}
-				height={props.size}
+				width={props.iconSize}
+				height={props.iconSize}
 				{...props}
 				viewBox="0 0 44 44"
 			>
@@ -19,8 +19,8 @@ export default function CustomIcon(props) {
 	} else if (props.icon === customIcons.monitoring) {
 		return (
 			<svg
-				width={props.size}
-				height={props.size}
+				width={props.iconSize}
+				height={props.iconSize}
 				{...props}
 				viewBox="0 0 44 44"
 			>
@@ -33,8 +33,8 @@ export default function CustomIcon(props) {
 	} else if (props.icon === customIcons.rules) {
 		return (
 			<svg
-				width={props.size}
-				height={props.size}
+				width={props.iconSize}
+				height={props.iconSize}
 				{...props}
 				viewBox="0 0 44 44"
 			>
@@ -47,8 +47,8 @@ export default function CustomIcon(props) {
 	} else if (props.icon === customIcons.chevron_down) {
 		return (
 			<svg
-				width={props.size}
-				height={props.size}
+				width={props.iconSize}
+				height={props.iconSize}
 				{...props}
 				viewBox="0 0 12 8"
 			>
@@ -61,10 +61,10 @@ export default function CustomIcon(props) {
 	} else if (props.icon === customIcons.hamburger) {
 		return (
 			<svg
-				width={props.size}
-				height={props.size}
+				width={props.iconSize}
+				height={props.iconSize}
 				{...props}
-				viewBox={`0 0 ${props.size} ${props.size}`}
+				viewBox={`0 0 ${props.iconSize} ${props.iconSize}`}
 			>
 				<rect y="0%" width="100%" height="12%" fill="currentColor" />
 				<rect y="44%" width="100%" height="12%" fill="currentColor" />
@@ -74,8 +74,8 @@ export default function CustomIcon(props) {
 	} else if (props.icon === customIcons.restore) {
 		return (
 			<svg
-				width={props.size}
-				height={props.size}
+				width={props.iconSize}
+				height={props.iconSize}
 				{...props}
 				viewBox="0 0 10 10"
 			>
@@ -102,8 +102,8 @@ export default function CustomIcon(props) {
 	} else if (props.icon === customIcons.close) {
 		return (
 			<svg
-				width={props.size}
-				height={props.size}
+				width={props.iconSize}
+				height={props.iconSize}
 				{...props}
 				viewBox="0 0 10 10"
 			>
@@ -126,8 +126,8 @@ export default function CustomIcon(props) {
 	} else if (props.icon === customIcons.terminal) {
 		return (
 			<svg
-				width={props.size}
-				height={props.size}
+				width={props.iconSize}
+				height={props.iconSize}
 				{...props}
 				viewBox={`0 0 24 24`}
 			>

@@ -1,6 +1,7 @@
 const default_state = {
 	connected: null,
 	toast: null,
+	settingsDialogIsOpen: false,
 	discardDialog: {
 		open: false,
 		callback: () => {},

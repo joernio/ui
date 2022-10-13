@@ -20,7 +20,7 @@ const styles = theme => ({
 	taggedScriptSectionStyle: {
 		paddingLeft: '0.65em',
 	},
-	selectedStyle: {
+	selectedConfigStyle: {
 		backgroundColor: '#0090F150',
 		'&:hover': {
 			backgroundColor: '#0090f16b !important',

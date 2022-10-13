@@ -1,3 +1,5 @@
+import { homedir } from 'os';
+
 export const terminalVariables = {
 	cpgWelcomeScreen: `
    \r
@@ -165,6 +167,7 @@ export const syntheticFiles = [
 	'Query Shortcuts',
 	'Script Report',
 	'Binary Viewer',
+	'Rules',
 ];
 export const joernBinaryLanguage = 'GHIDRA';
 
@@ -178,6 +181,32 @@ export const customIcons = {
 	close: 'custom-close',
 	terminal: 'custom-terminal',
 };
+
+export const defaultRulesConfigFilePath = `${homedir()}/bin/joern/joern-cli/scripts/rules-config.json`;
+export const defaultRulesConfigFileContent = `
+// The commented json below is the specification that is recognized.
+// Your custom rules configuration should look like the one below.
+// You can skip to the bottom of this file to start writing your own rules configuration.
+
+// [{
+//   "title": "Hardcoded Secrets Detection",
+//   "id":"001",
+//   "filename":"/home/joern/scripts/secrets.sc",
+//   "description": "Detect hardcoded secrets in Source",
+//   "tags":["cwe-789", "cve-2021-2787"],
+//   "languages": [ "C", "Java", "Javascript" ]
+//  },
+//  {
+//   "title": "Own title",
+//   "id" "002",
+//   "filename": "/home/joern/scripts/script_name.sc",
+//   "description": "Description goes here",
+//   "tags" : ["cwe-789", "cve-2021-2787", "secrets"],
+//   "languages": [ "C", "Java", "Javascript" ]
+//  }]
+
+// Your rules configuration should go here...
+`;
 
 // \r      ██╗ ██████╗ ███████╗██████╗ ███╗   ██╗
 // \r      ██║██╔═══██╗██╔════╝██╔══██╗████╗  ██║

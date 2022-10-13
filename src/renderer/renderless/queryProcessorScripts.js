@@ -51,7 +51,7 @@ export const processScriptResult = async (
 		handleSetToast({
 			icon: 'info-sign',
 			intent: 'success',
-			message: 'script ran successfully',
+			message: 'rule executed successfully',
 		});
 
 		const { synth_file_path, content } =
@@ -60,6 +60,13 @@ export const processScriptResult = async (
 			content &&
 			openSyntheticFile(synth_file_path, content);
 	}
+	// else {
+	//   handleSetToast({
+	// 		icon: 'warning-sign',
+	// 		intent: 'danger',
+	// 		message: 'rule execution failed',
+	// 	});
+	// }
 
 	handleSetState({
 		prev_results: results ? deepClone(results) : {},

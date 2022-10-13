@@ -32,7 +32,7 @@ const devSetup = async () => {
 
 export const createWindow = async () => {
 	// await devSetup();
-	devSetup(); // uncomment this line to keep devtools always open
+	// devSetup(); // uncomment this line to keep devtools always open
 
 	const { position, size } = getWindowPosition();
 
