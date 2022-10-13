@@ -5,7 +5,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Icon } from '@blueprintjs/core';
 import Folders from '../../components/folders/Folders';
 import Workspace from '../../components/workspace/Workspace';
-import CpgScripts from '../../components/cpg_scripts/CpgScripts';
 import OpenFiles from '../../components/open_files/OpenFiles';
 import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import * as querySelectors from '../../store/selectors/querySelectors';
@@ -82,7 +81,7 @@ function ExplorerWindow(props) {
 				/>
 			) : (
 				<>
-					<CpgScripts />
+					{/* <CpgScripts /> */}
 					<OpenFiles />
 					<Workspace />
 					<Folders />

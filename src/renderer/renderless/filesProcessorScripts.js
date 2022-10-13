@@ -1,3 +1,4 @@
+import { resolve } from 'path';
 import {
 	openFile,
 	closeFile,
@@ -8,12 +9,161 @@ import {
 	getActiveProject,
 	debounce,
 	deepClone,
+	pathStats,
+	handleSetToast,
+	fsWriteFile,
+	getTriageId,
 } from '../assets/js/utils/scripts';
 import { editorShouldGoToLine } from '../views/editor_window/editorScripts';
 import { vars as binaryViewerVars } from '../components/binary_viewer/binaryViewerScripts';
 import { store } from '../store/configureStore';
+import { setRulesConfigFilePath } from '../store/actions/settingsActions';
 import { setBinaryViewerCache } from '../store/actions/filesActions';
-import { joernBinaryLanguage } from '../assets/js/utils/defaultVariables';
+import { setFindings } from '../store/actions/findingsActions';
+import {
+	joernBinaryLanguage,
+	defaultRulesConfigFilePath,
+	defaultRulesConfigFileContent,
+} from '../assets/js/utils/defaultVariables';
+
+import finding0 from '../assets/js/utils/temp_findings/0_findings.json';
+import finding5 from '../assets/js/utils/temp_findings/5_findings.json';
+import finding10 from '../assets/js/utils/temp_findings/10_findings.json';
+import finding15 from '../assets/js/utils/temp_findings/15_findings.json';
+import finding20 from '../assets/js/utils/temp_findings/20_findings.json';
+import finding25 from '../assets/js/utils/temp_findings/25_findings.json';
+import finding30 from '../assets/js/utils/temp_findings/30_findings.json';
+import finding35 from '../assets/js/utils/temp_findings/35_findings.json';
+
+const temp_findings = {
+	finding0,
+	finding5,
+	finding10,
+	finding15,
+	finding20,
+	finding25,
+	finding30,
+	finding35,
+};
+
+export const ensureRulesConfigFileExists = async () => {
+	const { rulesConfigFilePath } = store.getState().settings;
+	const stat = await pathStats(rulesConfigFilePath).catch(err => err);
+	if (stat?.isDirectory && stat.isDirectory()) {
+		fsWriteFile(
+			resolve(rulesConfigFilePath, 'rules-config.json'),
+			defaultRulesConfigFileContent,
+		)
+			.then(() => {
+				handleSetToast({
+					icon: 'info-sign',
+					intent: 'warning',
+					message: `rules-config.json file was created inside "${rulesConfigFilePath}" directory`,
+				});
+				store.dispatch(
+					setRulesConfigFilePath(
+						resolve(rulesConfigFilePath, 'rules-config.json'),
+					),
+				);
+			})
+			.catch(err => {
+				handleSetToast({
+					icon: 'warning-sign',
+					intent: 'danger',
+					message: `attempted to create rules-config.json inside "${rulesConfigFilePath}" directory but failed. ${err}`,
+				});
+			});
+	} else if (typeof stat.errno === 'number') {
+		handleSetToast({
+			icon: 'warning-sign',
+			intent: 'danger',
+			message: `rules config file path "${rulesConfigFilePath}" doesn't exist`,
+		});
+
+		if (!rulesConfigFilePath) {
+			store.dispatch(setRulesConfigFilePath(defaultRulesConfigFilePath));
+			handleSetToast({
+				icon: 'warning-sign',
+				intent: 'warning',
+				timeout: 6000, // by default timeout is 4000, but this is set to 6000 to allow the top toast to close first.
+				message: `resetted rules config file path to default "${defaultRulesConfigFilePath}"`,
+			});
+		} else if (rulesConfigFilePath === defaultRulesConfigFilePath) {
+			fsWriteFile(rulesConfigFilePath, defaultRulesConfigFileContent)
+				.then(() => {
+					handleSetToast({
+						icon: 'info-sign',
+						intent: 'success',
+						message: `default rules config file "${rulesConfigFilePath}" was successfully created`,
+					});
+				})
+				.catch(err => {
+					handleSetToast({
+						icon: 'warning-sign',
+						intent: 'danger',
+						message: `attempted to create default rules config file "${rulesConfigFilePath}" but failed. ${err}`,
+					});
+				});
+		}
+	}
+};
+
+export const processTriageTemp = () => {
+	// NOTE this function is heavily modified and doesn't behave at all like it will be when we are finally able to get
+	// cpg.findings.jsonPretty from the backend
+	let findings = store.getState().findings;
+	const file_id = findings.triage_ids.length * 5;
+	if (file_id <= 35) {
+		const finding = temp_findings[`finding${file_id}`];
+		findings = deepClone(findings);
+		findings.open_sarif_finding_path = '';
+		// TODO remove first array in triage_ids if triage_ids is up to 10
+		findings.triage_ids.push([]);
+
+		for (let i = finding.length - 5; i < finding.length; i += 1) {
+			const triage_id = getTriageId(finding[i]);
+			const triage = {
+				valid: true,
+				finding: finding[i],
+			};
+			findings.triages[triage_id] = triage;
+			findings.triage_ids[findings.triage_ids.length - 1].push(triage_id);
+			store.dispatch(setFindings(findings));
+		}
+	}
+};
+
+export const processTriage = next_findings => {
+	let findings = store.getState().findings;
+
+  const new_findings = [];
+  next_findings.forEach(finding=>{
+    const triage_id = getTriageId(finding);
+    if(!findings.triages[triage_id]){
+      new_findings.push(finding);
+    }
+  });
+
+  if(new_findings.length){
+		findings = deepClone(findings);
+		findings.open_sarif_finding_path = '';
+
+    if(findings.triage_ids.length >= 10) findings.triage_ids.shift();// remove the first item in the array;
+		findings.triage_ids.push([]);
+
+    new_findings.forEach(finding=>{
+      const triage_id = getTriageId(finding);
+			const triage = {
+				valid: true,
+				finding,
+			};
+			findings.triages[triage_id] = triage;
+			findings.triage_ids[findings.triage_ids.length - 1].push(triage_id);
+    });
+
+    store.dispatch(setFindings(findings));
+  };
+};
 
 export const processFiles = async props => {
 	const result_keys = Object.keys(props.results);
@@ -52,6 +202,51 @@ export const processFiles = async props => {
 				methods: [],
 			}),
 		);
+	}
+};
+
+export const processScriptsTemp = scriptsResults => {
+	const result_keys = Object.keys(scriptsResults);
+	const latest = scriptsResults[result_keys[result_keys.length - 1]];
+
+  let proceed;
+
+  if(latest?.origin === "script" || (latest?.post_query_uuid && latest?.project)){
+    proceed = true;
+  };
+
+
+	if (
+		latest?.query?.startsWith('cpg.findings.jsonPretty') &&
+		latest.result?.stderr &&
+		latest.t_0 &&
+		latest.t_1 &&
+    proceed
+	) {
+		// TODO remember to change stderr here to stdout
+		// console.log(latest.result?.stderr);
+		setTimeout(processTriageTemp, 0);
+	}
+};
+
+export const processScripts = scriptsResults => {
+	const result_keys = Object.keys(scriptsResults);
+	const latest = scriptsResults[result_keys[result_keys.length - 1]];
+  let proceed;
+
+  if(latest?.origin === "script" || (latest?.post_query_uuid && latest?.project)){
+    proceed = true;
+  };
+
+
+	if (
+		latest?.query?.startsWith('cpg.findings.jsonPretty') &&
+		latest.result?.stdout &&
+		latest.t_0 &&
+		latest.t_1 &&
+    proceed
+	) {
+		setTimeout(()=>processTriage(JSON.parse(latest.result.stdout)), 0);
 	}
 };
 

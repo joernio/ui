@@ -65,7 +65,7 @@ const styles = theme => ({
 	},
 	fileNameStyle: {
 		flexGrow: 1,
-		maxWidth: '180px',
+		// maxWidth: '180px',
 		color: props =>
 			theme.palette.explorer.base[
 				props.prefersDarkMode ? 'dark' : 'light'

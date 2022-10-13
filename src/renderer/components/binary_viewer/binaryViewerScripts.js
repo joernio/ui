@@ -65,7 +65,7 @@ export const getMethodPositionInDecompiledMethodsEditor = (
 		code = code.split(/\n/);
 		const str_to_search = code[0].startsWith('/*') ? code[1] : code[0];
 		const range =
-			editor._modelData.model.findMatches(str_to_search)[0].range; // eslint-disable-line no-underscore-dangle
+			editor._modelData.model.findMatches(str_to_search)[0].range;
 		range.startLineNumber = code[0].startsWith('/*')
 			? range.startLineNumber - 1
 			: range.startLineNumber;

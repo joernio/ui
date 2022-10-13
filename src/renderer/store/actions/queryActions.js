@@ -17,6 +17,13 @@ export const setResults = payload => dispatch => {
 	});
 };
 
+export const setScriptsResults = payload => dispatch => {
+  dispatch({
+    type: "SET_SCRIPTS_RESULTS",
+    payload
+  });
+};
+
 export const setQueue = payload => dispatch =>
 	dispatch({
 		type: 'SET_QUEUE',
@@ -90,6 +97,12 @@ export const pushResult = result => dispatch => {
 	dispatch(setResults(updated_results));
 };
 
+export const pushScriptsResult= result => dispatch => {
+	const { scriptsResults } = store.getState().query;
+	const updated_results = performPushResult(result, scriptsResults);
+	dispatch(setScriptsResults(updated_results));
+};
+
 export const runQuery = query_string => () =>
 	API.query(query_string).then(data => {
 		if (data && data.uuid) {
@@ -119,25 +132,22 @@ export const getQueryResult = uuid => () =>
 					.join('\n');
 				throw new Error(err);
 			}
-		})
-		.catch(() => {
-			// handleAPIQueryError(err);
 		});
 
 export const postQuery = (post_query, main_result_key) => dispatch =>
-	runQuery(post_query)()
-		.then(data => {
-			const { results } = store.getState().query;
-			const result = results[main_result_key];
+runQuery(post_query)()
+  .then(data => {
+    const { results } = store.getState().query;
+    const result = results[main_result_key];
 
-			if (result) {
-				result.post_query_uuid = data.uuid;
-				dispatch(setResults(results));
-			}
-		})
-		.catch(err => {
-			handleAPIQueryError(err);
-		});
+    if (result) {
+      result.post_query_uuid = data.uuid;
+      dispatch(setResults(results));
+    }
+  })
+  .catch(err => {
+    handleAPIQueryError(err);
+  });
 
 export const mainQuery = query => dispatch =>
 	runQuery(query.query)()
@@ -145,12 +155,17 @@ export const mainQuery = query => dispatch =>
 			const query_result = {
 				[data.uuid]: {
 					result: { stdout: null, stderr: null },
-					t_0: performance.now(),
+					t_0: new Date().getTime(),
 					t_1: null,
 					...query,
 				},
 			};
-			dispatch(pushResult(query_result));
+
+      if(query.origin === "script"){
+        dispatch(pushScriptsResult(query_result));
+      }else{
+        dispatch(pushResult(query_result));
+      };
 		})
 		.catch(err => {
 			handleAPIQueryError(err);

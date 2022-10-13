@@ -8,6 +8,7 @@ import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import { handleToggleBlock } from './uiQueryScripts';
 import styles from '../../assets/js/styles/components/ui_query/uiQueryStyles';
 import commonStyles from '../../assets/js/styles';
+import { customIcons } from '../../assets/js/utils/defaultVariables';
 
 const useStyles = makeStyles(styles);
 const useCommonStyles = makeStyles(commonStyles);
@@ -37,8 +38,8 @@ function UiQuery(props) {
 								circuit_ui_responses.all[block_id].dropdown,
 						},
 					)}
-					icon="custom-chevron-down"
-					size={20}
+					icon={customIcons.chevron_down}
+					iconSize={20}
 					onClick={() =>
 						handleToggleBlock(block_id, props.cache, props.vList)
 					}

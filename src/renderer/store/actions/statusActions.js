@@ -13,6 +13,10 @@ export const setToast = toast => dispatch => {
 	dispatch(setStatus({ toast }));
 };
 
+export const setSettingsDialogIsOpen = settingsDialogIsOpen => dispatch => {
+	dispatch(setStatus({ settingsDialogIsOpen }));
+};
+
 export const setDiscardDialog = discardDialog => dispatch => {
 	dispatch(setStatus({ discardDialog }));
 };

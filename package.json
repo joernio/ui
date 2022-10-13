@@ -70,6 +70,7 @@
   "devDependencies": {
     "@babel/core": "^7.14.0",
     "@babel/eslint-parser": "^7.17.0",
+    "@babel/eslint-plugin": "^7.19.1",
     "@babel/preset-env": "^7.14.1",
     "@babel/preset-react": "^7.13.13",
     "@blueprintjs/core": "^3.46.0",
@@ -130,6 +131,7 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
+    "@microsoft/sarif-web-component": "^0.6.0-16",
     "axios": "^0.21.1",
     "chokidar": "^3.5.2",
     "d3": "5.14.2",

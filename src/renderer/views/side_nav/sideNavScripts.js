@@ -1,10 +1,6 @@
 import { openSyntheticFile } from '../../assets/js/utils/scripts';
 import { syntheticFiles } from '../../assets/js/utils/defaultVariables';
 
-export const toggleSettingsDialog = isSettingsDialogOpen => ({
-	isSettingsDialogOpen: !isSettingsDialogOpen,
-});
-
 export const handleDrawerToggle = props => ({
 	drawerWidth: props.drawerWidth ? 0 : '250px',
 });
@@ -43,6 +39,7 @@ export const getSettingsInitialValues = props => {
 	initialSettings.prefers_terminal_view = props.prefersTerminalView;
 	initialSettings.font_size = Number(props.fontSize?.split('px')[0]);
 	initialSettings.scripts_dir = props.scriptsDir;
+	initialSettings.rules_config_file_path = props.rulesConfigFilePath;
 	initialSettings.ui_ignore = props.uiIgnore;
 
 	initialSettings.cert_path_up_to_date = props.server?.cert_path
@@ -72,6 +69,7 @@ export const collectSettingsValues = values => {
 		prefersTerminalView: values.prefers_terminal_view,
 		fontSize: `${values.font_size}px`,
 		scriptsDir: values.scripts_dir,
+		rulesConfigFilePath: values.rules_config_file_path,
 		uiIgnore: values.ui_ignore,
 	};
 
@@ -80,4 +78,12 @@ export const collectSettingsValues = values => {
 
 export const openShortcutsPage = () => {
 	openSyntheticFile(syntheticFiles[1], syntheticFiles[1]);
+};
+
+export const openRulesPage = () => {
+	openSyntheticFile(syntheticFiles[4], syntheticFiles[4]);
+};
+
+export const openRulesReportPage = () => {
+	openSyntheticFile(syntheticFiles[5], syntheticFiles[5]);
 };

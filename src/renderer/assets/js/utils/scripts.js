@@ -15,12 +15,13 @@ import {
 } from './defaultVariables';
 import {
 	deQueueQuery,
+  deQueueScriptsQuery,
 	getQueryResult,
+  setScriptsResults,
 	postQuery,
 	setResults,
 	resetQueue,
 	enQueueQuery,
-	deQueueScriptsQuery,
 	setQueryShortcut,
 } from '../../../store/actions/queryActions';
 import {
@@ -48,11 +49,40 @@ export const handleSetToast = toast => {
 	store.dispatch(setToast(toast));
 };
 
-export const queueEmpty = queue => {
+export const parseJsonc = data => {
+	// remove json comments
+	data = data.replace(/\/\/(.*)/g, '');
+	return JSON.parse(data);
+};
+
+export const pathStats = path =>
+	new Promise((resolve, reject) => {
+		fs.stat(path, (err, stats) => {
+			if (!err) {
+				resolve(stats);
+			} else {
+				reject(err);
+			}
+		});
+	});
+
+export const queueEmpty = () => {
+	const { queue } = store.getState().query;
 	if (queue && Object.keys(queue).length === 0) {
 		return true;
 	}
 	if (!queue) {
+		return true;
+	}
+	return false;
+};
+
+export const scriptsQueueEmpty = () => {
+	const { scriptsQueue } = store.getState().query;
+	if (scriptsQueue && Object.keys(scriptsQueue).length === 0) {
+		return true;
+	}
+	if (!scriptsQueue) {
 		return true;
 	}
 	return false;
@@ -165,19 +195,6 @@ export const deepClone = obj => {
 	return new_obj;
 };
 
-export const getResultObjWithPostQueryKey = (results, post_query_key) => {
-	let res;
-	Object.keys(results).some(key => {
-		if (key && results[key].post_query_uuid === post_query_key) {
-			res = key;
-			return true;
-		}
-		return false;
-	});
-
-	return res;
-};
-
 export const getActiveProject = () => {
 	const { projects } = store.getState().workspace;
 	let activeProject = null;
@@ -244,39 +261,35 @@ export const parseProject = data => {
 	return { name, inputPath, path, cpg, language };
 };
 
-const performPostQuery = (store, results, key) => {
-	let post_query;
-	const result = results[key];
+const performPostQuery = (result, key) => {
+  let post_query;
 
-	if (
-		result.query.startsWith(manCommands.switchWorkspace) ||
-		result.query === 'project'
-	) {
-		post_query = 'workspace';
-	} else {
-		post_query = 'project';
-	}
+  if (
+    result.query.startsWith(manCommands.switchWorkspace) ||
+    result.query === 'project'
+  ) {
+    post_query = 'workspace';
+  } else {
+    post_query = 'project';
+  }
 
-	store.dispatch(postQuery(post_query, key));
+  store.dispatch(postQuery(post_query, key));
 };
 
-const setQueryResult = (data, store, key, results) => {
+const setQueryResult = (data, key, results) => {
 	if (results[key].t_0 && !results[key].t_1) {
-		results[key].t_1 = performance.now();
+		results[key].t_1 = new Date().getTime();
 	}
 
 	if (!results[key].result.stdout && !results[key].result.stderr) {
-		if (!data) {
-			results[key].result.stderr = 'query failed';
-		} else {
-			if (data.stdout) {
-				results[key].result.stdout = data.stdout;
-			}
 
-			if (data.stderr) {
-				results[key].result.stderr = data.stderr;
-			}
-		}
+    if (data.stdout) {
+      results[key].result.stdout = data.stdout;
+    }
+
+    if (data.stderr) {
+      results[key].result.stderr = data.stderr;
+    }
 
 		store.dispatch(setResults(results));
 	} else if (
@@ -284,7 +297,6 @@ const setQueryResult = (data, store, key, results) => {
 		results[key].query === 'project'
 	) {
 		if (
-			!data &&
 			!results[key].result.stdout &&
 			!results[key].result.stderr
 		) {
@@ -297,7 +309,6 @@ const setQueryResult = (data, store, key, results) => {
 		store.dispatch(setResults(results));
 	} else {
 		if (
-			!data &&
 			!results[key].result.stdout &&
 			!results[key].result.stderr
 		) {
@@ -310,32 +321,64 @@ const setQueryResult = (data, store, key, results) => {
 	}
 };
 
-export const handleWebSocketResponse = data => {
-	store.dispatch(getQueryResult(data.utf8Data)).then(data => {
-		const { results } = store.getState().query;
-		let key = data.uuid;
-		let result_obj = results[key];
+const setScriptsQueryResult = (data, key, results) => {
+	if (results[key].t_0 && !results[key].t_1) {
+		results[key].t_1 = new Date().getTime();
+	}
 
-		if (!result_obj) {
-			key = getResultObjWithPostQueryKey(results, data.uuid);
-			result_obj = results[key];
-		}
-
-		if (result_obj) {
-			if (!result_obj.result.stdout && !result_obj.result.stderr) {
-				setQueryResult(data, store, key, results);
-				if (result_obj.origin === 'script') {
-					store.dispatch(deQueueScriptsQuery());
-					addToQueue(addWorkSpaceQueryToQueue());
-				} else {
-					performPostQuery(store, results, key);
-				}
-			} else {
-				setQueryResult(data, store, key, results);
-				store.dispatch(deQueueQuery());
+			if (data.stdout) {
+				results[key].result.stdout = data.stdout;
 			}
-		}
-	});
+
+			if (data.stderr) {
+				results[key].result.stderr = data.stderr;
+			}
+
+		store.dispatch(setScriptsResults(results));
+};
+
+export const handleWebSocketResponse = data => {
+  store.dispatch(getQueryResult(data.utf8Data)).then(data => {
+    const { results, scriptsResults } = store.getState().query;
+    let key = data?.uuid;
+    if(!key) return;
+
+    let latest = results[key];
+
+    if(!latest){
+      latest = scriptsResults[key];
+    };
+
+    if(!latest){
+      const result_keys = Object.keys(results);
+      key = result_keys[result_keys.length - 1];
+      const _latest = results[key];
+      if(_latest.post_query_uuid === data.uuid){
+        latest = _latest
+      };
+    };
+
+    if(latest && latest.origin === "script"){
+
+      if (!latest.result.stdout && !latest.result.stderr) {
+        setScriptsQueryResult(data, key, scriptsResults);
+        store.dispatch(deQueueScriptsQuery());
+      };
+
+    }else if(latest && latest.origin !== "script"){
+
+      if (!latest.result.stdout && !latest.result.stderr) {
+        setQueryResult(data, key, results);
+        performPostQuery(results[key], key);
+      } else {
+        setQueryResult(data, key, results);
+        store.dispatch(deQueueQuery());
+      }
+
+    }
+  }).catch(() => {
+    // handleAPIQueryError(err);
+  });
 };
 
 export const handleCertificateError = () => {
@@ -376,6 +419,22 @@ export const discardDialogHandler = callback => {
 	}
 };
 
+export const selectFilePath = async () => {
+	selectDirApi.selectDir('select-file');
+
+	return new Promise((resolve, reject) => {
+		selectDirApi.registerListener('selected-file', value => {
+			if (value) {
+				resolve(value);
+			} else {
+				reject();
+			}
+		});
+	}).catch(() => {
+		console.log("can't select file path"); // eslint-disable-line no-console
+	});
+};
+
 export const getOpenFileName = () => {
 	let { openFilePath: path } = store.getState().files;
 	if (path) {
@@ -389,6 +448,33 @@ export const getOpenFileName = () => {
 export const getExtension = path => {
 	const ext = path.split('.')[path.split('.').length - 1];
 	return ext ? `.${ext}` : '';
+};
+
+export const fsWriteFile = (path, content) =>
+	new Promise((res, rej) => {
+		fs.writeFile(path, content, err => {
+			if (!err) {
+				res();
+			} else {
+				rej(err);
+			}
+		});
+	});
+
+export const pathShouldBeReadOnly = (path, new_file) => {
+	const { rulesConfigFilePath } = store.getState().settings;
+
+	/**
+	 * We also need to check for when it's a new file being created (i.e file name starts with "untitled"),
+	 * but this is tricky because an already existing file can also have the name "untitled" so to avoid bugs,
+	 * we only want to check if the file name starts with 'untitled' if the file doesn't exist (i.e errored out during read),
+	 * so the checks had to be split into two and handled with an "new_file" conditional statement.
+	 */
+	if (new_file) {
+		return !(path && path.startsWith('untitled'));
+	} else {
+		return !(path.endsWith('.sc') || path === rulesConfigFilePath);
+	}
 };
 
 export const readFile = path =>
@@ -445,9 +531,7 @@ export const openFile = async path => {
 
 		const { openFileContent, openFileIsReadOnly } = await readFile(path)
 			.then(data => {
-				const openFileIsReadOnly =
-					path.slice(path.length - 3) !== '.sc';
-
+				const openFileIsReadOnly = pathShouldBeReadOnly(path);
 				return { openFileContent: data, openFileIsReadOnly };
 			})
 			.catch(() => {
@@ -457,9 +541,7 @@ export const openFile = async path => {
 				) {
 					return {
 						openFileContent: '',
-						openFileIsReadOnly: !(
-							path && path.startsWith('untitled')
-						),
+						openFileIsReadOnly: pathShouldBeReadOnly(path, true),
 					};
 				}
 				handleSetToast({
@@ -534,10 +616,9 @@ export const closeFile = async path => {
 			files.openFilePath,
 		)
 			.then(data => {
-				const openFileIsReadOnly =
-					files.openFilePath.slice(files.openFilePath.length - 3) !==
-					'.sc';
-
+				const openFileIsReadOnly = pathShouldBeReadOnly(
+					files.openFilePath,
+				);
 				return { openFileContent: data, openFileIsReadOnly };
 			})
 			.catch(() => {
@@ -576,9 +657,9 @@ export const closeFile = async path => {
 				) {
 					return {
 						openFileContent: '',
-						openFileIsReadOnly: !(
-							files.openFilePath &&
-							files.openFilePath.startsWith('untitled')
+						openFileIsReadOnly: pathShouldBeReadOnly(
+							files.openFilePath,
+							true,
 						),
 					};
 				}
@@ -637,9 +718,9 @@ export const saveFile = async (path, base_dir) => {
 	const file_content = store.getState().files.openFileContent;
 	const files = { ...store.getState().files };
 
-	const readOnly = !(path && path.slice(path.length - 3) === '.sc');
+	const readOnly = !(path && !pathShouldBeReadOnly(path));
 
-	if (!readOnly || path.startsWith('untitled')) {
+	if (!readOnly || !pathShouldBeReadOnly(path, true)) {
 		path &&
 			(await new Promise((resolve, reject) => {
 				fs.stat(path, (err, stats) => {
@@ -655,15 +736,7 @@ export const saveFile = async (path, base_dir) => {
 				});
 			})
 				.then(() =>
-					new Promise((res, rej) => {
-						fs.writeFile(path, file_content, err => {
-							if (!err) {
-								res();
-							} else {
-								rej();
-							}
-						});
-					})
+					fsWriteFile(path, file_content)
 						.then(() => {
 							handleSetToast({
 								icon: 'info-sign',
@@ -717,26 +790,15 @@ export const saveFile = async (path, base_dir) => {
 					});
 
 					if (file && !file.canceled) {
-						const readOnly =
-							file.filePath
-								.toString()
-								.slice(file.filePath.toString().length - 3) !==
-							'.sc';
+						const readOnly = pathShouldBeReadOnly(
+							file.filePath.toString(),
+						);
 
 						if (!readOnly) {
-							await new Promise((res, rej) => {
-								fs.writeFile(
-									file.filePath.toString(),
-									file_content,
-									err => {
-										if (err) {
-											rej();
-										} else {
-											res();
-										}
-									},
-								);
-							})
+							await fsWriteFile(
+								file.filePath.toString(),
+								file_content,
+							)
 								.then(() => {
 									handleSetToast({
 										icon: 'info-sign',
@@ -782,7 +844,8 @@ export const saveFile = async (path, base_dir) => {
 							handleSetToast({
 								icon: 'warning-sign',
 								intent: 'danger',
-								message: 'can only save .sc files',
+								message:
+									'can only save .sc and rule configuration files',
 							});
 						}
 					} else {
@@ -793,9 +856,92 @@ export const saveFile = async (path, base_dir) => {
 		handleSetToast({
 			icon: 'warning-sign',
 			intent: 'danger',
-			message: 'can only save .sc files',
+			message: 'can only save .sc and rule configuration files',
 		});
 	}
+};
+
+export const unrestrictedSaveFile = async (path, file_content, base_dir) => {
+	path &&
+		(await new Promise((resolve, reject) => {
+			fs.stat(path, (err, stats) => {
+				if (
+					!err &&
+					stats.isFile() &&
+					path !== path.split('/')[path.split('/').length - 1]
+				) {
+					resolve(stats);
+				} else {
+					reject(err);
+				}
+			});
+		})
+			.then(() =>
+				fsWriteFile(path, file_content)
+					.then(() => {
+						handleSetToast({
+							icon: 'info-sign',
+							intent: 'success',
+							message: 'saved successfully',
+						});
+					})
+					.catch(() => {
+						handleSetToast({
+							icon: 'warning-sign',
+							intent: 'danger',
+							message: 'error saving file',
+						});
+					}),
+			)
+			.catch(async () => {
+				let new_path;
+
+				if (base_dir) {
+					new_path = `${base_dir}/${path}`;
+				} else if (store.getState().workspace.path) {
+					new_path = `${store.getState().workspace.path}/${path}`;
+				} else {
+					new_path = `/${path}`;
+				}
+
+				selectDirApi.createFile(new_path);
+
+				const file = await new Promise((resolve, reject) => {
+					selectDirApi.registerCreatedFileListener(file => {
+						if (file) {
+							resolve(file);
+						} else {
+							reject();
+						}
+					});
+				}).catch(() => {
+					handleSetToast({
+						icon: 'warning-sign',
+						intent: 'danger',
+						message: "couldn't create file",
+					});
+				});
+
+				if (file && !file.canceled) {
+					await fsWriteFile(file.filePath.toString(), file_content)
+						.then(() => {
+							handleSetToast({
+								icon: 'info-sign',
+								intent: 'success',
+								message: 'saved successfully',
+							});
+						})
+						.catch(() => {
+							handleSetToast({
+								icon: 'warning-sign',
+								intent: 'danger',
+								message: "can't save to file",
+							});
+						});
+				} else {
+					console.log('file creation was cancelled'); // eslint-disable-line no-console
+				}
+			}));
 };
 
 export const refreshRecent = async () => {
@@ -887,7 +1033,7 @@ export const refreshOpenFiles = async () => {
 
 export const deleteFile = async path => {
 	if (path) {
-		const readOnly = !(path && path.slice(path.length - 3) === '.sc');
+		const readOnly = !(path && !pathShouldBeReadOnly(path));
 
 		if (!readOnly) {
 			(await path) &&
@@ -938,7 +1084,7 @@ export const deleteFile = async path => {
 			handleSetToast({
 				icon: 'warning-sign',
 				intent: 'danger',
-				message: 'can only delete .sc files',
+				message: 'can only delete .sc and rules configuration files',
 			});
 		}
 	}
@@ -1016,6 +1162,14 @@ export const isQueryResultToOpenSynthFile = latest => {
 			synth_file_path = false;
 			content = false;
 		}
+	} else if (
+		latest?.result?.stderr && // remember to replace .err with .stdout. .err is for testing purposes here
+		typeof latest.result.stderr === 'string' && // remember to replace .err with .stdout. .err is for testing purposes here
+		latest.query.search('findings.jsonPretty') > -1
+	) {
+		synth_file_path = syntheticFiles[5];
+		// content = latest.result.stdout;
+		content = syntheticFiles[5]; // remember to comment this out later, it is for test
 	} else if (binaryProject) {
 		synth_file_path = `${binaryProject} - ${syntheticFiles[3]}`;
 		content = synth_file_path;
@@ -1024,40 +1178,40 @@ export const isQueryResultToOpenSynthFile = latest => {
 	return { synth_file_path, content };
 };
 
-export const isScriptQueryResultToOpenSynthFile = async result => {
-	let synth_file_path = false;
-	let content = false;
+// export const isScriptQueryResultToOpenSynthFile = async result => {
+// 	let synth_file_path = false;
+// 	let content = false;
 
-	if (
-		result?.result?.stdout &&
-		typeof result.result.stdout === 'string' &&
-		!result.query.startsWith('import') &&
-		result.result.stdout.includes('.json')
-	) {
-		try {
-			synth_file_path = `${
-				result.query.split('`').join('').split('.')[0]
-			}.sc - ${syntheticFiles[2]}`;
-			content = result.result.stdout.split('=')[1].split('"')[1];
-			content = await readFile(content).catch(() => {
-				synth_file_path = false;
-				handleSetToast({
-					icon: 'warning-sign',
-					intent: 'danger',
-					message:
-						"script report file path returned by script run doesn't exist",
-				});
+// 	if (
+// 		result?.result?.stdout &&
+// 		typeof result.result.stdout === 'string' &&
+// 		!result.query.startsWith('import') &&
+// 		result.result.stdout.includes('.json')
+// 	) {
+// 		try {
+// 			synth_file_path = `${
+// 				result.query.split('`').join('').split('.')[0]
+// 			}.sc - ${syntheticFiles[2]}`;
+// 			content = result.result.stdout.split('=')[1].split('"')[1];
+// 			content = await readFile(content).catch(() => {
+// 				synth_file_path = false;
+// 				handleSetToast({
+// 					icon: 'warning-sign',
+// 					intent: 'danger',
+// 					message:
+// 						"script report file path returned by script run doesn't exist",
+// 				});
 
-				return false;
-			});
-		} catch (e) {
-			synth_file_path = false;
-			content = false;
-		}
-	}
+// 				return false;
+// 			});
+// 		} catch (e) {
+// 			synth_file_path = false;
+// 			content = false;
+// 		}
+// 	}
 
-	return { synth_file_path, content };
-};
+// 	return { synth_file_path, content };
+// };
 
 export const isQueryResultToCloseSynthFile = async () => {
 	const paths_to_close = [];
@@ -1123,7 +1277,7 @@ export const getDirectories = src =>
 		);
 	});
 
-export const watchFolderPath = (path, vars, callback) => {
+export const watchPath = (path, vars, callback) => {
 	const ignore = store.getState()?.settings?.uiIgnore;
 	if (vars.chokidarWatcher) {
 		vars.chokidarWatcher.close().then(() => {
@@ -1355,17 +1509,9 @@ export const constructQueryWithPath = async (query_name, type) => {
 		console.log("can't select project path"); // eslint-disable-line no-console
 	});
 
-	const stats = await new Promise((resolve, reject) => {
-		fs.stat(path, (err, stats) => {
-			if (!err) {
-				resolve(stats);
-			} else {
-				reject();
-			}
-		});
-	});
+	const stats = await pathStats(path);
 
-	if (path && stats) {
+	if (path && stats.errno === undefined) {
 		const query = {
 			query: `${query_name}(inputPath="${path}")`,
 			origin: 'workspace',
@@ -1404,8 +1550,7 @@ export const handleSwitchWorkspace = async () => {
 
 export const handleAPIQueryError = err => {
 	err = typeof err === 'string' ? { message: err } : err;
-
-	if (err === apiErrorStrings.ws_not_connected) {
+	if (err.message === apiErrorStrings.ws_not_connected) {
 		const ws_url = store.getState().settings.websocket.url;
 		handleSetToast({
 			action: {
@@ -1524,18 +1669,18 @@ export const handleFontSizeChange = (doc, fontSize) => {
 	doc.children[0].children[1].style.fontSize = fontSize;
 };
 
-export const getScriptResult = (uuids, results) => {
-	let result;
+// export const getScriptResult = (uuids, results) => {
+// 	let result;
 
-	for (let i = uuids.length - 1; i >= 0; i -= 1) {
-		if (results[uuids[i]].origin === 'script') {
-			result = results[uuids[i]];
-			break;
-		}
-	}
+// 	for (let i = uuids.length - 1; i >= 0; i -= 1) {
+// 		if (results[uuids[i]].origin === 'script') {
+// 			result = results[uuids[i]];
+// 			break;
+// 		}
+// 	}
 
-	return result;
-};
+// 	return result;
+// };
 
 export const generateScriptImportQuery = async (
 	path_to_script,
@@ -1561,43 +1706,27 @@ export const generateScriptImportQuery = async (
 		return;
 	}
 
-	let error = await new Promise((res, rej) => {
-		fs.stat(path_to_script, err => {
-			if (!err) {
-				res();
-			} else {
-				rej();
-			}
-		});
-	}).catch(() => {
+	let error = await pathStats(path_to_script).catch(err => {
 		handleSetToast({
 			icon: 'warning-sign',
 			intent: 'danger',
 			message: 'script path does not exist',
 		});
 
-		return true;
+		return err;
 	});
 
-	error = await new Promise((res, rej) => {
-		fs.stat(path_to_workspace, err => {
-			if (!err) {
-				res();
-			} else {
-				rej();
-			}
-		});
-	}).catch(() => {
+	error = await pathStats(path_to_workspace).catch(err => {
 		handleSetToast({
 			icon: 'warning-sign',
 			intent: 'danger',
 			message: 'workspace path does not exist',
 		});
 
-		return true;
+		return err;
 	});
 
-	if (error) return;
+	if (error.errno !== undefined) return;
 
 	let modified_path_to_script = path_to_script;
 	path_to_workspace = path_to_workspace.split('/workspace').join('');
@@ -1687,4 +1816,13 @@ export const handleEditorGoToLineAndHighlight = (
 			});
 		}, 1000);
 	}
+};
+
+export const slugify = str =>
+	str.replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+
+export const getTriageId = finding => {
+	const name_slug = slugify(finding['keyValuePairs'][0]['value']);
+	const fingerprint = finding['evidence'][0]['fingerprint'];
+	return `${name_slug}-${fingerprint}`;
 };

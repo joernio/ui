@@ -22,6 +22,8 @@ import Toaster from './components/toaster/Toaster';
 import DiscardDialog from './components/discard_dialog/DiscardDialog';
 import QueryShortcutWithArgsDialog from './components/query_shortcut_with_args_dialog/QueryShortcutWithArgsDialog';
 
+// TODO this component should be stripped of all useeffects, most of which should be moved to a new GenericProcessor
+
 function App(props) {
 	React.useEffect(() => {
 		props.connected !== null &&

@@ -4,7 +4,7 @@ import * as settingsSelectors from '../store/selectors/settingsSelectors';
 import * as querySelectors from '../store/selectors/querySelectors';
 import * as statusSelectors from '../store/selectors/statusSelectors';
 import * as queryActions from '../store/actions/queryActions';
-import { shouldRunQuery, processScriptResult } from './queryProcessorScripts';
+import { shouldRunQuery } from './queryProcessorScripts';
 import {
 	addToQueue,
 	addWorkSpaceQueryToQueue,
@@ -71,10 +71,6 @@ function QueryProcessor(props) {
 		props.connected && addToQueue(addWorkSpaceQueryToQueue());
 	}, [props.connected, props.server, props.websocket]);
 
-	React.useEffect(() => {
-		processScriptResult(state.prev_results, props.results, handleSetState);
-	}, [props.results]);
-
 	return null;
 }
 
@@ -92,6 +88,7 @@ const mapDispatchToProps = dispatch => ({
 	peekQueue: () => dispatch(queryActions.peekQueue()),
 	peekScriptsQueue: () => dispatch(queryActions.peekScriptsQueue()),
 	enQueueQuery: query => dispatch(queryActions.enQueueQuery(query)),
+  enQueueScriptsQuery: query => dispatch(queryActions.enQueueScriptsQuery(query))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(QueryProcessor);

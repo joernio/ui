@@ -11,7 +11,7 @@ const persistConfig = {
 	key: 'root',
 	storage,
 	version: 1,
-	whitelist: ['settings', 'files'],
+	whitelist: ['settings', 'files', 'findings'],
 	blacklist: ['status', 'terminal', 'query', 'workspace', 'editor'],
 	stateReconciler: autoMergeLevel2,
 	migrate: createMigrate(migrations, { debug: true }),

@@ -66,7 +66,7 @@ function CpgScript(props) {
 		>
 			<div
 				className={clsx(classes.scriptSectionStyle, {
-					[classes.selectedStyle]: selected[path],
+					[classes.selectedConfigStyle]: selected[path],
 					[classes.taggedScriptSectionStyle]: hasTag,
 				})}
 				tabIndex="0"

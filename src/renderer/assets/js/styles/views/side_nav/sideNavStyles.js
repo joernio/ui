@@ -137,14 +137,36 @@ const styles = theme => ({
 		justifyContent: 'flex-end',
 		paddingBottom: '0.2em',
 		'& h3': {
-			color: props =>
-				theme.palette.button.base[
-					props.prefersDarkMode ? 'dark' : 'light'
-				],
+			border: props =>
+				`1px solid ${
+					theme.palette.sideNav.base[
+						props.prefersDarkMode ? 'dark' : 'light'
+					]
+				}`,
 			backgroundColor: props =>
-				theme.palette.navBar.hover[
+				theme.palette.navBar.background[
 					props.prefersDarkMode ? 'dark' : 'light'
 				],
+			color: props =>
+				theme.palette.navBar.base[
+					props.prefersDarkMode ? 'dark' : 'light'
+				],
+			'&:hover': {
+				backgroundColor: props =>
+					theme.palette.navBar.hover[
+						props.prefersDarkMode ? 'dark' : 'light'
+					],
+			},
+
+			// color: props =>
+			// 	theme.palette.button.base[
+			// 		props.prefersDarkMode ? 'dark' : 'light'
+			// 	],
+			// backgroundColor: props =>
+			// 	theme.palette.navBar.hover[
+			// 		props.prefersDarkMode ? 'dark' : 'light'
+			// 	],
+
 			cursor: 'pointer',
 			margin: '0.3em',
 			padding: '0.5em 0.8em',

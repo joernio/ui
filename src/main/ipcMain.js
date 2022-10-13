@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+// eslint-disable-line no-console
 import { BrowserWindow, ipcMain, Notification, dialog } from 'electron';
 import initWebSocket from './webSocket';
 import { handleClipBoardActivity } from './utils';
@@ -27,12 +27,14 @@ export const handleWindowAction = (action, window) => {
 			window.close();
 			return true;
 		default:
+			// eslint-disable-next-line no-console
 			console.error(`Invalid window action: ${action}`);
 			return false;
 	}
 };
 
 export const initIpcMain = app => {
+	// eslint-disable-next-line no-console
 	console.log('starting to init ipc');
 
 	ipcMain.on('import-certificate', (event, obj) => {
@@ -129,7 +131,7 @@ export const initIpcMain = app => {
 		const clip_board_value = handleClipBoardActivity('paste');
 		window.webContents.send('pasted-from-clipboard', clip_board_value);
 	});
-
+	// eslint-disable-next-line no-console
 	console.log('all ipc inited and waiting for connection');
 };
 

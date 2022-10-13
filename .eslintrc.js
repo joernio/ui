@@ -42,6 +42,9 @@ module.exports = {
 		'func-names': 'off',
 		'default-param-last': 'off',
 		'no-unneeded-ternary': 'off',
+		'class-methods-use-this': 'off',
+		'no-continue': 'off',
+		'no-underscore-dangle': 'off',
 		'import/prefer-default-export': 'off',
 		'import/no-cycle': 'off',
 		'import/no-self-import': 'off',
@@ -73,6 +76,9 @@ module.exports = {
 					'./.erb/configs/webpack.config.eslint.js',
 				),
 			},
+      react: {
+        version: "detect"
+      },
 			typescript: {},
 		},
 		// 'import/parsers': {

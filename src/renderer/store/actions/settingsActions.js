@@ -64,8 +64,16 @@ export const setUIIgnore = payload => dispatch => {
 	});
 };
 
-export const setQueryShortcuts = payload => dispatch =>
+export const setQueryShortcuts = payload => dispatch => {
 	dispatch({
 		type: 'SET_QUERY_SHORTCUTS',
 		payload,
 	});
+};
+
+export const setRulesConfigFilePath = payload => dispatch => {
+	dispatch({
+		type: 'SET_RULES_CONFIG_FILE_PATH',
+		payload,
+	});
+};

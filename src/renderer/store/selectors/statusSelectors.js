@@ -11,6 +11,11 @@ export const selectToast = createSelector(
 	status => status.toast,
 );
 
+export const selectSettingsDialogIsOpen = createSelector(
+	[selectStatus],
+	status => status.settingsDialogIsOpen,
+);
+
 export const selectDiscardDialog = createSelector(
 	[selectStatus],
 	status => status.discardDialog,

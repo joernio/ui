@@ -20,7 +20,7 @@ import CpgScript from '../cpg_script/CpgScript';
 import styles from '../../assets/js/styles/components/cpg_scripts/cpgScriptsStyles';
 import {
 	isElementScrolled,
-	watchFolderPath,
+	watchPath,
 	openProjectExists,
 	discardDialogHandler,
 	openEmptyFile,
@@ -77,7 +77,7 @@ function CpgScripts(props) {
 			handleSetState({ scripts: scripts || {} });
 		};
 		handleGetCpgScripts();
-		watchFolderPath(props.scriptsDir, chokidarVars, handleGetCpgScripts);
+		watchPath(props.scriptsDir, chokidarVars, handleGetCpgScripts);
 	}, [props.scriptsDir]);
 
 	React.useEffect(() => {

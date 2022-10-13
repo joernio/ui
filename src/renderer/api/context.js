@@ -1,8 +1,8 @@
-/* eslint-disable react/display-name */
 import React from 'react';
 
 const APIContext = React.createContext(null);
 
+// eslint-disable-next-line react/display-name
 export const withAPI = Component => props =>
 	(
 		<APIContext.Consumer>
