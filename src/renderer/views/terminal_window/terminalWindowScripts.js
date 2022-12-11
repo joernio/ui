@@ -17,21 +17,21 @@ import {
 	setTerminalBusy,
 	setQuerySuggestions,
 	setCircuitUIResponses,
-	setSuggestionDialogOpen,
+  setSuggestionDialogOpen
 } from '../../store/actions/terminalActions';
 import { store } from '../../store/configureStore';
 
 import * as TWS from './terminalWindowScripts';
-import querydb from '../../assets/js/utils/queries'; // eslint-disable-line import/extensions
+import querydb from '../../assets/js/utils/queries';
 
 export const { workerPool } = store.getState().query;
 
-// TODO: remove stale refs variable file wide
+//TODO: remove stale refs variable file wide
+
 
 export const vars = {
-	data: '',
-	cursorPosition: 0,
-	currentBlockID: null,
+  data: '', cursorPosition: 0,
+  currentBlockID: null
 };
 
 export const updateData = str => {
@@ -95,15 +95,24 @@ export const setSuggestionsPopoverMarginLeftTrackerContent = el => {
 	el.innerText = vars.data;
 };
 
+export const suggestSimilarQueries = () => {
+	let suggestions = getQuerySuggestionFromHistory();
+	suggestions = [...suggestions, ...getQuerySuggestionFromQueryDatabase()];
+	store.dispatch(setQuerySuggestions(suggestions));
+};
+
 export const getQuerySuggestionFromHistory = () => {
 	const { results } = store.getState().query;
+  const {history} = store.getState().terminal;
 	let suggestions = Object.keys(results);
 	suggestions = suggestions.map(key => results[key].query);
 	suggestions = suggestions.filter(query =>
-		query && vars.data && query.startsWith(vars.data) ? true : false,
+		query && vars.data && query.startsWith(vars.data)
+			? true
+			: false,
 	);
 	suggestions.reverse();
-	suggestions = [...new Set(suggestions)]; // remove duplicates
+	suggestions = [...new Set(suggestions)]; //remove duplicates
 	suggestions = suggestions.map(suggestion => ({
 		suggestion,
 		origin: 'history',
@@ -116,8 +125,7 @@ export const getQuerySuggestionFromQueryDatabase = () => {
 	query = query.split('.');
 	let suggestions = querydb;
 
-  // eslint-disable-next-line no-restricted-syntax
-	for (const str of query) {
+	for (let str of query) {
 		let child = suggestions[str];
 		if (!child) {
 			child = Object.keys(suggestions);
@@ -141,19 +149,15 @@ export const getQuerySuggestionFromQueryDatabase = () => {
 		);
 	}
 
-	suggestions = suggestions.map(suggestion => `${vars.data}${suggestion}`);
+	suggestions = suggestions.map(
+		suggestion => `${vars.data}${suggestion}`,
+	);
 
 	suggestions = suggestions.map(suggestion => ({
 		suggestion,
 		origin: 'database',
 	}));
 	return suggestions;
-};
-
-export const suggestSimilarQueries = () => {
-	let suggestions = getQuerySuggestionFromHistory();
-	suggestions = [...suggestions, ...getQuerySuggestionFromQueryDatabase()];
-	store.dispatch(setQuerySuggestions(suggestions));
 };
 
 export const handleSuggestionClick = async (e, refs, term) => {
@@ -223,7 +227,7 @@ export const focusPrevOrNextSuggestion = (e, refs) => {
 	const activeElement =
 		refs.suggestionsContainerEl.current.ownerDocument.activeElement;
 
-	for (let i = 0; i < children.length; i += 1) {
+	for (let i = 0; i < children.length; i++) {
 		if (children[i].classList.contains('query-suggestion-selected')) {
 			children[i].classList.remove('query-suggestion-selected');
 
@@ -257,7 +261,7 @@ export const selectSuggestionInFocus = refs => {
 	const { term } = store.getState().terminal;
 	const children = refs.suggestionsContainerEl.current.children;
 
-	for (let i = 0; i < children.length; i += 1) {
+	for (let i = 0; i < children.length; i++) {
 		if (children[i].classList.contains('query-suggestion-selected')) {
 			handleSuggestionClick({ target: children[i] }, refs, term);
 			break;
@@ -271,7 +275,9 @@ export const suggestQueryForXterm = async term => {
 	const { query_suggestions } = store.getState().terminal;
 	await TWS.termWrite(term, TWS.constructInputToWrite());
 	if (query_suggestions.length > 0) {
-		let str_to_write = query_suggestions[0].suggestion.split(vars.data)[1];
+		let str_to_write = query_suggestions[0].suggestion.split(
+			vars.data,
+		)[1];
 		str_to_write =
 			TV.clearLine +
 			TV.cpgDefaultPrompt +
@@ -459,20 +465,20 @@ export const termWriteLn = (term, value) =>
 	new Promise(r => term.writeln(value, r));
 
 export const getNext = history => {
-	let next = Object.keys(history.next_queries);
-	next = next[next.length - 1];
-	next = history.next_queries[next];
-	return next ? next : '';
+  let next = Object.keys(history.next_queries);
+  next = next[next.length - 1];
+  next = history.next_queries[next];
+  return next ? next : '';
 };
 export const getPrev = history => {
-	let prev = Object.keys(history.prev_queries);
-	prev = prev[prev.length - 1];
-	prev = history.prev_queries[prev];
-	if (prev) {
-		return prev;
-	} else {
-		return TWS.getNext(history);
-	}
+  let prev = Object.keys(history.prev_queries);
+  prev = prev[prev.length - 1];
+  prev = history.prev_queries[prev];
+  if (prev) {
+    return prev;
+  } else {
+    return TWS.getNext(history);
+  }
 };
 
 export const removeOldestQueryFromHistory = (history, prev_keys) => {
@@ -625,7 +631,6 @@ export const initCircuitUI = refs => {
 
 	el.children[1].children[0].addEventListener(
 		'keydown',
-    // eslint-disable-next-line prefer-arrow-callback
 		async function handleInitCircuitUIInputKeyDown(e) {
 			const { suggestion_dialog_open } = store.getState().terminal;
 			if (suggestion_dialog_open) {
@@ -647,8 +652,7 @@ export const initCircuitUI = refs => {
 
 	el.children[1].children[1].addEventListener(
 		'click',
-		// eslint-disable-next-line prefer-arrow-callback
-		async function handleInitCircuitUIButtonClick() {
+		async function handleInitCircuitUIButtonClick(e) {
 			const { term, busy } = store.getState().terminal;
 			if (!busy) {
 				await handleEnter(term, refs);
@@ -830,29 +834,32 @@ export const handleWriteToCircuitUIInput = (refs, ev) => {
 	const input = refs.circuitUIRef.current.children[1].children[0];
 	input.value = TWS.vars.data;
 
-	/**
-	 * Here we save state of the previous value of the
-	 * input in the input itself through the input attribute "data-prev-value"
-	 *
-	 * This allows us to micro-control when calling handleWriteToCirtcuitInput
-	 * is allowed to call suggestSimilarQueries().
-	 *
-	 * To be more specific, this ensures that the query suggestion dialog is
-	 * closed immediately after the execution of a query,
-	 * and is opened when a user tries typing a query and immediately clears the input,
-	 * even when the input box contains just empty strings in both scenarios
-	 */
-	const prev_value = input.getAttribute('data-prev-value');
-	input.setAttribute('data-prev-value', TWS.vars.data);
-	if (prev_value.length > TWS.vars.data.length && prev_value.length > 1) {
-		store.dispatch(setSuggestionDialogOpen(false));
-		return;
-	}
-	/** ********************************** */
+  /**
+   * Here we save state of the previous value of the
+   * input in the input itself through the input attribute "data-prev-value"
+   *
+   * This allows us to micro-control when calling handleWriteToCirtcuitInput
+   * is allowed to call suggestSimilarQueries().
+   *
+   * To be more specific, this ensures that the query suggestion dialog is
+   * closed immediately after the execution of a query,
+   * and is opened when a user tries typing a query and immediately clears the input,
+   * even when the input box contains just empty strings in both scenarios
+   */
+  const prev_value = input.getAttribute("data-prev-value");
+  input.setAttribute("data-prev-value", TWS.vars.data);
+  if(prev_value.length > TWS.vars.data.length && prev_value.length > 1){
+    store.dispatch(setSuggestionDialogOpen(false));
+    return;
+  }
+  /*************************************/
 
-	input.setSelectionRange(TWS.vars.cursorPosition, TWS.vars.cursorPosition);
+	input.setSelectionRange(
+		TWS.vars.cursorPosition,
+		TWS.vars.cursorPosition,
+	);
 	if (!ev || !['ArrowUp', 'ArrowDown'].includes(ev.code))
-		suggestSimilarQueries();
+  suggestSimilarQueries();
 };
 
 export const handleMaximize = (terminalRef, isMaximized) => {

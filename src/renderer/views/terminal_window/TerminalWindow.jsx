@@ -43,8 +43,8 @@ import {
 	handleEmptyWorkspace,
 	handleSuggestionClick,
 	handleToggleAllBlocks,
-	calculateSuggestionsPopoverMarginLeft,
-	vars,
+  calculateSuggestionsPopoverMarginLeft,
+	vars
 } from './terminalWindowScripts';
 import commonStyles from '../../assets/js/styles';
 
@@ -116,7 +116,7 @@ function TerminalWindow(props) {
 		circuitUIRef: React.useRef(null),
 		resizeEl: React.useRef(null),
 		vListEl: React.useRef(null),
-		suggestionsPopoverMarginLeftTrackerEl: React.useRef(null),
+    suggestionsPopoverMarginLeftTrackerEl: React.useRef(null),
 		suggestionsContainerEl: React.useRef(null),
 		cacheRef: React.useRef(
 			new CellMeasurerCache({
@@ -137,7 +137,7 @@ function TerminalWindow(props) {
 		prefersTerminalView,
 		isMaximized,
 		query_suggestions,
-		suggestion_dialog_open,
+    suggestion_dialog_open,
 		circuit_ui_responses,
 	} = props;
 	const { scrolled } = state;
@@ -225,8 +225,7 @@ function TerminalWindow(props) {
 		);
 	}, [props.isMaximized]);
 
-	React.useEffect(() => {
-		// verify that this useEffect is useful
+	React.useEffect(() => { // verify that this useEffect is useful
 		setTimeout(resize, 0);
 
 		if (refs.terminalRef.current) {
@@ -234,8 +233,7 @@ function TerminalWindow(props) {
 		}
 	}, [props.terminalHeight]);
 
-	React.useEffect(() => {
-		// eslint-disable-next-line no-undef
+  React.useEffect(() => {
 		const observer = new MutationObserver(() =>
 			calculateSuggestionsPopoverMarginLeft(refs),
 		);
@@ -254,7 +252,10 @@ function TerminalWindow(props) {
 	}, [refs.suggestionsPopoverMarginLeftTrackerEl]);
 
 	React.useEffect(() => {
-		if (props.query_suggestions.length > 0 && !props.prefersTerminalView) {
+		if (
+			props.query_suggestions.length > 0 &&
+			!props.prefersTerminalView
+		) {
 			props.setSuggestionDialogOpen(true);
 		} else {
 			props.setSuggestionDialogOpen(false);
@@ -452,7 +453,7 @@ function TerminalWindow(props) {
 				<div id="circuit-ui-input-container">
 					<input type="text" placeholder="▰  query" />
 					<button>Run Query ↵</button>
-					<Popover2
+          <Popover2
 						shouldReturnFocusOnClose={true}
 						placement="auto-end"
 						interactionKind="click"
@@ -464,6 +465,7 @@ function TerminalWindow(props) {
 							classes.querySuggestionPopoverPortalStyle,
 							'query-suggestion-popover-portal',
 						)}
+						shouldReturnFocusOnClose={true}
 						content={
 							<div
 								ref={refs.suggestionsContainerEl}
@@ -477,7 +479,7 @@ function TerminalWindow(props) {
 									(query_suggestion, index) => (
 										<div
 											tabIndex="0"
-											autoFocus={
+											autofocus={
 												index === 0 ? true : false
 											}
 											key={`${index}-${query_suggestion.suggestion}`}
@@ -509,24 +511,27 @@ function TerminalWindow(props) {
 												? query_suggestion.suggestion
 												: query_suggestion.suggestion
 														.split(vars.data)
-														.map((str, index) =>
-															index === 0 ? (
+														.map((str, index) => {
+															return index ===
+																0 ? (
 																<span
 																	className={
 																		classes.querySuggestionMatchStyle
 																	}
-																	key={`${index}-${str}`}
+                                  key={`${index}-${str}`}
 																>
-																	{vars.data}
+																	{
+																		vars.data
+																	}
 																</span>
 															) : (
 																<span
-																	key={`${index}-${str}`}
-																>
+                                  key={`${index}-${str}`}
+                                >
 																	{str}
 																</span>
-															),
-														)}
+															);
+														})}
 										</div>
 									),
 								)}
@@ -551,7 +556,7 @@ const mapStateToProps = state => ({
 	prev_projects: terminalSelectors.selectPrevProjects(state),
 	isMaximized: terminalSelectors.selectIsMaximized(state),
 	query_suggestions: terminalSelectors.selectQuerySuggestions(state),
-	suggestion_dialog_open: terminalSelectors.selectSuggestionDialogOpen(state),
+  suggestion_dialog_open: terminalSelectors.selectSuggestionDialogOpen(state),
 	circuit_ui_responses: terminalSelectors.selectCircuitUiResponses(state),
 
 	results: querySelectors.selectResults(state),
@@ -575,8 +580,7 @@ const mapDispatchToProps = dispatch => ({
 	setPrevProjects: prev_projects =>
 		dispatch(terminalActions.setPrevProjects(prev_projects)),
 	setIsMaximized: obj => dispatch(terminalActions.setIsMaximized(obj)),
-	setSuggestionDialogOpen: bool =>
-		dispatch(terminalActions.setSuggestionDialogOpen(bool)),
+  setSuggestionDialogOpen: bool => dispatch(terminalActions.setSuggestionDialogOpen(bool)),
 	setSettings: values => dispatch(settingsActions.setSettings(values)),
 });
 

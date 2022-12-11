@@ -39,8 +39,8 @@ export const selectQuerySuggestions = createSelector(
 	terminal => terminal.query_suggestions,
 );
 export const selectSuggestionDialogOpen = createSelector(
-	[selectTerminal],
-	terminal => terminal.suggestion_dialog_open,
+  [selectTerminal],
+  terminal => terminal.suggestion_dialog_open
 );
 export const selectCircuitUiResponses = createSelector(
 	[selectTerminal],
