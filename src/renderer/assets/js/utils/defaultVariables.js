@@ -168,17 +168,6 @@ export const syntheticFiles = [
 ];
 export const joernBinaryLanguage = 'GHIDRA';
 
-export const customIcons = {
-	rules: 'custom-rules',
-	analytics: 'custom-analytics',
-	monitoring: 'custom-monitoring',
-	chevron_down: 'custom-chevron-down',
-	hamburger: 'custom-hamburger',
-	restore: 'custom-restore',
-	close: 'custom-close',
-	terminal: 'custom-terminal',
-};
-
 // \r      ██╗ ██████╗ ███████╗██████╗ ███╗   ██╗
 // \r      ██║██╔═══██╗██╔════╝██╔══██╗████╗  ██║
 // \r      ██║██║   ██║█████╗  ██████╔╝██╔██╗ ██║

@@ -1,24 +1,15 @@
 import React from 'react';
 import clsx from 'clsx';
 import { connect } from 'react-redux';
-import { makeStyles } from '@material-ui/core';
 import * as terminalSelectors from '../../store/selectors/terminalSelectors';
-import * as settingsSelectors from '../../store/selectors/settingsSelectors';
-import CustomIcon from '../custom_icon/CustomIcon';
 import {
 	handleToggleAllSubBlocks,
 	handleToggleSubBlock,
 	openFileAndGoToLineFromCircuitUI,
 } from './uiQueryResponseScripts';
-import styles from '../../assets/js/styles/components/ui_query_response/uiQueryResponseStyles';
-import commonStyles from '../../assets/js/styles';
-
-const useStyles = makeStyles(styles);
-const useCommonStyles = makeStyles(commonStyles);
+import iconChevronDown from '../../assets/image/icon-chevron-down.svg';
 
 function UiQueryResponse(props) {
-	const classes = useStyles(props);
-	const commonClasses = useCommonStyles(props);
 	const {
 		item: { res_type, block_id, sub_block_id },
 		registerChild,
@@ -33,7 +24,7 @@ function UiQueryResponse(props) {
 	return (
 		<div
 			ref={registerChild}
-			className={clsx(classes.uiResponseStyle, {
+			className={clsx('response', {
 				dropdown: circuit_ui_responses.all[block_id].dropdown,
 			})}
 			data-block-id={block_id}
@@ -54,55 +45,44 @@ function UiQueryResponse(props) {
 				></div>
 			) : null}
 			{res_type === 'stderr' ? (
-				<div className={classes.contentStyle}>
-					<span className={classes.errorStyle}>ERROR</span>
+				<div className="content">
+					<span className="error">ERROR</span>
 					<span dangerouslySetInnerHTML={{ __html: value }} />
 				</div>
 			) : null}
 			{res_type === 'stdout' && typeof value === 'string' ? (
-				<div className={classes.contentStyle}>
+				<div className="content">
 					<div dangerouslySetInnerHTML={{ __html: value }}></div>
 				</div>
 			) : null}
 			{res_type === 'stdout' && !(typeof value === 'string') ? (
-				<div className={clsx(classes.contentStyle, classes.listStyle)}>
-					<div className={classes.objectTitleSectionStyle}>
-						<span
-							className={classes.objectTitleStyle}
-							onClick={() =>
-								openFileAndGoToLineFromCircuitUI(value)
-							}
-							dangerouslySetInnerHTML={{
-								__html: `${value.fullName}()`,
-							}}
-						></span>
-						<CustomIcon
-							className={clsx(
-								commonClasses.iconStyle,
-								classes.customIconStyle,
-								{ dropdown: sub_block_dropdown },
-							)}
-							icon="custom-chevron-down"
-							size={20}
-							onClick={() =>
-								handleToggleSubBlock(
-									block_id,
-									sub_block_id,
-									props.measure,
-								)
-							}
-						/>
-					</div>
+				<div className="content list">
+					<span
+						className="object-title"
+						onClick={() => openFileAndGoToLineFromCircuitUI(value)}
+						dangerouslySetInnerHTML={{
+							__html: `${value.fullName}()`,
+						}}
+					></span>
+					<img
+						className={clsx({ dropdown: sub_block_dropdown })}
+						src={iconChevronDown}
+						onClick={() =>
+							handleToggleSubBlock(
+								block_id,
+								sub_block_id,
+								props.measure,
+							)
+						}
+					/>
 					{Object.keys(value).map((each, index) => (
 						<div
 							key={`${index}-${each}`}
-							className={clsx(classes.objectEntryContainerStyle, {
+							className={clsx('object-entry-container', {
 								dropdown: sub_block_dropdown,
 							})}
 						>
-							<span className={classes.objectKeyStyle}>
-								{each}
-							</span>
+							<span className="object-key">{each}</span>
 							<span>{value[each]}</span>
 						</div>
 					))}
@@ -114,7 +94,6 @@ function UiQueryResponse(props) {
 
 const mapStateToProps = state => ({
 	circuit_ui_responses: terminalSelectors.selectCircuitUiResponses(state),
-	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
 
 export default connect(mapStateToProps, null)(UiQueryResponse);
