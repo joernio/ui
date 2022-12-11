@@ -36,9 +36,9 @@ function QueriesStats(props) {
 
 	React.useEffect(() => {
 		if (props.results) {
-			handleSetState(countQueries(props.results));
-		}
-	}, [props.results]);
+			handleSetState(countQueries(props.results, props.scriptsResults));
+		};
+	}, [props.results, props.scriptsResults]);
 
 	React.useEffect(() => {
 		if (state.queriesStatsPopoverIsOpen && props.results) {
@@ -46,7 +46,7 @@ function QueriesStats(props) {
 				() =>
 					setState(state => ({
 						...state,
-						...updateQueriesStats(props.results),
+						...updateQueriesStats(props.results, props.scriptsResults),
 					})),
 				100,
 			);
@@ -149,7 +149,7 @@ function QueriesStats(props) {
 				data-test="queries-stats"
 			>
 				<div className={classes.refreshIconContainerStyle}>
-					{!queueEmpty(props.queue) ? (
+					{!queueEmpty(props.queue) || !queueEmpty(props.scriptsQueue) ? (
 						<Icon
 							icon="refresh"
 							className={clsx(
@@ -167,7 +167,7 @@ function QueriesStats(props) {
 				<p className={classes.queriesStatsStyle}>
 					{nFormatter(queriesCount)}
 				</p>
-				{!queueEmpty(props.queue) ? <div>running...</div> : null}
+				{!queueEmpty(props.queue) || !queueEmpty(props.scriptsQueue) ? <div>running...</div> : null}
 			</div>
 		</Popover2>
 	);
@@ -175,7 +175,9 @@ function QueriesStats(props) {
 
 const mapStateToProps = state => ({
 	results: querySelectors.selectResults(state),
+  scriptsResults: querySelectors.selectScriptsResults(state),
 	queue: querySelectors.selectQueue(state),
+  scriptsQueue: querySelectors.selectScriptsQueue(state),
 	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
 
