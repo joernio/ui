@@ -145,9 +145,6 @@ const styles = theme => ({
 	displayFlex: {
 		display: 'flex !important',
 	},
-  positionAbsolute: {
-		position: 'absolute',
-	},
 	alignCenter: {
 		alignItems: 'center',
 	},

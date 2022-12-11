@@ -48,6 +48,12 @@ git clone https://github.com/joernio/ui
 npm install
 ```
 
+If you encounter dependency resolution issues while running `npm install`, then run:
+
+```commandline
+npm install --legacy-peer-deps
+```
+
 2. from the root of the cloned repository, cd into release/app and run:
 
 ```commandline
