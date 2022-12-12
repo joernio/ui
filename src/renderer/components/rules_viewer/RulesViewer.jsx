@@ -395,7 +395,7 @@ function RulesViewer(props) {
 																<button
                                   key={`${index}-${language}`}
 																	className={clsx(
-																		classes.configTagButtonStyle,
+																		classes.smallButtonStyle,
 																		classes.secondaryButtonStyle,
 																	)}
 																	onClick={e => {
@@ -421,7 +421,7 @@ function RulesViewer(props) {
 																<button
                                   key={`${index}-${tag}`}
 																	className={clsx(
-																		classes.configTagButtonStyle,
+																		classes.smallButtonStyle,
 																		classes.secondaryButtonStyle,
 																	)}
 																	onClick={e => {
@@ -446,6 +446,7 @@ function RulesViewer(props) {
 												</div>
 												<button
 													className={clsx(
+                            classes.buttonStyle,
 														classes.configButtonStyle,
 														classes.primaryButtonStyle,
 													)}
@@ -474,8 +475,9 @@ function RulesViewer(props) {
 					<div className={classes.configsFooterStyle}>
 						<button
 							className={clsx(
+                classes.buttonStyle,
+                classes.secondaryButtonStyle,
 								classes.configsFooterButtonStyle,
-								classes.secondaryButtonStyle,
 							)}
 							onClick={() => openFile(rulesConfigFilePath)}
 						>
@@ -483,8 +485,9 @@ function RulesViewer(props) {
 						</button>
 						<button
 							className={clsx(
+                classes.buttonStyle,
+                classes.primaryButtonStyle,
 								classes.configsFooterButtonStyle,
-								classes.primaryButtonStyle,
 								{
 									[commonClasses.displayNone]:
 										filtered_configs.length === 0,

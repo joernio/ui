@@ -20,27 +20,21 @@ const styles = theme => ({
 			],
 		fontSize: '1.5rem',
 	},
+  buttonStyle: {
+    padding: '0.5em',
+		margin: '1em',
+    fontSize: "1rem"
+  },
+  smallButtonStyle: {
+		margin: '0.2em',
+		padding: '0.2em',
+    fontSize: "1rem",
+  },
 	configsFooterButtonStyle: {
-		fontSize: '1rem',
-		minWidth: '10em',
-		margin: '0.3em 0.3em 0.3em 0.3em',
-		padding: '0.5em 0.5em 0.5em 0.7em',
-	},
-	configTagSectionStyle: {
-		display: 'flex',
-		width: '100%',
-		flexWrap: 'wrap',
-	},
-	configTagButtonStyle: {
-		fontSize: '1rem',
-		margin: '0.2em 0.2em 0.2em 0.2em',
-		padding: '0.2em 0.2em 0.2em 0.2em',
+		minWidth: '10em'
 	},
 	configButtonStyle: {
-		fontSize: '1rem',
-		padding: '0.5em 0.5em 0.5em 0.5em',
 		height: 'fit-content',
-		margin: '0.6em 0.5em 0.5em 1em',
 		minWidth: '5em',
 	},
 	primaryButtonStyle: {
@@ -80,6 +74,11 @@ const styles = theme => ({
 					props.prefersDarkMode ? 'dark' : 'light'
 				],
 		},
+	},
+  configTagSectionStyle: {
+		display: 'flex',
+		width: '100%',
+		flexWrap: 'wrap',
 	},
 	configsSectionStyle: {
 		width: '100%',

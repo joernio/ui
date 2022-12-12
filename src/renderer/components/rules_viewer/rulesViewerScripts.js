@@ -153,7 +153,7 @@ export const extractRuleMainFunctionNameAndArgs = data => {
 
 export const runScript = async config => {
 	const workspace_path = store.getState().workspace.path;
-	if (config.filename && workspace_path) {
+	if (config?.filename && workspace_path) {
 		const query_string = await generateScriptImportQuery(
 			config.filename,
 			workspace_path,
@@ -190,6 +190,7 @@ export const runScript = async config => {
 					text: 'View rule',
 				},
 			});
+      return true;// single that there was no errors while trying to run this script
 		} else {
 			handleSetToast({
 				icon: 'warning-sign',
@@ -203,22 +204,22 @@ export const runScript = async config => {
 				},
 			});
 		}
-	} else {
+	} else if(!workspace_path) {
+
 		handleSetToast({
 			icon: 'warning-sign',
 			intent: 'danger',
-			message: `an error occured while executing rule ${config.id}.`,
-			action: {
-				onClick: () => {
-					openFile(config.filename);
-				},
-				text: 'View rule',
-			},
+			message: (
+      `error executing rule ${config.id}.
+      There is no active project in your workspace.
+      You need to "open" a project first before you can execute a rule`
+      )
 		});
-	}
+	};
 };
 
-export const runSelectedConfigs = async selected_configs => Promise.all(
+export const runSelectedConfigs = async selected_configs => {
+  const run_script_status_arr = await Promise.all(
 		selected_configs.map(config =>
 			readFile(config.filename)
 				.then(data => {
@@ -243,9 +244,34 @@ export const runSelectedConfigs = async selected_configs => Promise.all(
             });
 					}
 				})
-				.then(config => runScript(config)),
+				.then(config => runScript(config))
+        .catch(err=>{
+          handleSetToast({
+            icon: 'warning-sign',
+            intent: 'danger',
+            message: String(err)
+          });
+        })
 		),
 	);
+
+  let should_get_findings = false;
+  run_script_status_arr.forEach(status=>{
+    if(status === true){
+      should_get_findings = true;
+    }
+  });
+
+  const ruleResultPretty = {
+    query: "cpg.findings.jsonPretty",
+    origin: 'script',
+    ignore: true,
+  };
+
+  should_get_findings && setTimeout(() => {
+    store.dispatch(enQueueScriptsQuery(ruleResultPretty));
+  }, 0);
+};
 
 // export const populateArgsDialogFields = (modified_selected) => {
 // 	const fields_arr = [];
