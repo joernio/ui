@@ -922,7 +922,7 @@ export const sendQueryResultToXTerm = async (results, refs) => {
 		term &&
 		(latest?.result.stdout || latest?.result.stderr) &&
 		!latest?.ignore &&
-		latest.post_query_uuid &&
+    latest.post_query_uuid &&
 		(latest.workspace || latest.project)
 	) {
 		return await handleWriteQueryResult(term, refs, latest); // eslint-disable-line no-return-await

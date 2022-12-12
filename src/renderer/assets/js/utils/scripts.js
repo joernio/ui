@@ -15,12 +15,13 @@ import {
 } from './defaultVariables';
 import {
 	deQueueQuery,
+  deQueueScriptsQuery,
 	getQueryResult,
+  setScriptsResults,
 	postQuery,
 	setResults,
 	resetQueue,
 	enQueueQuery,
-	deQueueScriptsQuery,
 	setQueryShortcut,
 } from '../../../store/actions/queryActions';
 import {
@@ -182,19 +183,6 @@ export const deepClone = obj => {
 	return new_obj;
 };
 
-export const getResultObjWithPostQueryKey = (results, post_query_key) => {
-	let res;
-	Object.keys(results).some(key => {
-		if (key && results[key].post_query_uuid === post_query_key) {
-			res = key;
-			return true;
-		}
-		return false;
-	});
-
-	return res;
-};
-
 export const getActiveProject = () => {
 	const { projects } = store.getState().workspace;
 	let activeProject = null;
@@ -261,39 +249,35 @@ export const parseProject = data => {
 	return { name, inputPath, path, cpg, language };
 };
 
-const performPostQuery = (store, results, key) => {
-	let post_query;
-	const result = results[key];
+const performPostQuery = (result, key) => {
+  let post_query;
 
-	if (
-		result.query.startsWith(manCommands.switchWorkspace) ||
-		result.query === 'project'
-	) {
-		post_query = 'workspace';
-	} else {
-		post_query = 'project';
-	}
+  if (
+    result.query.startsWith(manCommands.switchWorkspace) ||
+    result.query === 'project'
+  ) {
+    post_query = 'workspace';
+  } else {
+    post_query = 'project';
+  }
 
-	store.dispatch(postQuery(post_query, key));
+  store.dispatch(postQuery(post_query, key));
 };
 
-const setQueryResult = (data, store, key, results) => {
+const setQueryResult = (data, key, results) => {
 	if (results[key].t_0 && !results[key].t_1) {
-		results[key].t_1 = performance.now();
+		results[key].t_1 = new Date().getTime();
 	}
 
 	if (!results[key].result.stdout && !results[key].result.stderr) {
-		if (!data) {
-			results[key].result.stderr = 'query failed';
-		} else {
-			if (data.stdout) {
-				results[key].result.stdout = data.stdout;
-			}
 
-			if (data.stderr) {
-				results[key].result.stderr = data.stderr;
-			}
-		}
+    if (data.stdout) {
+      results[key].result.stdout = data.stdout;
+    }
+
+    if (data.stderr) {
+      results[key].result.stderr = data.stderr;
+    }
 
 		store.dispatch(setResults(results));
 	} else if (
@@ -301,7 +285,6 @@ const setQueryResult = (data, store, key, results) => {
 		results[key].query === 'project'
 	) {
 		if (
-			!data &&
 			!results[key].result.stdout &&
 			!results[key].result.stderr
 		) {
@@ -314,7 +297,6 @@ const setQueryResult = (data, store, key, results) => {
 		store.dispatch(setResults(results));
 	} else {
 		if (
-			!data &&
 			!results[key].result.stdout &&
 			!results[key].result.stderr
 		) {
@@ -327,32 +309,64 @@ const setQueryResult = (data, store, key, results) => {
 	}
 };
 
-export const handleWebSocketResponse = data => {
-	store.dispatch(getQueryResult(data.utf8Data)).then(data => {
-		const { results } = store.getState().query;
-		let key = data.uuid;
-		let result_obj = results[key];
+const setScriptsQueryResult = (data, key, results) => {
+	if (results[key].t_0 && !results[key].t_1) {
+		results[key].t_1 = new Date().getTime();
+	}
 
-		if (!result_obj) {
-			key = getResultObjWithPostQueryKey(results, data.uuid);
-			result_obj = results[key];
-		}
-
-		if (result_obj) {
-			if (!result_obj.result.stdout && !result_obj.result.stderr) {
-				setQueryResult(data, store, key, results);
-				if (result_obj.origin === 'script') {
-					store.dispatch(deQueueScriptsQuery());
-					addToQueue(addWorkSpaceQueryToQueue());
-				} else {
-					performPostQuery(store, results, key);
-				}
-			} else {
-				setQueryResult(data, store, key, results);
-				store.dispatch(deQueueQuery());
+			if (data.stdout) {
+				results[key].result.stdout = data.stdout;
 			}
-		}
-	});
+
+			if (data.stderr) {
+				results[key].result.stderr = data.stderr;
+			}
+
+		store.dispatch(setScriptsResults(results));
+};
+
+export const handleWebSocketResponse = data => {
+  store.dispatch(getQueryResult(data.utf8Data)).then(data => {
+    const { results, scriptsResults } = store.getState().query;
+    let key = data?.uuid;
+    if(!key) return;
+
+    let latest = results[key];
+
+    if(!latest){
+      latest = scriptsResults[key];
+    };
+
+    if(!latest){
+      const result_keys = Object.keys(results);
+      key = result_keys[result_keys.length - 1];
+      const _latest = results[key];
+      if(_latest.post_query_uuid === data.uuid){
+        latest = _latest
+      };
+    };
+
+    if(latest && latest.origin === "script"){
+
+      if (!latest.result.stdout && !latest.result.stderr) {
+        setScriptsQueryResult(data, key, scriptsResults);
+        store.dispatch(deQueueScriptsQuery());
+      };
+
+    }else if(latest && latest.origin !== "script"){
+
+      if (!latest.result.stdout && !latest.result.stderr) {
+        setQueryResult(data, key, results);
+        performPostQuery(results[key], key);
+      } else {
+        setQueryResult(data, key, results);
+        store.dispatch(deQueueQuery());
+      }
+
+    }
+  }).catch(() => {
+    // handleAPIQueryError(err);
+  });
 };
 
 export const handleCertificateError = () => {
@@ -1044,40 +1058,40 @@ export const isQueryResultToOpenSynthFile = latest => {
 	return { synth_file_path, content };
 };
 
-export const isScriptQueryResultToOpenSynthFile = async result => {
-	let synth_file_path = false;
-	let content = false;
+// export const isScriptQueryResultToOpenSynthFile = async result => {
+// 	let synth_file_path = false;
+// 	let content = false;
 
-	if (
-		result?.result?.stdout &&
-		typeof result.result.stdout === 'string' &&
-		!result.query.startsWith('import') &&
-		result.result.stdout.includes('.json')
-	) {
-		try {
-			synth_file_path = `${
-				result.query.split('`').join('').split('.')[0]
-			}.sc - ${syntheticFiles[2]}`;
-			content = result.result.stdout.split('=')[1].split('"')[1];
-			content = await readFile(content).catch(() => {
-				synth_file_path = false;
-				handleSetToast({
-					icon: 'warning-sign',
-					intent: 'danger',
-					message:
-						"script report file path returned by script run doesn't exist",
-				});
+// 	if (
+// 		result?.result?.stdout &&
+// 		typeof result.result.stdout === 'string' &&
+// 		!result.query.startsWith('import') &&
+// 		result.result.stdout.includes('.json')
+// 	) {
+// 		try {
+// 			synth_file_path = `${
+// 				result.query.split('`').join('').split('.')[0]
+// 			}.sc - ${syntheticFiles[2]}`;
+// 			content = result.result.stdout.split('=')[1].split('"')[1];
+// 			content = await readFile(content).catch(() => {
+// 				synth_file_path = false;
+// 				handleSetToast({
+// 					icon: 'warning-sign',
+// 					intent: 'danger',
+// 					message:
+// 						"script report file path returned by script run doesn't exist",
+// 				});
 
-				return false;
-			});
-		} catch (e) {
-			synth_file_path = false;
-			content = false;
-		}
-	}
+// 				return false;
+// 			});
+// 		} catch (e) {
+// 			synth_file_path = false;
+// 			content = false;
+// 		}
+// 	}
 
-	return { synth_file_path, content };
-};
+// 	return { synth_file_path, content };
+// };
 
 export const isQueryResultToCloseSynthFile = async () => {
 	const paths_to_close = [];
@@ -1535,18 +1549,18 @@ export const handleFontSizeChange = (doc, fontSize) => {
 	doc.children[0].children[1].style.fontSize = fontSize;
 };
 
-export const getScriptResult = (uuids, results) => {
-	let result;
+// export const getScriptResult = (uuids, results) => {
+// 	let result;
 
-	for (let i = uuids.length - 1; i >= 0; i -= 1) {
-		if (results[uuids[i]].origin === 'script') {
-			result = results[uuids[i]];
-			break;
-		}
-	}
+// 	for (let i = uuids.length - 1; i >= 0; i -= 1) {
+// 		if (results[uuids[i]].origin === 'script') {
+// 			result = results[uuids[i]];
+// 			break;
+// 		}
+// 	}
 
-	return result;
-};
+// 	return result;
+// };
 
 export const generateScriptImportQuery = async (
 	path_to_script,
