@@ -12,6 +12,7 @@ import {
 } from './uiQueryResponseScripts';
 import styles from '../../assets/js/styles/components/ui_query_response/uiQueryResponseStyles';
 import commonStyles from '../../assets/js/styles';
+import { customIcons } from '../../assets/js/utils/defaultVariables';
 
 const useStyles = makeStyles(styles);
 const useCommonStyles = makeStyles(commonStyles);
@@ -82,8 +83,8 @@ function UiQueryResponse(props) {
 								classes.customIconStyle,
 								{ dropdown: sub_block_dropdown },
 							)}
-							icon="custom-chevron-down"
-							size={20}
+							icon={customIcons.chevron_down}
+							iconSize={20}
 							onClick={() =>
 								handleToggleSubBlock(
 									block_id,

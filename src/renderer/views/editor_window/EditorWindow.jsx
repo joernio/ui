@@ -54,6 +54,7 @@ function EditorWindow(props) {
 		openFileIsReadOnly,
 		openFilePath,
 		openFileContent,
+		rulesConfigFilePath,
 	} = props;
 
 	const options = {
@@ -95,6 +96,8 @@ function EditorWindow(props) {
 						message={
 							openFileIsReadOnly
 								? 'Read-only Mode'
+								: openFilePath === rulesConfigFilePath
+								? 'Rules Configuration Editing Mode'
 								: 'Scripts Development Mode'
 						}
 					/>
@@ -125,6 +128,7 @@ const mapStateToProps = state => ({
 	openFileIsReadOnly: filesSelectors.selectOpenFileIsReadOnly(state),
 	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 	fontSize: settingsSelectors.selectFontSize(state),
+	rulesConfigFilePath: settingsSelectors.selectRulesConfigFilePath(state),
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -1,4 +1,5 @@
 import { homedir } from 'os';
+import { defaultRulesConfigFilePath } from '../../assets/js/utils/defaultVariables';
 
 export const default_state = {
 	server: {
@@ -14,6 +15,7 @@ export const default_state = {
 	prefersTerminalView: false,
 	fontSize: '16px',
 	scriptsDir: `${homedir()}/bin/joern/joern-cli/scripts`,
+	rulesConfigFilePath: defaultRulesConfigFilePath,
 	uiIgnore: 'node_modules, vendor, build, .git',
 	queryShortcuts: {},
 };
@@ -64,6 +66,11 @@ const settings = (state = default_state, action) => {
 			return {
 				...state,
 				queryShortcuts: { ...state.queryShortcuts, ...action.payload },
+			};
+		case 'SET_RULES_CONFIG_FILE_PATH':
+			return {
+				...state,
+				rulesConfigFilePath: action.payload,
 			};
 		default:
 			return state;

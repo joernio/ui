@@ -116,7 +116,7 @@ export const getQuerySuggestionFromQueryDatabase = () => {
 	query = query.split('.');
 	let suggestions = querydb;
 
-  // eslint-disable-next-line no-restricted-syntax
+	// eslint-disable-next-line no-restricted-syntax
 	for (const str of query) {
 		let child = suggestions[str];
 		if (!child) {
@@ -625,7 +625,7 @@ export const initCircuitUI = refs => {
 
 	el.children[1].children[0].addEventListener(
 		'keydown',
-    // eslint-disable-next-line prefer-arrow-callback
+		// eslint-disable-next-line prefer-arrow-callback
 		async function handleInitCircuitUIInputKeyDown(e) {
 			const { suggestion_dialog_open } = store.getState().terminal;
 			if (suggestion_dialog_open) {

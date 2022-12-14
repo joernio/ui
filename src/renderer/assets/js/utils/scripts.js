@@ -49,6 +49,23 @@ export const handleSetToast = toast => {
 	store.dispatch(setToast(toast));
 };
 
+export const parseJsonc = data => {
+	// remove json comments
+	data = data.replace(/\/\/(.*)/g, '');
+	return JSON.parse(data);
+};
+
+export const pathStats = path =>
+	new Promise((resolve, reject) => {
+		fs.stat(path, (err, stats) => {
+			if (!err) {
+				resolve(stats);
+			} else {
+				reject(err);
+			}
+		});
+	});
+
 export const queueEmpty = queue => {
 	if (queue && Object.keys(queue).length === 0) {
 		return true;
@@ -405,6 +422,32 @@ export const getExtension = path => {
 	return ext ? `.${ext}` : '';
 };
 
+export const fsWriteFile = (path, content) => new Promise((res, rej) => {
+		fs.writeFile(path, content, err => {
+			if (!err) {
+				res();
+			} else {
+				rej(err);
+			}
+		});
+	});
+
+export const pathShouldBeReadOnly = (path, new_file) => {
+	const { rulesConfigFilePath } = store.getState().settings;
+
+	/**
+	 * We also need to check for when it's a new file being created (i.e file name starts with "untitled"),
+	 * but this is tricky because an already existing file can also have the name "untitled" so to avoid bugs,
+	 * we only want to check if the file name starts with 'untitled' if the file doesn't exist (i.e errored out during read),
+	 * so the checks had to be split into two and handled with an "new_file" conditional statement.
+	 */
+	if (new_file) {
+		return !(path && path.startsWith('untitled'));
+	} else {
+		return !(path.endsWith('.sc') || path === rulesConfigFilePath);
+	}
+};
+
 export const readFile = path =>
 	new Promise((resolve, reject) => {
 		if (path) {
@@ -425,7 +468,8 @@ export const readFile = path =>
 				}
 			});
 		} else {
-			reject();
+			reject(
+        Error(`can't read file. path is "${path}"`));
 		}
 	});
 
@@ -459,9 +503,7 @@ export const openFile = async path => {
 
 		const { openFileContent, openFileIsReadOnly } = await readFile(path)
 			.then(data => {
-				const openFileIsReadOnly =
-					path.slice(path.length - 3) !== '.sc';
-
+				const openFileIsReadOnly = pathShouldBeReadOnly(path);
 				return { openFileContent: data, openFileIsReadOnly };
 			})
 			.catch(() => {
@@ -471,9 +513,7 @@ export const openFile = async path => {
 				) {
 					return {
 						openFileContent: '',
-						openFileIsReadOnly: !(
-							path && path.startsWith('untitled')
-						),
+						openFileIsReadOnly: pathShouldBeReadOnly(path, true),
 					};
 				}
 				handleSetToast({
@@ -548,10 +588,9 @@ export const closeFile = async path => {
 			files.openFilePath,
 		)
 			.then(data => {
-				const openFileIsReadOnly =
-					files.openFilePath.slice(files.openFilePath.length - 3) !==
-					'.sc';
-
+				const openFileIsReadOnly = pathShouldBeReadOnly(
+					files.openFilePath,
+				);
 				return { openFileContent: data, openFileIsReadOnly };
 			})
 			.catch(() => {
@@ -590,9 +629,9 @@ export const closeFile = async path => {
 				) {
 					return {
 						openFileContent: '',
-						openFileIsReadOnly: !(
-							files.openFilePath &&
-							files.openFilePath.startsWith('untitled')
+						openFileIsReadOnly: pathShouldBeReadOnly(
+							files.openFilePath,
+							true,
 						),
 					};
 				}
@@ -651,9 +690,9 @@ export const saveFile = async (path, base_dir) => {
 	const file_content = store.getState().files.openFileContent;
 	const files = { ...store.getState().files };
 
-	const readOnly = !(path && path.slice(path.length - 3) === '.sc');
+	const readOnly = !(path && !pathShouldBeReadOnly(path));
 
-	if (!readOnly || path.startsWith('untitled')) {
+	if (!readOnly || !pathShouldBeReadOnly(path, true)) {
 		path &&
 			(await new Promise((resolve, reject) => {
 				fs.stat(path, (err, stats) => {
@@ -669,15 +708,7 @@ export const saveFile = async (path, base_dir) => {
 				});
 			})
 				.then(() =>
-					new Promise((res, rej) => {
-						fs.writeFile(path, file_content, err => {
-							if (!err) {
-								res();
-							} else {
-								rej();
-							}
-						});
-					})
+					fsWriteFile(path, file_content)
 						.then(() => {
 							handleSetToast({
 								icon: 'info-sign',
@@ -731,26 +762,15 @@ export const saveFile = async (path, base_dir) => {
 					});
 
 					if (file && !file.canceled) {
-						const readOnly =
-							file.filePath
-								.toString()
-								.slice(file.filePath.toString().length - 3) !==
-							'.sc';
+						const readOnly = pathShouldBeReadOnly(
+							file.filePath.toString(),
+						);
 
 						if (!readOnly) {
-							await new Promise((res, rej) => {
-								fs.writeFile(
-									file.filePath.toString(),
-									file_content,
-									err => {
-										if (err) {
-											rej();
-										} else {
-											res();
-										}
-									},
-								);
-							})
+							await fsWriteFile(
+								file.filePath.toString(),
+								file_content,
+							)
 								.then(() => {
 									handleSetToast({
 										icon: 'info-sign',
@@ -796,7 +816,8 @@ export const saveFile = async (path, base_dir) => {
 							handleSetToast({
 								icon: 'warning-sign',
 								intent: 'danger',
-								message: 'can only save .sc files',
+								message:
+									'can only save .sc and rule configuration files',
 							});
 						}
 					} else {
@@ -807,7 +828,7 @@ export const saveFile = async (path, base_dir) => {
 		handleSetToast({
 			icon: 'warning-sign',
 			intent: 'danger',
-			message: 'can only save .sc files',
+			message: 'can only save .sc and rule configuration files',
 		});
 	}
 };
@@ -901,7 +922,7 @@ export const refreshOpenFiles = async () => {
 
 export const deleteFile = async path => {
 	if (path) {
-		const readOnly = !(path && path.slice(path.length - 3) === '.sc');
+		const readOnly = !(path && !pathShouldBeReadOnly(path));
 
 		if (!readOnly) {
 			(await path) &&
@@ -952,7 +973,7 @@ export const deleteFile = async path => {
 			handleSetToast({
 				icon: 'warning-sign',
 				intent: 'danger',
-				message: 'can only delete .sc files',
+				message: 'can only delete .sc and rules configuration files',
 			});
 		}
 	}
@@ -1137,7 +1158,7 @@ export const getDirectories = src =>
 		);
 	});
 
-export const watchFolderPath = (path, vars, callback) => {
+export const watchPath = (path, vars, callback) => {
 	const ignore = store.getState()?.settings?.uiIgnore;
 	if (vars.chokidarWatcher) {
 		vars.chokidarWatcher.close().then(() => {
@@ -1369,17 +1390,9 @@ export const constructQueryWithPath = async (query_name, type) => {
 		console.log("can't select project path"); // eslint-disable-line no-console
 	});
 
-	const stats = await new Promise((resolve, reject) => {
-		fs.stat(path, (err, stats) => {
-			if (!err) {
-				resolve(stats);
-			} else {
-				reject();
-			}
-		});
-	});
+	const stats = await pathStats(path);
 
-	if (path && stats) {
+	if (path && stats.errno === undefined) {
 		const query = {
 			query: `${query_name}(inputPath="${path}")`,
 			origin: 'workspace',
@@ -1418,8 +1431,7 @@ export const handleSwitchWorkspace = async () => {
 
 export const handleAPIQueryError = err => {
 	err = typeof err === 'string' ? { message: err } : err;
-
-	if (err === apiErrorStrings.ws_not_connected) {
+	if (err.message === apiErrorStrings.ws_not_connected) {
 		const ws_url = store.getState().settings.websocket.url;
 		handleSetToast({
 			action: {
@@ -1555,6 +1567,8 @@ export const generateScriptImportQuery = async (
 	path_to_script,
 	path_to_workspace,
 ) => {
+
+  console.log("path_to_script: ", path_to_script, "path_to_workspace: ", path_to_workspace);
 	if (!path_to_script || !path_to_script.endsWith('.sc')) {
 		handleSetToast({
 			icon: 'warning-sign',
@@ -1575,43 +1589,27 @@ export const generateScriptImportQuery = async (
 		return;
 	}
 
-	let error = await new Promise((res, rej) => {
-		fs.stat(path_to_script, err => {
-			if (!err) {
-				res();
-			} else {
-				rej();
-			}
-		});
-	}).catch(() => {
+	let error = await pathStats(path_to_script).catch(err => {
 		handleSetToast({
 			icon: 'warning-sign',
 			intent: 'danger',
 			message: 'script path does not exist',
 		});
 
-		return true;
+		return err;
 	});
 
-	error = await new Promise((res, rej) => {
-		fs.stat(path_to_workspace, err => {
-			if (!err) {
-				res();
-			} else {
-				rej();
-			}
-		});
-	}).catch(() => {
+	error = await pathStats(path_to_workspace).catch(err => {
 		handleSetToast({
 			icon: 'warning-sign',
 			intent: 'danger',
 			message: 'workspace path does not exist',
 		});
 
-		return true;
+		return err;
 	});
 
-	if (error) return;
+	if (error.errno !== undefined) return;
 
 	let modified_path_to_script = path_to_script;
 	path_to_workspace = path_to_workspace.split('/workspace').join('');

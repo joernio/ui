@@ -34,3 +34,8 @@ export const selectQueryShortcuts = createSelector(
 	[selectSettings],
 	settings => settings.queryShortcuts,
 );
+
+export const selectRulesConfigFilePath = createSelector(
+	[selectSettings],
+	settings => settings.rulesConfigFilePath,
+);

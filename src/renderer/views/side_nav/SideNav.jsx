@@ -5,19 +5,23 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Icon, Divider, Switch, Dialog } from '@blueprintjs/core';
 import { Tooltip2 } from '@blueprintjs/popover2';
 import * as settingsActions from '../../store/actions/settingsActions';
+import * as statusActions from '../../store/actions/statusActions';
 import * as settingsSelectors from '../../store/selectors/settingsSelectors';
+import * as statusSelectors from '../../store/selectors/statusSelectors';
 import styles from '../../assets/js/styles/views/side_nav/sideNavStyles';
 import commonStyles from '../../assets/js/styles';
+import CustomIcon from '../../components/custom_icon/CustomIcon';
 
 import {
-	toggleSettingsDialog,
 	handleDrawerToggle,
 	handleTerminalToggle,
 	getSettingsInitialValues,
 	collectSettingsValues,
 	handleOnChange,
 	openShortcutsPage,
+	openRulesPage,
 } from './sideNavScripts';
+import { customIcons } from '../../assets/js/utils/defaultVariables';
 
 const useStyles = makeStyles(styles);
 const useCommonStyles = makeStyles(commonStyles);
@@ -28,7 +32,6 @@ function SideNav(props) {
 
 	const [state, setState] = React.useState({
 		anchorEl: null,
-		settingsDialogIsOpen: false,
 		values: {},
 	});
 
@@ -49,6 +52,7 @@ function SideNav(props) {
 		props.prefersTerminalView,
 		props.fontSize,
 		props.scriptsDir,
+		props.rulesConfigFilePath,
 		props.uiIgnore,
 	]);
 
@@ -77,7 +81,10 @@ function SideNav(props) {
 						<Icon
 							icon="control"
 							iconSize={25}
-							className={classes.iconStyle}
+							className={clsx(
+								classes.iconStyle,
+								commonClasses.cursorPointer,
+							)}
 							onClick={() =>
 								props.handleSetState(handleDrawerToggle(props))
 							}
@@ -101,9 +108,58 @@ function SideNav(props) {
 							className={clsx(
 								classes.iconStyle,
 								classes.shortcutsIconStyle,
+								commonClasses.cursorPointer,
 							)}
 							onClick={openShortcutsPage}
 						/>
+					</Tooltip2>
+
+					<Tooltip2
+						popoverClassName={commonClasses.toolTipStyle}
+						content={
+							<span className={commonClasses.toolTipTextStyle}>
+								rules management view
+							</span>
+						}
+						placement="right"
+						usePortal={false}
+						openOnTargetFocus={false}
+					>
+						<div>
+							<CustomIcon
+								icon={customIcons.analytics}
+								iconSize={25}
+								className={clsx(
+									classes.iconStyle,
+									commonClasses.cursorPointer,
+								)}
+								onClick={openRulesPage}
+							/>
+						</div>
+					</Tooltip2>
+
+					<Tooltip2
+						popoverClassName={commonClasses.toolTipStyle}
+						content={
+							<span className={commonClasses.toolTipTextStyle}>
+								rules results view
+							</span>
+						}
+						placement="right"
+						usePortal={false}
+						openOnTargetFocus={false}
+					>
+						<div>
+							<CustomIcon
+								icon={customIcons.monitoring}
+								iconSize={25}
+								className={clsx(
+									classes.iconStyle,
+									commonClasses.cursorPointer,
+								)}
+								// onClick={openShortcutsPage}
+							/>
+						</div>
 					</Tooltip2>
 				</div>
 
@@ -121,7 +177,10 @@ function SideNav(props) {
 					<Icon
 						icon="console"
 						iconSize={25}
-						className={classes.iconStyle}
+						className={clsx(
+							classes.iconStyle,
+							commonClasses.cursorPointer,
+						)}
 						onClick={() =>
 							props.handleSetState(handleTerminalToggle(props))
 						}
@@ -142,12 +201,13 @@ function SideNav(props) {
 					<Icon
 						icon="cog"
 						iconSize={25}
-						className={classes.iconStyle}
+						className={clsx(
+							classes.iconStyle,
+							commonClasses.cursorPointer,
+						)}
 						onClick={() => {
-							handleSetState(
-								toggleSettingsDialog(
-									state.isSettingsDialogOpen,
-								),
+							props.setSettingsDialogIsOpen(
+								!props.settingsDialogIsOpen,
 							);
 						}}
 					/>
@@ -159,14 +219,12 @@ function SideNav(props) {
 				canEscapeKeyClose={true}
 				canOutsideClickClose={true}
 				enforceFocus={true}
-				isOpen={state.isSettingsDialogOpen}
+				isOpen={props.settingsDialogIsOpen}
 				title="Settings"
 				isCloseButtonShown={false}
-				onClose={() =>
-					handleSetState(
-						toggleSettingsDialog(state.isSettingsDialogOpen),
-					)
-				}
+				onClose={() => {
+					props.setSettingsDialogIsOpen(!props.settingsDialogIsOpen);
+				}}
 				usePortal={true}
 			>
 				<div className={classes.settingsDialogContentStyle}>
@@ -278,12 +336,26 @@ function SideNav(props) {
 							}
 						/>
 
-						<h4>Default Scripts Directory</h4>
+						{/* <h4>Default Scripts Directory</h4>
 						<input
 							type="text"
 							id="scripts_dir"
 							placeholder="/home/........"
 							defaultValue={values.scripts_dir}
+							onChange={e =>
+								handleSetState(handleOnChange(e, values))
+							}
+							onBlur={e =>
+								handleSetState(handleOnChange(e, values))
+							}
+						/> */}
+
+						<h4>Default Rules Config File Path</h4>
+						<input
+							type="text"
+							id="rules_config_file_path"
+							placeholder="/home/........"
+							defaultValue={values.rules_config_file_path}
 							onChange={e =>
 								handleSetState(handleOnChange(e, values))
 							}
@@ -408,13 +480,11 @@ function SideNav(props) {
 				<Divider className={classes.menuDividerStyle} />
 				<div className={classes.submitSectionStyle}>
 					<h3
-						onClick={() =>
-							handleSetState(
-								toggleSettingsDialog(
-									state.isSettingsDialogOpen,
-								),
-							)
-						}
+						onClick={() => {
+							props.setSettingsDialogIsOpen(
+								!props.settingsDialogIsOpen,
+							);
+						}}
 					>
 						Cancel
 					</h3>
@@ -422,10 +492,8 @@ function SideNav(props) {
 						className="save"
 						onClick={() => {
 							props.setSettings(collectSettingsValues(values));
-							handleSetState(
-								toggleSettingsDialog(
-									state.isSettingsDialogOpen,
-								),
+							props.setSettingsDialogIsOpen(
+								!props.settingsDialogIsOpen,
 							);
 						}}
 					>
@@ -438,17 +506,21 @@ function SideNav(props) {
 }
 
 const mapStateToProps = state => ({
+	settingsDialogIsOpen: statusSelectors.selectSettingsDialogIsOpen(state),
 	server: settingsSelectors.selectServer(state),
 	websocket: settingsSelectors.selectWebSocket(state),
 	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 	prefersTerminalView: settingsSelectors.selectPrefersTerminalView(state),
 	fontSize: settingsSelectors.selectFontSize(state),
 	scriptsDir: settingsSelectors.selectScriptsDir(state),
+	rulesConfigFilePath: settingsSelectors.selectRulesConfigFilePath(state),
 	uiIgnore: settingsSelectors.selectUiIgnore(state),
 });
 
 const mapDispatchToProps = dispatch => ({
 	setSettings: values => dispatch(settingsActions.setSettings(values)),
+	setSettingsDialogIsOpen: bool =>
+		dispatch(statusActions.setSettingsDialogIsOpen(bool)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SideNav);

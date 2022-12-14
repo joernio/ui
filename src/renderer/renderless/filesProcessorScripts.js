@@ -1,3 +1,4 @@
+import { resolve } from 'path';
 import {
 	openFile,
 	closeFile,
@@ -8,12 +9,82 @@ import {
 	getActiveProject,
 	debounce,
 	deepClone,
+	pathStats,
+	handleSetToast,
+	fsWriteFile,
 } from '../assets/js/utils/scripts';
 import { editorShouldGoToLine } from '../views/editor_window/editorScripts';
 import { vars as binaryViewerVars } from '../components/binary_viewer/binaryViewerScripts';
 import { store } from '../store/configureStore';
+import { setRulesConfigFilePath } from '../store/actions/settingsActions';
 import { setBinaryViewerCache } from '../store/actions/filesActions';
-import { joernBinaryLanguage } from '../assets/js/utils/defaultVariables';
+import {
+	joernBinaryLanguage,
+	defaultRulesConfigFilePath,
+	defaultRulesConfigFileContent,
+} from '../assets/js/utils/defaultVariables';
+
+export const ensureRulesConfigFileExists = async () => {
+	const { rulesConfigFilePath } = store.getState().settings;
+	const stat = await pathStats(rulesConfigFilePath).catch(err => err);
+	if (stat?.isDirectory && stat.isDirectory()) {
+		fsWriteFile(
+			resolve(rulesConfigFilePath, 'rules-config.json'),
+			defaultRulesConfigFileContent,
+		)
+			.then(() => {
+				handleSetToast({
+					icon: 'info-sign',
+					intent: 'warning',
+					message: `rules-config.json file was created inside "${rulesConfigFilePath}" directory`,
+				});
+				store.dispatch(
+					setRulesConfigFilePath(
+						resolve(rulesConfigFilePath, 'rules-config.json'),
+					),
+				);
+			})
+			.catch(err => {
+				handleSetToast({
+					icon: 'warning-sign',
+					intent: 'danger',
+					message: `attempted to create rules-config.json inside "${rulesConfigFilePath}" directory but failed. ${err}`,
+				});
+			});
+	} else if (typeof stat.errno === 'number') {
+		handleSetToast({
+			icon: 'warning-sign',
+			intent: 'danger',
+			message: `rules config file path "${rulesConfigFilePath}" doesn't exist`,
+		});
+
+		if (!rulesConfigFilePath) {
+			store.dispatch(setRulesConfigFilePath(defaultRulesConfigFilePath));
+			handleSetToast({
+				icon: 'warning-sign',
+				intent: 'warning',
+				timeout: 6000, // by default timeout is 4000, but this is set to 6000 to allow the top toast to close first.
+				message: `resetted rules config file path to default "${defaultRulesConfigFilePath}"`,
+			});
+		} else if (rulesConfigFilePath === defaultRulesConfigFilePath) {
+			fsWriteFile(rulesConfigFilePath, defaultRulesConfigFileContent)
+				.then(() => {
+					handleSetToast({
+						icon: 'info-sign',
+						intent: 'success',
+						message: `default rules config file "${rulesConfigFilePath}" was successfully created`,
+					});
+				})
+				.catch(err => {
+					handleSetToast({
+						icon: 'warning-sign',
+						intent: 'danger',
+						message: `attempted to create default rules config file "${rulesConfigFilePath}" but failed. ${err}`,
+					});
+				});
+		}
+	}
+};
 
 export const processFiles = async props => {
 	const result_keys = Object.keys(props.results);

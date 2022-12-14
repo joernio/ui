@@ -1,9 +1,8 @@
-import fs from 'fs';
-
 import {
 	getDirectories,
 	handleSetToast,
 	getUIIgnoreArr,
+	pathStats,
 } from '../../assets/js/utils/scripts';
 import { selectDirApi } from '../../assets/js/utils/ipcRenderer';
 import { store } from '../../store/configureStore';
@@ -138,21 +137,12 @@ export const createFolderJsonModel = async (obj, callback) => {
 
 		if (Array.isArray(paths)) {
 			paths.forEach(async path => {
-				const stats = await new Promise((resolve, reject) => {
-					fs.stat(path, (err, stats) => {
-						if (!err) {
-							resolve(stats);
-						} else {
-							reject(err);
-						}
-					});
-				}).catch(() => {
+				const stats = await pathStats(path).catch(() => {
 					failed = true;
 				});
-
 				counter += 1;
 
-				const isFile = stats ? stats.isFile() : null;
+				const isFile = stats?.isFile ? stats.isFile() : null;
 				const arr = path.split('/').filter(value => !!value);
 
 				if (
