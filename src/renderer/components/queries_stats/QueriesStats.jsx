@@ -6,7 +6,7 @@ import { Icon } from '@blueprintjs/core';
 import { Popover2, Tooltip2 } from '@blueprintjs/popover2';
 import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import * as querySelectors from '../../store/selectors/querySelectors';
-import { queueEmpty, nFormatter } from '../../assets/js/utils/scripts';
+import { queueEmpty, scriptsQueueEmpty, nFormatter } from '../../assets/js/utils/scripts';
 import { countQueries, updateQueriesStats } from './queriesStatsScripts';
 import styles from '../../assets/js/styles/components/queries_stats/queriesStatsStyles';
 import commonStyles from '../../assets/js/styles';
@@ -149,7 +149,7 @@ function QueriesStats(props) {
 				data-test="queries-stats"
 			>
 				<div className={classes.refreshIconContainerStyle}>
-					{!queueEmpty(props.queue) || !queueEmpty(props.scriptsQueue) ? (
+					{!queueEmpty() || !scriptsQueueEmpty() ? (
 						<Icon
 							icon="refresh"
 							className={clsx(
@@ -167,7 +167,7 @@ function QueriesStats(props) {
 				<p className={classes.queriesStatsStyle}>
 					{nFormatter(queriesCount)}
 				</p>
-				{!queueEmpty(props.queue) || !queueEmpty(props.scriptsQueue) ? <div>running...</div> : null}
+				{!queueEmpty() || !scriptsQueueEmpty() ? <div>running...</div> : null}
 			</div>
 		</Popover2>
 	);

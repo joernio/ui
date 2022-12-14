@@ -70,8 +70,7 @@ function Workspace(props) {
 
 	return (
 		<div data-test="workspace">
-			{Object.keys(props.projects).length > 0 ||
-			!queueEmpty(props.queue) ? (
+			{Object.keys(props.projects).length > 0 || !queueEmpty() ? (
 				<div className={classes.rootStyle} tabIndex="0">
 					<div className={classes.titleSectionStyle}>
 						{projectsVisible ? (
@@ -111,8 +110,7 @@ function Workspace(props) {
 						>
 							Workspace
 						</h2>
-						{!queueEmpty(props.queue) &&
-						latestIsManCommand(props.results) ? (
+						{!queueEmpty() && latestIsManCommand(props.results) ? (
 							<Icon
 								icon="refresh"
 								className={clsx(
@@ -304,7 +302,6 @@ function Workspace(props) {
 }
 
 const mapStateToProps = state => ({
-	queue: querySelectors.selectQueue(state),
 	results: querySelectors.selectResults(state),
 	projects: workSpaceSelectors.selectProjects(state),
 	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),

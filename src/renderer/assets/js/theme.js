@@ -119,6 +119,20 @@ const createTheme = mode =>
 					dark: 'rgba(255,255,255,0.22)',
 				},
 			},
+			sarifviewercontainer: {
+				background: {
+					light: '#FFFFFF',
+					dark: '#323130',
+				},
+				base: {
+					light: '#616161',
+					dark: '#CCCCCC',
+				},
+				hover: {
+					light: '#FFFFFF',
+					dark: '#323130',
+				},
+			},
 		},
 	});
 

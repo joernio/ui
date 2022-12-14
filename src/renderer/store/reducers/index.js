@@ -7,6 +7,7 @@ import status from './statusReducers';
 import workspace from './workSpaceReducers';
 import terminal from './terminalReducers';
 import editor from './editorReducers';
+import findings from './findingsReducers';
 
 export default combineReducers({
 	files,
@@ -16,4 +17,5 @@ export default combineReducers({
 	workspace,
 	terminal,
 	editor,
+	findings,
 });

@@ -66,11 +66,23 @@ export const pathStats = path =>
 		});
 	});
 
-export const queueEmpty = queue => {
+export const queueEmpty = () => {
+	const { queue } = store.getState().query;
 	if (queue && Object.keys(queue).length === 0) {
 		return true;
 	}
 	if (!queue) {
+		return true;
+	}
+	return false;
+};
+
+export const scriptsQueueEmpty = () => {
+	const { scriptsQueue } = store.getState().query;
+	if (scriptsQueue && Object.keys(scriptsQueue).length === 0) {
+		return true;
+	}
+	if (!scriptsQueue) {
 		return true;
 	}
 	return false;
@@ -405,6 +417,22 @@ export const discardDialogHandler = callback => {
 	} else {
 		callback();
 	}
+};
+
+export const selectFilePath = async () => {
+	selectDirApi.selectDir('select-file');
+
+	return new Promise((resolve, reject) => {
+		selectDirApi.registerListener('selected-file', value => {
+			if (value) {
+				resolve(value);
+			} else {
+				reject();
+			}
+		});
+	}).catch(() => {
+		console.log("can't select file path"); // eslint-disable-line no-console
+	});
 };
 
 export const getOpenFileName = () => {
@@ -833,6 +861,89 @@ export const saveFile = async (path, base_dir) => {
 	}
 };
 
+export const unrestrictedSaveFile = async (path, file_content, base_dir) => {
+	path &&
+		(await new Promise((resolve, reject) => {
+			fs.stat(path, (err, stats) => {
+				if (
+					!err &&
+					stats.isFile() &&
+					path !== path.split('/')[path.split('/').length - 1]
+				) {
+					resolve(stats);
+				} else {
+					reject(err);
+				}
+			});
+		})
+			.then(() =>
+				fsWriteFile(path, file_content)
+					.then(() => {
+						handleSetToast({
+							icon: 'info-sign',
+							intent: 'success',
+							message: 'saved successfully',
+						});
+					})
+					.catch(() => {
+						handleSetToast({
+							icon: 'warning-sign',
+							intent: 'danger',
+							message: 'error saving file',
+						});
+					}),
+			)
+			.catch(async () => {
+				let new_path;
+
+				if (base_dir) {
+					new_path = `${base_dir}/${path}`;
+				} else if (store.getState().workspace.path) {
+					new_path = `${store.getState().workspace.path}/${path}`;
+				} else {
+					new_path = `/${path}`;
+				}
+
+				selectDirApi.createFile(new_path);
+
+				const file = await new Promise((resolve, reject) => {
+					selectDirApi.registerCreatedFileListener(file => {
+						if (file) {
+							resolve(file);
+						} else {
+							reject();
+						}
+					});
+				}).catch(() => {
+					handleSetToast({
+						icon: 'warning-sign',
+						intent: 'danger',
+						message: "couldn't create file",
+					});
+				});
+
+				if (file && !file.canceled) {
+					await fsWriteFile(file.filePath.toString(), file_content)
+						.then(() => {
+							handleSetToast({
+								icon: 'info-sign',
+								intent: 'success',
+								message: 'saved successfully',
+							});
+						})
+						.catch(() => {
+							handleSetToast({
+								icon: 'warning-sign',
+								intent: 'danger',
+								message: "can't save to file",
+							});
+						});
+				} else {
+					console.log('file creation was cancelled'); // eslint-disable-line no-console
+				}
+			}));
+};
+
 export const refreshRecent = async () => {
 	const files = { ...store.getState().files };
 	if (
@@ -1051,6 +1162,14 @@ export const isQueryResultToOpenSynthFile = latest => {
 			synth_file_path = false;
 			content = false;
 		}
+	} else if (
+		latest?.result?.stderr && // remember to replace .err with .stdout. .err is for testing purposes here
+		typeof latest.result.stderr === 'string' && // remember to replace .err with .stdout. .err is for testing purposes here
+		latest.query.search('findings.jsonPretty') > -1
+	) {
+		synth_file_path = syntheticFiles[5];
+		// content = latest.result.stdout;
+		content = syntheticFiles[5]; // remember to comment this out later, it is for test
 	} else if (binaryProject) {
 		synth_file_path = `${binaryProject} - ${syntheticFiles[3]}`;
 		content = synth_file_path;
@@ -1699,4 +1818,13 @@ export const handleEditorGoToLineAndHighlight = (
 			});
 		}, 1000);
 	}
+};
+
+export const slugify = str =>
+	str.replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+
+export const getTriageId = finding => {
+	const name_slug = slugify(finding['keyValuePairs'][0]['value']);
+	const fingerprint = finding['evidence'][0]['fingerprint'];
+	return `${name_slug}-${fingerprint}`;
 };

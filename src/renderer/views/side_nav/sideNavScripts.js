@@ -83,3 +83,7 @@ export const openShortcutsPage = () => {
 export const openRulesPage = () => {
 	openSyntheticFile(syntheticFiles[4], syntheticFiles[4]);
 };
+
+export const openRulesReportPage = () => {
+	openSyntheticFile(syntheticFiles[5], syntheticFiles[5]);
+};

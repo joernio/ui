@@ -4,6 +4,7 @@ describe('function toggleSettingsDialog:', () => {
 	it('expect function to return {isSettingsDialogOpen: true} when arg is falsy:', () => {
 		[undefined, null, '', false, 0].forEach(arg => {
 			expect(
+				// eslint-disable-next-line import/namespace
 				sideNavScripts.toggleSettingsDialog(arg).isSettingsDialogOpen,
 			).toBe(true);
 		});
@@ -12,6 +13,7 @@ describe('function toggleSettingsDialog:', () => {
 	it('expect function to return {isSettingsDialogOpen: false} when arg is truthy:', () => {
 		[1, true, 'true'].forEach(arg => {
 			expect(
+				// eslint-disable-next-line import/namespace
 				sideNavScripts.toggleSettingsDialog(arg).isSettingsDialogOpen,
 			).toBe(false);
 		});

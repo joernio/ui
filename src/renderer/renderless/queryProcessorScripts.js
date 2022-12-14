@@ -1,10 +1,3 @@
-// import {
-// 	getScriptResult,
-// 	handleSetToast,
-// 	openSyntheticFile,
-// 	deepClone,
-// } from '../assets/js/utils/scripts';
-
 export const shouldRunQuery = (prev_queue, queue, query) => {
 	const prev_queue_count = prev_queue ? Object.keys(prev_queue).length : 0;
 	const queue_count = Object.keys(queue).length;
@@ -50,7 +43,7 @@ export const shouldRunQuery = (prev_queue, queue, query) => {
 // 		handleSetToast({
 // 			icon: 'info-sign',
 // 			intent: 'success',
-// 			message: 'script ran successfully',
+// 			message: 'rule executed successfully',
 // 		});
 
 // 		const { synth_file_path, content } =
@@ -59,6 +52,13 @@ export const shouldRunQuery = (prev_queue, queue, query) => {
 // 			content &&
 // 			openSyntheticFile(synth_file_path, content);
 // 	}
+// 	// else {
+// 	//   handleSetToast({
+// 	// 		icon: 'warning-sign',
+// 	// 		intent: 'danger',
+// 	// 		message: 'rule execution failed',
+// 	// 	});
+// 	// }
 
 // 	handleSetState({
 // 		prev_results: results ? deepClone(results) : {},

@@ -19,6 +19,7 @@ import {
 	collectSettingsValues,
 	handleOnChange,
 	openShortcutsPage,
+	openRulesReportPage,
 	openRulesPage,
 } from './sideNavScripts';
 import { customIcons } from '../../assets/js/utils/defaultVariables';
@@ -157,7 +158,7 @@ function SideNav(props) {
 									classes.iconStyle,
 									commonClasses.cursorPointer,
 								)}
-								// onClick={openShortcutsPage}
+								onClick={openRulesReportPage}
 							/>
 						</div>
 					</Tooltip2>
