@@ -165,9 +165,9 @@ export const processTriage = next_findings => {
   };
 };
 
-export const processFiles = async props => {
-	const result_keys = Object.keys(props.results);
-	const latest = props.results[result_keys[result_keys.length - 1]];
+export const processFiles = async results => {
+	const result_keys = Object.keys(results);
+	const latest = results[result_keys[result_keys.length - 1]];
 
 	const file_path = isFilePathInQueryResult(latest);
 	file_path && (await openFile(file_path));
@@ -214,7 +214,6 @@ export const processScriptsTemp = scriptsResults => {
   if(latest?.origin === "script" || (latest?.post_query_uuid && latest?.project)){
     proceed = true;
   };
-
 
 	if (
 		latest?.query?.startsWith('cpg.findings.jsonPretty') &&

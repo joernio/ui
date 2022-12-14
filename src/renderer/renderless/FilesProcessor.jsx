@@ -11,7 +11,7 @@ import * as findingsActions from '../store/actions/findingsActions';
 import {
 	processFiles,
   processScripts,
-	processScriptsTemp,
+	// processScriptsTemp,
 	processMethodListForBinaryProjects,
 	ensureRulesConfigFileExists,
 } from './filesProcessorScripts';
@@ -25,7 +25,7 @@ function FilesProcessor(props) {
 
 	// TODO should be moved to QueryProcessor
 	React.useEffect(() => {
-		processFiles(props);
+		processFiles(props.results);
 	}, [props.results, props.projects]);
 
 	// TODO should be moved to GenericProcessor
@@ -39,6 +39,7 @@ function FilesProcessor(props) {
 	}, [props.rulesConfigFilePath]);
 
 	React.useEffect(() => {
+    processFiles(props.scriptsResults)
 		processScripts(props.scriptsResults);
 	}, [props.scriptsResults]);
 
