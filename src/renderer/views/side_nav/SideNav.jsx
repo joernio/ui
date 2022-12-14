@@ -20,6 +20,7 @@ import {
 	handleOnChange,
 	openShortcutsPage,
 	openRulesReportPage,
+	openRulesPage,
 } from './sideNavScripts';
 import { customIcons } from '../../assets/js/utils/defaultVariables';
 
@@ -52,6 +53,7 @@ function SideNav(props) {
 		props.prefersTerminalView,
 		props.fontSize,
 		props.scriptsDir,
+		props.rulesConfigFilePath,
 		props.uiIgnore,
 	]);
 
@@ -111,6 +113,30 @@ function SideNav(props) {
 							)}
 							onClick={openShortcutsPage}
 						/>
+					</Tooltip2>
+
+					<Tooltip2
+						popoverClassName={commonClasses.toolTipStyle}
+						content={
+							<span className={commonClasses.toolTipTextStyle}>
+								rules management view
+							</span>
+						}
+						placement="right"
+						usePortal={false}
+						openOnTargetFocus={false}
+					>
+						<div>
+							<CustomIcon
+								icon={customIcons.analytics}
+								iconSize={25}
+								className={clsx(
+									classes.iconStyle,
+									commonClasses.cursorPointer,
+								)}
+								onClick={openRulesPage}
+							/>
+						</div>
 					</Tooltip2>
 
 					<Tooltip2
@@ -488,6 +514,7 @@ const mapStateToProps = state => ({
 	prefersTerminalView: settingsSelectors.selectPrefersTerminalView(state),
 	fontSize: settingsSelectors.selectFontSize(state),
 	scriptsDir: settingsSelectors.selectScriptsDir(state),
+	rulesConfigFilePath: settingsSelectors.selectRulesConfigFilePath(state),
 	uiIgnore: settingsSelectors.selectUiIgnore(state),
 });
 

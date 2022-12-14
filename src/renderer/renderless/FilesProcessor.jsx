@@ -10,6 +10,7 @@ import * as findingsActions from '../store/actions/findingsActions';
 
 import {
 	processFiles,
+  processScripts,
 	processScriptsTemp,
 	processMethodListForBinaryProjects,
 	ensureRulesConfigFileExists,
@@ -38,11 +39,11 @@ function FilesProcessor(props) {
 	}, [props.rulesConfigFilePath]);
 
 	React.useEffect(() => {
-		processScriptsTemp(props.scriptsResults);
+		processScripts(props.scriptsResults);
 	}, [props.scriptsResults]);
 
   React.useEffect(()=>{
-    processScriptsTemp(props.results)
+    processScripts(props.results)
   },[props.results]);
 
 	React.useEffect(() => {

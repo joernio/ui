@@ -176,6 +176,8 @@ function QueriesStats(props) {
 const mapStateToProps = state => ({
 	results: querySelectors.selectResults(state),
   scriptsResults: querySelectors.selectScriptsResults(state),
+	queue: querySelectors.selectQueue(state),
+  scriptsQueue: querySelectors.selectScriptsQueue(state),
 	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
 

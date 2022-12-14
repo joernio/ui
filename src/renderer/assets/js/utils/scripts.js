@@ -450,8 +450,7 @@ export const getExtension = path => {
 	return ext ? `.${ext}` : '';
 };
 
-export const fsWriteFile = (path, content) =>
-	new Promise((res, rej) => {
+export const fsWriteFile = (path, content) => new Promise((res, rej) => {
 		fs.writeFile(path, content, err => {
 			if (!err) {
 				res();
@@ -497,7 +496,8 @@ export const readFile = path =>
 				}
 			});
 		} else {
-			reject();
+			reject(
+        Error(`can't read file. path is "${path}"`));
 		}
 	});
 
@@ -1686,6 +1686,8 @@ export const generateScriptImportQuery = async (
 	path_to_script,
 	path_to_workspace,
 ) => {
+
+  console.log("path_to_script: ", path_to_script, "path_to_workspace: ", path_to_workspace);
 	if (!path_to_script || !path_to_script.endsWith('.sc')) {
 		handleSetToast({
 			icon: 'warning-sign',

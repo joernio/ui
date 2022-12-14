@@ -199,7 +199,7 @@ export const defaultRulesConfigFileContent = `
 //  },
 //  {
 //   "title": "Own title",
-//   "id" "002",
+//   "id":"002",
 //   "filename": "/home/joern/scripts/script_name.sc",
 //   "description": "Description goes here",
 //   "tags" : ["cwe-789", "cve-2021-2787", "secrets"],
