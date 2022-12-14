@@ -1687,7 +1687,6 @@ export const generateScriptImportQuery = async (
 	path_to_workspace,
 ) => {
 
-  console.log("path_to_script: ", path_to_script, "path_to_workspace: ", path_to_workspace);
 	if (!path_to_script || !path_to_script.endsWith('.sc')) {
 		handleSetToast({
 			icon: 'warning-sign',
