@@ -263,7 +263,7 @@ export const runSelectedConfigs = async selected_configs => {
   });
 
   const ruleResultPretty = {
-    query: "cpg.findings.jsonPretty",
+    query: "cpg.finding.toJsonPretty",
     origin: 'script',
     ignore: true,
   };
