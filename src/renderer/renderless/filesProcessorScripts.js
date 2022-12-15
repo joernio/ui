@@ -110,7 +110,7 @@ export const ensureRulesConfigFileExists = async () => {
 
 export const processTriageTemp = () => {
 	// NOTE this function is heavily modified and doesn't behave at all like it will be when we are finally able to get
-	// cpg.finding.jsonPretty from the backend
+	// cpg.finding.toJsonPretty from the backend
 	let findings = store.getState().findings;
 	const file_id = findings.triage_ids.length * 5;
 	if (file_id <= 35) {
@@ -216,7 +216,7 @@ export const processScriptsTemp = scriptsResults => {
   };
 
 	if (
-		latest?.query?.startsWith('cpg.finding.jsonPretty') &&
+		latest?.query?.startsWith('cpg.finding.toJsonPretty') &&
 		latest.result?.stderr &&
 		latest.t_0 &&
 		latest.t_1 &&
@@ -239,13 +239,15 @@ export const processScripts = scriptsResults => {
 
 
 	if (
-		latest?.query?.startsWith('cpg.finding.jsonPretty') &&
+		latest?.query?.startsWith('cpg.finding.toJsonPretty') &&
 		latest.result?.stdout &&
 		latest.t_0 &&
 		latest.t_1 &&
     proceed
 	) {
-		setTimeout(()=>processTriage(JSON.parse(latest.result.stdout)), 0);
+    let json = latest.result.stdout.split('"""');
+    json = `${json[1]}`;
+		setTimeout(()=>processTriage(JSON.parse(json)), 0);
 	}
 };
 

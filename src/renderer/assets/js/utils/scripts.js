@@ -1165,7 +1165,7 @@ export const isQueryResultToOpenSynthFile = latest => {
 	} else if (
 		latest?.result?.stderr && // remember to replace .err with .stdout. .err is for testing purposes here
 		typeof latest.result.stderr === 'string' && // remember to replace .err with .stdout. .err is for testing purposes here
-		latest.query.search('finding.jsonPretty') > -1
+		latest.query.search('finding.toJsonPretty') > -1
 	) {
 		synth_file_path = syntheticFiles[5];
 		// content = latest.result.stdout;
