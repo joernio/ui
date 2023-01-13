@@ -23,7 +23,8 @@ export const chokidarVars = {
 	}),
 };
 
-export const isSelectedConfig = (selected_keys, config) => selected_keys[config.index_in_configs] === config.id;
+export const isSelectedConfig = (selected_keys, config) =>
+	selected_keys[config.index_in_configs] === config.id;
 
 export const getSelectedConfigs = (selected_keys, configs) => {
 	const keys = Object.keys(selected_keys);
@@ -76,7 +77,7 @@ export const rulesConfigFilePathIsValid = rulesConfigFilePath =>
 		});
 
 export const validateConfigs = configs => {
-	// ensure that configs is in the format we espect
+	// ensure that configs is in the format we expect
 	const keys = [
 		'title',
 		'id',
@@ -84,12 +85,25 @@ export const validateConfigs = configs => {
 		'description',
 		'tags',
 		'languages',
+		'arguments',
 	];
 	const ids = {};
-	if (configs.length === 0) throw new Error('rules configs is invalid');
+	if (configs.length === 0)
+		throw new Error(
+			'Rules config file content is not valid. There are no rules in the config array',
+		);
 	configs.forEach(config => {
+		if (!isEqual(Object.keys(config), keys)) {
+			throw new Error(
+				`Rules config file content is not valid. Arguments "${Object.keys(
+					config,
+				).join(', ')}" given for one of the config rules, "${keys.join(
+					', ',
+				)}" was expected`,
+			);
+		}
+
 		if (
-			!isEqual(Object.keys(config), keys) ||
 			!isString(config['title']) ||
 			!isString(config['id']) ||
 			!isString(config['filename']) ||
@@ -97,11 +111,16 @@ export const validateConfigs = configs => {
 			!Array.isArray(config['tags']) ||
 			!Array.isArray(config['languages'])
 		) {
-			throw new Error('rules configs is invalid');
+			throw new Error(
+				'Rules config file content is not valid. Wrong datatype in one of the config rules entries',
+			);
 		}
 
 		// ensure that ids are unique
-		if (ids[config['id']]) throw new Error('rules configs is invalid');
+		if (ids[config['id']])
+			throw new Error(
+				'Rules config file content is not valid. Two or more rules have the same id',
+			);
 		ids[config['id']] = true;
 	});
 	return configs;
@@ -169,8 +188,20 @@ export const runScript = async config => {
 				ignore: true,
 			};
 
+			const args_str = Object.keys(config.arguments)
+				.map(arg => {
+					let arg_value = null;
+					if (typeof config.arguments[arg] === 'string') {
+						arg_value = `"${config.arguments[arg]}"`;
+					} else {
+						arg_value = JSON.stringify(config.arguments[arg]);
+					}
+					return `${arg}=${arg_value}`;
+				})
+				.join(',');
+
 			const runScriptQuery = {
-				query: `${filename}.${config.main_function_name}()`,
+				query: `${filename}.${config.main_function_name}(${args_str})`,
 				origin: 'script',
 				ignore: true,
 			};
@@ -190,7 +221,7 @@ export const runScript = async config => {
 					text: 'View rule',
 				},
 			});
-      return true;// single that there was no errors while trying to run this script
+			return true; // single that there was no errors while trying to run this script
 		} else {
 			handleSetToast({
 				icon: 'warning-sign',
@@ -204,73 +235,91 @@ export const runScript = async config => {
 				},
 			});
 		}
-	} else if(!workspace_path) {
-
+	} else if (!workspace_path) {
 		handleSetToast({
 			icon: 'warning-sign',
 			intent: 'danger',
-			message: (
-      `error executing rule ${config.id}.
+			message: `error executing rule ${config.id}.
       There is no active project in your workspace.
-      You need to "open" a project first before you can execute a rule`
-      )
+      You need to "open" a project first before you can execute a rule`,
 		});
-	};
+	}
 };
 
 export const runSelectedConfigs = async selected_configs => {
-  const run_script_status_arr = await Promise.all(
+	const run_script_status_arr = await Promise.all(
 		selected_configs.map(config =>
 			readFile(config.filename)
 				.then(data => {
 					if (data.search(/^(?:\s*)@main|(?:\n\s*)@main/) > -1) {
-						const [main_function_name] =
+						const [main_function_name, main_function_args] =
 							extractRuleMainFunctionNameAndArgs(data);
-						return {
-							...config,
-							main_function_name,
-						};
+						if (
+							main_function_args.length !== 0 &&
+							!isEqual(
+								Object.keys(config.arguments),
+								main_function_args,
+							)
+						) {
+							handleSetToast({
+								icon: 'warning-sign',
+								intent: 'danger',
+								message: `Argument mismatch. The arguments in config ${config['id']} doesn't match the parameters of ${config['filename']}`,
+								action: {
+									onClick: () => {
+										openFile(config.filename);
+									},
+									text: 'View rule',
+								},
+							});
+						} else {
+							return {
+								...config,
+								main_function_name,
+							};
+						}
 					} else {
-            handleSetToast({
-              icon: 'warning-sign',
-              intent: 'danger',
-              message: `config ${config.id}: rule has no "main" function.`,
-              action: {
-                onClick: () => {
-                  openFile(config.filename);
-                },
-                text: 'View rule',
-              },
-            });
+						handleSetToast({
+							icon: 'warning-sign',
+							intent: 'danger',
+							message: `config ${config.id}: rule has no "main" function.`,
+							action: {
+								onClick: () => {
+									openFile(config.filename);
+								},
+								text: 'View rule',
+							},
+						});
 					}
 				})
 				.then(config => runScript(config))
-        .catch(err=>{
-          handleSetToast({
-            icon: 'warning-sign',
-            intent: 'danger',
-            message: String(err)
-          });
-        })
+				.catch(err => {
+					handleSetToast({
+						icon: 'warning-sign',
+						intent: 'danger',
+						message: String(err),
+					});
+				}),
 		),
 	);
 
-  let should_get_findings = false;
-  run_script_status_arr.forEach(status=>{
-    if(status === true){
-      should_get_findings = true;
-    }
-  });
+	let should_get_findings = false;
+	run_script_status_arr.forEach(status => {
+		if (status === true) {
+			should_get_findings = true;
+		}
+	});
 
-  const ruleResultPretty = {
-    query: "cpg.finding.toJsonPretty",
-    origin: 'script',
-    ignore: true,
-  };
+	const ruleResultPretty = {
+		query: 'cpg.finding.toJsonPretty',
+		origin: 'script',
+		ignore: true,
+	};
 
-  should_get_findings && setTimeout(() => {
-    store.dispatch(enQueueScriptsQuery(ruleResultPretty));
-  }, 0);
+	should_get_findings &&
+		setTimeout(() => {
+			store.dispatch(enQueueScriptsQuery(ruleResultPretty));
+		}, 0);
 };
 
 // export const populateArgsDialogFields = (modified_selected) => {

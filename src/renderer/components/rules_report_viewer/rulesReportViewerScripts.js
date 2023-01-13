@@ -26,7 +26,7 @@ export const exportValidResults = triage_id_arr_index => {
 		'ocular',
 		'',
 		resolve('./'),
-		valid_findings
+		valid_findings,
 	);
 	unrestrictedSaveFile('untitled', JSON.stringify(findings_sarif));
 };
@@ -65,10 +65,7 @@ export const getFindingsSarifFromTriages = triage_id_arr_index => {
 		getTriageIdArrIndex(triage_id_arr_index, triage_ids.length)
 	]?.map(id => triages[id].finding);
 	findings = findings && deepClone(findings);
-	return (
-		findings &&
-		convert_file('ocular', '', resolve('./'), findings)
-	);
+	return findings && convert_file('ocular', '', resolve('./'), findings);
 };
 
 export const getFindingsSarifFromLocalPath = () => {

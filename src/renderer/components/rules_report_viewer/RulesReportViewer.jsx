@@ -9,6 +9,7 @@ import * as findingsActions from '../../store/actions/findingsActions';
 import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import * as findingsSelectors from '../../store/selectors/findingsSelectors';
 import * as querySelectors from '../../store/selectors/querySelectors';
+import { openRulesPage } from '../../views/side_nav/sideNavScripts';
 import {
 	exportValidResults,
 	rotateTriageIdArrIndexRight,
@@ -132,6 +133,7 @@ function RulesReportViewer(props) {
 								classes.buttonStyle,
 								classes.primaryButtonStyle,
 							)}
+							onClick={openRulesPage}
 						>
 							Execute Rule(s)
 						</button>
@@ -320,8 +322,8 @@ function RulesReportViewer(props) {
 const mapStateToProps = state => ({
 	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 	findings: findingsSelectors.selectFindings(state),
-  queue: querySelectors.selectQueue(state),
-  scriptsQueue: querySelectors.selectScriptsQueue(state)
+	queue: querySelectors.selectQueue(state),
+	scriptsQueue: querySelectors.selectScriptsQueue(state),
 });
 
 const mapDispatchToProps = dispatch => ({

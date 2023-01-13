@@ -83,16 +83,35 @@ function RulesViewer(props) {
 				// get the content of the config file
 				readFile(rulesConfigFilePath)
 					.then(data => {
+						try {
+							const parsed_json = parseJsonc(data);
+							try {
+								handleSetState({
+									configs: {
+										values: validateConfigs(parsed_json),
+										err: null,
+									},
+								});
+							} catch (e) {
+								handleSetState({
+									configs: { values: [], err: String(e) },
+								});
+							}
+						} catch {
+							handleSetState({
+								configs: {
+									values: [],
+									err: 'Rules config file content is invalid. Config is not a valid json',
+								},
+							});
+						}
+					})
+					.catch(() => {
 						handleSetState({
 							configs: {
-								values: validateConfigs(parseJsonc(data)),
-								err: null,
+								values: [],
+								err: "Rules config file path is not valid. This is most likely a permission issue or the path doesn't exist",
 							},
-						});
-					})
-					.catch(e => {
-						handleSetState({
-							configs: { values: [], err: String(e) },
 						});
 					});
 
@@ -100,33 +119,57 @@ function RulesViewer(props) {
 				watchPath(rulesConfigFilePath, chokidarVars, (_, path) => {
 					readFile(path)
 						.then(data => {
+							try {
+								const parsed_json = parseJsonc(data);
+								try {
+									handleSetState({
+										configs: {
+											values: validateConfigs(
+												parsed_json,
+											),
+											err: null,
+										},
+									});
+								} catch (e) {
+									handleSetState({
+										configs: { values: [], err: String(e) },
+									});
+								}
+							} catch {
+								handleSetState({
+									configs: {
+										values: [],
+										err: 'Rules config file content is invalid. Config is not a valid json',
+									},
+								});
+							}
+						})
+						.catch(() => {
 							handleSetState({
 								configs: {
-									values: validateConfigs(parseJsonc(data)),
-									err: null,
+									values: [],
+									err: "Rules config file path is not valid. This is most likely a permission issue or the path doesn't exist",
 								},
-							});
-						})
-						.catch(e => {
-							handleSetState({
-								configs: { values: [], err: String(e) },
 							});
 						});
 				});
 			} else if (chokidarVars.chokidarWatcher) {
-					chokidarVars.chokidarWatcher.close().then(() => {
-						handleSetState({
-							configs: {
-								values: [],
-								err: 'rules config is invalid',
-							},
-						});
-					});
-				} else {
+				chokidarVars.chokidarWatcher.close().then(() => {
 					handleSetState({
-						configs: { values: [], err: 'rules config is invalid' },
+						configs: {
+							values: [],
+							err: "Rules config file path is not valid. This is most likely a permission issue or the path doesn't exist",
+						},
 					});
-				}
+				});
+			} else {
+				handleSetState({
+					configs: {
+						values: [],
+						err: "Rules config file path is not valid. This is most likely a permission issue or the path doesn't exist",
+					},
+				});
+			}
 		});
 
 		return () => {
@@ -168,9 +211,7 @@ function RulesViewer(props) {
 			{chokidarVars.chokidarWatcher === null ||
 			(chokidarVars.chokidarWatcher?.closed && configs.err) ? (
 				<>
-					<p className={classes.messageStyle}>
-						Rules config file path is not valid
-					</p>
+					<p className={classes.messageStyle}>{configs.err}</p>
 					<button
 						className={clsx(
 							classes.buttonStyle,
@@ -183,9 +224,7 @@ function RulesViewer(props) {
 				</>
 			) : !chokidarVars.chokidarWatcher?.closed && configs.err ? (
 				<>
-					<p className={classes.messageStyle}>
-						Rules config file content is not valid
-					</p>
+					<p className={classes.messageStyle}>{configs.err}</p>
 					<button
 						className={clsx(
 							classes.buttonStyle,
@@ -218,7 +257,8 @@ function RulesViewer(props) {
 								}}
 							>
 								<option value="">----</option>
-								{Object.keys(languages_filter.values).map(language => (
+								{Object.keys(languages_filter.values).map(
+									language => (
 										<option key={language} value={language}>
 											{language}
 										</option>
@@ -246,11 +286,10 @@ function RulesViewer(props) {
 							>
 								<option value="">----</option>
 								{Object.keys(tags_filter.values).map(tag => (
-										<option key={tag} value={tag}>
-											{tag}
-										</option>
-									),
-								)}
+									<option key={tag} value={tag}>
+										{tag}
+									</option>
+								))}
 							</HTMLSelect>
 						</Label>
 					</div>
@@ -391,9 +430,12 @@ function RulesViewer(props) {
 														}
 													>
 														{config.languages.map(
-															(language, index) => (
+															(
+																language,
+																index,
+															) => (
 																<button
-                                  key={`${index}-${language}`}
+																	key={`${index}-${language}`}
 																	className={clsx(
 																		classes.smallButtonStyle,
 																		classes.secondaryButtonStyle,
@@ -419,7 +461,7 @@ function RulesViewer(props) {
 														{config.tags.map(
 															(tag, index) => (
 																<button
-                                  key={`${index}-${tag}`}
+																	key={`${index}-${tag}`}
 																	className={clsx(
 																		classes.smallButtonStyle,
 																		classes.secondaryButtonStyle,
@@ -446,7 +488,7 @@ function RulesViewer(props) {
 												</div>
 												<button
 													className={clsx(
-                            classes.buttonStyle,
+														classes.buttonStyle,
 														classes.configButtonStyle,
 														classes.primaryButtonStyle,
 													)}
@@ -475,8 +517,8 @@ function RulesViewer(props) {
 					<div className={classes.configsFooterStyle}>
 						<button
 							className={clsx(
-                classes.buttonStyle,
-                classes.secondaryButtonStyle,
+								classes.buttonStyle,
+								classes.secondaryButtonStyle,
 								classes.configsFooterButtonStyle,
 							)}
 							onClick={() => openFile(rulesConfigFilePath)}
@@ -485,8 +527,8 @@ function RulesViewer(props) {
 						</button>
 						<button
 							className={clsx(
-                classes.buttonStyle,
-                classes.primaryButtonStyle,
+								classes.buttonStyle,
+								classes.primaryButtonStyle,
 								classes.configsFooterButtonStyle,
 								{
 									[commonClasses.displayNone]:

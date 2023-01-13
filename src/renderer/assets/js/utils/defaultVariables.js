@@ -195,7 +195,8 @@ export const defaultRulesConfigFileContent = `
 //   "filename":"/home/joern/scripts/secrets.sc",
 //   "description": "Detect hardcoded secrets in Source",
 //   "tags":["cwe-789", "cve-2021-2787"],
-//   "languages": [ "C", "Java", "Javascript" ]
+//   "languages": [ "C", "Java", "Javascript" ],
+//   "arguments": {}
 //  },
 //  {
 //   "title": "Own title",
@@ -203,7 +204,8 @@ export const defaultRulesConfigFileContent = `
 //   "filename": "/home/joern/scripts/script_name.sc",
 //   "description": "Description goes here",
 //   "tags" : ["cwe-789", "cve-2021-2787", "secrets"],
-//   "languages": [ "C", "Java", "Javascript" ]
+//   "languages": [ "C", "Java", "Javascript" ],
+//   "arguments": {"arg1": "value of arg1", "arg2": "/value/of/arg/2"}
 //  }]
 
 // Your rules configuration should go here...

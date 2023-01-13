@@ -18,10 +18,10 @@ export const setResults = payload => dispatch => {
 };
 
 export const setScriptsResults = payload => dispatch => {
-  dispatch({
-    type: "SET_SCRIPTS_RESULTS",
-    payload
-  });
+	dispatch({
+		type: 'SET_SCRIPTS_RESULTS',
+		payload,
+	});
 };
 
 export const setQueue = payload => dispatch =>
@@ -97,7 +97,7 @@ export const pushResult = result => dispatch => {
 	dispatch(setResults(updated_results));
 };
 
-export const pushScriptsResult= result => dispatch => {
+export const pushScriptsResult = result => dispatch => {
 	const { scriptsResults } = store.getState().query;
 	const updated_results = performPushResult(result, scriptsResults);
 	dispatch(setScriptsResults(updated_results));
@@ -119,35 +119,34 @@ export const runQuery = query_string => () =>
 	});
 
 export const getQueryResult = uuid => () =>
-	API.getQueryResult(uuid)
-		.then(data => {
-			if (data && data.uuid) {
-				return data;
-			}
-			if (data && data.err) {
-				throw new Error(data.err);
-			} else {
-				const err = Object.keys(data)
-					.map(key => data[key])
-					.join('\n');
-				throw new Error(err);
-			}
-		});
+	API.getQueryResult(uuid).then(data => {
+		if (data && data.uuid) {
+			return data;
+		}
+		if (data && data.err) {
+			throw new Error(data.err);
+		} else {
+			const err = Object.keys(data)
+				.map(key => data[key])
+				.join('\n');
+			throw new Error(err);
+		}
+	});
 
 export const postQuery = (post_query, main_result_key) => dispatch =>
-runQuery(post_query)()
-  .then(data => {
-    const { results } = store.getState().query;
-    const result = results[main_result_key];
+	runQuery(post_query)()
+		.then(data => {
+			const { results } = store.getState().query;
+			const result = results[main_result_key];
 
-    if (result) {
-      result.post_query_uuid = data.uuid;
-      dispatch(setResults(results));
-    }
-  })
-  .catch(err => {
-    handleAPIQueryError(err);
-  });
+			if (result) {
+				result.post_query_uuid = data.uuid;
+				dispatch(setResults(results));
+			}
+		})
+		.catch(err => {
+			handleAPIQueryError(err);
+		});
 
 export const mainQuery = query => dispatch =>
 	runQuery(query.query)()
@@ -161,11 +160,11 @@ export const mainQuery = query => dispatch =>
 				},
 			};
 
-      if(query.origin === "script"){
-        dispatch(pushScriptsResult(query_result));
-      }else{
-        dispatch(pushResult(query_result));
-      };
+			if (query.origin === 'script') {
+				dispatch(pushScriptsResult(query_result));
+			} else {
+				dispatch(pushResult(query_result));
+			}
 		})
 		.catch(err => {
 			handleAPIQueryError(err);

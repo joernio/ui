@@ -19,19 +19,20 @@ const styles = theme => ({
 				props.prefersDarkMode ? 'light' : 'dark'
 			],
 		fontSize: '1.5rem',
+		maxWidth: '80%',
 	},
-  buttonStyle: {
-    padding: '0.5em',
+	buttonStyle: {
+		padding: '0.5em',
 		margin: '1em',
-    fontSize: "1rem"
-  },
-  smallButtonStyle: {
+		fontSize: '1rem',
+	},
+	smallButtonStyle: {
 		margin: '0.2em',
 		padding: '0.2em',
-    fontSize: "1rem",
-  },
+		fontSize: '1rem',
+	},
 	configsFooterButtonStyle: {
-		minWidth: '10em'
+		minWidth: '10em',
 	},
 	configButtonStyle: {
 		height: 'fit-content',
@@ -75,7 +76,7 @@ const styles = theme => ({
 				],
 		},
 	},
-  configTagSectionStyle: {
+	configTagSectionStyle: {
 		display: 'flex',
 		width: '100%',
 		flexWrap: 'wrap',

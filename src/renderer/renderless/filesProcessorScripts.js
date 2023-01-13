@@ -136,33 +136,33 @@ export const processTriageTemp = () => {
 export const processTriage = next_findings => {
 	let findings = store.getState().findings;
 
-  const new_findings = [];
-  next_findings.forEach(finding=>{
-    const triage_id = getTriageId(finding);
-    if(!findings.triages[triage_id]){
-      new_findings.push(finding);
-    }
-  });
+	const new_findings = [];
+	next_findings.forEach(finding => {
+		const triage_id = getTriageId(finding);
+		if (!findings.triages[triage_id]) {
+			new_findings.push(finding);
+		}
+	});
 
-  if(new_findings.length){
+	if (new_findings.length) {
 		findings = deepClone(findings);
 		findings.open_sarif_finding_path = '';
 
-    if(findings.triage_ids.length >= 10) findings.triage_ids.shift();// remove the first item in the array;
+		if (findings.triage_ids.length >= 10) findings.triage_ids.shift(); // remove the first item in the array;
 		findings.triage_ids.push([]);
 
-    new_findings.forEach(finding=>{
-      const triage_id = getTriageId(finding);
+		new_findings.forEach(finding => {
+			const triage_id = getTriageId(finding);
 			const triage = {
 				valid: true,
 				finding,
 			};
 			findings.triages[triage_id] = triage;
 			findings.triage_ids[findings.triage_ids.length - 1].push(triage_id);
-    });
+		});
 
-    store.dispatch(setFindings(findings));
-  };
+		store.dispatch(setFindings(findings));
+	}
 };
 
 export const processFiles = async results => {
@@ -209,18 +209,21 @@ export const processScriptsTemp = scriptsResults => {
 	const result_keys = Object.keys(scriptsResults);
 	const latest = scriptsResults[result_keys[result_keys.length - 1]];
 
-  let proceed;
+	let proceed;
 
-  if(latest?.origin === "script" || (latest?.post_query_uuid && latest?.project)){
-    proceed = true;
-  };
+	if (
+		latest?.origin === 'script' ||
+		(latest?.post_query_uuid && latest?.project)
+	) {
+		proceed = true;
+	}
 
 	if (
 		latest?.query?.startsWith('cpg.finding.toJsonPretty') &&
 		latest.result?.stderr &&
 		latest.t_0 &&
 		latest.t_1 &&
-    proceed
+		proceed
 	) {
 		// TODO remember to change stderr here to stdout
 		// console.log(latest.result?.stderr);
@@ -231,23 +234,25 @@ export const processScriptsTemp = scriptsResults => {
 export const processScripts = scriptsResults => {
 	const result_keys = Object.keys(scriptsResults);
 	const latest = scriptsResults[result_keys[result_keys.length - 1]];
-  let proceed;
+	let proceed;
 
-  if(latest?.origin === "script" || (latest?.post_query_uuid && latest?.project)){
-    proceed = true;
-  };
-
+	if (
+		latest?.origin === 'script' ||
+		(latest?.post_query_uuid && latest?.project)
+	) {
+		proceed = true;
+	}
 
 	if (
 		latest?.query?.startsWith('cpg.finding.toJsonPretty') &&
 		latest.result?.stdout &&
 		latest.t_0 &&
 		latest.t_1 &&
-    proceed
+		proceed
 	) {
-    let json = latest.result.stdout.split('"""');
-    json = `${json[1]}`;
-		setTimeout(()=>processTriage(JSON.parse(json)), 0);
+		let json = latest.result.stdout.split('"""');
+		json = `${json[1]}`;
+		setTimeout(() => processTriage(JSON.parse(json)), 0);
 	}
 };
 

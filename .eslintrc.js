@@ -76,9 +76,9 @@ module.exports = {
 					'./.erb/configs/webpack.config.eslint.js',
 				),
 			},
-      react: {
-        version: "detect"
-      },
+			react: {
+				version: 'detect',
+			},
 			typescript: {},
 		},
 		// 'import/parsers': {

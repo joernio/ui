@@ -57,11 +57,7 @@ export const parse_code = code => {
 	return [first_line_number, snippet_lines];
 };
 
-export const get_rule_short_description = (
-	tool_name,
-	rule_id,
-	issue_obj,
-) => {
+export const get_rule_short_description = (tool_name, rule_id, issue_obj) => {
 	/*
   Constructs a short description for the rule
    :param tool_name:
@@ -77,9 +73,7 @@ export const get_rule_short_description = (
 	return `Rule ${rule_id} from ${tool_name}.`;
 };
 
-export const get_rule_full_description = (
-	issue_obj,
-) => {
+export const get_rule_full_description = issue_obj => {
 	/*
   Constructs a full description for the rule
    :param tool_name:
@@ -200,14 +194,8 @@ export const create_or_find_rule = (
 	const rule = {
 		id: rule_id,
 		help: {
-			text: get_help(
-				'text',
-				issue_obj,
-			),
-			markdown: get_help(
-				'markdown',
-				issue_obj,
-			),
+			text: get_help('text', issue_obj),
+			markdown: get_help('markdown', issue_obj),
 		},
 		name: rule_name,
 		properties: {
@@ -218,17 +206,11 @@ export const create_or_find_rule = (
 			level: level_from_severity(issue_severity),
 		},
 		fullDescription: {
-			text: get_rule_full_description(
-				issue_obj,
-			),
+			text: get_rule_full_description(issue_obj),
 		},
 		helpUri: get_url(rule_id, issue_obj),
 		shortDescription: {
-			text: get_rule_short_description(
-				tool_name,
-				rule_id,
-				issue_obj,
-			),
+			text: get_rule_short_description(tool_name, rule_id, issue_obj),
 		},
 	};
 	const index = Object.keys(rules).length;
@@ -634,9 +616,9 @@ export const find_repo_details = (src_dir = null) => {
       GitLab - https://docs.gitlab.com/ee/ci/variables/predefined_variables.html
       Jenkins - https://jenkins.io/doc/book/pipeline/jenkinsfile/#using-environment-variables
     */
-  // eslint-disable-next-line no-undef
+	// eslint-disable-next-line no-undef
 	Object.entries(process.env).forEach(entry => {
-		const [ key, value ] = entry;
+		const [key, value] = entry;
 		// Check REPOSITORY_URL first followed CI specific vars
 		// Some CI such as GitHub pass only the slug instead of the full url :(
 		if (!gitProvider || !ciProvider) {
@@ -824,31 +806,30 @@ export const find_repo_details = (src_dir = null) => {
 };
 
 export const convert_dataflow = (working_dir, dataflows) => {
-  /*
+	/*
   Convert dataflow into a simpler source and sink format for better representation in SARIF based viewers
 
   * param dataflows: List of dataflows from Inspect
   * return List of filename and location
   */
 
-  if (dataflows.length === 0) {
+	if (dataflows.length === 0) {
 		return null;
-	};
+	}
 
 	const loc_list = [];
-  // eslint-disable-next-line no-restricted-syntax
+	// eslint-disable-next-line no-restricted-syntax
 	for (const flow of dataflows) {
 		if (!flow.location.file_name || !flow.location.line_number) {
 			continue;
 		}
-		loc_list.push(
-      {
-        'filename': path.join(working_dir, flow.location.file_name),
-        'line_number': flow.location.line_number
-      });
+		loc_list.push({
+			filename: path.join(working_dir, flow.location.file_name),
+			line_number: flow.location.line_number,
+		});
 	}
 	return loc_list;
-}
+};
 
 export const extract_from_file = (
 	tool_name,
@@ -875,7 +856,11 @@ export const extract_from_file = (
 	if (['joern', 'ocular'].includes(tool_name)) {
 		// eslint-disable-next-line no-restricted-syntax
 		for (const value of joern_findings_json) {
-			if (!value || Object.keys(value).length === 0 || !value._label === 'FINDING') {
+			if (
+				!value ||
+				Object.keys(value).length === 0 ||
+				!value._label === 'FINDING'
+			) {
 				continue;
 			}
 			const keyValuePairs = value.keyValuePairs;
@@ -914,7 +899,7 @@ export const extract_from_file = (
 					}
 				}
 				const sink_obj = ev.sink;
-        if (sink_obj && Object.keys(sink_obj).length > 0) {
+				if (sink_obj && Object.keys(sink_obj).length > 0) {
 					if (sink_obj?.method?.filename) {
 						sink = {
 							filename: path.join(
@@ -957,96 +942,97 @@ export const extract_from_file = (
 				codeflows,
 			});
 		}
-  }else if(["ng-sast", "core"].includes(tool_name)){// NG SAST (Formerly Inspect) uses vulnerabilities
-    let data_to_use = joern_findings_json
-    // Is this raw json
-    if (joern_findings_json["ok"]){
-        const response = joern_findings_json["response"]
-        if(response && Object.keys(response).length > 0){
-            data_to_use = {
-                [response.scan?.app]: response.findings
-            }
-        }
-    };
-    // eslint-disable-next-line no-restricted-syntax
-    for (const v in Object.values(data_to_use)){
-      if(v?.length === 0){
-        continue;
-      };
+	} else if (['ng-sast', 'core'].includes(tool_name)) {
+		// NG SAST (Formerly Inspect) uses vulnerabilities
+		let data_to_use = joern_findings_json;
+		// Is this raw json
+		if (joern_findings_json['ok']) {
+			const response = joern_findings_json['response'];
+			if (response && Object.keys(response).length > 0) {
+				data_to_use = {
+					[response.scan?.app]: response.findings,
+				};
+			}
+		}
+		// eslint-disable-next-line no-restricted-syntax
+		for (const v in Object.values(data_to_use)) {
+			if (v?.length === 0) {
+				continue;
+			}
 
-      v.forEach(vuln=>{
+			v.forEach(vuln => {
+				let location = {};
+				let codeflows = [];
+				let score = '';
+				const vuln_type = vuln['type'];
+				const details = vuln['details'] || {};
+				const file_locations = details['file_locations'] || [];
+				const tags = vuln['tags'] || [];
+				const internal_id = vuln['internal_id'];
+				const tmpA = internal_id.split('/');
+				const rule_id = tmpA[0];
+				const fingerprint = tmpA[tmpA.length - 1];
+				const cvss_tag = [];
 
-        let location = {};
-        let codeflows = [];
-        let score = "";
-        const vuln_type = vuln["type"];
-        const details = vuln["details"] || {};
-        const file_locations = details["file_locations"] || [];
-        const tags = vuln["tags"] || [];
-        const internal_id = vuln["internal_id"];
-        const tmpA = internal_id.split("/");
-        const rule_id = tmpA[0];
-        const fingerprint = tmpA[tmpA.length - 1];
-        const cvss_tag = [];
+				tags.forEach(t => {
+					if (t['key'] === 'cvss_score') {
+						cvss_tag.push(t);
+					}
+				});
 
-        tags.forEach(t=>{
-          if (t["key"] === "cvss_score"){
-            cvss_tag.push(t);
-          }
-        });
+				if (cvss_tag.length > 0) {
+					score = cvss_tag[0]['value'];
+				}
 
-        if(cvss_tag.length > 0){
-          score = cvss_tag[0]["value"];
-        };
+				if (vuln_type === 'extscan') {
+					location = {
+						filename: path.join(working_dir, details['fileName']),
+						line_number: details['lineNumber'],
+					};
+					codeflows.push(location);
+				} else if (file_locations?.length > 0) {
+					file_locations.forEach(floc => {
+						const flocArr = floc.split(':');
+						codeflows.push({
+							filename: path.join(working_dir, flocArr[0]),
+							line_number: flocArr[1],
+						});
+					});
+					location = codeflows[codeflows.length - 1];
+				}
 
-        if(vuln_type === "extscan"){
-          location = {
-            filename: path.join(working_dir, details["fileName"]),
-            line_number: details["lineNumber"]
-          };
-          codeflows.push(location);
-        } else if(file_locations?.length > 0){
-          file_locations.forEach(floc=>{
-            const flocArr = floc.split(":");
-            codeflows.push({
-              filename: path.join(working_dir, flocArr[0]),
-              line_number: flocArr[1]
-            });
-          });
-          location = codeflows[codeflows.length - 1];
-        };
+				if (Object.keys(location).length === 0 && details['dataflow']) {
+					const dataflows = details['dataflow']['list'];
+					if (dataflows?.length > 0) {
+						const location_list = convert_dataflow(
+							working_dir,
+							dataflows,
+						);
+						if (location_list?.length > 0) {
+							codeflows = location_list;
+							location = location_list[location_list.length - 1];
+						}
+					}
+				}
 
-        if(Object.keys(location).length === 0 && details["dataflow"]){
-          const dataflows = details["dataflow"]["list"];
-          if(dataflows?.length > 0){
-            const location_list = convert_dataflow(working_dir, dataflows);
-            if(location_list?.length > 0){
-                codeflows = location_list;
-                location = location_list[location_list.length - 1];
-            }
-          }
-        };
-
-        if(Object.keys(location).length > 0){
-          issues.push(
-            {
-              rule_id,
-              title: vuln["title"],
-              short_description: vuln["category"],
-              description: vuln["description"],
-              score,
-              severity: vuln["severity"],
-              line_number: location["line_number"],
-              filename: location["filename"],
-              first_found: vuln["version_first_seen"],
-              issue_confidence: "HIGH",
-              fingerprint,
-              codeflows,
-          }
-          )
-        }
-      });
-    }
+				if (Object.keys(location).length > 0) {
+					issues.push({
+						rule_id,
+						title: vuln['title'],
+						short_description: vuln['category'],
+						description: vuln['description'],
+						score,
+						severity: vuln['severity'],
+						line_number: location['line_number'],
+						filename: location['filename'],
+						first_found: vuln['version_first_seen'],
+						issue_confidence: 'HIGH',
+						fingerprint,
+						codeflows,
+					});
+				}
+			});
+		}
 	}
 
 	return issues;
@@ -1288,7 +1274,7 @@ export const report = (
 	tool_name = 'joern',
 	tool_args = ['--script', 'oc_scripts/scan.sc'],
 	working_dir = '',
-	issues = null
+	issues = null,
 ) => {
 	/**
    * Prints issues in SARIF format
@@ -1398,7 +1384,7 @@ export const convert_file = (
 	tool_name,
 	tool_args,
 	working_dir,
-	joern_findings_json
+	joern_findings_json,
 ) => {
 	/* Convert report file
    :param tool_name: tool name
