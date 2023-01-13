@@ -52,7 +52,6 @@ function SideNav(props) {
 		props.prefersDarkMode,
 		props.prefersTerminalView,
 		props.fontSize,
-		props.scriptsDir,
 		props.rulesConfigFilePath,
 		props.uiIgnore,
 	]);
@@ -513,7 +512,6 @@ const mapStateToProps = state => ({
 	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 	prefersTerminalView: settingsSelectors.selectPrefersTerminalView(state),
 	fontSize: settingsSelectors.selectFontSize(state),
-	scriptsDir: settingsSelectors.selectScriptsDir(state),
 	rulesConfigFilePath: settingsSelectors.selectRulesConfigFilePath(state),
 	uiIgnore: settingsSelectors.selectUiIgnore(state),
 });

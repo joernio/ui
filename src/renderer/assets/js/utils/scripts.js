@@ -1620,7 +1620,7 @@ export const initShortcuts = () => {
 	const handleSaveFileShortcut = () => {
 		saveFile(
 			store.getState().files.openFilePath,
-			store.getState().settings.scriptsDir,
+			store.getState().settings.rulesConfigFilePath,
 		);
 	};
 

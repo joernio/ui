@@ -1,4 +1,3 @@
-import { homedir } from 'os';
 import { defaultRulesConfigFilePath } from '../../assets/js/utils/defaultVariables';
 
 export const default_state = {
@@ -14,7 +13,6 @@ export const default_state = {
 	prefersDarkMode: true,
 	prefersTerminalView: false,
 	fontSize: '16px',
-	scriptsDir: `${homedir()}/bin/joern/joern-cli/scripts`,
 	rulesConfigFilePath: defaultRulesConfigFilePath,
 	uiIgnore: 'node_modules, vendor, build, .git',
 	queryShortcuts: {},
@@ -51,11 +49,6 @@ const settings = (state = default_state, action) => {
 			return {
 				...state,
 				fontSize: action.payload,
-			};
-		case 'SET_SCRIPTSDIR':
-			return {
-				...state,
-				scriptsDir: action.payload,
 			};
 		case 'SET_UIIGNORE':
 			return {

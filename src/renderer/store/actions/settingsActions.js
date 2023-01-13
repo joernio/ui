@@ -50,13 +50,6 @@ export const setFontSize = payload => dispatch => {
 	});
 };
 
-export const setScriptsDir = payload => dispatch => {
-	dispatch({
-		type: 'SET_SCRIPTSDIR',
-		payload,
-	});
-};
-
 export const setUIIgnore = payload => dispatch => {
 	dispatch({
 		type: 'SET_UIIGNORE',

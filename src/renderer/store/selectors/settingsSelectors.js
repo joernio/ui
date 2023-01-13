@@ -22,10 +22,6 @@ export const selectFontSize = createSelector(
 	[selectSettings],
 	settings => settings.fontSize,
 );
-export const selectScriptsDir = createSelector(
-	[selectSettings],
-	settings => settings.scriptsDir,
-);
 export const selectUiIgnore = createSelector(
 	[selectSettings],
 	settings => settings.uiIgnore,
