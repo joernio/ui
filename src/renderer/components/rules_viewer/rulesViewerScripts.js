@@ -1,6 +1,11 @@
 import isEqual from 'lodash/isEqual';
 import isString from 'lodash/isString';
 import {
+	isAbsolute as path_isAbsolute,
+	dirname as path_dirname,
+	join as path_join,
+} from 'path';
+import {
 	getUIIgnoreArr,
 	pathStats,
 	openFile,
@@ -87,7 +92,9 @@ export const validateConfigs = configs => {
 		'languages',
 		'arguments',
 	];
+	const { rulesConfigFilePath } = store.getState().settings;
 	const ids = {};
+
 	if (configs.length === 0)
 		throw new Error(
 			'Rules config file content is not valid. There are no rules in the config array',
@@ -121,6 +128,14 @@ export const validateConfigs = configs => {
 			throw new Error(
 				'Rules config file content is not valid. Two or more rules have the same id',
 			);
+
+		if (!path_isAbsolute(config['filename'])) {
+			config['filename'] = path_join(
+				path_dirname(rulesConfigFilePath),
+				config['filename'],
+			);
+		}
+
 		ids[config['id']] = true;
 	});
 	return configs;
