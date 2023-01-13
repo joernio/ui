@@ -183,7 +183,7 @@ export const customIcons = {
 	terminal: 'custom-terminal',
 };
 
-export const defaultRulesConfigFilePath = `${homedir()}/bin/joern/joern-cli/scripts/rules-config.json`;
+export const defaultRulesConfigFilePath = `${homedir()}/bin/ocular/scripts/rules/rules-config.json`;
 export const defaultRulesConfigFileContent = `
 // The commented json below is the specification that is recognized.
 // Your custom rules configuration should look like the one below.

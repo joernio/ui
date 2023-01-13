@@ -26,26 +26,6 @@ import {
 	defaultRulesConfigFileContent,
 } from '../assets/js/utils/defaultVariables';
 
-import finding0 from '../assets/js/utils/temp_findings/0_findings.json';
-import finding5 from '../assets/js/utils/temp_findings/5_findings.json';
-import finding10 from '../assets/js/utils/temp_findings/10_findings.json';
-import finding15 from '../assets/js/utils/temp_findings/15_findings.json';
-import finding20 from '../assets/js/utils/temp_findings/20_findings.json';
-import finding25 from '../assets/js/utils/temp_findings/25_findings.json';
-import finding30 from '../assets/js/utils/temp_findings/30_findings.json';
-import finding35 from '../assets/js/utils/temp_findings/35_findings.json';
-
-const temp_findings = {
-	finding0,
-	finding5,
-	finding10,
-	finding15,
-	finding20,
-	finding25,
-	finding30,
-	finding35,
-};
-
 export const ensureRulesConfigFileExists = async () => {
 	const { rulesConfigFilePath } = store.getState().settings;
 	const stat = await pathStats(rulesConfigFilePath).catch(err => err);
@@ -104,31 +84,6 @@ export const ensureRulesConfigFileExists = async () => {
 						message: `attempted to create default rules config file "${rulesConfigFilePath}" but failed. ${err}`,
 					});
 				});
-		}
-	}
-};
-
-export const processTriageTemp = () => {
-	// NOTE this function is heavily modified and doesn't behave at all like it will be when we are finally able to get
-	// cpg.finding.toJsonPretty from the backend
-	let findings = store.getState().findings;
-	const file_id = findings.triage_ids.length * 5;
-	if (file_id <= 35) {
-		const finding = temp_findings[`finding${file_id}`];
-		findings = deepClone(findings);
-		findings.open_sarif_finding_path = '';
-		// TODO remove first array in triage_ids if triage_ids is up to 10
-		findings.triage_ids.push([]);
-
-		for (let i = finding.length - 5; i < finding.length; i += 1) {
-			const triage_id = getTriageId(finding[i]);
-			const triage = {
-				valid: true,
-				finding: finding[i],
-			};
-			findings.triages[triage_id] = triage;
-			findings.triage_ids[findings.triage_ids.length - 1].push(triage_id);
-			store.dispatch(setFindings(findings));
 		}
 	}
 };
@@ -202,32 +157,6 @@ export const processFiles = async results => {
 				methods: [],
 			}),
 		);
-	}
-};
-
-export const processScriptsTemp = scriptsResults => {
-	const result_keys = Object.keys(scriptsResults);
-	const latest = scriptsResults[result_keys[result_keys.length - 1]];
-
-	let proceed;
-
-	if (
-		latest?.origin === 'script' ||
-		(latest?.post_query_uuid && latest?.project)
-	) {
-		proceed = true;
-	}
-
-	if (
-		latest?.query?.startsWith('cpg.finding.toJsonPretty') &&
-		latest.result?.stderr &&
-		latest.t_0 &&
-		latest.t_1 &&
-		proceed
-	) {
-		// TODO remember to change stderr here to stdout
-		// console.log(latest.result?.stderr);
-		setTimeout(processTriageTemp, 0);
 	}
 };
 

@@ -91,7 +91,10 @@ function WindowWrapper(props) {
 									text="Save Script"
 									icon="floppy-disk"
 									onClick={() =>
-										saveFile(openFilePath, props.scriptsDir)
+										saveFile(
+											openFilePath,
+											props.rulesConfigFilePath,
+										)
 									}
 								/>
 								<MenuDivider
@@ -309,6 +312,7 @@ const mapStateToProps = state => ({
 	connected: statusSelectors.selectConnected(state),
 	websocket: settingsSelectors.selectWebSocket(state),
 	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
+	rulesConfigFilePath: settingsSelectors.selectRulesConfigFilePath(state),
 });
 
 export default connect(mapStateToProps, null)(WindowWrapper);

@@ -38,7 +38,6 @@ export const getSettingsInitialValues = props => {
 	initialSettings.prefers_dark_mode = props.prefersDarkMode;
 	initialSettings.prefers_terminal_view = props.prefersTerminalView;
 	initialSettings.font_size = Number(props.fontSize?.split('px')[0]);
-	initialSettings.scripts_dir = props.scriptsDir;
 	initialSettings.rules_config_file_path = props.rulesConfigFilePath;
 	initialSettings.ui_ignore = props.uiIgnore;
 
@@ -68,7 +67,6 @@ export const collectSettingsValues = values => {
 		prefersDarkMode: values.prefers_dark_mode,
 		prefersTerminalView: values.prefers_terminal_view,
 		fontSize: `${values.font_size}px`,
-		scriptsDir: values.scripts_dir,
 		rulesConfigFilePath: values.rules_config_file_path,
 		uiIgnore: values.ui_ignore,
 	};
