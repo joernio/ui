@@ -6,7 +6,11 @@ import { Icon } from '@blueprintjs/core';
 import { Popover2, Tooltip2 } from '@blueprintjs/popover2';
 import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import * as querySelectors from '../../store/selectors/querySelectors';
-import { queueEmpty, scriptsQueueEmpty, nFormatter } from '../../assets/js/utils/scripts';
+import {
+	queueEmpty,
+	scriptsQueueEmpty,
+	nFormatter,
+} from '../../assets/js/utils/scripts';
 import { countQueries, updateQueriesStats } from './queriesStatsScripts';
 import styles from '../../assets/js/styles/components/queries_stats/queriesStatsStyles';
 import commonStyles from '../../assets/js/styles';
@@ -37,7 +41,7 @@ function QueriesStats(props) {
 	React.useEffect(() => {
 		if (props.results) {
 			handleSetState(countQueries(props.results, props.scriptsResults));
-		};
+		}
 	}, [props.results, props.scriptsResults]);
 
 	React.useEffect(() => {
@@ -46,7 +50,10 @@ function QueriesStats(props) {
 				() =>
 					setState(state => ({
 						...state,
-						...updateQueriesStats(props.results, props.scriptsResults),
+						...updateQueriesStats(
+							props.results,
+							props.scriptsResults,
+						),
 					})),
 				100,
 			);
@@ -167,7 +174,9 @@ function QueriesStats(props) {
 				<p className={classes.queriesStatsStyle}>
 					{nFormatter(queriesCount)}
 				</p>
-				{!queueEmpty() || !scriptsQueueEmpty() ? <div>running...</div> : null}
+				{!queueEmpty() || !scriptsQueueEmpty() ? (
+					<div>running...</div>
+				) : null}
 			</div>
 		</Popover2>
 	);
@@ -175,9 +184,9 @@ function QueriesStats(props) {
 
 const mapStateToProps = state => ({
 	results: querySelectors.selectResults(state),
-  scriptsResults: querySelectors.selectScriptsResults(state),
+	scriptsResults: querySelectors.selectScriptsResults(state),
 	queue: querySelectors.selectQueue(state),
-  scriptsQueue: querySelectors.selectScriptsQueue(state),
+	scriptsQueue: querySelectors.selectScriptsQueue(state),
 	prefersDarkMode: settingsSelectors.selectPrefersDarkMode(state),
 });
 

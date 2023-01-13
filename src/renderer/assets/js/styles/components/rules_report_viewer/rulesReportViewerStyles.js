@@ -79,6 +79,7 @@ const styles = theme => ({
 				props.prefersDarkMode ? 'light' : 'dark'
 			],
 		fontSize: '1.5rem',
+		maxWidth: '80%',
 	},
 	loadingContainerStyle: {
 		height: '100%',

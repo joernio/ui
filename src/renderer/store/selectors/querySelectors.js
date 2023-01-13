@@ -7,8 +7,8 @@ export const selectResults = createSelector(
 	query => query.results,
 );
 export const selectScriptsResults = createSelector(
-  [selectQuery],
-  query => query.scriptsResults,
+	[selectQuery],
+	query => query.scriptsResults,
 );
 export const selectQueue = createSelector([selectQuery], query => query.queue);
 export const selectScriptsQueue = createSelector(

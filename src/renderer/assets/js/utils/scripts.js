@@ -15,9 +15,9 @@ import {
 } from './defaultVariables';
 import {
 	deQueueQuery,
-  deQueueScriptsQuery,
+	deQueueScriptsQuery,
 	getQueryResult,
-  setScriptsResults,
+	setScriptsResults,
 	postQuery,
 	setResults,
 	resetQueue,
@@ -262,18 +262,18 @@ export const parseProject = data => {
 };
 
 const performPostQuery = (result, key) => {
-  let post_query;
+	let post_query;
 
-  if (
-    result.query.startsWith(manCommands.switchWorkspace) ||
-    result.query === 'project'
-  ) {
-    post_query = 'workspace';
-  } else {
-    post_query = 'project';
-  }
+	if (
+		result.query.startsWith(manCommands.switchWorkspace) ||
+		result.query === 'project'
+	) {
+		post_query = 'workspace';
+	} else {
+		post_query = 'project';
+	}
 
-  store.dispatch(postQuery(post_query, key));
+	store.dispatch(postQuery(post_query, key));
 };
 
 const setQueryResult = (data, key, results) => {
@@ -282,24 +282,20 @@ const setQueryResult = (data, key, results) => {
 	}
 
 	if (!results[key].result.stdout && !results[key].result.stderr) {
+		if (data.stdout) {
+			results[key].result.stdout = data.stdout;
+		}
 
-    if (data.stdout) {
-      results[key].result.stdout = data.stdout;
-    }
-
-    if (data.stderr) {
-      results[key].result.stderr = data.stderr;
-    }
+		if (data.stderr) {
+			results[key].result.stderr = data.stderr;
+		}
 
 		store.dispatch(setResults(results));
 	} else if (
 		results[key].query.startsWith(manCommands.switchWorkspace) ||
 		results[key].query === 'project'
 	) {
-		if (
-			!results[key].result.stdout &&
-			!results[key].result.stderr
-		) {
+		if (!results[key].result.stdout && !results[key].result.stderr) {
 			results[key].result.stderr = 'query failed';
 		} else if (data.stdout) {
 			const projects = parseProjects(data);
@@ -308,10 +304,7 @@ const setQueryResult = (data, key, results) => {
 
 		store.dispatch(setResults(results));
 	} else {
-		if (
-			!results[key].result.stdout &&
-			!results[key].result.stderr
-		) {
+		if (!results[key].result.stdout && !results[key].result.stderr) {
 			results[key].result.stderr = 'query failed';
 		} else {
 			results[key].project = parseProject(data);
@@ -326,59 +319,58 @@ const setScriptsQueryResult = (data, key, results) => {
 		results[key].t_1 = new Date().getTime();
 	}
 
-			if (data.stdout) {
-				results[key].result.stdout = data.stdout;
-			}
+	if (data.stdout) {
+		results[key].result.stdout = data.stdout;
+	}
 
-			if (data.stderr) {
-				results[key].result.stderr = data.stderr;
-			}
+	if (data.stderr) {
+		results[key].result.stderr = data.stderr;
+	}
 
-		store.dispatch(setScriptsResults(results));
+	store.dispatch(setScriptsResults(results));
 };
 
 export const handleWebSocketResponse = data => {
-  store.dispatch(getQueryResult(data.utf8Data)).then(data => {
-    const { results, scriptsResults } = store.getState().query;
-    let key = data?.uuid;
-    if(!key) return;
+	store
+		.dispatch(getQueryResult(data.utf8Data))
+		.then(data => {
+			const { results, scriptsResults } = store.getState().query;
+			let key = data?.uuid;
+			if (!key) return;
 
-    let latest = results[key];
+			let latest = results[key];
 
-    if(!latest){
-      latest = scriptsResults[key];
-    };
+			if (!latest) {
+				latest = scriptsResults[key];
+			}
 
-    if(!latest){
-      const result_keys = Object.keys(results);
-      key = result_keys[result_keys.length - 1];
-      const _latest = results[key];
-      if(_latest.post_query_uuid === data.uuid){
-        latest = _latest
-      };
-    };
+			if (!latest) {
+				const result_keys = Object.keys(results);
+				key = result_keys[result_keys.length - 1];
+				const _latest = results[key];
+				if (_latest.post_query_uuid === data.uuid) {
+					latest = _latest;
+				}
+			}
 
-    if(latest && latest.origin === "script"){
-
-      if (!latest.result.stdout && !latest.result.stderr) {
-        setScriptsQueryResult(data, key, scriptsResults);
-        store.dispatch(deQueueScriptsQuery());
-      };
-
-    }else if(latest && latest.origin !== "script"){
-
-      if (!latest.result.stdout && !latest.result.stderr) {
-        setQueryResult(data, key, results);
-        performPostQuery(results[key], key);
-      } else {
-        setQueryResult(data, key, results);
-        store.dispatch(deQueueQuery());
-      }
-
-    }
-  }).catch(() => {
-    // handleAPIQueryError(err);
-  });
+			if (latest && latest.origin === 'script') {
+				if (!latest.result.stdout && !latest.result.stderr) {
+					setScriptsQueryResult(data, key, scriptsResults);
+					store.dispatch(deQueueScriptsQuery());
+				}
+			} else if (latest && latest.origin !== 'script') {
+				if (!latest.result.stdout && !latest.result.stderr) {
+					setQueryResult(data, key, results);
+					performPostQuery(results[key], key);
+				} else {
+					setQueryResult(data, key, results);
+					store.dispatch(deQueueQuery());
+				}
+			}
+		})
+		.catch(() => {
+			// handleAPIQueryError(err);
+		});
 };
 
 export const handleCertificateError = () => {
@@ -450,7 +442,8 @@ export const getExtension = path => {
 	return ext ? `.${ext}` : '';
 };
 
-export const fsWriteFile = (path, content) => new Promise((res, rej) => {
+export const fsWriteFile = (path, content) =>
+	new Promise((res, rej) => {
 		fs.writeFile(path, content, err => {
 			if (!err) {
 				res();
@@ -496,8 +489,7 @@ export const readFile = path =>
 				}
 			});
 		} else {
-			reject(
-        Error(`can't read file. path is "${path}"`));
+			reject(Error(`can't read file. path is "${path}"`));
 		}
 	});
 
@@ -1686,7 +1678,6 @@ export const generateScriptImportQuery = async (
 	path_to_script,
 	path_to_workspace,
 ) => {
-
 	if (!path_to_script || !path_to_script.endsWith('.sc')) {
 		handleSetToast({
 			icon: 'warning-sign',

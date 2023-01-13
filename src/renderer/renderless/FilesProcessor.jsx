@@ -10,7 +10,7 @@ import * as findingsActions from '../store/actions/findingsActions';
 
 import {
 	processFiles,
-  processScripts,
+	processScripts,
 	// processScriptsTemp,
 	processMethodListForBinaryProjects,
 	ensureRulesConfigFileExists,
@@ -39,13 +39,13 @@ function FilesProcessor(props) {
 	}, [props.rulesConfigFilePath]);
 
 	React.useEffect(() => {
-    processFiles(props.scriptsResults)
+		processFiles(props.scriptsResults);
 		processScripts(props.scriptsResults);
 	}, [props.scriptsResults]);
 
-  React.useEffect(()=>{
-    processScripts(props.results)
-  },[props.results]);
+	React.useEffect(() => {
+		processScripts(props.results);
+	}, [props.results]);
 
 	React.useEffect(() => {
 		props.resetFindings();
@@ -56,7 +56,7 @@ function FilesProcessor(props) {
 
 const mapStateToProps = state => ({
 	results: querySelectors.selectResults(state),
-  scriptsResults: querySelectors.selectScriptsResults(state),
+	scriptsResults: querySelectors.selectScriptsResults(state),
 	projects: workSpaceSelectors.selectProjects(state),
 	circuit_ui_responses: terminalSelectors.selectCircuitUiResponses(state),
 	rulesConfigFilePath: settingsSelectors.selectRulesConfigFilePath(state),

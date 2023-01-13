@@ -88,7 +88,8 @@ const mapDispatchToProps = dispatch => ({
 	peekQueue: () => dispatch(queryActions.peekQueue()),
 	peekScriptsQueue: () => dispatch(queryActions.peekScriptsQueue()),
 	enQueueQuery: query => dispatch(queryActions.enQueueQuery(query)),
-  enQueueScriptsQuery: query => dispatch(queryActions.enQueueScriptsQuery(query))
+	enQueueScriptsQuery: query =>
+		dispatch(queryActions.enQueueScriptsQuery(query)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(QueryProcessor);
