@@ -192,7 +192,7 @@ export const defaultRulesConfigFileContent = `
 // [{
 //   "title": "Hardcoded Secrets Detection",
 //   "id":"001",
-//   "filename":"/home/joern/scripts/secrets.sc",
+//   "filename":"secrets.sc",
 //   "description": "Detect hardcoded secrets in Source",
 //   "tags":["cwe-789", "cve-2021-2787"],
 //   "languages": [ "C", "Java", "Javascript" ],
@@ -207,6 +207,10 @@ export const defaultRulesConfigFileContent = `
 //   "languages": [ "C", "Java", "Javascript" ],
 //   "arguments": {"arg1": "value of arg1", "arg2": "/value/of/arg/2"}
 //  }]
+
+// Note: filename can only be an absolute path or
+// a special relative path that is only relative to the
+// rules config file path (this can be changed from the settings)
 
 // Your rules configuration should go here...
 `;
