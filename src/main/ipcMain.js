@@ -1,5 +1,5 @@
 // eslint-disable-line no-console
-import { BrowserWindow, ipcMain, Notification, dialog } from 'electron';
+import { BrowserWindow, ipcMain, Notification, dialog, shell } from 'electron';
 import initWebSocket from './webSocket';
 import { handleClipBoardActivity } from './utils';
 
@@ -131,6 +131,11 @@ export const initIpcMain = app => {
 		const clip_board_value = handleClipBoardActivity('paste');
 		window.webContents.send('pasted-from-clipboard', clip_board_value);
 	});
+
+	ipcMain.on('open-external-link', (_, link) => {
+		shell.openExternal(link);
+	});
+
 	// eslint-disable-next-line no-console
 	console.log('all ipc inited and waiting for connection');
 };

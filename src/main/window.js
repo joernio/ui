@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, shell } from 'electron';
 import { getWindowPosition } from './config';
 import { updateWindowInfo, openDevTools } from './ipcMain'; // eslint-disable-line no-unused-vars
 import { require, isDev, getAssetPath, resolveHtmlPath } from './utils';
@@ -66,10 +66,10 @@ export const createWindow = async () => {
 	window.loadURL(resolveHtmlPath('index.html'));
 
 	// Open urls in the user's browser
-	// window.webContents.setWindowOpenHandler((edata) => {
-	//   shell.openExternal(edata.url);
-	//   return { action: 'deny' };
-	// });
+	window.webContents.setWindowOpenHandler(({ url }) => {
+		shell.openExternal(url);
+		return { action: 'deny' };
+	});
 
 	return window;
 };
