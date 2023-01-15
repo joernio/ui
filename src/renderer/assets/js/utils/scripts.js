@@ -551,6 +551,7 @@ export const openFile = async path => {
 };
 
 export const openSyntheticFile = async (path, content) => {
+	// TODO: should this be async?
 	if (path) {
 		const files = deepClone(store.getState().files);
 
@@ -1817,4 +1818,9 @@ export const getTriageId = finding => {
 	const name_slug = slugify(finding['keyValuePairs'][0]['value']);
 	const fingerprint = finding['evidence'][0]['fingerprint'];
 	return `${name_slug}-${fingerprint}`;
+};
+
+export const isSynthFileOpen = synth_file_path => {
+	const { openFilePath } = store.getState().files;
+	return openFilePath.endsWith(synth_file_path);
 };

@@ -23,6 +23,7 @@ const styles = theme => ({
 		display: 'flex',
 		flexDirection: 'column',
 		alignItems: 'center',
+		width: '100%',
 	},
 	settingsDialogStyle: {
 		'& > div > div:nth-child(1)': {
@@ -193,6 +194,46 @@ const styles = theme => ({
 					props.prefersDarkMode ? 'dark' : 'light'
 				]
 			}50`,
+	},
+	iconContainerStyle: {
+		width: '100%',
+		'& > span': {
+			width: '100%',
+			height: '100%',
+			display: 'flex !important',
+			alignItems: 'center',
+			justifyContent: 'center',
+			borderTop: props =>
+				`1px solid ${
+					theme.palette.sideNav.background[
+						props.prefersDarkMode ? 'dark' : 'light'
+					]
+				}`,
+			borderBottom: props =>
+				`1px solid ${
+					theme.palette.sideNav.background[
+						props.prefersDarkMode ? 'dark' : 'light'
+					]
+				}`,
+		},
+		'&:hover': {
+			backgroundColor: theme.palette.navBar.hover.dark,
+			'& svg': {
+				color: props =>
+					theme.palette.sideNav.hover[
+						props.prefersDarkMode ? 'dark' : 'light'
+					],
+			},
+		},
+	},
+	iconContainerFocusStyle: {
+		backgroundColor: theme.palette.navBar.hover.dark,
+		'& svg': {
+			color: props =>
+				theme.palette.sideNav.hover[
+					props.prefersDarkMode ? 'dark' : 'light'
+				],
+		},
 	},
 	iconStyle: {
 		color: props =>

@@ -213,6 +213,10 @@
 	outline: none !important;
 }
 
+.sarif-viewer .bolt-header-title-area {
+	color: var(--text-primary-color);
+}
+
 body {
 	overflow: hidden;
 	height: 100vh;
