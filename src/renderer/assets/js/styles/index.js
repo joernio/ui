@@ -148,6 +148,9 @@ const styles = theme => ({
 	alignCenter: {
 		alignItems: 'center',
 	},
+	justifyCenter: {
+		justifyContent: 'center',
+	},
 	addOnSmallScreen: {
 		[theme.breakpoints.up('555')]: {
 			display: 'none',
@@ -166,6 +169,9 @@ const styles = theme => ({
 	},
 	width100Percent: {
 		width: '100%',
+	},
+	height100Percent: {
+		height: '100%',
 	},
 	cursorPointer: {
 		cursor: 'pointer',

@@ -113,7 +113,7 @@ function RulesReportViewer(props) {
 				dark: props.prefersDarkMode,
 			})}
 		>
-			{!(queueEmpty() && scriptsQueueEmpty()) ? ( // TODO remember to remove queueEmpty from this condition as it is only here for demo purpose and should be removed when all issues have been fixed
+			{!(queueEmpty() && scriptsQueueEmpty()) ? ( // check if this line is still applicable before doing what the line says TODO remember to remove queueEmpty from this condition as it is only here for demo purpose and should be removed when all issues have been fixed
 				<div className={classes.loadingContainerStyle}>
 					<Icon
 						icon="refresh"

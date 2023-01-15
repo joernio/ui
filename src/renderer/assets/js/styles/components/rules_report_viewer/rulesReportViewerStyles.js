@@ -184,9 +184,9 @@ const styles = theme => ({
 		overflow: 'hidden',
 		display: '-webkit-box',
 		WebkitBoxOrient: 'vertical',
-		color: '#98c6ff',
+		color: 'var(--communication-foreground, #005a9e)',
 		'&:hover': {
-			color: '#b8d8ff',
+			color: 'rgba(var(--palette-primary-shade-30, 0, 69, 120), 1)',
 		},
 	},
 	controlElementsStyle: {

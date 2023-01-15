@@ -8,9 +8,12 @@ import * as settingsActions from '../../store/actions/settingsActions';
 import * as statusActions from '../../store/actions/statusActions';
 import * as settingsSelectors from '../../store/selectors/settingsSelectors';
 import * as statusSelectors from '../../store/selectors/statusSelectors';
+import * as filesSelectors from '../../store/selectors/filesSelectors';
 import styles from '../../assets/js/styles/views/side_nav/sideNavStyles';
 import commonStyles from '../../assets/js/styles';
 import CustomIcon from '../../components/custom_icon/CustomIcon';
+
+import { isSynthFileOpen } from '../../assets/js/utils/scripts';
 
 import {
 	handleDrawerToggle,
@@ -22,7 +25,10 @@ import {
 	openRulesReportPage,
 	openRulesPage,
 } from './sideNavScripts';
-import { customIcons } from '../../assets/js/utils/defaultVariables';
+import {
+	customIcons,
+	syntheticFiles,
+} from '../../assets/js/utils/defaultVariables';
 
 const useStyles = makeStyles(styles);
 const useCommonStyles = makeStyles(commonStyles);
@@ -68,6 +74,14 @@ function SideNav(props) {
 					)}
 				>
 					<Tooltip2
+						className={clsx(
+							classes.iconContainerStyle,
+							commonClasses.cursorPointer,
+							{
+								[classes.iconContainerFocusStyle]:
+									!!props.drawerWidth,
+							},
+						)}
 						popoverClassName={commonClasses.toolTipStyle}
 						content={
 							<span className={commonClasses.toolTipTextStyle}>
@@ -78,20 +92,28 @@ function SideNav(props) {
 						usePortal={false}
 						openOnTargetFocus={false}
 					>
-						<Icon
-							icon="control"
-							iconSize={25}
-							className={clsx(
-								classes.iconStyle,
-								commonClasses.cursorPointer,
-							)}
+						<span
 							onClick={() =>
 								props.handleSetState(handleDrawerToggle(props))
 							}
-						/>
+						>
+							<Icon
+								icon="control"
+								iconSize={25}
+								className={classes.iconStyle}
+							/>
+						</span>
 					</Tooltip2>
 
 					<Tooltip2
+						className={clsx(
+							classes.iconContainerStyle,
+							commonClasses.cursorPointer,
+							{
+								[classes.iconContainerFocusStyle]:
+									isSynthFileOpen(syntheticFiles[1]),
+							},
+						)}
 						popoverClassName={commonClasses.toolTipStyle}
 						content={
 							<span className={commonClasses.toolTipTextStyle}>
@@ -102,19 +124,27 @@ function SideNav(props) {
 						usePortal={false}
 						openOnTargetFocus={false}
 					>
-						<Icon
-							icon="key-enter"
-							iconSize={25}
-							className={clsx(
-								classes.iconStyle,
-								classes.shortcutsIconStyle,
-								commonClasses.cursorPointer,
-							)}
-							onClick={openShortcutsPage}
-						/>
+						<span onClick={openShortcutsPage}>
+							<Icon
+								icon="key-enter"
+								iconSize={25}
+								className={clsx(
+									classes.iconStyle,
+									classes.shortcutsIconStyle,
+								)}
+							/>
+						</span>
 					</Tooltip2>
 
 					<Tooltip2
+						className={clsx(
+							classes.iconContainerStyle,
+							commonClasses.cursorPointer,
+							{
+								[classes.iconContainerFocusStyle]:
+									isSynthFileOpen(syntheticFiles[4]),
+							},
+						)}
 						popoverClassName={commonClasses.toolTipStyle}
 						content={
 							<span className={commonClasses.toolTipTextStyle}>
@@ -125,20 +155,24 @@ function SideNav(props) {
 						usePortal={false}
 						openOnTargetFocus={false}
 					>
-						<div>
+						<span onClick={openRulesPage}>
 							<CustomIcon
 								icon={customIcons.analytics}
 								iconSize={25}
-								className={clsx(
-									classes.iconStyle,
-									commonClasses.cursorPointer,
-								)}
-								onClick={openRulesPage}
+								className={classes.iconStyle}
 							/>
-						</div>
+						</span>
 					</Tooltip2>
 
 					<Tooltip2
+						className={clsx(
+							classes.iconContainerStyle,
+							commonClasses.cursorPointer,
+							{
+								[classes.iconContainerFocusStyle]:
+									isSynthFileOpen(syntheticFiles[5]),
+							},
+						)}
 						popoverClassName={commonClasses.toolTipStyle}
 						content={
 							<span className={commonClasses.toolTipTextStyle}>
@@ -149,21 +183,25 @@ function SideNav(props) {
 						usePortal={false}
 						openOnTargetFocus={false}
 					>
-						<div>
+						<span onClick={openRulesReportPage}>
 							<CustomIcon
 								icon={customIcons.monitoring}
 								iconSize={25}
-								className={clsx(
-									classes.iconStyle,
-									commonClasses.cursorPointer,
-								)}
-								onClick={openRulesReportPage}
+								className={classes.iconStyle}
 							/>
-						</div>
+						</span>
 					</Tooltip2>
 				</div>
 
 				<Tooltip2
+					className={clsx(
+						classes.iconContainerStyle,
+						commonClasses.cursorPointer,
+						{
+							[classes.iconContainerFocusStyle]:
+								!!props.terminalHeight,
+						},
+					)}
 					popoverClassName={commonClasses.toolTipStyle}
 					content={
 						<span className={commonClasses.toolTipTextStyle}>
@@ -174,20 +212,28 @@ function SideNav(props) {
 					usePortal={false}
 					openOnTargetFocus={false}
 				>
-					<Icon
-						icon="console"
-						iconSize={25}
-						className={clsx(
-							classes.iconStyle,
-							commonClasses.cursorPointer,
-						)}
+					<span
 						onClick={() =>
 							props.handleSetState(handleTerminalToggle(props))
 						}
-					/>
+					>
+						<Icon
+							icon="console"
+							iconSize={25}
+							className={classes.iconStyle}
+						/>
+					</span>
 				</Tooltip2>
 
 				<Tooltip2
+					className={clsx(
+						classes.iconContainerStyle,
+						commonClasses.cursorPointer,
+						{
+							[classes.iconContainerFocusStyle]:
+								!!props.settingsDialogIsOpen,
+						},
+					)}
 					popoverClassName={commonClasses.toolTipStyle}
 					content={
 						<span className={commonClasses.toolTipTextStyle}>
@@ -198,19 +244,19 @@ function SideNav(props) {
 					usePortal={false}
 					openOnTargetFocus={false}
 				>
-					<Icon
-						icon="cog"
-						iconSize={25}
-						className={clsx(
-							classes.iconStyle,
-							commonClasses.cursorPointer,
-						)}
+					<span
 						onClick={() => {
 							props.setSettingsDialogIsOpen(
 								!props.settingsDialogIsOpen,
 							);
 						}}
-					/>
+					>
+						<Icon
+							icon="cog"
+							iconSize={25}
+							className={classes.iconStyle}
+						/>
+					</span>
 				</Tooltip2>
 			</div>
 			<Dialog
@@ -514,6 +560,7 @@ const mapStateToProps = state => ({
 	fontSize: settingsSelectors.selectFontSize(state),
 	rulesConfigFilePath: settingsSelectors.selectRulesConfigFilePath(state),
 	uiIgnore: settingsSelectors.selectUiIgnore(state),
+	openFilePath: filesSelectors.selectOpenFilePath(state), // Do Not Remove: This is a hack to force sideNav to re-render whenever openFilePath changes, otherwise isSynthFileOpen won't get called when query shortcut synth file is opened
 });
 
 const mapDispatchToProps = dispatch => ({
