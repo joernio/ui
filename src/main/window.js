@@ -1,7 +1,8 @@
 import { BrowserWindow, shell } from 'electron';
 import { getWindowPosition } from './config';
 import { updateWindowInfo, openDevTools } from './ipcMain'; // eslint-disable-line no-unused-vars
-import { require, isDev, getAssetPath, resolveHtmlPath } from './utils';
+import { require, isDev, resolveHtmlPath } from './utils';
+import ui_icon from '../../assets/icon.png';
 
 const installExtensions = async () => {
 	const installer = require('electron-devtools-installer');
@@ -16,12 +17,12 @@ const installExtensions = async () => {
 
 // eslint-disable-next-line no-unused-vars
 const devSetup = async () => {
-	if (process.env.NODE_ENV === 'production' && isDev) {
+	if (process.env.NODE_ENV === 'production' && isDev()) {
 		const sourceMapSupport = require('source-map-support');
 		sourceMapSupport.install();
 	}
 
-	if (isDev) {
+	if (isDev()) {
 		const debug = require('electron-debug');
 		debug();
 		await installExtensions();
@@ -39,7 +40,7 @@ export const createWindow = async () => {
 	const window = new BrowserWindow({
 		title: 'CPG UI Client',
 		// titleBarStyle: 'hiddenInset',
-		icon: getAssetPath('icon.png'),
+		icon: ui_icon,
 		frame: true,
 		// transparent: isMac,
 		acceptFirstMouse: true,

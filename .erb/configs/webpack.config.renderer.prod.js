@@ -49,6 +49,7 @@ const configuration = {
 		path: path.join(webpackPaths.distRendererPath, './'),
 		publicPath: path.join(webpackPaths.distRendererPath, './'),
 		filename: '[name].renderer.prod.js',
+    clean: true
 		// library: {
 		//   type: 'umd',
 		// },

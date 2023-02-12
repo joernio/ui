@@ -113,6 +113,10 @@ cd ./release/app
 npx electron-forge import
 ```
 
+```commandline
+cp ../../forge.config.template.js ./forge.config.js
+```
+
 ### Build Executable
 
 1. After running the command above, electron forge modifies your project (mostly release/app/package.json) to the format it accepts while building an executable. run the command below while still in the release/app/ directory to build an executable for your local machine (be patient, this can take a while).

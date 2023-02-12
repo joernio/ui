@@ -80,7 +80,7 @@ jobs:
                   npm run build
                   npm --prefix ./release/app install @electron-forge/cli -D
                   npm --prefix ./release/app install @electron-forge/plugin-auto-unpack-natives -D
-                  cd ./release/app && npx electron-forge import && npx electron-forge make
+                  cd ./release/app && npx electron-forge import && cp ../../forge.config.template.js ./forge.config.js && npx electron-forge make
 
             - name: 'Upload Ubuntu Artifacts'
               uses: actions/upload-artifact@v2
