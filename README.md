@@ -94,11 +94,11 @@ npm run build
 1. run:
 
 ```commandline
-npm --prefix ./release/app install @electron-forge/cli -D
+npm --prefix ./release/app install @electron-forge/cli@6.0.5 -D
 ```
 
 ```commandline
-npm --prefix ./release/app install @electron-forge/plugin-auto-unpack-natives -D
+npm --prefix ./release/app install @electron-forge/plugin-auto-unpack-natives@6.0.5 -D
 ```
 
 ### Import The Project Into Electron Forge

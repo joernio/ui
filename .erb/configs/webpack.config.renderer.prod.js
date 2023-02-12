@@ -47,7 +47,7 @@ const configuration = {
 	},
 	output: {
 		path: path.join(webpackPaths.distRendererPath, './'),
-		publicPath: path.join(webpackPaths.distRendererPath, './'),
+		publicPath: './',
 		filename: '[name].renderer.prod.js',
     clean: true
 		// library: {
