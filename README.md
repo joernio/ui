@@ -54,10 +54,10 @@ If you encounter dependency resolution issues while running `npm install`, then 
 npm install --legacy-peer-deps
 ```
 
-2. from the root of the cloned repository, cd into release/app and run:
+2. next step is to run:
 
 ```commandline
-npm install
+npm --prefix ./release/app install
 ```
 
 ### Run Joern in server mode
@@ -91,27 +91,35 @@ npm run build
 
 ### Install Electron Forge
 
-1. cd into release/app and run:
+1. run:
 
 ```commandline
-npm install @electron-forge/cli -D
+npm --prefix ./release/app install @electron-forge/cli@6.0.5 -D
 ```
 
 ```commandline
-npm install @electron-forge/plugin-auto-unpack-natives -D
+npm --prefix ./release/app install @electron-forge/plugin-auto-unpack-natives@6.0.5 -D
 ```
 
 ### Import The Project Into Electron Forge
 
-1. while still on the release/app directory, to import the project into electron forge, run
+1. from the root of the repository, run:
+
+```commandline
+cd ./release/app
+```
 
 ```commandline
 npx electron-forge import
 ```
 
+```commandline
+cp ../../forge.config.template.js ./forge.config.js
+```
+
 ### Build Executable
 
-1. After running the command above, electron forge modifies your project (mostly release/app/package.json) to the format it accepts while building an executable. run the command below to build an executable for your local machine (be patient, this can take a while).
+1. After running the command above, electron forge modifies your project (mostly release/app/package.json) to the format it accepts while building an executable. run the command below while still in the release/app/ directory to build an executable for your local machine (be patient, this can take a while).
 
 ```commandline
 npx electron-forge make
@@ -157,7 +165,7 @@ If no merge conflicts occurred, then you are good to go. If you get a merge conf
 
 ### Update version of package.json
 
-1. go to the package.json file and bump up the version. Note that the version name MUST not start with a leading "v" or the build will fail. An example version name for the package.json file is "1.0.0-a.5".
+1. from the root of the project, go to ./package.json and ./release/app/package.json files and bump up the version. Note that the version name MUST not start with a leading "v" or the build will fail. An example version name for the package.json file is "1.0.0-a.5".
 
 ### Commit changes
 

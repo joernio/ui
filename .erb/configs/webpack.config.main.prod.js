@@ -37,6 +37,20 @@ const configuration = {
 	output: {
 		path: webpackPaths.distMainPath,
 		filename: '[name].prod.js',
+    clean: true
+	},
+
+  module: {
+		rules: [
+			// Images
+			{
+				test: /\.(png|svg|jpg|jpeg|gif)$/i,
+				type: 'asset/resource',
+        generator: {
+          filename: '[name][ext]'
+        }
+			},
+		],
 	},
 
 	optimization: {

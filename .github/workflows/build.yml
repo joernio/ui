@@ -1,127 +1,127 @@
 name: Build/release
 
 on:
-  push:
-    branches:
-      - release
-    paths:
-      - '!**'
-      - 'src/main'
-      - 'src/renderer'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'release/app/package-lock.json'
-      - 'release/app/package-lock.json'
+    push:
+        branches:
+            - release
+        paths:
+            - '!**'
+            - 'src/main'
+            - 'src/renderer'
+            - 'package.json'
+            - 'package-lock.json'
+            - 'release/app/package-lock.json'
+            - 'release/app/package-lock.json'
 
-  workflow_dispatch:
+    workflow_dispatch:
 
 jobs:
-  init:
-    # if: ${{(github.event_name == 'workflow_dispatch') || (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))}}
-    runs-on: ubuntu-latest
-    steps:
-      - name: 'checkout'
-        uses: actions/checkout@v1
+    init:
+        # if: ${{(github.event_name == 'workflow_dispatch') || (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))}}
+        runs-on: ubuntu-latest
+        steps:
+            - name: 'checkout'
+              uses: actions/checkout@v1
 
-      - name: 'Get Release Tag'
-        id: release_tag
-        uses: 'WyriHaximus/github-action-get-previous-tag@v1'
+            - name: 'Get Release Tag'
+              id: release_tag
+              uses: 'WyriHaximus/github-action-get-previous-tag@v1'
 
-      - name: 'create release_tag file'
-        run: |
-          echo ${{steps.release_tag.outputs.tag}} > release_tag.txt
+            - name: 'create release_tag file'
+              run: |
+                  echo ${{steps.release_tag.outputs.tag}} > release_tag.txt
 
-      - name: 'Upload Tag Artifact'
-        uses: actions/upload-artifact@v2
-        with:
-          name: 'release_tag'
-          path: |
-            ./release_tag.txt
-          retention-days: 1
+            - name: 'Upload Tag Artifact'
+              uses: actions/upload-artifact@v2
+              with:
+                  name: 'release_tag'
+                  path: |
+                      ./release_tag.txt
+                  retention-days: 1
 
-  build:
-    needs: init
-    # if: ${{(github.event_name == 'workflow_dispatch') || (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))}}
-    runs-on: ubuntu-latest
+    build:
+        needs: init
+        # if: ${{(github.event_name == 'workflow_dispatch') || (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))}}
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v2
+        steps:
+            - name: Check out Git repository
+              uses: actions/checkout@v2
 
-      - name: Build Sphinx Documenaton
-        run: |
-          sudo apt update -y
-          sudo apt-get install python3-sphinx -y
-          pip install sphinx_rtd_theme
-          sudo apt-get install -y latexmk
-          sudo apt-get install -y texlive-latex-recommended
-          sudo apt-get install -y texlive-latex-extra
-          cd docs
-          make latexpdf
-          cd ../
+            - name: Build Sphinx Documenaton
+              run: |
+                  sudo apt update -y
+                  sudo apt-get install python3-sphinx -y
+                  pip install sphinx_rtd_theme
+                  sudo apt-get install -y latexmk
+                  sudo apt-get install -y texlive-latex-recommended
+                  sudo apt-get install -y texlive-latex-extra
+                  cd docs
+                  make latexpdf
+                  cd ../
 
-      - name: 'Upload PDF Artifact'
-        uses: actions/upload-artifact@v2
-        with:
-          name: 'docs_build'
-          path: |
-            ./docs/_build/latex/CpgUIClient.pdf
-          retention-days: 1
+            - name: 'Upload PDF Artifact'
+              uses: actions/upload-artifact@v2
+              with:
+                  name: 'docs_build'
+                  path: |
+                      ./docs/_build/latex/cpguiclient.pdf
+                  retention-days: 1
 
-      - name: Install Node.js, NPM and Yarn
-        uses: actions/setup-node@v1
-        with:
-          node-version: 16
+            - name: Install Node.js, NPM and Yarn
+              uses: actions/setup-node@v1
+              with:
+                  node-version: 16
 
-      - name: Build Electron app
-        run: |
-          npm install
-          npm run build
-          npm --prefix ./release/app install @electron-forge/cli -D
-          npm --prefix ./release/app install @electron-forge/plugin-auto-unpack-natives -D
-          npx --workspace ./release/app electron-forge import
-          npx --workspace ./release/app electron-forge make
+            - name: Build Electron app
+              run: |
+                  npm install --legacy-peer-deps
+                  npm --prefix ./release/app install
+                  npm run build
+                  npm --prefix ./release/app install @electron-forge/cli@6.0.5 -D
+                  npm --prefix ./release/app install @electron-forge/plugin-auto-unpack-natives@6.0.5 -D
+                  cd ./release/app && npx electron-forge import && cp ../../forge.config.template.js ./forge.config.js && npx electron-forge make
 
-      - name: 'Upload Ubuntu Artifacts'
-        uses: actions/upload-artifact@v2
-        # if: matrix.os == 'ubuntu-latest'
-        with:
-          name: 'ubuntu_build'
-          path: |
-            ./release/app/out/**/ui-client*.*
-          retention-days: 1
+            - name: 'Upload Ubuntu Artifacts'
+              uses: actions/upload-artifact@v2
+              # if: matrix.os == 'ubuntu-latest'
+              with:
+                  name: 'ubuntu_build'
+                  path: |
+                      ./release/app/out/**/ui-client*.*
+                  retention-days: 1
 
-      # - name: 'Upload Macos Artifacts'
-      #   uses: actions/upload-artifact@v2
-      #   if: matrix.os == 'macos-latest'
-      #   with:
-      #     name: 'macos_build'
-      #     path: |
-      #       ./out/make/zip/darwin/x64/ui-client-darwin-x64*.zip
-      #     retention-days: 1
+            # - name: 'Upload Macos Artifacts'
+            #   uses: actions/upload-artifact@v2
+            #   if: matrix.os == 'macos-latest'
+            #   with:
+            #     name: 'macos_build'
+            #     path: |
+            #       ./out/make/zip/darwin/x64/ui-client-darwin-x64*.zip
+            #     retention-days: 1
 
-  release:
-    needs: build
-    # if: ${{(github.event_name == 'workflow_dispatch') || (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))}}
-    runs-on: ubuntu-latest
-    steps:
-      - name: 'checkout'
-        uses: actions/checkout@v2
+    release:
+        needs: build
+        # if: ${{(github.event_name == 'workflow_dispatch') || (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))}}
+        runs-on: ubuntu-latest
+        steps:
+            - name: 'checkout'
+              uses: actions/checkout@v2
 
-      - name: 'Download Artifacts'
-        uses: actions/download-artifact@v2
+            - name: 'Download Artifacts'
+              uses: actions/download-artifact@v2
 
-      - name: 'Write content of release_tag artifact to steps'
-        id: cat_to_steps
-        run: echo ::set-output name=release_tag::$(cat ./release_tag/release_tag.txt)
+            - name: 'Write content of release_tag artifact to steps'
+              id: cat_to_steps
+              run: echo ::set-output name=release_tag::$(cat ./release_tag/release_tag.txt)
 
-      - name: Release Electron app
-        uses: 'marvinpinto/action-automatic-releases@latest'
-        with:
-          repo_token: '${{ secrets.GITHUB_TOKEN }}'
-          automatic_release_tag: ${{ steps.cat_to_steps.outputs.release_tag }}
-          prerelease: true
-          files: |
-            ./ubuntu_build/**/ui-client*.*
-            ./docs_build/CpgUIClient.pdf
-        # ./macos_build/ui-client*.*
+            - name: Release Electron app
+              uses: 'marvinpinto/action-automatic-releases@latest'
+              with:
+                  repo_token: '${{ secrets.GITHUB_TOKEN }}'
+                  automatic_release_tag: ${{ steps.cat_to_steps.outputs.release_tag }}
+                  prerelease: true
+                  files: |
+                      ./ubuntu_build/**/ui-client*.*
+                      ./docs_build/cpguiclient.pdf
+              # ./macos_build/ui-client*.*

@@ -6,20 +6,19 @@ import { createRequire } from 'module';
 
 export const require = createRequire(import.meta.url);
 
-export const isDev =
-	process.env.NODE_ENV === 'development' ||
+export const isDev = () => process.env.NODE_ENV === 'development' ||
 	process.env.DEBUG_PROD === 'true' ||
 	!app.isPackaged;
 
 export const getDirName = url => path.dirname(new URL(url).pathname);
 
-const RESOURCES_PATH = isDev
-	? path.join(getDirName(import.meta.url), '../../assets')
-	: path.join(process.resourcesPath, 'assets');
+// const resourcesPath = () => isDev()
+// 	? path.resolve(getDirName(import.meta.url), '..','..','assets')
+// 	: path.join(process.resourcesPath, 'assets');
 
-export const getAssetPath = (...paths) => path.join(RESOURCES_PATH, ...paths);
+// export const getAssetPath = (...paths) => path.join(resourcesPath(), ...paths);
 
-const getFullPath = filename =>
+const getFullPath = filename => isDev() ?
 	path.resolve(
 		getDirName(import.meta.url),
 		'..',
@@ -29,7 +28,7 @@ const getFullPath = filename =>
 		'dist',
 		'renderer',
 		filename,
-	);
+	) : path.join(process.resourcesPath, 'app.asar/dist/renderer', filename);
 
 export const resolveHtmlPath = htmlFileName =>
 	`file://${getFullPath(htmlFileName)}`;

@@ -2,12 +2,12 @@ module.exports = {
 	packagerConfig: {
 		asar: true,
 	},
-	plugins: [['@electron-forge/plugin-auto-unpack-natives']],
+	plugins: [{name: '@electron-forge/plugin-auto-unpack-natives', config: {}}],
 	makers: [
 		{
 			name: '@electron-forge/maker-squirrel',
 			config: {
-				name: 'ui_client',
+				name: 'ui-client',
 			},
 		},
 		{
@@ -17,13 +17,13 @@ module.exports = {
 		{
 			name: '@electron-forge/maker-deb',
 			config: {
-				icon: '../../assets/icon.png',
+				icon: './dist/main/icon.png',
 			},
 		},
 		{
 			name: '@electron-forge/maker-rpm',
 			config: {
-				icon: '../../assets/icon.png',
+				icon: './dist/main/icon.png',
 			},
 		},
 	],

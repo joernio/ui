@@ -28,6 +28,16 @@ const configuration = {
 		filename: '[name].dev.js',
 	},
 
+  module: {
+		rules: [
+			// Images
+			{
+				test: /\.(png|svg|jpg|jpeg|gif)$/i,
+				type: 'asset/resource',
+			},
+		],
+	},
+
 	plugins: [
 		/**
 		 * Create global constants which can be configured at compile time.
