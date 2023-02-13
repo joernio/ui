@@ -5,7 +5,7 @@ export const parseCircuitUIResponseValue = data => {
 
 	return new Observable(observer => {
 		try {
-			const keysArr = [
+			const joernMethodKeysArr = [
 				'id',
 				'astParentFullName',
 				'astParentType',
@@ -23,6 +23,23 @@ export const parseCircuitUIResponseValue = data => {
 				'signature',
 			];
 
+      const ocularMethodKeysArr = [
+				'id',
+				'astParentFullName',
+				'astParentType',
+        'binarySignature',
+				'code',
+				'columnNumber',
+				'columnNumberEnd',
+        'depthFirstOrder',
+				'filename',
+				'fullName',
+        'hasMapping',
+				'hash',
+        'internalFlags',
+				'isExternal'
+      ]
+
 			let res = value.split('List[Method] = List(')[1];
 			res = res.replaceAll(/"?\)\)/gi, ''); // replace '"))' or '))'
 			res = res.replaceAll(
@@ -37,13 +54,27 @@ export const parseCircuitUIResponseValue = data => {
 			res.forEach(str => {
 				// this creates a nested loop. Any better way to do this?
 				str = str.split(objValueSeperator);
-				if (str.length !== 15) throw {}; // eslint-disable-line no-throw-literal
-				const methodObj = {};
 
-				str.forEach((value, index) => {
-					methodObj[keysArr[index]] = value;
-				});
-				observer.next({ value: methodObj, blockID });
+        if(str.length === 15){
+
+          const methodObj = {};
+          str.forEach((value, index) => {
+            methodObj[joernMethodKeysArr[index]] = value;
+          });
+          observer.next({ value: methodObj, blockID });
+
+        }else if(str.length === 14){
+
+          const methodObj = {};
+          str.forEach((value, index) => {
+            methodObj[ocularMethodKeysArr[index]] = value;
+          });
+          observer.next({ value: methodObj, blockID });
+
+        }else {
+          throw {};// eslint-disable-line no-throw-literal
+        }
+
 			});
 		} catch (e) {
 			observer.next({ value, blockID });
