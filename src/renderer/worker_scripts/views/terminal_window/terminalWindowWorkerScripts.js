@@ -37,7 +37,13 @@ export const parseCircuitUIResponseValue = data => {
         'hasMapping',
 				'hash',
         'internalFlags',
-				'isExternal'
+				'isExternal',
+        'lineNumber',
+        'lineNumberEnd',
+        'name',
+        'order',
+        'signature',
+        'varargParameter'
       ]
 
 			let res = value.split('List[Method] = List(')[1];
@@ -63,7 +69,7 @@ export const parseCircuitUIResponseValue = data => {
           });
           observer.next({ value: methodObj, blockID });
 
-        }else if(str.length === 14){
+        }else if(str.length === 20){
 
           const methodObj = {};
           str.forEach((value, index) => {
