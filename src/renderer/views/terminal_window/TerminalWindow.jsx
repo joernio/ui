@@ -134,7 +134,6 @@ function TerminalWindow(props) {
 
 	const {
 		terminalHeight,
-		prefersTerminalView,
 		isMaximized,
 		query_suggestions,
 		suggestion_dialog_open,
@@ -329,7 +328,7 @@ function TerminalWindow(props) {
 					[commonClasses.scrolledStyle]: scrolled,
 				})}
 			>
-				{prefersTerminalView ? (
+				{/* {prefersTerminalView ? (
 					<Icon
 						icon="application"
 						className={classes.terminalControlItemsStyle}
@@ -349,7 +348,7 @@ function TerminalWindow(props) {
 							})
 						}
 					/>
-				)}
+				)} */}
 
 				<Icon
 					icon="minus"

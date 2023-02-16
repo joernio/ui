@@ -18,11 +18,11 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Cpg UI Client'
-copyright = '2021, ShiftLeft Inc.'
+copyright = '2023, ShiftLeft Inc.'
 authors = 'Ndibe Raymond'
 
 # The full version, including alpha/beta/rc tags
-release = '1.1.0'
+release = '2.0.5'
 
 
 # -- General configuration ---------------------------------------------------

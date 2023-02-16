@@ -7,7 +7,7 @@ Analysts can:
 
 * manipulate workspaces and projects under them.
 
-* Run CPG queries in a command line-like terminal or a more user-friendly query execution component.
+* Run CPG queries in a user-friendly query execution terminal.
 
 * Create, delete, view, and edit scala scripts used to automate code analysis operations.
 
