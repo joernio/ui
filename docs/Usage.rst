@@ -8,21 +8,25 @@ Below is a labeled diagram of the main sections of CPG UI Client;
 
 1. File Menu
 2. Explorer section toggle control
-3. Scripts section
-4. Opened files section
-5. Workspace section
-6. Terminal section toggle control
-7. Settings modal toggle control
-8. Queries status section
-9. Explorer section
-10. Folders section
-11. Server connection status section
-12. Query input section
-13. Terminal view section
-14. Editor section
-15. Terminal hide control
-16. Terminal mode toggle control
+3. Query shortcut view
+4. Rules management view
+5. Rules results view
+6. Open editor section
+7. Workspace section
+8. Folders section
+9. Terminal section toggle control
+10. Settings modal toggle control
+11. Queries status section
+12. Explorer section
+13. Server connection status section
+14. Query input section
+15. Terminal view section
+16. Terminal hide control
 17. Terminal minimize/maximize control
+18. Editor section
+---------------------------------------
+19. AST graph Viewer
+20. Binary viewer
 
 
 
@@ -42,32 +46,31 @@ tools like importing code and switching workspace:
 
 This control button can be used to collapse and expand the whole explorer section.
 
-3. Scripts section
+3. Query Shortcut View
 ======================================================================
+The query shortcut view is used for the creation and management of your frequently used queries.
+This is especially useful to power-users who don't want to keep typing "cpg.method.name("main").dotAst.l" for example over and over again.
 
-This section is where all the scripts under the current default scripts folder are displayed.
-Scripts can be created, edited, and deleted through the editor but other files can only be viewed on the editor.
-* To further organize your scripts, you can add a special type of comment (e.g. //<tag>my new tag</tag>)
-  to your script files and the scripts will be organized according to the tag name added in the comment
+.. image:: ./query_shortcut_view.png
 
-.. image:: ./organised_scripts_section.png
-
-* Clicking on the "more" icon at the top right-hand side of the script section reveals a hidden menu through
-  which you can perform actions such as deleting selected scripts or changing the default scripts folder.
-
-.. image:: ./screenshot_scripts_context.png
-
-* you can select multiple scripts to delete by holding down the "ctrl" button and clicking on the scripts you want to select.
-* To delete a single script, right-click on the script to reveal the "delete" context menu
-
-4. Opened files section
+4. Rules Management View
 ======================================================================
+This is a nice UI for the rules we have in the rules-config.json (see settings). Here we can manage and execute rules.
 
+.. image:: ./rules_management.png
+
+5. Rules Results View
+======================================================================
+This view is used to view the results of rules executed inthe rules management view.
+
+.. image:: ./rules_result.png
+
+6. Open Editor Section
+======================================================================
 Here you will see all the files that are currently open in the editor. Clicking on a file makes it the active file on the editor
 
-5. Workspace section
+7. Workspace Section
 ======================================================================
-
 This section contains all the projects open in a particular workspace.
 * If the workspace does not contain any project, you will be asked to import a project.
 * Clicking on the "more" icon at the top right-hand side of the workspace section
@@ -79,38 +82,8 @@ This section contains all the projects open in a particular workspace.
 
 .. image:: ./screenshot_project_right_click.png
 
-
-6. Terminal section toggle control
+8. Folders Section
 ======================================================================
-
-This control determines if the terminal section should be hidden or visible.
-
-7. Settings modal toggle control
-======================================================================
-
-Clicking on this toggles the settings modal. In the settings, you can specify the URL (and WebSocket URL) to the backend you want the client to connect.
-You can also change things like server authentication, font size, theme, large folders to be ignored when rendering sections like the folder and scripts section.
-
-.. image:: ./screenshot_settings_page.png
-
-
-8. Queries status section
-======================================================================
-
-This indicates whether there is a currently running query or not, and how many queries have been run since the tool was opened.
-Hovering on this section reveals additional details showing all previously ran queries, status (pending or completed), and total time it took to run the query.
-
-.. image:: ./screenshot_status_section.png
-
-
-9. Explorer section
-======================================================================
-
-This section houses other sections like folder section, workspace section, etc.
-
-10. Folders section
-======================================================================
-
 This section is where the folder structure of the currently active project is displayed.
 * You can inspect the folders and files of the currently active project.
 * When you click on a file in the folder section, the file will be opened in the editor.
@@ -118,49 +91,74 @@ This section is where the folder structure of the currently active project is di
 
 .. image:: ./screenshot_switch_folder.png
 
-
-11. Server connection status section
+9. Terminal Section Toggle Control
 ======================================================================
+This control determines if the terminal section should be hidden or visible.
 
+10. Settings Modal Toggle Control
+======================================================================
+Clicking on this toggles the settings modal. In the settings, you can specify the URL (and WebSocket URL) to the backend you want the client to connect.
+You can also change things like server authentication, font size, theme, large folders to be ignored when rendering sections like the folder and scripts section.
+
+.. image:: ./screenshot_settings_page.png
+
+11. Queries Status Section
+======================================================================
+This indicates whether there is a currently running query or not, and how many queries have been ran since the tool was opened.
+Hovering on this section reveals additional details showing all previously ran queries, status (pending or completed), and total time it took to run the query.
+
+.. image:: ./screenshot_status_section.png
+
+12. Explorer Section
+======================================================================
+This section houses other sections like folder section, workspace section, etc.
+
+13. Server Connection Status Section
+======================================================================
 This section indicates the UI client's connection status to the server.
 * If the server with the server URL in the settings is not active, the connection status will be "failed" and queries won't work.
 * You can right-click on this section to manually connect and disconnect from the server
 
 .. image:: ./screenshot_connect_reconnect.png
 
-12. Query Input section
+14. Query Input Section
 ======================================================================
-
 Just like you can perform certain actions (like opening, closing, and importing projects)
 through the GUI alone without typing any queries, you can also choose to manually type your queries instead.
-* To type queries manually, this section is where input your manual queries (in the more terminal-like view, you input your queries in a terminal-like view instead)
+* To type queries manually, this section is where input your manual queries.
 * Queries and results will appear on top according to the order you ran them.
 
-13. Terminal view section
+15. Terminal View Section
 ======================================================================
+This is the place where you can view queries and their results.
 
-This is the place where you can view queries and their results (in the terminal-like view, this looks like a traditional terminal view)
-
-14. Editor section
+16. Terminal Hide Control
 ======================================================================
-
-This is the section where scripts can be viewed and edited. Other files that are not scripts can only be viewed here, the editor only allows read-only mode for those files.
-
-15. Terminal hide control
-======================================================================
-
 This controls whether the terminal section is visible or not.
 
-16. Terminal mode toggle control
+17. Terminal Minimize/Maximize Control
 ======================================================================
-
-With this, you can control the view of the terminal section.
-* If you prefer a more command line-like interface or a rich GUI mode, you can select it by toggling this control
-
-17. Terminal minimize/maximize control
-======================================================================
-
 As the name suggests, this can be used to minimize or maximize the terminal.
+
+18. Editor Section
+======================================================================
+This is the section where scripts can be viewed and edited. Other files
+that are not scripts can only be viewed here, the editor only allows read-only mode for those files.
+
+19. Ast Graph Viewer
+======================================================================
+this view opens when you run a query that returns ast graph, for example 'cpg.method.name("main").dotAst.l'.
+It is important that this graph has a root node or else it won't draw the graph.
+
+.. image:: ./ast_graph.png
+
+20. Binary Viewer
+======================================================================
+This view opens when you import a binary e.g. "/bin/curl" into your workspace.
+It decompiles the binary and gives you readable code.
+
+.. image:: ./binary_viewer.png
+
 
 
 Secure and Non-Secure Connections

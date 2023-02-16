@@ -354,7 +354,7 @@ function SideNav(props) {
 							}
 						/>
 
-						<h4>Prefers Terminal View</h4>
+						{/* <h4>Prefers Terminal View</h4>
 						<Switch
 							className={classes.switchStyle}
 							innerLabelChecked="on"
@@ -367,7 +367,7 @@ function SideNav(props) {
 							onBlur={e =>
 								handleSetState(handleOnChange(e, values))
 							}
-						/>
+						/> */}
 
 						<h4>Font Size</h4>
 						<input
